@@ -41,15 +41,15 @@ public class JavaTermMethodModel extends JavaMethodModel
     public boolean checkNamePatterns() throws TermWareException
     {
      boolean retval=true;
-     if (getFacts().isCheckMethodNamePatterns()) {
+     if (getFacts().isCheckEnabled("MethodNamePatterns")) {
         if (!methodName_.matches(getFacts().getMethodNamePattern())) {
-            getFacts().methodNamePatternViolationDiscovered(t_);
+            getFacts().violationDiscovered("MethodNamePatterns","bad name of method", t_);
             retval=false;
         }
      }
      
      ITermHolder termHolder=new ITermHolder(ITermFactory.createBoolean(retval));
-     if (getFacts().isCheckVariablePatterns()) {
+     if (getFacts().isCheckEnabled("VariablePatterns")) {
          visitFormalParameterIdentifiers(new ITermVisitor()
          {
              public boolean doFirst(ITerm t, ITermHolder result, HashSet trace) throws TermWareException
@@ -59,7 +59,7 @@ public class JavaTermMethodModel extends JavaMethodModel
                }
                String formalParameterName=t.getSubtermAt(0).getName();
                if (!formalParameterName.matches(getFacts().getMethodNamePattern())) {
-                   getFacts().methodNamePatternViolationDiscovered(t);
+                   getFacts().violationDiscovered("MethodNamePatterns","bad method name",t);
                    result.setValue(ITermFactory.createBoolean(false));
                }
                return true;
@@ -67,10 +67,28 @@ public class JavaTermMethodModel extends JavaMethodModel
              public boolean doSecond(ITerm t, ITermHolder result, HashSet trace)
              {return true;}
          },termHolder,null);
+         
+         visitLocalVariableDeclarators(getMethodBody(),new ITermVisitor()
+         {
+             public boolean doFirst(ITerm t, ITermHolder result, HashSet trace) throws TermWareException {
+                 ITerm identifierTerm=t.getSubtermAt(0);
+                 ITerm nameTerm=identifierTerm.getSubtermAt(0);
+                 String variableName=nameTerm.getName();
+                 if (!variableName.matches(getFacts().getLocalVariableNamePattern())) {
+                     getFacts().violationDiscovered("VariablePatterns","violation of variable name conventions",t);
+                     result.setValue(ITermFactory.createBoolean(false));
+                 }
+                 return true;
+             }
+             
+             public boolean doSecond(ITerm t, ITermHolder result, HashSet trace)
+             { return true; }
+         },termHolder,null);
      }
      
      return retval;
     }
+    
     
     public  boolean check() throws TermWareException
     {
@@ -101,7 +119,7 @@ public class JavaTermMethodModel extends JavaMethodModel
     public boolean checkHidingOfFormalParameters() throws TermWareException
     {
       boolean retval=true;
-      if (getFacts().isCheckHiding()) {
+      if (getFacts().isCheckEnabled("Hiding")) {
         HashSet names=new HashSet();
         ITermVisitor visitor=new HidingVisitor(names);
         visitFormalParameterIdentifiers(visitor, null, null);
@@ -151,6 +169,27 @@ public class JavaTermMethodModel extends JavaMethodModel
      }     
     }
     
+    public void visitLocalVariableDeclarators(ITerm t,ITermVisitor visitor, ITermHolder result, HashSet trace) throws TermWareException
+    {
+      if (t.isComplexTerm()) {
+          if (t.getName().equals("java_local_variable_declaration")) {
+              ITerm type=t.getSubtermAt(1);
+              ITerm variableDeclaratorsList=t.getSubtermAt(2);
+              ITerm current=variableDeclaratorsList;
+              while(!current.isNil()) {
+                  ITerm variableDeclarator=current.getSubtermAt(0);
+                  visitor.doFirst(variableDeclarator,result,trace);
+                  current=current.getSubtermAt(1);
+                  // now vizit in initialization clause
+                  ITerm iniclause=variableDeclarator.getSubtermAt(1);
+              }
+          }else{
+              for(int i=0; i<t.getArity(); ++i) {
+                  visitLocalVariableDeclarators(t.getSubtermAt(i),visitor,result,trace);
+              }
+          }
+      }
+    }
    
     
     private String methodName_;

@@ -53,28 +53,28 @@ public class JavaMemberVariableModel {
     public boolean check() throws TermWareException
     {
       boolean retval=true;
-      if (getFacts().isCheckVariablePatterns()) {
+      if (getFacts().isCheckEnabled("VariablePatterns")) {
           if (isFinal_) {
               if (!name_.matches(getFacts().getFinalFieldNamePattern())) {
-                  getFacts().finalFieldNamePatternViolationDiscovered(t_);
+                  getFacts().violationDiscovered("VariablePatterns", "final field name pattern violation", t_);
                   retval=false;
               }
           }else{
               if (!name_.matches(getFacts().getNonFinalFieldNamePattern())) {
-                  getFacts().nonFinalFieldNamePatternViolationDiscovered(t_);
+                  getFacts().violationDiscovered("VariablePatterns", "non-final field name pattern violation", t_);
                   retval=false;
               }
           }
       }
-      if (getFacts().isCheckNonFinalPublicFields()) {
+      if (getFacts().isCheckEnabled("NonFinalPublicFields")) {
           if (accessLevelModel_.isPublic()) {
               if (!isFinal_) {
-                  getFacts().nonFinalPublicFieldDiscovered(t_);
+                  getFacts().violationDiscovered("NonFinalPublicFields","non-final public field discovered",t_);
                   retval=false;
               }
           }
       }
-      if (getFacts().isCheckSynchronizeViolations()) {
+      if (getFacts().isCheckEnabled("SynchronizeViolations")) {
           String setterName=JUtils.generateSetterName(name_);
           boolean synchronizedSetterFound=false;
           try {

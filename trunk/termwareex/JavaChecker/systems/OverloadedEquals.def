@@ -18,9 +18,9 @@
 
       checkType(java_class_declaration($name,$properties,$extend_classes,$implements_classes,$body)) -> checkClassBody($body,$name),
    
-      checkClassBody([$x1,$x2] ,$classname) -> checkClassBody($x1,$classname) && checkClassBody($x2,$classname),
+      checkClassBody([$x1:$x2] ,$classname) -> checkClassBody($x1,$classname) && checkClassBody($x2,$classname),
 
-      checkClassBody([$x1], $classname) -> checkClassBody($x1,$classname),
+      checkClassBody([], $classname) -> true,
 
       checkClassBody(empty_list, $classname) -> true,
 

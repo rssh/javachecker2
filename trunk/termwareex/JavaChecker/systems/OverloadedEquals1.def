@@ -4,9 +4,9 @@
 
       import(general,logical_and),
 
-      FOUND_EQUALS($classname) -> true //  equalsWithoutHashcodeDiscovered($classname),
+      FOUND_EQUALS($classname) -> true //  violationDiscovered("OverloadedEquals","overrided equals, but not hashcode",$classname),
 
-      FOUND_HASHCODE($classname) -> true //  hashcodeWithoudEqualsDiscovered($classname)
+      FOUND_HASHCODE($classname) -> true //  violationDiscovered("OverloadedEquals","overrided hashcode, but not equals",$classname)
 
     ),
     FirstTop

@@ -30,7 +30,7 @@ public class JavaTermTypeModel extends JavaTypeModel
           try {
             checkerComment_=CheckerComment.extract(commentTerm.getString());
           }catch(InvalidCheckerCommentException ex){
-              packageModel.getFacts().invalidCheckerCommentDiscovered(t,ex.getMessage());
+              packageModel.getFacts().violationDiscovered("InvalidCheckerComments",ex.getMessage(),t);
           }
         }
         methodModelVectors_=new HashMap();
@@ -51,10 +51,10 @@ public class JavaTermTypeModel extends JavaTypeModel
       ITerm membersList=null;
       if (t_.isComplexTerm() && t_.getName().equals("java_interface_declaration")) {
           isInterface_=true;
-          membersList=t_.getSubtermAt(3);
+          membersList=t_.getSubtermAt(INTERFACE_MEMBERS_INDEX);
       }else if (t_.getName().equals("java_class_declaration")) {
           isClass_=true;
-          membersList=t_.getSubtermAt(4);
+          membersList=t_.getSubtermAt(CLASS_MEMBERS_INDEX);
       }else{
           throw new AssertException("Invalid Java Type:"+TermHelper.termToString(t_));
       }
@@ -142,10 +142,10 @@ public class JavaTermTypeModel extends JavaTypeModel
         if (Main.getBTPatternChecker().isEnabled()) {
           Main.getBTPatternChecker().check(t_.term_clone());
         }
-  
-        
-        
-        //TODO: check method models.
+
+        checkBean();
+      
+        // check method models.
         Iterator it=methodModelVectors_.entrySet().iterator();
         while(it.hasNext()) {
             Map.Entry me=(Map.Entry)it.next();
@@ -171,9 +171,9 @@ public class JavaTermTypeModel extends JavaTypeModel
     public boolean checkNamePatterns() throws TermWareException
     {
      boolean retval=true;
-     if (getFacts().isCheckClassNamePatterns()) {
+     if (getFacts().isCheckEnabled("ClassNamePatterns")) {
         if (!typeName_.matches(getFacts().getClassNamePattern())) {
-            getFacts().classNamePatternViolationDiscovered(t_);
+            getFacts().violationDiscovered("ClassNamePatterns","bad classname pattern",t_);
             retval=false;
         }
      }
@@ -181,6 +181,43 @@ public class JavaTermTypeModel extends JavaTypeModel
      return retval;
     }
     
+    /**
+     * check bean-s constraint.
+     *  (i. e. when checkerComment_.isBean()).
+     *<ul>
+     * <li> have default constructor </li>
+     *<ul>
+     */
+    public boolean checkBean() throws TermWareException
+    {
+        if (checkerComment_==null) {
+           return true;
+        }
+        if (!checkerComment_.isBean()) {
+           return true;
+        }
+        if (!isClass_) {
+           getFacts().violationDiscovered("Beans","interface with bean checker comment",t_);
+           return false;
+        }
+        ITerm membersList=t_.getSubtermAt(CLASS_MEMBERS_INDEX);
+        boolean foundDefaultConstructor=false;
+        while(!membersList.isNil()){
+            ITerm candidate=membersList.getSubtermAt(0);
+            if (candidate.getName().equals("java_constructor_declaration")){
+                ITerm params=candidate.getSubtermAt(CONSTRUCTOR_PARAMS_INDEX);
+                if (params.isNil()||params.getName().equals("empty_list")){
+                   foundDefaultConstructor=true;
+                   break;
+                }
+            }
+            membersList=membersList.getSubtermAt(1);
+        }
+        if (!foundDefaultConstructor){
+            getFacts().violationDiscovered("Beans","bean class have no default constructor",t_);
+        }
+        return foundDefaultConstructor;
+    }
     
     
     public boolean canCheck() {
@@ -200,4 +237,8 @@ public class JavaTermTypeModel extends JavaTypeModel
     private ITerm t_;
     private CheckerComment checkerComment_=null;
     
+    public static final int CLASS_MEMBERS_INDEX = 4;
+    public static final int INTERFACE_MEMBERS_INDEX = 4;
+    
+    public static final int CONSTRUCTOR_PARAMS_INDEX = 2;
 }

@@ -27,16 +27,16 @@ public class BTPatternChecker {
         ITermRewritingStrategy strategy=TermWareSingleton.createStrategyByName("BottomUp");
         sys_=new ITermSystem(strategy,facts,facts.getEnv()); 
         enabled_=false;
-        if (facts.isCheckEmptyCatchClauses()) {
-           sys_.addRule("java_catch($formal_parameter, java_empty_block ) -> PROBLEM // emptyCatchClauseDiscovered($formal_parameter)");
+        if (facts.isCheckEnabled("EmptyCatchClauses")) {
+           sys_.addRule("java_catch($formal_parameter, java_empty_block ) -> PROBLEM // violationDiscovered(EmptyCatchClauses,\" empty catch clause \",$formal_parameter)");
            enabled_=true;
         }
-        if (facts.isCheckGenericExceptionSpecifications()) {
-           sys_.addRule("java_method_declaration($name,$attrs,$result_type,$params,[java_name([java_identifier(\"Exception\")])],$body)-> PROBLEM // genericExceptionSpecificationDiscovered($name) ");
+        if (facts.isCheckEnabled("GenericExceptionSpecifications")) {
+           sys_.addRule("java_method_declaration($name,$attrs,$result_type,$params,[java_name([java_identifier(\"Exception\")])],$body)-> PROBLEM // violationDiscovered(GenericExceptionSpecifications,\" generic exception specifications\",$name) ");
            enabled_=true;
         }
-        if (facts.isCheckGenericExceptionCatchClauses()) {
-           sys_.addRule("java_catch(java_formal_parameter($x,java_name([java_identifier(\"Exception\")]),$final),$block) -> PROBLEM // genericExceptionCatchClauseDiscovered($x) ");
+        if (facts.isCheckEnabled("GenericExceptionCatchClauses")) {
+           sys_.addRule("java_catch(java_formal_parameter($x,java_name([java_identifier(\"Exception\")]),$final),$block) -> PROBLEM // violationDiscovered(GenericExceptionCatchClauses,\"generic exception catch clause\",$x) ");           
            enabled_=true;
         }
         if (facts.isDebugMode()) {

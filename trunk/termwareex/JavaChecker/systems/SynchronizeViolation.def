@@ -4,8 +4,8 @@
       import(general,apply),
       import(general,logical_and),
 
-      C([$x],$var,$synchronizer) -> C($x,$var,$synchronizer),
-      C([$x,$y],$var,$synchronizer) -> C($x,$var,$synchronizer) && C($y,$var,$synchronizer),
+      C([$x:$y],$var,$synchronizer) -> C($x,$var,$synchronizer) && C($y,$var,$synchronizer),
+      C([],$var,$synchronizer) -> true,
 
       
       C($v,$v,$s) -> false // synchronizeViolationDiscovered($v,$s),
@@ -165,7 +165,7 @@
       # !!1 - this is the main rule.
       C(java_name([$x]),$v,$s) -> C1(java_name([$x]),$v,$s,$x),
 
-      C1(java_name([$v]),$v,$s,$x) ->  false // synchronizeViolationDiscovered($x,$s),
+      C1(java_name([$v]),$v,$s,$x) ->  false // synchronizeViolationDiscovered($v,$x),
 
       C1(java_name([$a,$b]),$v,$s,$x) -> true,
 
@@ -194,9 +194,9 @@
 
       C(java_null, $v, $s) -> true,
 
-      CB([$x],$v,$s) -> CB1($x,$v,$s),
+      CB([$x:$y],$v,$s) -> CB1($x,$v,$s) && CB($y,$v,$s),
 
-      CB([$x,$y],$v,$s) -> CB1($x,$v,$s) && CB($y,$v,$s),
+      CB([],$v,$s) -> true,
 
       CB1(java_initializer($x),$v,$s) -> C($x,$v,FromSuperClass.$s),
 

@@ -10,7 +10,7 @@ import ua.kiev.gradsoft.TermWare.*;
 import ua.kiev.gradsoft.TermWare.exceptions.*;
 
 /**
- *
+ * Model for method
  * @author  Ruslan Shevchenko
  */
 public abstract class JavaMethodModel {

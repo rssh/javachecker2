@@ -7,7 +7,8 @@
 package ua.kiev.gradsoft.JavaChecker;
 
 /**
- *
+ *Throwed when we can't find some entity in model-s findXXX method.
+ *  (for example - method with some name)
  * @author  Ruslan Shevchenko
  */
 public class EntityNotFoundException extends java.lang.Exception {

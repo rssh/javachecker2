@@ -47,15 +47,16 @@ public class HidingCheckFacts extends DefaultFacts {
       hideType_=hideType;  
     }
     
+    
     public boolean hidingDiscovered(ITerm t) throws TermWareException
     {
       ++nHides_;
       switch(hideType_) {
           case HidingChecker.HIDING_OF_FORMAL_PARAMETER:
-              getJavaFacts().hidingOfFormalParameterDiscovered(t);  
+              getJavaFacts().violationDiscovered("Hiding", "hiding of formal parameter by local variable discovered", t);
               break;
           case HidingChecker.HIDING_OF_CLASS_FIELD:
-              getJavaFacts().hidingOfClassFieldDiscovered(t);
+              getJavaFacts().violationDiscovered("Hiding", "hiding of class field by local variable discovered", t);
               break;
           default:
               throw new AssertException("HidingCheckFacts: bad hidingType");

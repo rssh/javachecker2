@@ -4,7 +4,7 @@
 >
 <article>
   <artheader>
-  <title>JavaChecker guide </title>
+  <title>JavaChecker Guide. Version 1.1.0 </title>
   <author>
       <firstname>Ruslan</firstname>
       <surname>Shevchenko</surname>
@@ -83,6 +83,8 @@ Options have next meaning:
          <entry key="CheckClassNamePatterns" value="true" />
          <entry key="ClassNamePattern" value="[A-Z].*" />
          <entry key="CheckMethodNamePatterns" value="true" />
+         <entry key="LocalVariableNamePattern" 
+                            value="[a-z]([A-Z]|[0-9]|[a-z]|_)*([A-Z]|[a-z]|[0-9])" />
          <entry key="MethodNamePattern" value="[a-z].*" />
          <entry key="CheckNonFinalPublicFields" value="true" />
          <entry key="CheckHiding" value="true" />
@@ -225,6 +227,10 @@ public class Sv1
                 </simpara></listitem>
                 <listitem><simpara>
                   <code> FinalFieldNamePattern </code> - set pattern for final fields. default is <code> [A-Z](A-Z|_|0-9)* </code>
+                </simpara></listitem>
+                <listitem><simpara>
+                  <code> LocalVariableNamePattern </code> - set pattern for local variables.
+                       default is <code> "[a-z]+([A-Z]|[a-z]|_[0-9])*" </code>
                 </simpara></listitem>
               </itemizedlist>
               Names of patterns are names of appropriative property, so you can confgigure this

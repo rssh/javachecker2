@@ -25,6 +25,7 @@
          <entry key="ClassNamePattern" value="[A-Z].*" />
          <entry key="CheckMethodNamePatterns" value="true" />
          <entry key="MethodNamePattern" value="[a-z].*" />
+         <entry key="LocalVariableNamePattern" value="([a-z]([A-Z]|[0-9]|[a-z]|_)*([A-Z]|[a-z]|[0-9]))|[a-z]" />
          <entry key="CheckNonFinalPublicFields" value="true" />
          <entry key="CheckHiding" value="true" />
        </map>

@@ -23,17 +23,19 @@ public class ProxyJavaFacts extends DefaultFacts
         super(env);
     }
     
-    public boolean isCheckEmptyCatchClauses()
-    { return Main.getFacts().isCheckEmptyCatchClauses(); }
+     public boolean violationDiscovered(String name,String message,ITerm partOfCode) throws TermWareException
+    {
+        return Main.getFacts().violationDiscovered(name, message, partOfCode);
+    }
     
-    public boolean equalsWithoutHashcodeDiscovered(ITerm classnameTerm) throws TermWareException
-    { return Main.getFacts().equalsWithoutHashcodeDiscovered(classnameTerm); }
+    public boolean isCheckEnabled(String name)
+    {
+        return Main.getFacts().isCheckEnabled(name);
+    }
     
-    public boolean hashcodeWithoudEqualsDiscovered(ITerm classnameTerm) throws TermWareException
-    { return Main.getFacts().hashcodeWithoudEqualsDiscovered(classnameTerm); }
     
     public boolean synchronizeViolationDiscovered(ITerm varTerm,ITerm synchronizerTerm) throws TermWareException
-    { return Main.getFacts().synchronizeViolationDiscovered(varTerm,synchronizerTerm); }
+    { return violationDiscovered("SynchronizeViolations","violation of synchronization for variable "+TermHelper.termToString(varTerm.getSubtermAt(0)),synchronizerTerm); }
     
     
     

@@ -47,35 +47,15 @@ public class CheckerComment {
             throw new InvalidCheckerCommentException(expression,ex.getMessage());
         }
         try {
-          if (t.isComplexTerm()) {
-            if (t.getName().equals("disable")) {
-                if (t.getArity()==0) {
-                    throw new InvalidCheckerCommentException(expression,"arity of disable must be not nul");
-                }
-                for(int i=0; i<t.getArity(); ++i){
-                    ITerm st=t.getSubtermAt(i);
-                    if (st.isAtom()) {
-                        if (st.getName().equals("all")||st.getName().equals("All")) {
-                            disabledChecks_.add("All");
-                        }else if (st.getName().equals("style")||st.getName().equals("style")) {
-                            disabledChecks_.add("Style");
-                        }
-                    }else{
-                        throw new InvalidCheckerCommentException(expression,"subterms of disable must be atoms");
-                    }
-                }
-            }else{
-                throw new InvalidCheckerCommentException(expression,"unknown name of checker term");
-            }
-          }else{
-              throw new InvalidCheckerCommentException(expression,"checker expression can't be atom");
-          }
+          processCommentTerm(t);
         }catch(TermWareException ex){
               throw new InvalidCheckerCommentException(expression,ex.getMessage());
         }
         
     }
     
+    public boolean isBean()
+    { return bean_; }
     
     public boolean isDisable(String checkName)
     { return disabledChecks_.contains(checkName) || disabledChecks_.contains("All"); }
@@ -116,8 +96,63 @@ public class CheckerComment {
 
        return null;
     }
+
+
+    private void processCommentTerm(ITerm t) throws InvalidCheckerCommentException, TermWareException
+    {
+      if (t.isComplexTerm()) {
+        if (t.getName().equals("disable")) {
+            processDisable(t);
+        }else if (t.getName().equals("cons")){
+            if (t.getArity()!=2){
+               throw new InvalidCheckerCommentException(t,"cons with arity !=2 in checker comment");
+            }else{
+               ITerm current=t;
+               while(!current.isNil()) {
+                  if (current.getArity()!=2) {
+                      throw new InvalidCheckerCommentException(t,"cons with arity !=2 in checker comment");
+                  }
+                  processCommentTerm(current.getSubtermAt(0));
+                  current=current.getSubtermAt(1);
+               }
+            }
+        }else{
+            throw new InvalidCheckerCommentException(t,"unknown name of checker term");
+        }
+      }else if(t.isAtom()){    
+        if (t.getName().equals("bean")){
+            bean_=true;   
+        }else{
+            throw new InvalidCheckerCommentException(t,"checker expression is unknown atom");
+        }
+      }else{
+        throw new InvalidCheckerCommentException(t,"bad type for checker expression");
+      }
+    }
+
+    /**
+     * process "disable" comment
+     */
+    private void processDisable(ITerm t) throws InvalidCheckerCommentException, TermWareException
+    {
+     if (t.getArity()==0) {
+          throw new InvalidCheckerCommentException(t,"arity of disable must be not nul");
+     }
+     for(int i=0; i<t.getArity(); ++i){
+        ITerm st=t.getSubtermAt(i);
+        if (st.isAtom()) {
+           if (st.getName().equals("all")||st.getName().equals("All")) {
+               disabledChecks_.add("All");
+           }else if (st.getName().equals("style")||st.getName().equals("style")) {
+               disabledChecks_.add("Style");
+           }
+        }else{
+           throw new InvalidCheckerCommentException(t,"subterms of disable must be atoms");
+        }
+     }
+    }
     
-    
+    private boolean bean_ = false;
     private HashSet disabledChecks_ = new HashSet();
     private static final Pattern asterisksRemovePattern_ = Pattern.compile("\\p{Space}\\*",Pattern.MULTILINE);
     private static final Pattern checkerPattern_ = Pattern.compile(".*!@checker:([^{!@}]*)!@.*",Pattern.DOTALL);

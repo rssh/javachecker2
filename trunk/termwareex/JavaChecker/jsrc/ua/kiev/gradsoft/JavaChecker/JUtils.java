@@ -100,10 +100,12 @@ public final class JUtils {
      ITerm markedIdentifier=JUtils.findMarkedIdentifier(partOfCode);
      ITerm fileTerm=TermHelper.getAttribute(markedIdentifier,"file");
      ITerm lineTerm=TermHelper.getAttribute(markedIdentifier,"line");
-     String fname="unknown";
+     String fname="unknown, entry is:";
      int    line=-1;
      if (!fileTerm.isNil()) {
          fname=fileTerm.getString();
+     }else{
+         fname+=TermHelper.termToString(partOfCode);
      }
      if (!lineTerm.isNil()) {
          if (lineTerm.isString()) {

@@ -69,6 +69,9 @@ public class Main
    }catch(TermWareException ex){
        ex.printStackTrace();
        throw new ProcessingException("error during processing:"+ex.getMessage(),ex);
+   }catch(Exception ex){
+       ex.printStackTrace();
+       throw new ProcessingException("error during processing:"+ex.getMessage(),ex);
    }
    try {
       report();
@@ -178,13 +181,13 @@ public class Main
 //  sys.setDebugMode(true);
 //  sys.setDebugEntity("All");
   btPatternChecker_=new BTPatternChecker(facts_);
-  if (facts_.isCheckOverloadedEquals()) {
+  if (facts_.isCheckEnabled("OverloadedEquals")) {
       overloadedEqualsChecker_=new OverloadedEqualsChecker(facts_);
   }
-  if (facts_.isCheckHiding()) {
+  if (facts_.isCheckEnabled("Hiding")) {
       hidingChecker_=new HidingChecker();
   }
-  if (facts_.isCheckSynchronizeViolations()) {
+  if (facts_.isCheckEnabled("SynchronizeViolations")) {
       synchronizeViolationChecker_=new SynchronizeViolationChecker(facts_);
   }
  }

@@ -6,7 +6,7 @@
 
    - inaccurate exceptions handling (empty catch block, throwing of generic
      exceptions and so on) 
-   - hiding defects (for example, when name of memebr variable is the same,
+   - hiding defects (for example, when name of member variable is the same,
       as name of formal parameter of some methods in the same class)
    - style defects. (you can set style conventions with set of regular expressions)
    - violations of standatd usage contracts (such as overloading equals without
