@@ -1,0 +1,34 @@
+
+ JavaChecker -  static analyzer of Java source code, based on
+ TermWare technology.
+
+  This tool allows to detect code defects, such as:
+
+   - inaccurate exceptions handling (empty catch block, throwing of generic
+     exceptions and so on) 
+   - hiding defects (for example, when name of memebr variable is the same,
+      as name of formal parameter of some methods in the same class)
+   - style defects. (you can set style conventions with set of regular expressions)
+   - violations of standatd usage contracts (such as overloading equals without
+       overloading hashCode) 
+   - synchronization defects (for example, when synchronized variable is accessed
+       outside synchronized block)
+
+  You can tune set of checks using preferences and special comments. And of course,
+    JavaChecker can be called from  ANT scripts.
+      
+    - binary distributive
+    - source code.
+    - user quiede.
+    - license.
+    - mail list (subscribe, archives)
+
+  Technology is open:
+     - for commercial usage:
+                    - <buy - script("Buy Java Checker")> $10 commerce license.
+                    - <contract - script("Contract Java Checker Custom Check") > us to create custom  checks for you.
+
+     - and non-commercial:
+                    - cleanup you open-source project. 
+                    - fix our errors ;)
+                     - <propose - script("Propose Java Checker Check") > you ideas.

@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<!-- build file for JavaChecker project -->
+<project name="javaChecker" default="build" basedir=".">
+
+<!-- 
+ You need TermWare and docbook for building.
+ IzPack, if you want build installation.
+-->
+
+ <!-- set here location of TermWare installed (see http://www.gradsoft.com.ua ) -->
+ <property name="termware.home" location="c:/home/rssh/work/TermWare" />
+
+ <!-- set here location of IzPack (see http://www.izforge.com) -->
+ <property name="izpackhome" location="c:/Program Files/Izpack" />
+                
+ <!-- set here location of docbook xsl (see http://www.docbook.org) -->
+ <property name="docbookxsl" location="c:/local/docbook/docbook-xsl-1.64.1/html/docbook.xsl" />
+
+ <!-- set here location of docbook dtd (see http://www.docbook.org) -->
+ <property name="docbookdtd" location="c:/local/docbook/xmlcatalog/docbookx.dtd" />
+
+ <!-- set here location of ant (see ant.apache.org ) -->
+ <property name="anthome" location="c:/local/java/ant" />
+
+
+
+ <!-- external tasks -->
+ 
+ <taskdef name="izpack" classpath="${izpackhome}/lib/compiler.jar"
+         classname="com.izforge.izpack.ant.IzPackTask"/>
+
+ <!-- targets -->
+
+ <target name="clean">
+  <delete>
+   <fileset dir="jsrc"   includes="**/*.class" />
+   <fileset dir="jtests" includes="**/*.class" />
+  </delete>
+ </target>
+
+ 
+ <target name="build-classes">
+  <javac srcdir="jsrc" includes="**/*.java">
+    <classpath>
+      <pathelement location="jsrc"/>
+      <pathelement location="${termware.home}/jlib/TermWare.jar"/>
+      <pathelement location="${java.class.path}/"/>      
+    </classpath>
+  </javac>
+  <jar basedir="jsrc" includes="**/*.class" 
+       destfile="jlib/JavaChecker.jar" 
+       index="true">
+  <include name="build"/>
+  <manifest>
+   <attribute name="Build-By" value="${user-name}"/>
+   <attribute name="Main-Class" value="ua.kiev.gradsoft.JavaChecker.Main"/>
+  </manifest>
+  </jar>
+ </target>
+
+
+ <target name="build"  depends="build-classes">
+ </target>
+
+ <target name="declareJavaChecker"  depends="build-classes">
+    <taskdef name="JavaChecker"  classname="ua.kiev.gradsoft.JavaChecker.ant.JavaCheckerTask">
+     <classpath>
+      <pathelement location="jsrc"/>
+      <pathelement location="${termware.home}/jlib/TermWare.jar"/>
+      <pathelement location="${java.class.path}/"/>      
+     </classpath>
+    </taskdef>    
+ </target>
+
+
+ <target name="check" depends="declareJavaChecker" >
+   <JavaChecker jchhome="." input="jsrc" output="jchreport.txt" prefs="etc/prefs1.xml" />
+ </target>
+
+
+ <target name="JavaCheckerGuide">
+  <xslt style="${docbookxsl}" in="docs/JavaCheckerGuide.xml" out="docs/JavaCheckerGuide.html" >
+    <xmlcatalog>
+        <dtd 
+            publicId="-//OASIS//DTD DocBook XML V4.2//EN"
+            location="${docbookdtd}" />
+    </xmlcatalog>
+  </xslt>
+ </target>
+
+ <target name="docs" depends="JavaCheckerGuide">
+ </target>
+
+ <target name="cpTermWare" >
+   <copy file="${termware.home}/jlib/TermWare.jar" 
+         tofile="jlib/TermWare.jar"
+         preservelastmodified="yes"
+   />
+ </target>
+
+
+ <target name="binary_installation" depends="build,docs,cpTermWare">
+  <izpack input="installer/binary_installation.xml"
+          output="installer/JavaCheckerBinaryInstaller.jar"
+          installerType="standard-kunststoff"
+          basedir="installer"
+          IzPackDir="${izpackhome}"
+  />
+ </target>
+
+ <target name="source_installation" depends="build,docs,cpTermWare">
+  <izpack input="installer/source_installation.xml"
+          output="installer/JavaCheckerSourceInstaller.jar"
+          installerType="standard-kunststoff"
+          basedir="installer"
+          IzPackDir="${izpackhome}"
+  />
+ </target>
+
+ <target name="installation" depends="binary_installation,source_installation" />
+
+
+ <target name="all" depends="build,clean,docs,installation"/>
+
+</project>
