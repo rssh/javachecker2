@@ -1,0 +1,11 @@
+
+  system(FromSuperClass,javaFacts("ProxyJavaFacts","ua.kiev.gradsoft.JavaChecker.ProxyJavaFacts"),
+    ruleset(
+
+      java_this -> java_primary_experssion(java_this,java_dot(java_super)) // setCurrentStopFlag(true),
+
+
+    ),
+    FirstTop
+  );
+

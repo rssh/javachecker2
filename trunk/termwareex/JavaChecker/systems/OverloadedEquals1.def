@@ -1,0 +1,14 @@
+  #
+  system(OverloadedEquals1, javaFacts("ProxyJavaFacts","ua.kiev.gradsoft.JavaChecker.ProxyJavaFacts"),
+    ruleset(
+
+      import(general,logical_and),
+
+      FOUND_EQUALS($classname) -> true //  equalsWithoutHashcodeDiscovered($classname),
+
+      FOUND_HASHCODE($classname) -> true //  hashcodeWithoudEqualsDiscovered($classname)
+
+    ),
+    FirstTop
+);
+

@@ -1,0 +1,79 @@
+<!--
+    Document   : installer.xml
+    Created on : 07/03/2004, 02:44
+    Author     : Ruslan Shevchenko
+    Description:
+        IzPack install file for TermWare JavaChecker
+-->
+<installation version="1.0">
+ <info>
+  <appname>JavaChecker</appname>
+  <appversion>1.0.0</appversion>
+  <url>http://www.gradsoft.kiev.ua</url>
+  <authors>
+   <author name="Ruslan Shevchenko" email="Ruslan@Shevchenko.Kiev.UA" />
+   <author name="Grad-Soft ltd" email="info@gradsoft.kiev.ua" />
+  </authors>
+ </info>
+ <guiprefs height="480" resizable="yes" width="640"/>
+ <variables/>
+ <locale>
+   <langpack iso3="eng" />
+ </locale>
+ <resources>
+   <res id="LicencePanel.licence" src="../docs/LICENSE.eng" />
+ </resources>
+ <panels>
+  <panel classname="HelloPanel"/>
+  <panel classname="LicencePanel"/>
+  <panel classname="TargetPanel"/>
+  <panel classname="PacksPanel"/>
+  <panel classname="InstallPanel"/>
+  <panel classname="FinishPanel"/>
+ </panels>
+<packs>
+ <pack name="JavaChecker sources" required="no">
+  <description> full javachecker sources </description>
+  <file src="JavaChecker.bat" targetdir="$INSTALL_PATH/bin" />
+  <file src="JavaChecker.sh" targetdir="$INSTALL_PATH/bin" />
+  <parsable targetfile="$INSTALL_PATH/bin/JavaChecker.sh" os="unix"/>
+  <parsable targetfile="$INSTALL_PATH/bin/JavaChecker.bat" os="windows"/>
+  <file src="../jlib/JavaChecker.jar" targetdir="$INSTALL_PATH/jlib" />
+  <file src="../jlib/TermWare.jar"  targetdir="$INSTALL_PATH/jlib" />
+  <file src="../build.xml"  targetdir="$INSTALL_PATH" />
+  <fileset dir="../systems/" targetdir="$INSTALL_PATH/systems" >
+    <exclude name="CVS" />
+    <exclude name="**/CVS" />
+    <exclude name="CVS/*" />
+    <exclude name="**/CVS/*" />
+  </fileset>
+  <fileset dir="../docs/" targetdir="$INSTALL_PATH/docs" >
+    <exclude name="CVS" />
+    <exclude name="**/CVS" />
+    <exclude name="CVS/*" />
+    <exclude name="**/CVS/*" />
+  </fileset>
+  <fileset dir="../jsrc/" targetdir="$INSTALL_PATH/jsrc" >
+    <exclude name="CVS" />
+    <exclude name="**/CVS" />
+    <exclude name="CVS/*" />
+    <exclude name="**/CVS/*" />
+    <exclude name="**/*.class" />
+  </fileset>
+  <fileset dir="../testpackages/" targetdir="$INSTALL_PATH/testpackages" >
+    <exclude name="CVS" />
+    <exclude name="**/CVS" />
+    <exclude name="CVS/*" />
+    <exclude name="**/CVS/*" />
+  </fileset>
+  <fileset dir="../installer/" targetdir="$INSTALL_PATH/installer" >
+    <exclude name="CVS" />
+    <exclude name="**/CVS" />
+    <exclude name="CVS/*" />
+    <exclude name="**/CVS/*" />
+    <exclude name="JavaCheckerBinaryInstaller.jar" />
+    <exclude name="JavaCheckerSourceInstaller.jar" />
+  </fileset>
+ </pack>
+</packs>
+</installation>
