@@ -4,7 +4,7 @@
 >
 <article>
   <artheader>
-  <title>JavaChecker Guide. Version 1.1.0 </title>
+  <title>JavaChecker Guide. Version 1.2.0 </title>
   <author>
       <firstname>Ruslan</firstname>
       <surname>Shevchenko</surname>
@@ -22,7 +22,7 @@
   <abstract>
     <para>
      JavaChecker is a static analyzer tool for java language, based on TermWare
-   technology. It is development by <ulink url="http://www.gradsoft.kiev.ua" > Grad-Soft Ltd </ulink>, Kiev,
+   technology. It is development by <ulink url="http://www.gradsoft.ua" > Grad-Soft Ltd </ulink>, Kiev,
    Ukraine.
    </para>
   </abstract>

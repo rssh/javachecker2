@@ -218,7 +218,9 @@ public class Main
      if (inputDirs_==null) {
          throw new ConfigException("no directories to read");
      }
-     System.out.println("reading sources:");
+     if (!qOption_) {
+       System.out.println("reading sources:");
+     }
      Iterator it=inputDirs_.iterator();
      while(it.hasNext()) {
          String dirName=(String)it.next();

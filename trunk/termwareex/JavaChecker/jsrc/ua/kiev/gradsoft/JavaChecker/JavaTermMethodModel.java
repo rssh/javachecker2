@@ -53,19 +53,27 @@ public class JavaTermMethodModel extends JavaMethodModel
          visitFormalParameterIdentifiers(new ITermVisitor()
          {
              public boolean doFirst(ITerm t, ITermHolder result, HashSet trace) throws TermWareException
-             {          
-               if (!t.getName().equals("java_identifier")) {
-                  throw new AssertException("first subterm of formal parameter must have name java_identifier");
-               }
-               String formalParameterName=t.getSubtermAt(0).getName();
-               if (!formalParameterName.matches(getFacts().getMethodNamePattern())) {
-                   getFacts().violationDiscovered("MethodNamePatterns","bad method name",t);
-                   result.setValue(ITermFactory.createBoolean(false));
+             {     
+               if (t.getName().equals("java_identifier")) {
+                  checkFormalParameterName(t,t.getSubtermAt(0).getName(),result);
+               }else if (t.getName().equals("java_array_declarator")) {
+                   checkFormalParameterName(t.getSubtermAt(0),t.getSubtermAt(0).getSubtermAt(0).getName(),result);
+               }else{
+                  throw new AssertException("first subterm of formal parameter must have name java_identifier or java_array_declarator");
                }
                return true;
              }
              public boolean doSecond(ITerm t, ITermHolder result, HashSet trace)
              {return true;}
+             
+             private void checkFormalParameterName(ITerm t,String formalParameterName,ITermHolder result) throws TermWareException
+             {
+               if (!formalParameterName.matches(getFacts().getMethodNamePattern())) {
+                  getFacts().violationDiscovered("MethodNamePatterns","bad method name",t);
+                  result.setValue(ITermFactory.createBoolean(false));
+               }                 
+             }
+             
          },termHolder,null);
          
          visitLocalVariableDeclarators(getMethodBody(),new ITermVisitor()
@@ -104,7 +112,13 @@ public class JavaTermMethodModel extends JavaMethodModel
         
         public boolean doFirst(ITerm t,ITermHolder result,HashSet trace) throws TermWareException
         {
-          names_.add(t.getSubtermAt(0).getString());  
+          if (t.getName().equals("java_identifier")) {
+             names_.add(t.getSubtermAt(0).getString());  
+          }else if (t.getName().equals("java_array_declarator")) {
+             names_.add(t.getSubtermAt(0).getSubtermAt(0).getString());
+          }else{
+              throw new AssertException("formal parameter term must be identifier or java_array_declarator");
+          }
           return true;  
         }
         public boolean doSecond(ITerm t,ITermHolder result, HashSet trace)

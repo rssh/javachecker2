@@ -8,11 +8,11 @@
 <installation version="1.0">
  <info>
   <appname>JavaChecker</appname>
-  <appversion>1.1.0</appversion>
-  <url>http://www.gradsoft.kiev.ua</url>
+  <appversion>1.2.0</appversion>
+  <url>http://www.gradsoft.ua</url>
   <authors>
    <author name="Ruslan Shevchenko" email="Ruslan@Shevchenko.Kiev.UA" />
-   <author name="Grad-Soft ltd" email="info@gradsoft.kiev.ua" />
+   <author name="Grad-Soft ltd" email="info@gradsoft.ua" />
   </authors>
  </info>
  <guiprefs height="480" resizable="yes" width="640"/>

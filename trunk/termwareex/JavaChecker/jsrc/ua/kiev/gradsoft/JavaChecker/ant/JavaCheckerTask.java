@@ -1,7 +1,8 @@
 /*
  * JavaCheckerTask.java
  *
- * Created on неділя, 7, березня 2004, 4:11
+ * Created 07/04/2004, 4:11
+ * $Id: JavaCheckerTask.java,v 1.2 2004-07-06 23:00:59 rssh Exp $
  */
 
 package ua.kiev.gradsoft.JavaChecker.ant;
@@ -35,7 +36,7 @@ public class JavaCheckerTask extends Task {
     
     public void  setPrefs(String prefs)
     {
-     prefsFname_=null;
+     prefsFname_=prefs;
     }
     
     public void setQ(boolean q)
