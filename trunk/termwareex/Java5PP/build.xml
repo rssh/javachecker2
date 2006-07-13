@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<!-- build file for TermWare project -->
+<project name="TermWareJava5PP" default="build" basedir=".">
+
+
+ <!-- set here location of JavaCC [version 4.0] -->
+ <property name="javacchome" location="c:/home/rssh/packages/javacc/javacc-4.0beta1" />
+
+
+  <!-- set here debug property -->
+ 
+ <property name="debug" value="true" /> 
+  
+ <!-- task definitions -->
+ 
+ <!-- targets -->
+
+ <target name="clean">
+  <delete>
+   <fileset dir="src"   includes="**/*.class" />
+   <fileset dir="test"   includes="**/*.class" />
+  </delete>
+ </target>
+
+
+ <target name="build-java5-jj">
+     <java classpath="${javacchome}/bin/lib/javacc.jar"
+           classname="org.javacc.jjtree.Main"
+           fork="true"
+           dir="src/ua/gradsoft/parsers/java5"
+           >
+           <arg file="src/ua/gradsoft/parsers/java5/Java1.5.jt"/>
+     </java>
+ </target>
+
+ <target name="build-java5-jv" depends="build-java5-jj">
+     <java classpath="${javacchome}/bin/lib/javacc.jar"
+           classname="org.javacc.parser.Main"
+           fork="true"
+           dir="src/ua/gradsoft/parsers/java5"
+           >
+           <arg file="src/ua/gradsoft/parsers/java5/Java1.5.jj"/>
+     </java>
+ </target>
+ 
+
+ <target name="build-java5-classes" depends="build-java5-jv">
+  <javac srcdir="src" includes="**/*.java" debug="${debug}" >
+    <classpath>
+      <pathelement location="src"/>
+      <pathelement location="lib/TermWare2.jar"/>
+      <pathelement location="${java.class.path}/"/>      
+    </classpath>
+  </javac>
+ </target>
+ 
+
+ <target name="build-lib"  depends="build-java5-classes">
+   <jar basedir="src" includes="**/*.class,**/*.dtd" 
+       destfile="lib/TermWareJPP.jar" 
+       index="true">
+  <include name="build"/>
+  <manifest>
+   <attribute name="Build-By" value="${user-name}"/>
+   <attribute name="Extension-Name" value="TermWareJPP" />
+   <attribute name="Specification-Vendor" value="GradSoft Ltd" />
+   <attribute name="Specification-Version" value="1.0" />
+   <attribute name="Implementation-Vendor-Id" value="ua.gradsoft" />
+   <attribute name="Implementation-Vendor" value="GradSoft Ltd" />
+   <attribute name="Implementation-Version" value="1.0" />
+  </manifest>
+  </jar>
+ </target>
+
+  <target name="build-test" depends="build-lib">
+  <javac srcdir="test" includes="**/*.java" debug="${debug}" >
+    <classpath>
+      <pathelement location="test"/>
+      <pathelement location="lib/TermWare2.jar"/>
+      <pathelement location="lib/junit.jar"/>
+      <pathelement location="lib/TermWareJPP.jar"/>
+      <pathelement location="${java.class.path}/"/>      
+    </classpath>
+  </javac>     
+  <jar basedir="test" includes="**/*.class,**/*.dtd" 
+       destfile="lib/TermWareJPPTests.jar" 
+       index="true"/>
+ </target>
+
+ <target name="build" depends="build-lib,build-test">     
+ </target>
+ 
+  <target name="test" depends="build-test" >
+   <java classname="ua.gradsoft.parsers.java5.test.JPPTestSuite"
+        fork="true" failonerror="true" >
+      <classpath>
+      <pathelement location="jtests"/>
+      <pathelement location="lib/TermWare2.jar"/>
+      <pathelement location="lib/TermWareJPP.jar"/>
+      <pathelement location="lib/junit.jar"/>
+      <pathelement location="lib/TermWareJPPTests.jar"/>
+      <pathelement location="${java.class.path}/"/>      
+    </classpath>
+    <sysproperty key="termware.path" value="systems" />
+   </java>
+ </target>
+
+ 
+ <target name="api-docs">
+  <javadoc sourcepath="src" destdir="doc/api"
+           packagenames="ua.gradsoft.termware,ua.gradsoft.termware.*"
+  />
+ </target>
+
+</project>
