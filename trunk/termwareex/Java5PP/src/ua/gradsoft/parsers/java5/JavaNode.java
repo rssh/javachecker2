@@ -1,16 +1,18 @@
 package ua.gradsoft.parsers.java5;
 
 
+import ua.gradsoft.parsers.java5.jjt.JJTJavaParserTreeConstants;
+import ua.gradsoft.parsers.java5.jjt.Node;
 import ua.gradsoft.termware.Term;
-import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.jj.INode;
 import ua.gradsoft.termware.jj.NodeTerm;
+
 
 public class JavaNode extends NodeTerm implements Node {
 
   public JavaNode(int id)
   {
-    super(id,JavaParserTreeConstants.jjtNodeName[id]);    
+    super(id,JJTJavaParserTreeConstants.jjtNodeName[id]);    
   }
 
 

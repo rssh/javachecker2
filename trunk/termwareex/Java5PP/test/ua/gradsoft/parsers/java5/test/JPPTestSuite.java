@@ -19,7 +19,10 @@ public class JPPTestSuite extends TestSuite
     
     /** Creates a new instance of JPPTestSuite */
     public JPPTestSuite() {
-        this.addTestSuite(X1test.class);
+        this.addTestSuite(JCTest.class);        
+        this.addTestSuite(X1test.class);        
+        this.addTestSuite(ASTTransformTest.class);
+        this.addTestSuite(PrinterTest.class);
     }
     
     

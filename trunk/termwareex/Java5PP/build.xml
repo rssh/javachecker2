@@ -4,7 +4,7 @@
 
 
  <!-- set here location of JavaCC [version 4.0] -->
- <property name="javacchome" location="c:/home/rssh/packages/javacc/javacc-4.0beta1" />
+ <property name="javacchome" location="c:/home/rssh/packages/javacc/javacc-4.0" />
 
 
   <!-- set here debug property -->
@@ -27,9 +27,9 @@
      <java classpath="${javacchome}/bin/lib/javacc.jar"
            classname="org.javacc.jjtree.Main"
            fork="true"
-           dir="src/ua/gradsoft/parsers/java5"
+           dir="src/ua/gradsoft/parsers/java5/jjt"
            >
-           <arg file="src/ua/gradsoft/parsers/java5/Java1.5.jt"/>
+           <arg file="src/ua/gradsoft/parsers/java5/jjt/Java1.5.jt"/>
      </java>
  </target>
 
@@ -37,9 +37,9 @@
      <java classpath="${javacchome}/bin/lib/javacc.jar"
            classname="org.javacc.parser.Main"
            fork="true"
-           dir="src/ua/gradsoft/parsers/java5"
+           dir="src/ua/gradsoft/parsers/java5/jjt"
            >
-           <arg file="src/ua/gradsoft/parsers/java5/Java1.5.jj"/>
+           <arg file="src/ua/gradsoft/parsers/java5/jjt/Java1.5.jj"/>
      </java>
  </target>
  

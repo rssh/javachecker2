@@ -2,7 +2,10 @@ package ua.gradsoft.parsers.java5;
 
 
 import java.io.StringReader;
+import ua.gradsoft.parsers.java5.jjt.JJTJavaParser;
+import ua.gradsoft.parsers.java5.jjt.ParseException;
 import ua.gradsoft.termware.Term;
+
 
 
 
@@ -11,9 +14,9 @@ public class JPPMain
 
   public static void main(String[] args)
   {
-      JavaParser parser=null;
+      JJTJavaParser parser=null;
       try {
-        parser = new JavaParser(new java.io.FileInputStream(args[0]));
+        parser = new JJTJavaParser(new java.io.FileInputStream(args[0]));
       } catch (java.io.FileNotFoundException e) {
         System.err.println("file not found:"+args[0]);
         return;
@@ -24,18 +27,20 @@ public class JPPMain
           System.err.println(ex.getMessage());
           ex.printStackTrace();
       }
-      Term t = (Term)parser.jjtree.rootNode();
+      Term t = (Term)parser.getRootNode();
+      
       t.print(System.out);
+      //System.out.println("qqq");
   }
   
   public static Term  parseString(String text) throws ParseException
   {
-    JavaParser parser=null;
+    JJTJavaParser parser=null;
     
-    parser = new JavaParser(new StringReader(text));
+    parser = new JJTJavaParser(new StringReader(text));
     parser.CompilationUnit();
 
-    Term t = (Term)parser.jjtree.rootNode();
+    Term t = parser.getRootNode();
     return t;
 
     
