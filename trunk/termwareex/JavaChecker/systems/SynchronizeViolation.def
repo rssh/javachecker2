@@ -1,4 +1,4 @@
-  #
+  #                         
   system(SynchronizeViolation, javaFacts("ProxyJavaFacts","ua.kiev.gradsoft.JavaChecker.ProxyJavaFacts"),
     ruleset(
       import(general,apply),

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
+<preferences>
+<root type="user">
+ <map />
+ <node name="ua" >
+  <map />
+  <node name="kiev" >
+  <map />
+    <node name="gradsoft" >
+    <map />
+      <node name="JavaChecker" >
+       <map>
+         <!-- JavaChecker config file for properties -->
+         <!-- usage: JavaChecker -prefs <this-file>  -->
+         <entry key="CheckEmptyCatchClauses" value="true" />
+         <entry key="CheckGenericExceptionCatchClauses" value="true" />
+         <entry key="CheckGenericExceptionSpecifications" value="true" />
+         <entry key="CheckOverloadedEquals" value="true" />
+         <entry key="CheckSynchronizeViolations" value="true" />
+         <entry key="CheckVariablePatterns" value="true" />
+         <entry key="NonFinalFieldNamePattern" value="[a-z].*_" />
+         <entry key="FinalFieldNamePattern" value="[A-Z]([A-Z]|[0-9]|_)*" />
+         <entry key="CheckClassNamePatterns" value="true" />
+         <entry key="ClassNamePattern" value="[A-Z].*" />
+         <entry key="CheckMethodNamePatterns" value="true" />
+         <entry key="MethodNamePattern" value="[a-z].*" />
+         <entry key="LocalVariableNamePattern" value="([a-z]([A-Z]|[0-9]|[a-z]|_)*([A-Z]|[a-z]|[0-9]))|[a-z]" />
+         <entry key="CheckNonFinalPublicFields" value="true" />
+         <entry key="CheckHiding" value="true" />
+       </map>
+    </node>
+   </node>
+  </node>
+ </node> 
+</root>
+</preferences>

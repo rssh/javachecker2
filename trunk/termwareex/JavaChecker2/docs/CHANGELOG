@@ -1,0 +1,6 @@
+
+
+1.2.0
+  - fixed setting prefs from ant task.
+  - fixed bug, when formal parameter is not identifier, but array declaration
+
