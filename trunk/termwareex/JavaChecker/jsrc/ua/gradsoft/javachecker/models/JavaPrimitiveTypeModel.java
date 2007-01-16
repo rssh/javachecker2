@@ -13,6 +13,7 @@ import java.util.Map;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermWareException;
 
 /**
  *
@@ -31,7 +32,7 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
     public final static JavaPrimitiveTypeModel VOID = new JavaPrimitiveTypeModel("void");
     
     /** Creates a new instance of JavaPrimitiveTypeModel */
-    public JavaPrimitiveTypeModel(String name) {
+    private JavaPrimitiveTypeModel(String name) {
         super(Main.getFacts().getPackagesStore().findOrAddPackage("java.lang"));
         name_=name;
     }
@@ -65,6 +66,9 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
     public boolean isUnknown() {
         return false; }
     
+    public boolean isNull() {
+        return false; }        
+    
     public boolean isWildcardBounds() {
         return false; }
     
@@ -73,6 +77,12 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
     
     public boolean isArray() {
         return false; }
+    
+    public boolean isLocal()
+    { return false; }
+    
+    public JavaStatementModel  getEnclosedStatement()
+    { return null; }
     
     public JavaTypeModel  getReferencedType() throws NotSupportedException {
         throw new NotSupportedException(); }
@@ -116,6 +126,13 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() {
         return JavaModelConstants.TYPEVARIABLE_EMPTY_LIST; }
+
+    public JavaTypeModel getSuperClass()
+    { return JavaNullTypeModel.INSTANCE; }
+
+    public List<JavaTypeModel> getSuperInterfaces()
+    { return JavaModelConstants.TYPEMODEL_EMPTY_LIST; }
+    
     
     private String name_;
 }

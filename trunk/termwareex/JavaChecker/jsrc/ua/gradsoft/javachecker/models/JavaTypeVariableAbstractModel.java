@@ -69,6 +69,9 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     public boolean isWildcardBounds()
     { return false; }
     
+    public boolean isNull()
+    { return false; }
+    
     public boolean isUnknown()
     { return true; }
     
@@ -85,6 +88,13 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     public JavaTypeModel  getReferencedType() throws NotSupportedException
     { throw new NotSupportedException(); }
     
+    
+    public JavaTypeModel getSuperClass()
+    { return JavaNullTypeModel.INSTANCE; }
+    
+    public List<JavaTypeModel> getSuperInterfaces()
+    { return JavaModelConstants.TYPEMODEL_EMPTY_LIST; }
+
     
     public boolean canCheck() {
         return true; }
@@ -113,6 +123,12 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     
     public boolean hasNestedTypeModels() {
         return false; }
+    
+    public boolean isLocal()
+    { return false; }
+    
+    public JavaStatementModel getEnclosedStatement()
+    { return null; }
     
     public Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException, TermWareException {
         throw new NotSupportedException();

@@ -13,6 +13,9 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -32,6 +35,11 @@ public class JavaClassMethodModel extends JavaMethodAbstractModel
     public String getName()
     {
         return method_.getName();
+    }
+    
+    public JavaModifiersModel getModifiers()
+    {
+      return new JavaModifiersModel(JavaClassTypeModel.translateModifiers(method_.getModifiers()));       
     }
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters()
@@ -61,6 +69,19 @@ public class JavaClassMethodModel extends JavaMethodAbstractModel
         return retval;
     }            
     
+    public Map<String,JavaFormalParameterModel> getFormalParameters() throws TermWareException
+    {
+       Map<String,JavaFormalParameterModel> retval = new TreeMap<String,JavaFormalParameterModel>(); 
+       Type[] parameterTypes=method_.getGenericParameterTypes();
+       for(int i=0; i<parameterTypes.length; ++i){
+           String name="fp"+i;
+           JavaTypeModel c = JavaClassTypeModel.createTypeModel(parameterTypes[i]);
+           retval.put(name,new JavaFormalParameterModel(0,name,c,this,i));
+       }
+       return retval;
+    }
+
+    
     public boolean canCheck()
     {
         return false;
@@ -71,6 +92,12 @@ public class JavaClassMethodModel extends JavaMethodAbstractModel
       return true;  
     }
     
+     public boolean         isSupportBlockModel()
+     { return false; }
+    
+    public JavaTopLevelBlockModel  getTopLevelBlockModel() throws NotSupportedException
+    { throw new NotSupportedException(); }
+
     
     
     private Method   method_;

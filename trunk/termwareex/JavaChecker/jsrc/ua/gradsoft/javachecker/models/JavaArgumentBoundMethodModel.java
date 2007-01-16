@@ -8,48 +8,74 @@
 package ua.gradsoft.javachecker.models;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.TermWareException;
 
 /**
- *Method with bound type arguments.
+ *Method with bound type arguments of class.
  * @author Ruslan Shevchenko
  */
-public class JavaArgumentBoundMethodModel extends JavaMethodAbstractModel
+public class JavaArgumentBoundMethodModel extends JavaMethodAbstractModel implements JavaArgumentBoundTopLevelBlockOwnerModel
 {
     
     /** Creates a new instance of JavaArgumentBoundMethodModel */
-    public JavaArgumentBoundMethodModel(JavaMethodAbstractModel origin,List<JavaTypeVariableAbstractModel> typeVariables,List<JavaTypeModel> values) {
+    public JavaArgumentBoundMethodModel(JavaMethodAbstractModel origin,JavaTypeArgumentsSubstitution substitution) {
         super(origin.getTypeModel());
         origin_=origin;
-        typeVariables_=typeVariables;
-        typeValues_=values;
+        substitution_=substitution;
     }
     
-    public String getName()
-    { return origin_.getName(); }
+    public String getName() {
+        return origin_.getName(); }
     
-    public List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException
-    { return origin_.getTypeParameters(); }
+    public JavaModifiersModel getModifiers()
+    { return origin_.getModifiers(); }
     
-    public JavaTypeModel  getResultType() throws TermWareException
-    { return origin_.getResultType(); }
+    public List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException {
+        return substitution_.substituteTypeVariables(origin_.getTypeParameters());        
+    }
     
-    public List<JavaTypeModel>  getFormalParametersTypes() throws TermWareException
-    { return origin_.getFormalParametersTypes(); }
+    public JavaTypeModel  getResultType() throws TermWareException {
+        return substitution_.substitute(origin_.getResultType());        
+    }
     
-    public  JavaMethodAbstractModel substituteTypeParameters(List<JavaTypeVariableAbstractModel> typeVariables, List<JavaTypeModel> typeValues)
+    
+    public Map<String,JavaFormalParameterModel>  getFormalParameters() throws TermWareException
     {
-        //TODO: refine.
-        return new JavaArgumentBoundMethodModel(this,typeVariables,typeValues);
+      Map<String,JavaFormalParameterModel> retval = new TreeMap<String,JavaFormalParameterModel>();
+      for(Map.Entry<String,JavaFormalParameterModel> e: origin_.getFormalParameters().entrySet())  {
+          JavaFormalParameterModel oldModel = e.getValue();          
+          JavaFormalParameterModel newModel = new JavaFormalParameterModel(oldModel.getModifiers().getIntValue(),
+                  e.getKey(),
+                  substitution_.substitute(oldModel.getTypeModel()),
+                  this,
+                  oldModel.getIndex()
+                    );
+          retval.put(e.getKey(),newModel);
+      }
+      return retval;
     }
     
-    public boolean canCheck()
-    { return false; }
+    public  JavaMethodAbstractModel substituteTypeParameters(JavaTypeArgumentsSubstitution s) {
+        //TODO: refine.
+        return new JavaArgumentBoundMethodModel(this,s);
+    }
     
-    public boolean check()
-    { return true; }
+    public boolean canCheck() {
+        return false; }
+    
+    public boolean check() {
+        return true; }
+    
+    public boolean isSupportBlockModel()
+    { return origin_.isSupportBlockModel(); }
+    
+    public JavaArgumentBoundTopLevelBlockModel getTopLevelBlockModel() throws NotSupportedException {
+        return new JavaArgumentBoundTopLevelBlockModel(this,origin_.getTopLevelBlockModel(),substitution_);
+    }
     
     private JavaMethodAbstractModel origin_;
-    private List<JavaTypeVariableAbstractModel> typeVariables_;
-    private List<JavaTypeModel> typeValues_;
+    private JavaTypeArgumentsSubstitution substitution_;
 }

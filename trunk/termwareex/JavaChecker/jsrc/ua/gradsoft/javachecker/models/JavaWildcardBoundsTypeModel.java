@@ -8,6 +8,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
@@ -30,7 +31,7 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
     public JavaWildcardBoundsTypeModel(JavaTypeModel where) throws TermWareException
     {
         super(where.getPackageModel());
-        type_=Type.OBJECT;
+        kind_=JavaWildcardBoundsKind.OBJECT;
         boundTypeModel_=JavaResolver.resolveJavaLangObject();
     }
     
@@ -41,9 +42,9 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
         if (t.getName().equals("WildcardBounds")) {
             String stype=t.getSubtermAt(0).getName();
             if (stype.equals("extends")) {
-                type_=Type.EXTENDS;
+                kind_=JavaWildcardBoundsKind.EXTENDS;
             }else if (stype.equals("super")) {
-                type_=Type.SUPER;
+                kind_=JavaWildcardBoundsKind.SUPER;
             }else{
                 throw new AssertException("'extends' or 'super' is expected as the 0 subterm of "+TermHelper.termToString(t));
             }
@@ -59,13 +60,13 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
     
     public JavaWildcardBoundsTypeModel() throws TermWareException {
         super(Main.getFacts().getPackagesStore().findOrAddPackage("java.lang"));
-        type_=Type.OBJECT;
+        kind_=JavaWildcardBoundsKind.OBJECT;
         boundTypeModel_=null;
     }
     
-    public JavaWildcardBoundsTypeModel(Type type, JavaTypeModel boundTypeModel) throws TermWareException {
+    public JavaWildcardBoundsTypeModel(JavaWildcardBoundsKind kind, JavaTypeModel boundTypeModel) throws TermWareException {
         super(boundTypeModel.getPackageModel());
-        type_=type;
+        kind_=kind;
         boundTypeModel_=boundTypeModel;
     }
   
@@ -74,7 +75,7 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
     {
         StringBuilder sb=new StringBuilder();
         sb.append("< ? ");
-        switch(type_) {
+        switch(kind_) {
             case SUPER:
                 sb.append("super ");
                 sb.append(boundTypeModel_.getName());
@@ -95,7 +96,7 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
         int arity=0;
         Term internalTerm=null;
         Term retval=null;
-        switch(type_) {
+        switch(kind_) {
             case EXTENDS:
                 arity=2;
                 internalTerm=TermUtils.createAtom("extends");
@@ -140,10 +141,42 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
   
       public boolean isWildcardBounds()
       { return true; }
-  
+
+      public boolean isNull()
+      { return false; }
+            
       public boolean isUnknown()
       { return false; }
   
+      public JavaWildcardBoundsKind getKind()
+      {
+          return kind_;
+      }
+      
+      public boolean isLocal()
+      { return false; }
+      
+      public JavaStatementModel getEnclosedStatement()
+      { return null; }
+      
+      /**
+       * get bound type model
+       */
+      public JavaTypeModel getBoundTypeModel()
+      { return boundTypeModel_; }
+      
+      public JavaTypeModel  getSuperClass() throws TermWareException
+      { if (kind_==JavaWildcardBoundsKind.EXTENDS) {
+                return boundTypeModel_;
+        }else{
+            return JavaResolver.resolveJavaLangObject();
+        }
+      }
+      
+      public List<JavaTypeModel> getSuperInterfaces()
+      { return JavaModelConstants.TYPEMODEL_EMPTY_LIST; }
+      
+      
   /**
    *throws NotSupportedException
    */
@@ -172,54 +205,22 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
   
     public boolean hasMethodModels()
     {
-        if (type_==Type.SUPER) {
-            try {
-               return JavaResolver.resolveJavaLangObject().hasMethodModels();
-            }catch(TermWareException ex){
-               return false;
-            }
-        }else{
-            return boundTypeModel_.hasMethodModels();
-        }
+        return false;
     }
     
      public Map<String,List<JavaMethodAbstractModel> >   getMethodModels() throws NotSupportedException
      {
-        if (type_==Type.SUPER)  {           
-            try {
-              return JavaResolver.resolveJavaLangObject().getMethodModels();           
-            }catch(TermWareException ex){
-                throw new NotSupportedException();
-            }
-        }else{
-            return boundTypeModel_.getMethodModels();
-        }
+        throw new NotSupportedException(); 
      }
         
      public boolean hasMemberVariableModels()
      {
-        if (type_==Type.SUPER) {
-          try {  
-            return JavaResolver.resolveJavaLangObject().hasMemberVariableModels();
-          }catch(TermWareException ex){
-              return false;
-          }
-        }else{
-            return boundTypeModel_.hasMemberVariableModels();
-        }
+        return false; 
      }
   
       public Map<String,JavaMemberVariableAbstractModel> getMemberVariableModels() throws NotSupportedException
       {
-        if (type_==Type.SUPER) {
-          try{  
-            return JavaResolver.resolveJavaLangObject().getMemberVariableModels();
-          }catch(TermWareException ex){
-            throw new NotSupportedException();
-          }
-        }else{
-            return boundTypeModel_.getMemberVariableModels();
-        }          
+        throw new NotSupportedException(); 
       }
   
     
@@ -230,26 +231,17 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
   
       public boolean hasNestedTypeModels()
       {
-        if (type_==Type.SUPER)  {
-            return false;
-        }else{
-            return boundTypeModel_.hasNestedTypeModels();
-        }
+        return false;
       }
   
       public Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException, TermWareException
       {
-        if (type_==Type.SUPER)  {
-            throw new NotSupportedException();
-        }else{
-            return boundTypeModel_.getNestedTypeModels();
-        }          
+         throw new NotSupportedException();
       }
-
     
     
     public boolean hasTypeParameters() {
-        if (type_==Type.SUPER) {
+        if (kind_==JavaWildcardBoundsKind.SUPER) {
             return false;
         }else{
             return boundTypeModel_.hasTypeParameters();
@@ -257,21 +249,14 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
     }
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() {
-        if (type_==Type.SUPER) {
+        if (kind_==JavaWildcardBoundsKind.SUPER) {
            return JavaModelConstants.TYPEVARIABLE_EMPTY_LIST; 
         }else{
             return boundTypeModel_.getTypeParameters();
         }
     }
-    
-    
-  
-    
-    public enum Type {
-        OBJECT, SUPER, EXTENDS
-    };
-    
-    private Type          type_;
+              
+    private JavaWildcardBoundsKind      kind_;
     private JavaTypeModel boundTypeModel_=null;
     
 }

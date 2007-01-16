@@ -11,6 +11,7 @@ package ua.gradsoft.javachecker.models;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -37,11 +38,11 @@ public class JavaClassTypeModel extends JavaTypeModel
     /** Creates a new instance of JavaClassTypeModel */
     public JavaClassTypeModel(Class theClass) {
         super(Main.getFacts().getPackagesStore().findOrAddPackage(theClass.getPackage().getName()));
-        theClass_=theClass;
+        theClass_=theClass;       
     }
     
     public String getName()
-    {
+    {       
        int lastDotIndex = theClass_.getName().lastIndexOf('.');
        if (lastDotIndex==-1) {
            return theClass_.getName();
@@ -107,11 +108,42 @@ public class JavaClassTypeModel extends JavaTypeModel
   {
       return false;
   }
+
+  public boolean isNull()
+  {
+    return false;  
+  }
+
   
   public boolean isUnknown()
   {
     return false;  
   }
+  
+  
+  public JavaTypeModel  getSuperClass()
+  {
+    if (theClass_.getSuperclass()!=null)  {
+        return new JavaClassTypeModel(theClass_.getSuperclass());
+    }else{
+        return JavaUnknownTypeModel.INSTANCE;
+    }
+  }
+  
+  public List<JavaTypeModel>  getSuperInterfaces() throws TermWareException
+  {
+      Type[] rfinterfaces =theClass_.getGenericInterfaces();
+      if (rfinterfaces.length==0) {
+          return JavaModelConstants.TYPEMODEL_EMPTY_LIST;
+      }else{
+          List retval=new LinkedList();
+          for(int i=0; i<rfinterfaces.length;++i){
+              retval.add(createTypeModel(rfinterfaces[i]));
+          }
+          return retval;
+      }
+  }
+  
   
   /**
    *return enclosed class
@@ -246,6 +278,16 @@ public class JavaClassTypeModel extends JavaTypeModel
   public boolean hasTypeParameters()
   { return theClass_.getTypeParameters().length!=0; }
   
+   
+  public boolean isLocal()
+  { return theClass_.isLocalClass(); }
+  
+  public JavaStatementModel  getEnclosedStatement()
+  { return null; }
+  
+  public Class  getJavaClass()
+  { return theClass_; }
+  
   /**
    * return type parameters. (i. e.  for class<U,B> { ... }  definitions are <U,B> )
    */
@@ -284,15 +326,15 @@ public class JavaClassTypeModel extends JavaTypeModel
         Type[] lb=wtype.getLowerBounds();
         Type[] ub=wtype.getUpperBounds();
         Type[] b=null;
-        JavaWildcardBoundsTypeModel.Type wtmt=JavaWildcardBoundsTypeModel.Type.OBJECT;
+        JavaWildcardBoundsKind wtmt=JavaWildcardBoundsKind.OBJECT;
         if (lb.length==0 && ub.length==0) {
             // nothing, all as normal.
         }else if(lb.length==0 && ub.length!=0) {
             // only upper bounds, extends.
-            wtmt=JavaWildcardBoundsTypeModel.Type.EXTENDS;
+            wtmt=JavaWildcardBoundsKind.EXTENDS;
             b=ub;
         }else if(lb.length!=0 && ub.length==0) {
-            wtmt=JavaWildcardBoundsTypeModel.Type.SUPER;
+            wtmt=JavaWildcardBoundsKind.SUPER;
             b=lb;
         }else{
             // lower and upper type both exists. impossible.
@@ -313,7 +355,45 @@ public class JavaClassTypeModel extends JavaTypeModel
     }
   }
  
-  
+    /**
+     * translate modifiers from java.lang.reflect modifiers to our ModifiersModel
+     */
+    static public int translateModifiers(int jm)
+    {
+      int retval=0;
+      if (Modifier.isAbstract(jm)) {
+          retval |= JavaModifiersModel.ABSTRACT;
+      }
+      if (Modifier.isFinal(jm)){
+          retval |= JavaModifiersModel.FINAL;
+      }
+      if (Modifier.isNative(jm)){
+          retval |= JavaModifiersModel.NATIVE;
+      }
+      if (Modifier.isPrivate(jm)) {
+          retval |= JavaModifiersModel.PRIVATE;
+      }else if(Modifier.isProtected(jm)){
+          retval |= JavaModifiersModel.PROTECTED;
+      }else if(Modifier.isPublic(jm)){
+          retval |= JavaModifiersModel.PUBLIC;
+      }
+      if (Modifier.isStatic(jm)) {
+          retval |= JavaModifiersModel.STATIC;
+      }
+      if (Modifier.isStrict(jm)) {
+          retval |= JavaModifiersModel.STRICTFP;
+      }
+      if (Modifier.isSynchronized(jm)) {
+          retval |= JavaModifiersModel.SYNCHRONIZED;
+      }
+      if (Modifier.isTransient(jm)) {
+          retval |= JavaModifiersModel.TRANSIENT;
+      }
+      if (Modifier.isVolatile(jm)) {
+          retval |= JavaModifiersModel.VOLATILE;
+      }
+      return retval;        
+    }
     
     private Class<?> theClass_;
     

@@ -66,6 +66,10 @@ public class JavaArrayTypeModel extends JavaTypeModel
     
     public boolean isUnknown()
     { return false; }
+
+    public boolean isNull()
+    { return false; }
+    
     
     public boolean isTypeArgument()
     { return false; }
@@ -118,5 +122,21 @@ public class JavaArrayTypeModel extends JavaTypeModel
   public Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException
   { throw new NotSupportedException(); }
            
+  public JavaTypeModel  getSuperClass() throws TermWareException
+  {
+     return JavaResolver.resolveJavaLangObject(); 
+  }
+  
+  public List<JavaTypeModel> getSuperInterfaces()
+  {
+     return JavaModelConstants.TYPEMODEL_EMPTY_LIST; 
+  }
+  
+  public boolean isLocal()
+  { return false; }
+  
+  public JavaStatementModel getEnclosedStatement()
+  { return null; }
+  
     private JavaTypeModel referencedType_;
 }

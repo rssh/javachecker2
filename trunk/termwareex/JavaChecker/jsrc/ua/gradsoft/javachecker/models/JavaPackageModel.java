@@ -138,6 +138,7 @@ public class JavaPackageModel {
                   if (tm.getName().equals(name)) {
                       retval=tm;                                            
                   }
+                  tm.setUnitModel(cu);
               }
               if(retval!=null){
                 return retval;

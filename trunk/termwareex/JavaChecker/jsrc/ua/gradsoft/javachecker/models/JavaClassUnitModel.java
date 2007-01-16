@@ -19,10 +19,12 @@ public class JavaClassUnitModel extends JavaUnitModel
 {
     
     /** Creates a new instance of JavaClassUnitModel */
-    public JavaClassUnitModel(Class<?> theClass) {
+    public JavaClassUnitModel(Class theClass) {
         typeModels_=new LinkedList<JavaTypeModel>();
-        typeModels_.add(new JavaClassTypeModel(theClass));
-        packageName_=theClass.getPackage().getName();
+        JavaClassTypeModel tm=new JavaClassTypeModel(theClass);
+        typeModels_.add(tm);
+        tm.setUnitModel(this);
+        packageName_=theClass.getPackage().getName();      
     }
     
     public String getPackageName()

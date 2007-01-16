@@ -9,6 +9,8 @@ package ua.gradsoft.javachecker.models;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.ITermVisitor;
 import ua.gradsoft.javachecker.Main;
@@ -24,6 +26,7 @@ import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *Model for java method 
+ *TODO: build block model
  * @author  Ruslan Shevchenko
  */
 public class JavaTermMethodModel extends JavaMethodAbstractModel
@@ -161,10 +164,17 @@ public class JavaTermMethodModel extends JavaMethodAbstractModel
     public  String getName()
     { return methodName_; }
     
+    public JavaModifiersModel getModifiers()
+    { return modifiers_; }
+    
     public JavaTypeModel getResultType() throws TermWareException
     { 
+     Term resultType = getResultTypeAsTerm();
+     if (resultType.getName().equals("ResultType")) {
+         resultType=resultType.getSubtermAt(0);
+     }
      try {   
-        return JavaResolver.resolveTypeToModel(getResultTypeAsTerm(),getTypeModel(),getTypeParameters()); 
+        return JavaResolver.resolveTypeToModel(resultType,getTypeModel(),getTypeParameters()); 
      }catch(EntityNotFoundException ex){
         return JavaUnknownTypeModel.INSTANCE;  
      }
@@ -177,56 +187,26 @@ public class JavaTermMethodModel extends JavaMethodAbstractModel
     {        
         return t_.getSubtermAt(METHOD_DECLARATOR_INDEX).getSubtermAt(METHOD_DECLARATOR__FORMAL_PARAMETERS_INDEX).getSubtermAt(0);
     }
-    
-    public List<JavaTypeModel>  getFormalParametersTypes() throws TermWareException
-    {
-      List<JavaTypeModel> retval = new LinkedList<JavaTypeModel>();
+        
+    public Map<String,JavaFormalParameterModel> getFormalParameters() throws TermWareException
+    {      
       Term formalParametersList = getFormalParametersList();
-      while(!formalParametersList.isNil()) {
-          Term c = formalParametersList.getSubtermAt(0);
-          formalParametersList = formalParametersList.getSubtermAt(1);
-          Term typeTerm = c.getSubtermAt(1);
-          JavaTypeModel tm = null;
-          try {
-             tm = JavaResolver.resolveTypeToModel(typeTerm,this.getTypeModel(),getTypeParameters());
-          }catch(EntityNotFoundException ex){
-             tm = JavaUnknownTypeModel.INSTANCE;             
-          }
-          retval.add(tm);
-      }
-      return retval;
-    }
+      return TermUtils.buildFormalParameters(formalParametersList,this);
+    }            
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException
     {
         Term tpt = t_.getSubtermAt(TYPE_PARAMETERS_TERM_INDEX);
-        if (tpt.isNil()) {
-            return JavaModelConstants.TYPEVARIABLE_EMPTY_LIST;
-        }
-        if (!tpt.getName().equals("TypeParameters")) {
-            throw new AssertException("TypeParameters required instead "+TermHelper.termToString(tpt));
-        }
-        Term tl=tpt.getSubtermAt(0);
-        List<JavaTypeVariableAbstractModel> retval=new LinkedList<JavaTypeVariableAbstractModel>();
-        while(!tl.isNil()) {
-            Term ta=tl.getSubtermAt(0);
-            tl=tl.getSubtermAt(1);
-            if (!ta.getName().equals("TypeParameter")) {
-                throw new AssertException("TypeParameter required instead "+TermHelper.termToString(ta));
-            }
-            JavaTermTypeVariableModel m=new JavaTermTypeVariableModel(ta,getTypeModel());
-            retval.add(m);
-        }
-        return retval;
+        return TermUtils.buildTypeParameters(tpt,getTypeModel());
     }
     
     public  Term  getMethodBody() throws TermWareException
     { return t_.getSubtermAt(BLOCK_INDEX); }
     
-    public JavaMethodAbstractModel substituteTypeParameters(List<JavaTypeVariableAbstractModel> typeVariables, List<JavaTypeModel> values)
-    {
-      return new JavaArgumentBoundMethodModel(this,typeVariables,values);
-    }
+    //public JavaMethodAbstractModel substituteTypeParameters(List<JavaTypeVariableAbstractModel> typeVariables, List<JavaTypeModel> values)
+    //{
+    //  return new JavaArgumentBoundMethodModel(this,typeVariables,values);
+    //}
     
     public void  visitFormalParameterIdentifiers(ITermVisitor visitor,TermHolder result,HashSet<Term> hs) throws TermWareException
     {
@@ -272,10 +252,17 @@ public class JavaTermMethodModel extends JavaMethodAbstractModel
     public boolean isSynchronized()  {
         return modifiers_.isSynchronized();
     }
-   
+    
+    public boolean isSupportBlockModel()
+    { return true; }
+
+    public JavaTopLevelBlockModel getTopLevelBlockModel()
+    { return blockModel_; }
+    
     
     private String methodName_;
     private Term t_; 
+    private JavaTermTopLevelBlockModel blockModel_ =null;
     
     private JavaModifiersModel   modifiers_=null;    
     

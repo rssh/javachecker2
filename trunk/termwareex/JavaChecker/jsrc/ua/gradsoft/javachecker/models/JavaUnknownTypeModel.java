@@ -84,8 +84,17 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     public boolean isWildcardBounds()
     { return false; }
     
+    public boolean isNull()
+    { return false; }
+    
     public boolean isUnknown()
     { return true; }
+    
+    public boolean isLocal()
+    { return false; }
+
+    public JavaStatementModel getEnclosedStatement()
+    { return null; }
     
     public JavaTypeModel  getEnclosedType() throws NotSupportedException
     { throw new NotSupportedException(); }
@@ -95,6 +104,13 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
      */
     public JavaTypeModel  getReferencedType() throws NotSupportedException
     { throw new NotSupportedException(); }
+    
+    
+    public JavaTypeModel getSuperClass() throws TermWareException
+    { return JavaResolver.resolveJavaLangObject(); }
+    
+    public List<JavaTypeModel> getSuperInterfaces()
+    { return JavaModelConstants.TYPEMODEL_EMPTY_LIST; }
     
     public boolean canCheck()
     { return false; }

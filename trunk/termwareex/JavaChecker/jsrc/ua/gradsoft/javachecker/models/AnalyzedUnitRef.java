@@ -1,13 +1,6 @@
 /*
  * AnalyzedUnitRef.java
  *
- * Created on субота, 14, жовтня 2006, 17:45
- *
- * UBS application
- *
- * Class: __MAME__
- *
- * Created on: субота, 14, жовтня 2006, 17:45
  *
  * Owner: Ruslan Shevchenko
  *
@@ -15,8 +8,7 @@
  *
  * History:
  *
- * Copyright (c) 2004-2005 Infopulse Ukraine
- * Copyright (c) 2004-2005 GradSoft  Ukraine
+ * Copyright (c) 2004-2007 GradSoft  Ukraine
  * All Rights Reserved
  */
 

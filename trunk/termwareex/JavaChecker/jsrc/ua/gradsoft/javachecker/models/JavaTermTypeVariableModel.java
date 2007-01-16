@@ -70,6 +70,7 @@ public class JavaTermTypeVariableModel extends JavaTypeVariableAbstractModel
       return bounds_;  
     }
     
+    
      public boolean check() throws TermWareException {
        if (Main.getFacts().isCheckEnabled("TypeArgumentNamePatterns")) {
           if (!getName().matches(Main.getFacts().getTypeArgumentNamePattern())) {

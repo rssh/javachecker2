@@ -14,12 +14,23 @@ import ua.gradsoft.termware.TermWareException;
  *Abstract model for member variable.
  * @author Ruslan Shevchenko
  */
-public abstract class JavaMemberVariableAbstractModel {
-
+public abstract class JavaMemberVariableAbstractModel implements JavaVariableModel
+{
     
     public abstract JavaModifiersModel getModifiersModel();
+
+    /**
+     *@return name of member variable.
+     */
+    public abstract String getName(); 
     
-    public abstract String getName();        
+    /**
+     *@return JavaVariableKind.MEMBER_VARIABLE
+     */
+    public JavaVariableKind  getKind()
+    {
+        return JavaVariableKind.MEMBER_VARIABLE;
+    }
     
     public abstract JavaTypeModel getTypeModel() throws TermWareException;
     

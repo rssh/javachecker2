@@ -1,0 +1,28 @@
+/*
+ * JavaConstructorModel.java
+ *
+ */
+
+package ua.gradsoft.javachecker.models;
+
+import java.util.List;
+import java.util.Map;
+import ua.gradsoft.termware.TermWareException;
+
+/**
+ *Interface for constructor
+ * @author Ruslan Shevchenko
+ */
+public interface JavaConstructorModel extends JavaTopLevelBlockOwnerModel
+{
+    
+    public List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException;
+    
+    public Map<String,JavaFormalParameterModel> getFormalParameters() throws TermWareException;
+    
+    public boolean canCheck();
+    
+    public boolean check() throws TermWareException;   
+
+    
+}

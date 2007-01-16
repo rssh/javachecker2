@@ -35,7 +35,7 @@ public class BTPatternChecker {
         
         
         if (facts.isCheckEnabled("EmptyCatchClauses")) {
-           sys_.addRule("java_catch($formal_parameter, java_empty_block ) -> PROBLEM [ violationDiscovered(EmptyCatchClauses,\" empty catch clause \",$formal_parameter) ] ");
+           sys_.addRule("Catch($formal_parameter, Block(NIL)) -> PROBLEM [ violationDiscovered(EmptyCatchClauses,\" empty catch clause \",$formal_parameter) ] ");
            enabled_=true;
         }
         if (facts.isCheckEnabled("GenericExceptionSpecifications")) {

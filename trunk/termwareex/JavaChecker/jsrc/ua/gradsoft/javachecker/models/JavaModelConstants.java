@@ -16,7 +16,8 @@ import java.util.List;
  * @author Ruslan Shevchenko
  */
 public class JavaModelConstants {
-    
+   
+   public final static List<JavaStatementModel>            STATEMENT_EMPTY_LIST = new LinkedList<JavaStatementModel>();
    public final static List<JavaTypeVariableAbstractModel> TYPEVARIABLE_EMPTY_LIST = new LinkedList<JavaTypeVariableAbstractModel>();
    public final static List<JavaTypeModel>                 TYPEMODEL_EMPTY_LIST    = new LinkedList<JavaTypeModel>();
     

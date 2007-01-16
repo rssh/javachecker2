@@ -35,6 +35,7 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         typeArguments_=typeArguments;
         where_=where;
         createResolvedTypeArguments(typeArguments);
+        createSubstitution();
     }
     
     /** Creates a new instance of JavaArgumentBoundTypeModel */
@@ -122,6 +123,9 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
     public boolean isWildcardBounds() {
         return false; }
     
+    public boolean isNull()
+    { return false; }
+    
     public boolean isUnknown() {
         return origin_.isUnknown(); }
     
@@ -155,7 +159,7 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         for(Map.Entry<String,List<JavaMethodAbstractModel> > me: origin_.getMethodModels().entrySet()) {
             LinkedList<JavaMethodAbstractModel> mappedList=new LinkedList<JavaMethodAbstractModel>();
             for(JavaMethodAbstractModel cm : me.getValue()) {
-                JavaArgumentBoundToTypeMethodModel mm=new JavaArgumentBoundToTypeMethodModel(this,cm);
+                JavaClassArgumentBoundMethodModel mm=new JavaClassArgumentBoundMethodModel(this,cm);
                 mappedList.add(mm);
             }
             retval.put(me.getKey(),mappedList);
@@ -213,6 +217,9 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         }
     }
     
+    public JavaTypeModel getOrigin()
+    { return origin_; }
+    
     /**
      *@return type arguments, represented as term
      */
@@ -222,6 +229,32 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
     public List<JavaTypeModel> getResolvedTypeArguments() {
         return resolvedTypeArguments_;
     }
+    
+    public JavaTypeModel  getSuperClass() throws TermWareException, NotSupportedException
+    {
+      if (boundSuperClassModel_==null)  {
+          boundSuperClassModel_=substitution_.substitute(origin_.getSuperClass());
+      }
+      return boundSuperClassModel_;
+    }
+    
+    public List<JavaTypeModel> getSuperInterfaces() throws TermWareException, NotSupportedException
+    {
+      if (boundSuperInterfacesModels_==null) {
+          boundSuperInterfacesModels_=substitution_.substitute(getSuperInterfaces());
+      }
+      return boundSuperInterfacesModels_;
+    }    
+    
+    public boolean isLocal()
+    { return origin_.isLocal(); }
+
+    
+   public JavaStatementModel  getEnclosedStatement()
+   { return origin_.getEnclosedStatement(); }
+    
+    public JavaTypeArgumentsSubstitution getSubstitution()
+    { return substitution_; }
     
     public JavaTypeModel resolveTypeParameter(String name) throws EntityNotFoundException {
         int foundIndex=-1;
@@ -235,6 +268,9 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         throw new EntityNotFoundException("TypeParameter ",name, "in "+getName());
     }
     
+    /**
+     * substitute type parameters whith this.
+     */
     public JavaTypeModel substituteTypeParameters(JavaTypeModel otherType) throws TermWareException {
         if (otherType.isTypeArgument()) {
             try {
@@ -272,6 +308,7 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         Term l=typeArguments_.getSubtermAt(0);
         while(!l.isNil()) {
             Term t=l.getSubtermAt(0);
+            l=l.getSubtermAt(1);
             if (t.getName().equals("TypeArgument")) {
                 if (t.getArity()==0) {
                     resolvedTypeArguments_.add(new JavaWildcardBoundsTypeModel(where_));
@@ -303,21 +340,34 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         }
     }
     
+    private void createSubstitution() throws TermWareException
+    {
+        substitution_=new JavaTypeArgumentsSubstitution(origin_.getTypeParameters(),resolvedTypeArguments_);
+    }
+    
     public void createTermTypeArguments(List<JavaTypeModel> resolvedTypes) throws TermWareException {
         Term l=TermWare.getInstance().getTermFactory().createNIL();
         for(int i=resolvedTypes.size(); i>0; --i) {
             Term t = resolvedTypes.get(i-1).getShortNameAsTerm();
-            l=TermWare.getInstance().getTermFactory().createTerm("cons",l);
+            l=TermWare.getInstance().getTermFactory().createTerm("cons",t,l);
         }
         typeArguments_=TermWare.getInstance().getTermFactory().createTerm("TypeArguments",l);
     }
     
+    
+    
     //TODO:private void createTermTypeArguments()
     
-    private JavaTypeModel origin_;
+    private JavaTypeModel origin_;   
     private List<JavaTypeModel> resolvedTypeArguments_;
+    
+    private JavaTypeModel  boundSuperClassModel_=null;
+    private List<JavaTypeModel>  boundSuperInterfacesModels_=null;
+    
     private Map<String,List<JavaMethodAbstractModel> >   boundMethodModels_=null;
     private Map<String,JavaMemberVariableAbstractModel > boundMemberVariables_=null;
     private Term          typeArguments_;
     private JavaTypeModel where_;
+    private JavaTypeArgumentsSubstitution substitution_;
+    
 }

@@ -48,6 +48,8 @@ public class JavaClassTypeVariableModel extends JavaTypeVariableAbstractModel
         return true;
     }
     
+    
+    
     private TypeVariable<?> typeVariable_;
     
 }

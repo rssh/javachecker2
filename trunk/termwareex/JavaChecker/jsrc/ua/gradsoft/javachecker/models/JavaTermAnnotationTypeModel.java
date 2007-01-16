@@ -8,13 +8,13 @@
 
 package ua.gradsoft.javachecker.models;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *Model of annotation type which holds term.
@@ -52,6 +52,20 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
     public boolean hasMethodModels()
     { return false; }
     
+    public JavaTypeModel getSuperClass() throws TermWareException
+    {
+      try {  
+        return JavaResolver.resolveTypeModelFromPackage("Annotation","java.lang"); 
+      }catch(EntityNotFoundException ex){
+          throw new AssertException(ex.getMessage());
+      }
+    }
+    
+    
+    public List<JavaTypeModel>  getSuperInterfaces() 
+    { return JavaModelConstants.TYPEMODEL_EMPTY_LIST; }
+    
+    
     public Map<String,List<JavaMethodAbstractModel> > getMethodModels() throws NotSupportedException
     {
       throw new NotSupportedException();
@@ -59,5 +73,6 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
     
     public boolean hasTypeParameters()
     { return false; }
+    
     
 }

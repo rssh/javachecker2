@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import ua.gradsoft.javachecker.CheckerComment;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.InvalidCheckerCommentException;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
@@ -65,6 +66,9 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
    public boolean isPrimitiveType()
    { return false; }
   
+   public boolean isNull()
+   { return false; }
+   
    public boolean isUnknown()
    { return false; }
 
@@ -155,6 +159,15 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     public boolean isArray()
     { return false; }
     
+    public boolean isLocal()
+    {
+      return isLocal_;
+    }
+    
+    public JavaStatementModel  getEnclosedStatement()
+    { return statement_; }
+    
+    
     /**
      * throw NotSupportedException
      */
@@ -169,23 +182,85 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     public boolean isWildcardBounds()
     { return false; }
     
+    public JavaTypeModel getSuperClass() throws TermWareException
+    {
+      if (resolvedSuperClass_==null) {
+          if (isClass()) {
+              if (superClassTerm_==null) {
+                  resolvedSuperClass_=JavaResolver.resolveJavaLangObject();              
+              }else{
+                  try {
+                     resolvedSuperClass_=JavaResolver.resolveTypeToModel(superClassTerm_,this);
+                  }catch(EntityNotFoundException ex){
+                      throw new AssertException(ex.getMessage());
+                  }
+              }
+          }else if(isEnum()) {
+              
+          }else{
+              resolvedSuperClass_=JavaResolver.resolveJavaLangObject();
+          }
+      }  
+      return resolvedSuperClass_;
+    }
+    
+
     
     /**
-    *add initializer without modifiers
-    */
-    public void addInitializer(Term initializer) 
+     * return list of interfaces.
+     */
+    public List<JavaTypeModel> getSuperInterfaces() throws TermWareException
     {
-      addInitializer(0,initializer);
+      if (resolvedSuperInterfaces_==null) {
+          if (superInterfacesTerms_==null) {
+              resolvedSuperInterfaces_=JavaModelConstants.TYPEMODEL_EMPTY_LIST;
+          }else{
+            try {  
+              resolvedSuperInterfaces_=new LinkedList<JavaTypeModel>();
+              for(Term t:superInterfacesTerms_){                  
+                  resolvedSuperInterfaces_.add(JavaResolver.resolveTypeToModel(t,this));
+              }
+            }catch(EntityNotFoundException ex){
+                throw new AssertException(ex.getMessage(),ex);
+            }
+          }
+      } 
+      return resolvedSuperInterfaces_;
+    }
+
+    
+    
+    /**
+    *add initializer 
+    */
+    public void addInitializer(Term initializer) throws TermWareException
+    {
+      JavaTermInitializerModel initializerModel = new JavaTermInitializerModel(this,initializer);
+      initializers_.add(initializerModel);
+    }
+    
+    
+    
+    /**
+     *add super class, denoted by <code> classOrInterfaceTerm </code>.
+     *@param classOrInterfaceTerm - ClassOrInterfaceTerm, contains description of superclass.
+     */
+    public void addSuperClass(Term classOrInterfaceTerm)
+    {
+      superClassTerm_=classOrInterfaceTerm;  
     }
     
     /**
-    *@TODO: implement
-    */
-    public void addInitializer(int modifiers, Term initializer) 
+     *add super interface, denoted by <code> t </code>.
+     *@param t - ClassOrInterfaceTerm, contains description of super interface.
+     */
+    public void addSuperInterface(Term t)
     {
-      /* do nothing yet */
+      if (superInterfacesTerms_==null) {
+          superInterfacesTerms_=new LinkedList<Term>();
+      }
+      superInterfacesTerms_.add(t);
     }
-    
     
     
     /**
@@ -195,7 +270,8 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     {
       JavaTermClassOrInterfaceModel newModel=new JavaTermClassOrInterfaceModel(modifiers,declaration,this.getPackageModel());
       newModel.setParentType(this);
-      nestedTypes_.put(newModel.getName(),newModel);      
+      nestedTypes_.put(newModel.getName(),newModel); 
+      newModel.setUnitModel(getUnitModel());
     }
 
     /**
@@ -205,7 +281,8 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     {
       JavaTermEnumModel newModel=new JavaTermEnumModel(modifiers,declaration,this.getPackageModel());
       newModel.setParentType(this);
-      nestedTypes_.put(newModel.getName(),newModel);      
+      nestedTypes_.put(newModel.getName(),newModel);   
+      newModel.setUnitModel(getUnitModel());
     }
 
    /**
@@ -246,18 +323,71 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     
     public void addTypeParameter(Term typeParameter) throws TermWareException
     {
-      System.out.println("addTypeParameter "+TermHelper.termToString(typeParameter));  
+     // System.out.println("addTypeParameter "+TermHelper.termToString(typeParameter));  
       JavaTermTypeVariableModel model=new JavaTermTypeVariableModel(typeParameter,this);
       typeVariables_.add(model);
     }
 
+    public int getLastLocalTypeIndex()
+    { return localTypeIndex_; }
+    
+    int nextLocalTypeIndex()
+    {
+      return ++localTypeIndex_;  
+    }
+    
+    public int getLastAnonimousTypeIndex()
+    { return anonimousTypeIndex_; }
+    
+    int nextAnonimousTypeIndex()
+    {
+      return ++anonimousTypeIndex_;  
+    }
+    
     public Term getTerm()
     { return t_; }
+    
+    void setIsLocal(JavaTermStatementModel statement)
+    {
+      JavaTermTypeAbstractModel enclosedType=statement.getTermTopLevelBlockModel().getOwnerTermModel().getTermTypeAbstractModel();  
+      isLocal_=true;  
+      localIndexInEnclosed_=enclosedType.nextLocalTypeIndex();  
+      String externalName="$"+localIndexInEnclosed_+getName();  
+      enclosedType.nestedTypes_.put(externalName,this);
+      setParentType(enclosedType);
+      setUnitModel(enclosedType.getUnitModel());
+      statement_=statement;
+    }
+    
+    void addNestedType(String name,JavaTermTypeAbstractModel nestedType)
+    {
+      nestedTypes_.put(name,nestedType);  
+      nestedType.setUnitModel(getUnitModel());
+    }
+
+    
+    public void setUnitModel(JavaUnitModel unitModel)
+    {
+      super.setUnitModel(unitModel);  
+      for(JavaTypeVariableAbstractModel tv: typeVariables_) {
+          tv.setUnitModel(unitModel);
+      }
+      for(JavaTypeModel nested: nestedTypes_.values()) {
+          nested.setUnitModel(unitModel);
+      }
+    }
+    
+    protected Term  superClassTerm_ = null;
+    protected JavaTypeModel resolvedSuperClass_ = null;
+    
+    protected List<Term>  superInterfacesTerms_ = null;
+    protected List<JavaTypeModel>  resolvedSuperInterfaces_ = null;
+    
     
     private JavaTypeModel parentType_=null;
     private TreeMap<String,List<JavaMethodAbstractModel> > methodModels_;
     private TreeMap<String,JavaMemberVariableAbstractModel> fieldModels_;
-    private List<Term>                                      initializers_;
+    private List<JavaTermInitializerModel>                  initializers_;
     private List<JavaTermConstructorModel>                  constructors_;
     private List<JavaTypeVariableAbstractModel>             typeVariables_;
     
@@ -267,7 +397,20 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     private JavaModifiersModel modifiers_;
         
     protected Term   t_;
-    protected CheckerComment   checkerComment_;
+    protected CheckerComment   checkerComment_ = null;
     protected String name_=null;
     
+    private   int anonimousTypeIndex_ = 0;
+    private   int localTypeIndex_ = 0;
+
+    private boolean isLocal_=false;
+    private int     localIndexInEnclosed_=-1;        
+    
+    private boolean isAnonimous_=false;
+    
+    /**
+     * statement, in which this class is defined if this is local or anonimous class.
+     */
+    private JavaTermStatementModel  statement_;
+
 }

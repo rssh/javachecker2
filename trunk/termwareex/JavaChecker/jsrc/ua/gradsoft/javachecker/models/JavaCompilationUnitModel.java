@@ -48,13 +48,7 @@ public class JavaCompilationUnitModel extends JavaUnitModel
         
     public  void addImportDeclaration(Term t) throws TermWareException
     {
-      if (t.getArity()==1) {
-          // this is normal class declaration.
-          Term nameTerm=t.getSubtermAt(0);
-          String lastName=nameTerm.getSubtermAt(nameTerm.getArity()-1).getSubtermAt(0).getName();
-          String packageName=JUtils.getJavaNameAsString(nameTerm,nameTerm.getArity()-1);
-          classImports_.put(lastName,packageName);
-      }else if(t.getArity()==2){
+      if(t.getArity()==2){
           Term modifier=t.getSubtermAt(0);
           boolean isStatic=false;
           boolean isAll=false;
@@ -74,6 +68,9 @@ public class JavaCompilationUnitModel extends JavaUnitModel
               String className=JUtils.getJavaNameAsString(nameTerm);
               staticClassImports_.add(className);
           }else if(isStatic && !isAll){
+              if (true) {
+                throw new RuntimeException("Error: package name now list, needs rewriting");
+              }
               String methodName=nameTerm.getSubtermAt(nameTerm.getArity()-1).getSubtermAt(0).getName();
               String className=JUtils.getJavaNameAsString(nameTerm,nameTerm.getArity()-1);
               staticMethodImports_.put(methodName,className);
@@ -81,12 +78,22 @@ public class JavaCompilationUnitModel extends JavaUnitModel
               String packageName=JUtils.getJavaNameAsString(nameTerm);    
               packageImports_.add(packageName);
           }else{ //!isStatic && !isAll
-              String className=nameTerm.getSubtermAt(nameTerm.getArity()-1).getSubtermAt(0).getName();
-              String packageName=JUtils.getJavaNameAsString(nameTerm,nameTerm.getArity()-1);
+              int lastIndex=0;
+              Term curr=nameTerm.getSubtermAt(0);
+              String className=null;
+              while(!curr.isNil()) {
+                  if (curr.getSubtermAt(1).isNil()) {
+                      className=curr.getSubtermAt(0).getSubtermAt(0).getString();
+                  }else{
+                      ++lastIndex;                      
+                  }
+                  curr=curr.getSubtermAt(1);
+              }                            
+              String packageName=JUtils.getJavaNameAsString(nameTerm,lastIndex);
               classImports_.put(className,packageName);
           }
       }else{
-          throw new AssertException("arity of import declaration must be 1 or 2, term:"+TermHelper.termToString(t));
+          throw new AssertException("arity of import declaration must be 2, term:"+TermHelper.termToString(t));
       }  
     }
 

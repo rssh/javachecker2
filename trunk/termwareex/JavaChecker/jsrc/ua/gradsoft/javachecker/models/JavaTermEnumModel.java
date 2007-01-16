@@ -70,10 +70,16 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     }
     
     private void build(Term t) throws TermWareException {
-        //System.out.println("JavaTermEnumModel::build:"+TermHelper.termToString(t));
+        System.out.println("JavaTermEnumModel::build:"+TermHelper.termToString(t));
         
         Term identifierTerm=t.getSubtermAt(QENUM_IDENTIFIER_INDEX_);
         Term implementsList=t.getSubtermAt(IMPLEMENTS_INDEX_);
+        while(!implementsList.isNil()) {
+            Term classOrInterfaceTerm = implementsList.getSubtermAt(0);
+            addSuperInterface(classOrInterfaceTerm);
+            implementsList=implementsList.getSubtermAt(1);
+        }
+        
         Term enumBody=t.getSubtermAt(ENUMBODY_INDEX_);
         name_=identifierTerm.getSubtermAt(0).getString();
         Term curr=enumBody.getSubtermAt(0);
@@ -86,14 +92,7 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
                 System.out.println("et="+TermHelper.termToString(et));
                 if (et.getArity()>0) {
                     if (et.getSubtermAt(0).getName().equals("Initializer")) {
-                        Term initializer=et.getSubtermAt(0);
-                        if (initializer.getArity()==1) {
-                            addInitializer(0,initializer.getSubtermAt(0));
-                        }else if (initializer.getArity()==2) {
-                            addInitializer(initializer.getSubtermAt(0).getInt(),initializer.getSubtermAt(1));
-                        }else{
-                            throw new AssertException("arity of initializer must be 1 or 2");
-                        }
+                        addInitializer(et);
                     }else{
                         int modifiers=et.getSubtermAt(0).getSubtermAt(0).getInt();
                         Term declaration=et.getSubtermAt(1);
@@ -118,6 +117,11 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
         }
     }
     
+    public  JavaTypeModel getSuperClass() throws TermWareException
+    {
+      return JavaResolver.resolveJavaLangObject();  
+    }
+      
     
     private Set<String>  constantNames_;
     

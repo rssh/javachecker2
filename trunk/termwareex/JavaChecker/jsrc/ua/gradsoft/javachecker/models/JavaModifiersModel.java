@@ -103,7 +103,11 @@ public class JavaModifiersModel {
      }
    
 
-    
+      /**
+       *@return internal int value
+       */
+     public int getIntValue()
+     { return modifiers_; }
     
     private int modifiers_;
     

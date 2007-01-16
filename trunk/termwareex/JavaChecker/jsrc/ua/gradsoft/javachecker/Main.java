@@ -29,6 +29,7 @@ import ua.gradsoft.termware.TermWareException;
 import ua.gradsoft.termware.envs.SystemEnv;
 import ua.gradsoft.termware.exceptions.AssertException;
 import ua.gradsoft.parsers.java5.JavaParserFactory;
+import ua.gradsoft.printers.java5.JavaPrinterFactory;
 
 
 
@@ -109,7 +110,8 @@ public class Main
      throw new ConfigException("Error during TermWare initialization",ex);
   }
 
-   TermWare.getInstance().addParserFactory("Java",new JavaParserFactory());  
+   TermWare.getInstance().addParserFactory("Java",new JavaParserFactory()); 
+   TermWare.getInstance().addPrinterFactory("Java",new JavaPrinterFactory());
    getPreferences();
   
   

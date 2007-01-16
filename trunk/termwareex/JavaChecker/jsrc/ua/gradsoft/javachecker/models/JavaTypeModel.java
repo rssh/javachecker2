@@ -85,12 +85,31 @@ public abstract class JavaTypeModel {
   
   public abstract boolean isWildcardBounds();
   
+  public abstract boolean isNull();
+  
   public abstract boolean isUnknown();
+  
+  /**
+   *get superclass.  
+   *does not supported for primitive types, type arguments, wildcard bounds
+   */
+  public abstract JavaTypeModel getSuperClass() throws NotSupportedException, TermWareException;
+
+  /**
+   *get all superinterfaces.  
+   *does not supported for primitive types, type arguments, wildcard bounds, arrays.
+   *@return all direct superinterfaces.
+   */
+  public abstract List<JavaTypeModel> getSuperInterfaces() throws NotSupportedException, TermWareException;
+  
   
   /**
    *return enclosed class
    */
   public abstract JavaTypeModel  getEnclosedType() throws NotSupportedException, TermWareException;
+  
+  
+  public abstract boolean isLocal();
   
   /**
    *@return referenced type. Works only if isArray()==true, otherwise
@@ -124,6 +143,7 @@ public abstract class JavaTypeModel {
   
   public abstract Map<String,JavaMemberVariableAbstractModel> getMemberVariableModels() throws NotSupportedException;
   
+  
   public JavaMemberVariableAbstractModel findMemberVariableModel(String name) throws EntityNotFoundException, NotSupportedException
   {
     JavaMemberVariableAbstractModel retval=getMemberVariableModels().get(name);
@@ -144,6 +164,9 @@ public abstract class JavaTypeModel {
    */
   public abstract boolean hasNestedTypeModels();
   
+  /**
+   *@return set of nested types.
+   */
   public abstract Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException, TermWareException;
  
   public JavaTypeModel findNestedTypeModel(String name) throws EntityNotFoundException, NotSupportedException, TermWareException
@@ -166,6 +189,14 @@ public abstract class JavaTypeModel {
    */
   public abstract  List<JavaTypeVariableAbstractModel>  getTypeParameters();
   
+  /**
+   *if this is local or anonimous class and it is possible to get enclosing
+   *statement - return enclosed statement, otherwise - null
+   */
+  public abstract  JavaStatementModel  getEnclosedStatement();
+  
+  
+  
   public  JavaPackageModel  getPackageModel()
   { return packageModel_; }
   
@@ -174,6 +205,9 @@ public abstract class JavaTypeModel {
   
   public  void setUnitModel(JavaUnitModel unitModel)
   { unitModel_=unitModel; }
+  
+  
+  
   
   public  JavaFacts  getJavaFacts()
   { return packageModel_.getFacts(); }

@@ -6,6 +6,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.LinkedList;
 import java.util.List;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.Main;
@@ -58,6 +59,32 @@ public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
             }
         }
         //System.out.println("!!!:"+TermHelper.termToPrettyString(t_));
+        
+        Term extendsList = t_.getSubtermAt(EXTENDS_TERM_INDEX);
+        if (isInterface_) {
+            extendsList = extendsList.getSubtermAt(0);
+            while (!extendsList.isNil()) {
+                Term classOrInterfaceTypeTerm = extendsList.getSubtermAt(0);
+                addSuperInterface(classOrInterfaceTypeTerm);
+                extendsList=extendsList.getSubtermAt(1);
+            }
+        }else{
+            extendsList = extendsList.getSubtermAt(0);
+            if (!extendsList.isNil()) {
+              Term classOrInterfaceTypeTerm = extendsList.getSubtermAt(0);
+              addSuperClass(classOrInterfaceTypeTerm);
+            }                            
+            Term implementsList = t_.getSubtermAt(IMPLEMENTS_TERM_INDEX);
+            if (!implementsList.isNil()) {              
+              implementsList = implementsList.getSubtermAt(0);
+              while (!implementsList.isNil()) {
+                  Term classOrInterfaceTypeTerm = implementsList.getSubtermAt(0);
+                  addSuperInterface(classOrInterfaceTypeTerm);
+                  implementsList=implementsList.getSubtermAt(1);
+              }
+            }
+        }
+        
         
         Term membersList=t_.getSubtermAt(CLASS_OR_INTERFACE_BODY_INDEX);
         if (!membersList.getName().equals("ClassOrInterfaceBody")) {
@@ -121,6 +148,8 @@ public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
     
     public boolean hasTypeParameters() {
         return true; }
+    
+
     
     public boolean check() throws TermWareException {
         boolean retval=true;
