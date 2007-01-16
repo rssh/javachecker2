@@ -19,6 +19,8 @@
  * to countries subject to U.S. embargo or to entities identified on U.S.
  * export exclusion lists, including, but not limited to, the denied persons
  * and specially designated nationals lists is strictly prohibited.
+ *
+ * Copyright (C) 2004-2007  GradSoft, Ukraine
  */
 
 options {
@@ -26,6 +28,7 @@ options {
   STATIC = false;
   BUILD_NODE_FILES = false;
   NODE_EXTENDS = "JavaNode";
+//  NODE_SCOPE_HOOK = true;
 //  MULTI = true;
 }
 
@@ -35,10 +38,12 @@ package ua.gradsoft.parsers.java5.jjt;
 
 import java.io.*;
 import ua.gradsoft.termware.*;
+import ua.gradsoft.parsers.java5.JavaNode;
 
 /**
  * Grammar to parse Java version 1.5
  * @author Sreenivasa Viswanadha - Simplified and enhanced for 1.5
+ * @author Ruslan Shevchenko     - Fixed few bugs, imported to TermWare framework.
  */
 public class JJTJavaParser
 {
@@ -104,6 +109,19 @@ public class JJTJavaParser
       return s;
     }
 
+    private final void setComment(JavaNode node, Token tk) 
+    {
+     if (tk!=null) {
+       try{
+         if (tk.specialToken!=null) {
+           String comment=getSpecialToken(tk);                
+           node.setAttribute("original_comment",comment);
+         }
+       }catch(TermWareException ex){
+         throw new TermWareRuntimeException(ex);      
+       }
+     }
+    }
 
 
   Term cons(Term x1,Term x2) 
@@ -473,7 +491,9 @@ SimpleNode PackageDeclaration() :
   tk="package" Name() ";"
     {
      if (tk.specialToken != null) {
-        jjtThis.setAttribute("comment",getSpecialToken(tk));
+        String comment=getSpecialToken(tk);
+        jjtThis.setAttribute("comment",comment);
+        jjtThis.setAttribute("original_comment",comment);
      } 
      return jjtThis; 
     }
@@ -483,9 +503,10 @@ void ImportDeclaration() :
 {
   Token tkSTATIC=null;
   Token tkASTERISC=null;
+  Token tkImport=null;
 }
 {
-  "import" [ tkSTATIC="static" ] Name() [ "." tkASTERISC="*" ] ";"
+  tkImport="import" [ tkSTATIC="static" ] Name() [ "." tkASTERISC="*" ] ";"
   {
    Term modifiers = createNil();
    if (tkSTATIC!=null) {
@@ -495,6 +516,7 @@ void ImportDeclaration() :
       modifiers=cons(createAtom("all"),modifiers);
    }
    jjtThis.addTerm(modifiers,0);
+   setComment(jjtThis,tkImport);
   }
 }
 
@@ -509,6 +531,7 @@ SimpleNode Modifiers():
 { 
  Token   tk=null;
  String   comment=null;
+ String   original_comment=null;
  SimpleNode annotationNode=null;
  int modifiers=0;
 }
@@ -545,6 +568,7 @@ SimpleNode Modifiers():
          if (tk!=null) {             
              if (tk.specialToken!=null) {
                 comment=getSpecialToken(tk);                
+                original_comment=comment;
              }else{
                 // nothing.
              }
@@ -561,6 +585,9 @@ SimpleNode Modifiers():
     jjtThis.addTerm(createInt(modifiers),0);
     if (comment!=null) {
       jjtThis.setAttribute("comment",comment);
+      if (original_comment!=null) {
+         jjtThis.setAttribute("original_comment",comment);
+      }
     }
     return jjtThis;
  }
@@ -600,9 +627,10 @@ void ClassOrInterfaceDeclaration(int modifiers):
 {
    boolean isInterface = false;
    SimpleNode typeParameters = null;
+   Token tk = null;
 }
 {
-  ( "class" | "interface" { isInterface = true; } )
+  ( tk="class" | tk="interface" { isInterface = true; } )
   Identifier()
   [ typeParameters=TypeParameters() ]
   [ ExtendsList(isInterface) ]
@@ -614,48 +642,69 @@ void ClassOrInterfaceDeclaration(int modifiers):
     }else{
        jjtThis.addTerm(TermWare.getInstance().getTermFactory().createAtom("class"),0);
     }
+    if (tk!=null) {
+     if (tk.specialToken!=null) {
+       String comment=getSpecialToken(tk);                
+       jjtThis.setAttribute("original_comment",comment);
+     }
+    }
   }
 }
 
 void ExtendsList(boolean isInterface):
 {
    boolean extendsMoreThanOne = false;
+   Token tk=null;
 }
 {
-   "extends" ClassOrInterfaceType()
+   tk="extends" ClassOrInterfaceType()
    ( "," ClassOrInterfaceType() { extendsMoreThanOne = true; } )*
    {
+      setComment(jjtThis,tk);
       if (extendsMoreThanOne && !isInterface)
          throw new ParseException("A class cannot extend more than one other class");
    }
 }
 
 void ImplementsList(boolean isInterface):
-{}
 {
-   "implements" ClassOrInterfaceType()
+ Token tk;
+}
+{
+   tk="implements" ClassOrInterfaceType()
    ( "," ClassOrInterfaceType() )*
    {
+      setComment(jjtThis,tk);
       if (isInterface)
          throw new ParseException("An interface cannot implement other interfaces");
    }
 }
 
 void EnumDeclaration(int modifiers):
-{}
 {
-  "enum" Identifier()
+ Token tk;
+}
+{
+  tk="enum" Identifier()
   [ ImplementsList(false) ]
-  EnumBody()
+  EnumBody() 
+  {
+   setComment(jjtThis,tk);
+  }
 }
 
 void EnumBody():
-{}
 {
-   "{"
-   EnumConstant() ( "," EnumConstant() )*
+ Token tk;
+}
+{
+   tk="{"
+   EnumConstant() (LOOKAHEAD(2) "," EnumConstant() )*  [ "," ]
    [ ";" ( ClassOrInterfaceBodyDeclaration(false) )* ]
-   "}"                  	
+   "}"
+   {
+    setComment(jjtThis,tk);
+   }                  	
 }
 
 void EnumConstant():
@@ -665,10 +714,15 @@ void EnumConstant():
 }
 
 SimpleNode TypeParameters():
-{}
 {
-   "<" TypeParameter() ( "," TypeParameter() )* ">"
-   { return jjtThis; }
+ Token tk;
+}
+{
+   tk="<" TypeParameter() ( "," TypeParameter() )* ">"
+   {
+    setComment(jjtThis,tk); 
+    return jjtThis; 
+   }
 }
 
 void TypeParameter():
@@ -680,15 +734,25 @@ void TypeParameter():
 }
 
 void TypeBound():
-{}
 {
-   "extends" ClassOrInterfaceType() ( "&" ClassOrInterfaceType() )*
+ Token tk;
+}
+{
+   tk="extends" ClassOrInterfaceType() ( "&" ClassOrInterfaceType() )*
+   {
+    setComment(jjtThis,tk); 
+   }                  	
 }
 
 void ClassOrInterfaceBody(boolean isInterface):
-{}
 {
-  "{" ( ClassOrInterfaceBodyDeclaration(isInterface) )* "}"
+ Token tk=null;
+}
+{
+  tk="{" ( ClassOrInterfaceBodyDeclaration(isInterface) )* "}"
+   {
+    setComment(jjtThis,tk); 
+   }                  	
 }
 
 void ClassOrInterfaceBodyDeclaration(boolean isInterface):
@@ -768,9 +832,17 @@ void VariableInitializer():
 }
 
 void ArrayInitializer():
-{}
 {
-  "{" [ VariableInitializer() ( LOOKAHEAD(2) "," VariableInitializer() )* ] [ "," ] "}"
+ Token tk=null;
+}
+{
+  tk="{" [ VariableInitializer() ( LOOKAHEAD(2) "," VariableInitializer() )* ] [ "," ] "}"
+  {
+   if (tk.specialToken!=null) {
+     String comment=getSpecialToken(tk);
+     jjtThis.setAttribute("original_coment",comment);
+   }
+  }
 }
 
 void MethodDeclaration(int modifiers):
@@ -816,6 +888,8 @@ void FormalParameters():
 void FormalParameter():
 {
  int modifiers=0;
+// Token tkf=null;
+//TODO: add comment
 }
 {
   [ "final" {modifiers|=ModifierSet.FINAL;} ] Type() [ "..." {modifiers|=ModifierSet.VARARGS;} ] VariableDeclaratorId()
@@ -827,6 +901,7 @@ void ConstructorDeclaration():
  boolean    hasTP=false;
  boolean    hasThrows=false;
  boolean    hasECI=false;
+ boolean    hasBlock=false;
 }
 {
   [ TypeParameters() {hasTP=true;} ]
@@ -834,7 +909,7 @@ void ConstructorDeclaration():
   Identifier() FormalParameters() [ "throws" NameList() {hasThrows=true;}]
   "{"
     [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() {hasECI=true;} ]
-    ( BlockStatement() )*
+    ( BlockStatement() {hasBlock=true;} )*
   "}"
   {
    if (!hasTP) {
@@ -845,6 +920,9 @@ void ConstructorDeclaration():
    }
    if (!hasECI) {
      jjtThis.addTerm(createNil(),4);
+   }
+   if (!hasBlock) {
+     jjtThis.addTerm(createNil(),5);
    }
   }
 }
@@ -862,9 +940,16 @@ void ExplicitConstructorInvocation():
 
 void ExplicitThisConstructorInvocation():
 {
+ Token tk=null;
 }
 {
- "this" Arguments() ";"
+ tk="this" Arguments() ";"
+ {
+  if (tk.specialToken!=null) {
+    String comment=getSpecialToken(tk);
+    jjtThis.setAttribute("original_comment",comment);
+  }
+ }
 }
 
 void ExplicitSuperConstructorInvocation():
@@ -878,10 +963,19 @@ void ExplicitSuperConstructorInvocation():
 void Initializer():
 {
   int modifiers=0;
+  Token tk=null;
 }
 {
-  [ "static" { modifiers|=ModifierSet.STATIC; } ] Block() 
-    { jjtThis.addTerm(createTerm("Modifiers",createInt(modifiers)),0); }
+  [ tk="static" { modifiers|=ModifierSet.STATIC; } ] Block() 
+    { 
+     if (tk!=null) {
+      if (tk.specialToken!=null) {
+        String comment=getSpecialToken(tk);
+        jjtThis.setAttribute("original_comment",comment);
+      }
+     }
+     jjtThis.addTerm(createTerm("Modifiers",createInt(modifiers)),0); 
+    }
 }
 
 
@@ -918,9 +1012,12 @@ void ClassOrInterfaceType():
 }
 
 void TypeArguments():
-{}
 {
-   "<" TypeArgument() ( "," TypeArgument() )* ">"
+ Token tk=null;
+}
+{
+   tk="<" TypeArgument() ( "," TypeArgument() )* ">"
+   { setComment(jjtThis,tk); }
 }
 
 void TypeArgument():
@@ -941,29 +1038,44 @@ void WildcardBounds():
 
 
 void PrimitiveType():
-{}
 {
-  "boolean"   { jjtThis.addTerm(createAtom("boolean"),0); }
+ Token tk;
+}
+{
+(
+  tk="boolean"   { jjtThis.addTerm(createAtom("boolean"),0); }
 |
-  "char"      { jjtThis.addTerm(createAtom("char"),0); }
+  tk="char"      { jjtThis.addTerm(createAtom("char"),0); }
 |
-  "byte"      { jjtThis.addTerm(createAtom("byte"),0); }
+  tk="byte"      { jjtThis.addTerm(createAtom("byte"),0); }
 |
-  "short"     { jjtThis.addTerm(createAtom("short"),0); }
+  tk="short"     { jjtThis.addTerm(createAtom("short"),0); }
 |
-  "int"       { jjtThis.addTerm(createAtom("int"),0); }
+  tk="int"       { jjtThis.addTerm(createAtom("int"),0); }
 |
-  "long"      { jjtThis.addTerm(createAtom("long"),0); }
+  tk="long"      { jjtThis.addTerm(createAtom("long"),0); }
 |
-  "float"     { jjtThis.addTerm(createAtom("float"),0); }
+  tk="float"     { jjtThis.addTerm(createAtom("float"),0); }
 |
-  "double"    { jjtThis.addTerm(createAtom("double"),0); }
+  tk="double"    { jjtThis.addTerm(createAtom("double"),0); }
+)
+   {
+    setComment(jjtThis,tk);
+   }                  	
 }
 
 void ResultType():
-{}
 {
-  "void" { jjtThis.addTerm(createAtom("void"),0); }
+ Token tk;
+}
+{
+  tk="void" { 
+    jjtThis.addTerm(createAtom("void"),0); 
+      if (tk.specialToken!=null) {
+        String comment=getSpecialToken(tk);                
+        jjtThis.setAttribute("original_comment",comment);
+      }
+   }
 |
   Type()
 }
@@ -1015,7 +1127,8 @@ void Expression():
 }
 
 void AssignmentOperator():
-{}
+{
+}
 {
   "="   { jjtThis.addTerm(createAtom("op_assign"),0); }
   | "*=" { jjtThis.addTerm(createAtom("op_multiply_assign"),0); }
@@ -1169,8 +1282,10 @@ void UnaryExpression():
   {
     if (tkp!=null) {
       jjtThis.addTerm(createString("+"),0);
+      setComment(jjtThis,tkp);
     }else if(tkm!=null) {
       jjtThis.addTerm(createString("-"),0);
+      setComment(jjtThis,tkm);
     }
   }
 |
@@ -1182,15 +1297,21 @@ void UnaryExpression():
 }
 
 void PreIncrementExpression():
-{}
 {
-  "++" PrimaryExpression()
+ Token tk=null;
+}
+{
+  tk="++" PrimaryExpression()
+  { setComment(jjtThis,tk); }
 }
 
 void PreDecrementExpression():
-{}
 {
-  "--" PrimaryExpression()
+ Token tk=null;
+}
+{
+  tk="--" PrimaryExpression()
+  { setComment(jjtThis,tk); }
 }
 
 void UnaryExpressionNotPlusMinus():
@@ -1203,8 +1324,10 @@ void UnaryExpressionNotPlusMinus():
     {  
       if (tkInverse!=null) {
           jjtThis.addTerm(createString("~"),0);
+          setComment(jjtThis,tkInverse);
       }else if(tkNot!=null) {
           jjtThis.addTerm(createString("!"),0);
+          setComment(jjtThis,tkNot);
       }
     }
 |
@@ -1245,12 +1368,24 @@ Token tkd=null;
 }
 
 void CastExpression():
-{}
 {
+ Token tk=null;
+}
+{
+(
   LOOKAHEAD("(" PrimitiveType())
-  "(" Type() ")" UnaryExpression()
+  tk="(" Type() ")" UnaryExpression()
 |
-  "(" Type() ")" UnaryExpressionNotPlusMinus()
+  tk="(" Type() ")" UnaryExpressionNotPlusMinus()
+)
+{
+ if (tk!=null) {
+  if (tk.specialToken!=null) {
+    String comment = getSpecialToken(tk);
+    jjtThis.setAttribute("original_comment",comment);
+  }
+ }
+}
 }
 
 void PrimaryExpression():
@@ -1266,15 +1401,18 @@ void MemberSelector():
 }
 
 void PrimaryPrefix():
-{}
 {
+ Token tk=null;
+}
+{
+(
   Literal()
 |
-  "this"  { jjtThis.addTerm(createAtom("this"),0); }
+  tk="this"  { jjtThis.addTerm(createAtom("this"),0); }
 |
-  "super" "." Identifier()  { jjtThis.addTerm(createAtom("super"),0); }
+  tk="super" "." Identifier()  { jjtThis.addTerm(createAtom("super"),0); }
 |
-  "(" Expression() ")"
+  tk="(" Expression() ")"
 |
   AllocationExpression()
 |
@@ -1282,6 +1420,8 @@ void PrimaryPrefix():
   ResultType() "." "class"  { jjtThis.addTerm(createAtom("class"),1); }
 |
   Name()
+)
+  { setComment(jjtThis,tk); }
 }
 
 void PrimarySuffix():
@@ -1355,7 +1495,11 @@ void IntegerLiteral():
   Token tk;
 }
 {
-  tk=<INTEGER_LITERAL>  { jjtThis.addTerm(createString(tk.image),0); }
+  tk=<INTEGER_LITERAL>  
+  { 
+   setComment(jjtThis,tk);
+   jjtThis.addTerm(createString(tk.image),0); 
+  }
 }
 
 
@@ -1366,7 +1510,11 @@ void CharacterLiteral():
   Token tk;
 }
 {
-  tk=<CHARACTER_LITERAL>  { jjtThis.addTerm(createString(tk.image),0); }
+  tk=<CHARACTER_LITERAL>  
+  {
+    setComment(jjtThis,tk);
+    jjtThis.addTerm(createString(tk.image),0); 
+  }
 }
 
 
@@ -1375,7 +1523,11 @@ void FloatingPointLiteral():
   Token tk;
 }
 {
-  tk=<FLOATING_POINT_LITERAL>  { jjtThis.addTerm(createString(tk.image),0); }
+  tk=<FLOATING_POINT_LITERAL>  
+  { 
+    setComment(jjtThis,tk);
+    jjtThis.addTerm(createString(tk.image),0); 
+  }
 }
 
 
@@ -1384,28 +1536,49 @@ void StringLiteral():
   Token tk;
 }
 {
-  tk=<STRING_LITERAL>  { jjtThis.addTerm(createString(tk.image),0); }
+  tk=<STRING_LITERAL>  
+  {
+    setComment(jjtThis,tk);
+    jjtThis.addTerm(createString(tk.image),0); 
+  }
 }
 
 void BooleanLiteral():
-{}
 {
-  "true"   { jjtThis.addTerm(createBoolean(true),0); }
+ Token tk=null;
+}
+{
+(
+  tk="true"   { jjtThis.addTerm(createBoolean(true),0); }
 |
-  "false"  { jjtThis.addTerm(createBoolean(false),0); }
+  tk="false"  { jjtThis.addTerm(createBoolean(false),0); }
+)
+{
+    setComment(jjtThis,tk);
+}
 }
 
 
 void NullLiteral():
-{}
 {
-  "null"
+ Token tk;
+}
+{
+  tk="null"
+  {
+    setComment(jjtThis,tk);
+  }
 }
 
 void Arguments():
-{}
 {
-  "(" [ ArgumentList() ] ")"
+ Token tk=null;
+}
+{
+  tk="(" [ ArgumentList() ] ")"
+  {
+    setComment(jjtThis,tk);
+  }
 }
 
 void ArgumentList():
@@ -1418,13 +1591,14 @@ void AllocationExpression():
 {
  boolean haveTypeArguments=false;
  boolean haveClassBody=false;
+ Token tk=null;
 }
 {
 (
   LOOKAHEAD(2)
-  "new" PrimitiveType() ArrayDimsAndInits()
+  tk="new" PrimitiveType() ArrayDimsAndInits()
 |
-  "new" ClassOrInterfaceType() [ TypeArguments() {haveTypeArguments=true;} ]
+  tk="new" ClassOrInterfaceType() [ TypeArguments() {haveTypeArguments=true;} ]
     (
       ArrayDimsAndInits()
     |
@@ -1432,11 +1606,12 @@ void AllocationExpression():
     )
 )
  {
+   setComment(jjtThis,tk);
    if (!haveTypeArguments) {
      jjtThis.addTerm(createNil(),1);
    }  
    if (!haveClassBody) {
-     jjtThis.addTerm(createNil(),3);
+     jjtThis.addTerm(createNil(),4);
    }
  }
 }
@@ -1536,9 +1711,14 @@ void StatementExpressionStatement():
 }
 
 void AssertStatement():
-{}
 {
-  "assert" Expression() [ ":" Expression() ] ";"
+ Token tk;
+}
+{
+  tk="assert" Expression() [ ":" Expression() ] ";"
+  {
+   setComment(jjtThis,tk);
+  }
 }
 
 void LabeledStatement():
@@ -1548,14 +1728,19 @@ void LabeledStatement():
 }
 
 SimpleNode Block():
-{}
+{
+ Token tk=null;
+}
 {
  (
-  "{" ( BlockStatement() )* "}"
+  tk="{" ( BlockStatement() )* "}"
   |
    <BLOCK_PLACEHOLDER> "(" Identifier() ")"
  )
-  { return jjtThis; }
+  { 
+   setComment(jjtThis,tk);
+   return jjtThis; 
+  }
 }
 
 void BlockStatement():
@@ -1572,16 +1757,25 @@ void BlockStatement():
 void LocalVariableDeclaration():
 {
  int modifiers=0;
+ Token tkf=null;
 }
 {
-  [ "final" { modifiers|=ModifierSet.FINAL; }] Type() VariableDeclarator() ( "," VariableDeclarator() )*
-  { jjtThis.addTerm(createTerm("Modifiers",createInt(modifiers)),0); }
+  [ tkf="final" { modifiers|=ModifierSet.FINAL; }] Type() VariableDeclarator() ( "," VariableDeclarator() )*
+  { 
+   setComment(jjtThis,tkf);
+   jjtThis.addTerm(createTerm("Modifiers",createInt(modifiers)),0); 
+  }
 }
 
 void EmptyStatement():
-{}
 {
-  ";"
+ Token tk;
+}
+{
+  tk=";"
+  {
+   setComment(jjtThis,tk);
+  }
 }
 
 void StatementExpression():
@@ -1591,28 +1785,39 @@ void StatementExpression():
  * use PostfixExpression for performance reasons.
  */
 {
+ Token tk=null;
 }
 {
+(
   PreIncrementExpression()
 |
   PreDecrementExpression()
 |
   PrimaryExpression()
   [
-    "++"  { jjtThis.addTerm(createAtom("post_increment"),1); }
+    tk="++"  { jjtThis.addTerm(createAtom("post_increment"),1); }
   |
-    "--"  { jjtThis.addTerm(createAtom("post_decrement"),1); }
+    tk="--"  { jjtThis.addTerm(createAtom("post_decrement"),1); }
   |
     AssignmentOperator() Expression()
   ]
+)
+{
+   setComment(jjtThis,tk);
+}
 }
 
 void SwitchStatement():
-{}
+{
+ Token tk=null;
+}
 {
   "switch" "(" Expression() ")" "{"
     ( SwitchStatementLabelBlock() )*
   "}"
+  {
+   setComment(jjtThis,tk);
+  }
 }
 
 
@@ -1624,11 +1829,16 @@ void SwitchStatementLabelBlock():
 
 
 void SwitchLabel():
-{}
 {
-  "case" Expression() ":"
+ Token tk=null;
+}
+{
+(
+  tk="case" Expression() ":"
 |
-  "default" ":"  { jjtThis.addTerm(createAtom("default"),0); }
+  tk="default" ":"  { jjtThis.addTerm(createAtom("default"),0); }
+)
+ { setComment(jjtThis,tk); }
 }
 
 void IfStatement():
@@ -1637,27 +1847,44 @@ void IfStatement():
  * else's to the innermost if statement.  The LOOKAHEAD specification
  * is to tell JavaCC that we know what we are doing.
  */
-{}
 {
-  "if" "(" Expression() ")" Statement() [ LOOKAHEAD(1) "else" Statement() ]
+ Token tk=null;
+}
+{
+  tk="if" "(" Expression() ")" Statement() [ LOOKAHEAD(1) "else" Statement() ]
+  {
+   setComment(jjtThis,tk);
+  }
 }
 
 void WhileStatement():
-{}
 {
-  "while" "(" Expression() ")" Statement()
+ Token tk=null;
+}
+{
+  tk="while" "(" Expression() ")" Statement()
+  {
+   setComment(jjtThis,tk);
+  }
 }
 
 void DoStatement():
-{}
 {
-  "do" Statement() "while" "(" Expression() ")" ";"
+ Token tk=null;
+}
+{
+  tk="do" Statement() "while" "(" Expression() ")" ";"
+  {
+   setComment(jjtThis,tk);
+  }
 }
 
 void ForStatement():
-{}
 {
-  "for" "("
+ Token tk=null;
+}
+{
+  tk="for" "("
 
   (
       LOOKAHEAD(Type() Identifier() ":")
@@ -1667,6 +1894,9 @@ void ForStatement():
   )
 
   ")" Statement()
+  {
+   setComment(jjtThis,tk);
+  }
 }
 
 void ForEachLoopHead():
@@ -1719,33 +1949,48 @@ void ForUpdate():
 }
 
 void BreakStatement():
-{}
 {
-  "break" [ Identifier() ] ";"
+  Token tk=null;
+}
+{
+  tk="break" [ Identifier() ] ";"
+  { setComment(jjtThis,tk); }
 }
 
 void ContinueStatement():
-{}
 {
-  "continue" [ Identifier() ] ";"
+ Token tk=null;
+}
+{
+  tk="continue" [ Identifier() ] ";"
+  { setComment(jjtThis,tk); }
 }
 
 void ReturnStatement():
-{}
 {
-  "return" [ Expression() ] ";"
+ Token tk=null;
+}
+{
+  tk="return" [ Expression() ] ";"
+  { setComment(jjtThis,tk); }
 }
 
 void ThrowStatement():
-{}
 {
-  "throw" Expression() ";"
+ Token tk=null;
+}
+{
+  tk="throw" Expression() ";"
+  { setComment(jjtThis,tk); }
 }
 
 void SynchronizedStatement():
-{}
 {
-  "synchronized" "(" Expression() ")" Block()
+ Token tk=null;
+}
+{
+  tk="synchronized" "(" Expression() ")" Block()
+  { setComment(jjtThis,tk); }
 }
 
 void TryStatement():
@@ -1753,11 +1998,14 @@ void TryStatement():
  * Semantic check required here to make sure that at least one
  * finally/catch is present.
  */
-{}
 {
-  "try" Block()
+ Token tk=null;
+}
+{
+  tk="try" Block()
   CatchSequence()
   [ "finally" Block() ]
+  { setComment(jjtThis,tk); }
 }
 
 
@@ -1769,9 +2017,12 @@ void CatchSequence():
 
 
 void Catch():
-{}
 {
-"catch" "(" FormalParameter() ")" Block()
+ Token tk=null;
+}
+{
+ tk="catch" "(" FormalParameter() ")" Block()
+  { setComment(jjtThis,tk); }
 }
 
 
@@ -1829,7 +2080,9 @@ SimpleNode NormalAnnotation():
 {
    tk="@" Name() "(" [ MemberValuePairs() ] ")"
    { if (tk.specialToken!=null) {
-        jjtThis.setAttribute("comment",getSpecialToken(tk));
+        String comment=getSpecialToken(tk);
+        jjtThis.setAttribute("comment",comment);
+        jjtThis.setAttribute("original_comment",comment);
      }
      return jjtThis;
    }
@@ -1842,7 +2095,9 @@ SimpleNode MarkerAnnotation():
 {
   tk="@" Name()
    { if (tk.specialToken!=null) {
-        jjtThis.setAttribute("comment",getSpecialToken(tk));
+        String comment=getSpecialToken(tk);
+        jjtThis.setAttribute("comment",comment);
+        jjtThis.setAttribute("original_comment",comment);
      }
      return jjtThis;
    }
@@ -1855,7 +2110,9 @@ SimpleNode SingleMemberAnnotation():
 {
   tk="@" Name() "(" MemberValue() ")"
    { if (tk.specialToken!=null) {
-        jjtThis.setAttribute("comment",getSpecialToken(tk));
+        String comment=getSpecialToken(tk);
+        jjtThis.setAttribute("comment",comment);
+        jjtThis.setAttribute("original_comment",comment);
      }
      return jjtThis;
    }
@@ -1893,9 +2150,12 @@ void  MemberValueArrayInitializer():
 /* Annotation Types. */
 
 void AnnotationTypeDeclaration(int modifiers):
-{}
 {
-  "@" "interface" Identifier() AnnotationTypeBody()
+ Token tk;
+}
+{
+  tk="@" "interface" Identifier() AnnotationTypeBody()
+  { setComment(jjtThis,tk); }
 }
 
 void AnnotationTypeBody():
@@ -1927,9 +2187,12 @@ void AnnotationTypeMemberDeclaration():
 }
 
 void DefaultValue():
-{}
 {
-  "default" MemberValue()
+ Token tk=null;
+}
+{
+  tk="default" MemberValue()
+  { setComment(jjtThis,tk); }
 }
 
 void Identifier():
@@ -1944,7 +2207,10 @@ void Identifier():
     jjtThis.addTerm( identTerm, 0); 
     jjtThis.setAttribute("line",createInt(tk.beginLine));
     jjtThis.setAttribute("file",createString(inFname));
-
+    if (tk.specialToken!=null) {
+        String comment=getSpecialToken(tk);
+        jjtThis.setAttribute("original_comment",comment);
+    }
   }
   |
   tk=<IDENTIFIER_PLACEHOLDER> "(" Identifier() ")"
