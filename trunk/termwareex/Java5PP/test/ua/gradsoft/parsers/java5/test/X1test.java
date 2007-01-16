@@ -144,6 +144,17 @@ public class X1test extends TestCase
                   
      }
 
+    public void testJCCT() throws Exception
+    {
+      Term source=null;
+      String fname = "testdata/jc/CheckerType.java";
+      Reader reader = new FileReader(fname);
+      Term nil=TermWare.getInstance().getTermFactory().createNIL();
+      source=TermWare.getInstance().getParserFactory("Java").createParser(reader,fname,nil,TermWare.getInstance()).readTerm();
+      source.println(System.out);   
+    }
+    
+    
      
      public void testCT() throws Exception
      {

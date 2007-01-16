@@ -95,7 +95,9 @@ public class ASTTransformers {
             if (deep) {
                 ct=transformSeqToList(ct);
             }
-            list=TermWare.getInstance().getTermFactory().createTerm("cons",ct,list);
+            if (!ct.isNil()) {
+              list=TermWare.getInstance().getTermFactory().createTerm("cons",ct,list);
+            }
         }
         Term[] newBody=new Term[startFrom+1];
         for(int i=0; i<startFrom; ++i) {
