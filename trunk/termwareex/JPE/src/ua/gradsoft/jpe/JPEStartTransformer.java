@@ -11,6 +11,7 @@
 package ua.gradsoft.jpe;
 
 import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.TermWareException;
 
@@ -28,6 +29,7 @@ public class JPEStartTransformer
     
     public Term transform(Term t) throws TermWareException
     {
+        //System.err.println("get term for transformation:"+TermHelper.termToString(t));
         Term[] retBody=new Term[t.getArity()];
         for(int i=0; i<t.getArity(); ++i) {
             Term ct = t.getSubtermAt(i);
@@ -35,7 +37,9 @@ public class JPEStartTransformer
             ctb[0]=ct;
             retBody[i]=TermWare.getInstance().getTermFactory().createTerm(transformationName_,ctb);
         }
-        return TermWare.getInstance().getTermFactory().createTerm(t.getName(),retBody);
+        Term retval= TermWare.getInstance().getTermFactory().createTerm(t.getName(),retBody);
+        //System.err.println("retval:"+TermHelper.termToString(retval));
+        return retval;
     }
     
     private String transformationName_;

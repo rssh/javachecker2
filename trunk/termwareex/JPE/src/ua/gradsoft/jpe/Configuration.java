@@ -10,12 +10,13 @@
 
 package ua.gradsoft.jpe;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
  *Class which store JPE Configuration.
  */
-public class Configuration {
+public class Configuration implements Serializable {
     
     public void init(String[] args) throws JPEConfigurationException
     {
@@ -66,6 +67,8 @@ public class Configuration {
                 String key=args[++i];
                 String value=args[++i];
                 compileTimeProperties_.put(key,value);
+            }else if(args[i].equals("--create-output-dir")){
+                createOutputDir_=true;
             }else{
                 throw new JPEConfigurationException("Unknown option:"+args[i]);
             }
@@ -95,9 +98,19 @@ public class Configuration {
         return inputDir_;
     }
     
+    public void  setInputDir(String inputDir)
+    {
+       inputDir_ = inputDir; 
+    }        
+    
     public String getOutputDir()
     {
         return outputDir_;
+    }
+    
+    public void  setOutputDir(String outputDir)
+    {
+        outputDir_=outputDir;
     }
     
     public String getJPEHome()
@@ -105,9 +118,19 @@ public class Configuration {
         return jpeHome_;
     }
     
+    public void  setJPEHome(String jpeHome)
+    {
+       jpeHome_=jpeHome; 
+    }
+    
     public String getTransformationName()
     {
         return transformationName_;
+    }
+    
+    public void setTransformationName(String transformationName)
+    { 
+        transformationName_=transformationName; 
     }
     
     public boolean isDump()
@@ -115,7 +138,23 @@ public class Configuration {
         return dump_;
     }
     
-    private boolean dump_=true;
+    public void setDump(boolean dump)
+    {
+        dump_=dump;
+    }
+    
+    public boolean isCreateOutputDir()
+    {
+        return createOutputDir_;
+    }
+    
+    public void setCreateOutputDir(boolean createOutputDir)
+    {
+       createOutputDir_=createOutputDir; 
+    }
+    
+    private boolean dump_=false;
+    private boolean createOutputDir_=false;
     private String inputDir_=null;
     private String outputDir_=null;
     private String compileTimeClass_=null;

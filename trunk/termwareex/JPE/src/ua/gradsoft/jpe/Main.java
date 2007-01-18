@@ -44,8 +44,10 @@ public class Main {
             main.init(args);
             main.run();
         }catch(JPEConfigurationException ex){
+            System.err.print("exception during initialization");
             ex.printStackTrace();
         }catch(JPEProcessingException ex){
+            System.err.print("exception during processing");
             ex.printStackTrace();
         }
     }
@@ -108,7 +110,11 @@ public class Main {
                 throw new JPEConfigurationException("output dir "+outputDir+" is not directory");
             }
         }else{
-            throw new JPEConfigurationException("output dir "+outputDir+" does not exists");
+            if (configuration_.isCreateOutputDir()) {
+                outputDirFile.mkdirs();
+            }else{
+                throw new JPEConfigurationException("output dir "+outputDir+" does not exists");
+            }
         }
         if (inputDirFile.getAbsolutePath().equals(outputDirFile.getAbsolutePath())) {
             throw new JPEConfigurationException("input and output direcotries must be different ");
@@ -143,10 +149,13 @@ public class Main {
         }catch(TermWareException ex){
             throw new JPEProcessingException("exception during reading file "+f.getAbsolutePath(),ex);
         }
-        TermSystem jpeSystem=getJPESystem();
+        TermSystem jpeSystem=getJPESystem();        
         Term transformedSource=null;
         try {
-            transformedSource=jpeSystem.reduce(source);
+            Term startSource=startTransformer_.transform(source);
+            System.err.println("startSource="+TermHelper.termToString(startSource));
+            transformedSource=jpeSystem.reduce(startSource);
+            System.err.println("transformedSource="+TermHelper.termToString(transformedSource));
         }catch(TermWareException ex){
             throw new JPEProcessingException("exception during transforming file "+f.getAbsolutePath(),ex);
         }
