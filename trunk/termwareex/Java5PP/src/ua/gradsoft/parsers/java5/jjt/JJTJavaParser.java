@@ -4518,7 +4518,7 @@ Token tkd=null;
      jjtn000.addTerm(createNil(),1);
    }
    if (!haveClassBody) {
-     jjtn000.addTerm(createNil(),4);
+     jjtn000.addTerm(createNil(),3);
    }
     } catch (Throwable jjte000) {
   if (jjtc000) {
@@ -5285,7 +5285,7 @@ void ArrayDimsAndInits():
  boolean jjtc000 = true;
  jjtree.openNodeScope(jjtn000);Token tk=null;
     try {
-      jj_consume_token(SWITCH);
+      tk = jj_consume_token(SWITCH);
       jj_consume_token(LPAREN);
       Expression();
       jj_consume_token(RPAREN);

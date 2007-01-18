@@ -42,6 +42,7 @@ public class JavaPrinter extends AbstractPrinter {
     
     public void writeTerm(Term t,int level,int currentPriority) throws TermWareException {
         //System.err.println("writeTerm:"+TermHelper.termToString(t));       
+       // System.out.println("writeTerm:"+TermHelper.termToString(t));  
         //System.err.println("writeTerm:"+t.getName()+",class="+t.getClass().getName());                                                
         //if (t instanceof Attributed) {
         //    System.err.println("t instanceof Attributed");
@@ -432,12 +433,12 @@ public class JavaPrinter extends AbstractPrinter {
     public void writeImportDeclaration(Term t,int level) throws TermWareException {
         boolean isStatic=false;
         boolean isAll=false;
-        Term m=t.getSubtermAt(0);
+        Term m=t.getSubtermAt(0);        
         while(!m.isNil()) {
-            Term ct=m.getSubtermAt(0);
-            if (m.getName().equals("static")) {
+            Term ct=m.getSubtermAt(0);            
+            if (ct.getName().equals("static")) {
                 isStatic=true;
-            }else if(m.getName().equals("all")) {
+            }else if(ct.getName().equals("all")) {
                 isAll=true;
             }
             m=m.getSubtermAt(1);
@@ -945,7 +946,11 @@ public class JavaPrinter extends AbstractPrinter {
            Term l=t.getSubtermAt(1);
            while(!l.isNil()) {
                writeIdent(level+1);
-               writeTerm(l.getSubtermAt(0),level+1);
+               Term st = t.getSubtermAt(0);
+               writeTerm(st,level+1);
+               if (st.getName().equals("LocalVariableDeclaration")) {
+                   out_.print(";");
+               }
                out_.println();
                l=l.getSubtermAt(1);
            }
@@ -1572,7 +1577,11 @@ public class JavaPrinter extends AbstractPrinter {
           writeIdent(level+1);
           Term ct=t.getSubtermAt(5);
           while(!ct.isNil()) {
-            writeTerm(ct.getSubtermAt(0),level+1);          
+            Term st=ct.getSubtermAt(0);
+            writeTerm(st,level+1); 
+            if (st.getName().equals("LocalVariableDeclaration")) {
+                out_.print(";");
+            }
             out_.println();    
             writeIdent(level+1);
             ct=ct.getSubtermAt(1);

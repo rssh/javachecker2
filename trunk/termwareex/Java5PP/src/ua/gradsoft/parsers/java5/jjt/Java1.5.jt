@@ -1611,7 +1611,7 @@ void AllocationExpression():
      jjtThis.addTerm(createNil(),1);
    }  
    if (!haveClassBody) {
-     jjtThis.addTerm(createNil(),4);
+     jjtThis.addTerm(createNil(),3);
    }
  }
 }
@@ -1812,7 +1812,7 @@ void SwitchStatement():
  Token tk=null;
 }
 {
-  "switch" "(" Expression() ")" "{"
+  tk="switch" "(" Expression() ")" "{"
     ( SwitchStatementLabelBlock() )*
   "}"
   {

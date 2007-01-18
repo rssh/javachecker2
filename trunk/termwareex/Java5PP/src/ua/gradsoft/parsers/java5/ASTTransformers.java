@@ -125,6 +125,7 @@ public class ASTTransformers {
             ||t.getName().equals("ArgumentList")
             ||t.getName().equals("TypeParameters")
             ||t.getName().equals("TypeArguments")
+            ||t.getName().equals("TypeBound")
             ||t.getName().equals("StatementExpressionList")
             ||t.getName().equals("ArrayDims")
             ||t.getName().equals("ArrayInitializer")
