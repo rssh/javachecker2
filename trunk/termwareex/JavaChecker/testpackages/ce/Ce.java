@@ -1,5 +1,5 @@
 
-package ua.kiev.gradsoft.TermWare.ce;
+package ce;
 
 
 public class Ce

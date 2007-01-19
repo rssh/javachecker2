@@ -3,7 +3,7 @@
  *
  */
 
-package testpackages.je;
+package je;
 
 import java.io.*;
 

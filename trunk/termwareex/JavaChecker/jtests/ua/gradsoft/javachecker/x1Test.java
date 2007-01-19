@@ -38,7 +38,7 @@ public class x1Test extends TestCase
         
         assertTrue(" type model for X1 must be class",x1ClassModel.isClass());
                        
-        List<JavaMethodAbstractModel> qqqModels = x1ClassModel.findMethodModels("qqq");
+        List<JavaMethodModel> qqqModels = x1ClassModel.findMethodModels("qqq");
         assertTrue("must exists qqq method models", qqqModels!=null);
         
     }
@@ -64,7 +64,7 @@ public class x1Test extends TestCase
         JavaTypeModel fileAndLineClassModel = packageModel.findTypeModel("FL");
         assertTrue("must exists type model",fileAndLineClassModel!=null);
         
-        List<JavaMethodAbstractModel> getLineModels = fileAndLineClassModel.findMethodModels("getLine");
+        List<JavaMethodModel> getLineModels = fileAndLineClassModel.findMethodModels("getLine");
         assertTrue("must exists getLine method models", getLineModels!=null);
         
     }
