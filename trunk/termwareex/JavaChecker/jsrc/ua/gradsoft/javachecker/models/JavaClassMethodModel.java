@@ -22,7 +22,7 @@ import ua.gradsoft.termware.TermWareException;
  *Model class, which based on reflection mechanizm
  * @author Ruslan Shevchenko
  */
-public class JavaClassMethodModel extends JavaMethodAbstractModel
+public class JavaClassMethodModel extends JavaMethodModel
 {
     
     /** Creates a new instance of JavaClassMethodModel */
@@ -80,7 +80,7 @@ public class JavaClassMethodModel extends JavaMethodAbstractModel
        }
        return retval;
     }
-
+ 
     
     public boolean canCheck()
     {

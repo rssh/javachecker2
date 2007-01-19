@@ -1,16 +1,15 @@
 /*
- * JavaMethodAbstractModel.java
+ * JavaMethodModel.java
  *
  * Created  23, 02, 2004, 10:00
  */
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.ITermVisitor;
 import ua.gradsoft.javachecker.Main;
@@ -29,14 +28,14 @@ import ua.gradsoft.termware.exceptions.AssertException;
  *TODO: build block model
  * @author  Ruslan Shevchenko
  */
-public class JavaTermMethodModel extends JavaMethodAbstractModel
+public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopLevelBlockOwnerModel
 {
     
     
     /**
-     * Creates a new instance of JavaMethodAbstractModel
+     * Creates a new instance of JavaMethodModel
      */
-    public JavaTermMethodModel(int modifiers, Term t, JavaTypeModel owner) throws TermWareException
+    public JavaTermMethodModel(int modifiers, Term t, JavaTermTypeAbstractModel owner) throws TermWareException
     {
         super(owner);
         t_=t;
@@ -48,6 +47,8 @@ public class JavaTermMethodModel extends JavaMethodAbstractModel
             throw new AssertException("term must be MethodDeclaration:"+TermHelper.termToString(t));
         }        
         modifiers_=new JavaModifiersModel(modifiers);
+        Term blockTerm = t.getSubtermAt(BLOCK_INDEX);        
+        blockModel_= (blockTerm.isNil() ? null : new JavaTermTopLevelBlockModel(this,blockTerm.getSubtermAt(0)));
     }
     
     
@@ -190,9 +191,23 @@ public class JavaTermMethodModel extends JavaMethodAbstractModel
         
     public Map<String,JavaFormalParameterModel> getFormalParameters() throws TermWareException
     {      
-      Term formalParametersList = getFormalParametersList();
-      return TermUtils.buildFormalParameters(formalParametersList,this);
-    }            
+      if (formalParameters_==null) {
+        Term formalParametersList = getFormalParametersList();
+        formalParameters_ = TermUtils.buildFormalParameters(formalParametersList,this);
+      }
+      return formalParameters_;
+    }        
+    
+    public List<JavaTypeModel> getFormalParametersTypes() throws TermWareException
+    {
+      Map<String,JavaFormalParameterModel> fps=getFormalParameters();
+      JavaTypeModel[] retval = new JavaTypeModel[fps.size()];
+      for(Map.Entry<String,JavaFormalParameterModel> e:fps.entrySet())
+      {
+          retval[e.getValue().getIndex()]=e.getValue().getTypeModel();
+      }
+      return Arrays.asList(retval);
+    }
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException
     {
@@ -203,7 +218,7 @@ public class JavaTermMethodModel extends JavaMethodAbstractModel
     public  Term  getMethodBody() throws TermWareException
     { return t_.getSubtermAt(BLOCK_INDEX); }
     
-    //public JavaMethodAbstractModel substituteTypeParameters(List<JavaTypeVariableAbstractModel> typeVariables, List<JavaTypeModel> values)
+    //public JavaMethodModel substituteTypeParameters(List<JavaTypeVariableAbstractModel> typeVariables, List<JavaTypeModel> values)
     //{
     //  return new JavaArgumentBoundMethodModel(this,typeVariables,values);
     //}
@@ -253,18 +268,31 @@ public class JavaTermMethodModel extends JavaMethodAbstractModel
         return modifiers_.isSynchronized();
     }
     
+    
+    
+    public JavaTermTypeAbstractModel getTermTypeAbstractModel()
+    { return (JavaTermTypeAbstractModel)getTypeModel();  }
+    
+    
     public boolean isSupportBlockModel()
     { return true; }
 
+    /**
+     *return top-level block of method or null if one is not defined.
+     *(for abstract method)
+     *@Nullable
+     */    
     public JavaTopLevelBlockModel getTopLevelBlockModel()
     { return blockModel_; }
-    
+        
     
     private String methodName_;
     private Term t_; 
-    private JavaTermTopLevelBlockModel blockModel_ =null;
-    
+    private JavaTermTopLevelBlockModel blockModel_ =null;    
     private JavaModifiersModel   modifiers_=null;    
+    
+    // some cashed valuse
+    private Map<String,JavaFormalParameterModel> formalParameters_=null;
     
     public static int TYPE_PARAMETERS_TERM_INDEX=0;
     public static int RESULT_TYPE_TERM_INDEX=1;

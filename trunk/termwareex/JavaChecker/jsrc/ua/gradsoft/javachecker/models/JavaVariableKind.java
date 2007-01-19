@@ -18,5 +18,5 @@ public enum JavaVariableKind {
     
     MEMBER_VARIABLE,
     LOCAL_VARIABLE,
-    FORMAL_PARAMETER    
+    FORMAL_PARAMETER
 }

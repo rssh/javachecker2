@@ -8,8 +8,9 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.TreeMap;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
@@ -24,7 +25,7 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     
     JavaTermEnumModel(int modifiers, Term t,JavaPackageModel packageModel) throws TermWareException {
         super(modifiers,t,packageModel);
-        constantNames_=new TreeSet<String>();
+        enumConstants_=new TreeMap<String,JavaEnumConstantModel>();
         build(t);
     }
     
@@ -62,12 +63,17 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     }
     
     public boolean  containsConstant(String name) {
-        return constantNames_.contains(name);
+        return getConstantNames().contains(name);
     }
     
     public Set<String>  getConstantNames() {
-        return constantNames_;
+        return enumConstants_.keySet();
     }
+    
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels()  {
+        return enumConstants_;
+    }
+    
     
     private void build(Term t) throws TermWareException {
         System.out.println("JavaTermEnumModel::build:"+TermHelper.termToString(t));
@@ -87,9 +93,10 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
             Term et=curr.getSubtermAt(0);
             curr=curr.getSubtermAt(1);
             if (et.getName().equals("EnumConstant")) {
-                constantNames_.add(et.getSubtermAt(0).getSubtermAt(0).getString());
-            }else if(et.getName().equals("ClassOrInterfaceBodyDeclaration")){
-                System.out.println("et="+TermHelper.termToString(et));
+                JavaTermEnumConstantModel ec = new JavaTermEnumConstantModel(et,this);
+                enumConstants_.put(ec.getName(),ec);
+                fieldModels_.put(ec.getName(),ec);
+            }else if(et.getName().equals("ClassOrInterfaceBodyDeclaration")){                
                 if (et.getArity()>0) {
                     if (et.getSubtermAt(0).getName().equals("Initializer")) {
                         addInitializer(et);
@@ -123,7 +130,8 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     }
       
     
-    private Set<String>  constantNames_;
+    private Map<String,JavaEnumConstantModel>  enumConstants_;
+
     
     private static final int QENUM_IDENTIFIER_INDEX_=0;
     private static final int IMPLEMENTS_INDEX_=1;

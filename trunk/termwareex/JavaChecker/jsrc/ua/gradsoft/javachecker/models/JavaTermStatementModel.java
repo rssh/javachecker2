@@ -44,7 +44,11 @@ public class JavaTermStatementModel implements JavaStatementModel
            childs_.add(new JavaTermStatementModel(blockModel_,t.getSubtermAt(1),this,null));
        }else if(t.getName().equals("AssertStatement")) {
            kind_=JavaStatementKind.ASSERT_STATEMENT;    
-           childs_=JavaModelConstants.STATEMENT_EMPTY_LIST;           
+           childs_=JavaModelConstants.STATEMENT_EMPTY_LIST;      
+           extractAnonimousTypes(t.getSubtermAt(0));
+           if (t.getArity() > 1) {
+               extractAnonimousTypes(t.getSubtermAt(0));
+           }
        }else if(t.getName().equals("Block")){
            kind_=JavaStatementKind.BLOCK;
            childs_=new LinkedList<JavaStatementModel>();
@@ -53,7 +57,7 @@ public class JavaTermStatementModel implements JavaStatementModel
            while(!cur.isNil()) {
                Term st=cur.getSubtermAt(0);
                cur=cur.getSubtermAt(1);
-               JavaTermStatementModel s=new JavaTermStatementModel(blockModel_,t.getSubtermAt(1),this,prevS);
+               JavaTermStatementModel s=new JavaTermStatementModel(blockModel_,st,this,prevS);
                childs_.add(s);
                prevS=s;
            }           
@@ -63,8 +67,10 @@ public class JavaTermStatementModel implements JavaStatementModel
        }else if(t.getName().equals("StatementExpressionStatement")){
            kind_=JavaStatementKind.STATEMENT_EXPRESSION_STATEMENT;
            childs_=JavaModelConstants.STATEMENT_EMPTY_LIST;           
+           extractAnonimousTypes(t.getSubtermAt(0));
        }else if(t.getName().equals("SwitchStatement")){
            kind_=JavaStatementKind.SWITCH_STATEMENT;
+           extractAnonimousTypes(t.getSubtermAt(0));
            Term switchStatementLabelBlock = t.getSubtermAt(1);
            Term l=switchStatementLabelBlock = t.getSubtermAt(0);
            JavaTermStatementModel prevS=null;
@@ -74,9 +80,10 @@ public class JavaTermStatementModel implements JavaStatementModel
                Term newBlock=TermWare.getInstance().getTermFactory().createTerm("Block",blockStatementList);
                JavaTermStatementModel s = new JavaTermStatementModel(blockModel_,newBlock,this,prevS);
                childs_.add(s);               
-           }
+           }           
        }else if(t.getName().equals("IfStatement")){
            kind_=JavaStatementKind.IF_STATEMENT;
+           extractAnonimousTypes(t.getSubtermAt(0));
            childs_=new LinkedList<JavaStatementModel>();
            Term stTrue = t.getSubtermAt(1);
            JavaTermStatementModel stm=new JavaTermStatementModel(blockModel_,stTrue,this,null);
@@ -86,19 +93,23 @@ public class JavaTermStatementModel implements JavaStatementModel
                JavaTermStatementModel stm1=new JavaTermStatementModel(blockModel_,stFalse,this,stm);
                childs_.add(stm1);
            }
+           
        }else if(t.getName().equals("WhileStatement")){
            kind_=JavaStatementKind.WHILE_STATEMENT;
+           extractAnonimousTypes(t.getSubtermAt(0));
            childs_=new LinkedList<JavaStatementModel>();
            JavaTermStatementModel stm=new JavaTermStatementModel(blockModel_,t.getSubtermAt(2),this,null);           
            childs_.add(stm);
+           
        }else if(t.getName().equals("DoStatement")){
            kind_=JavaStatementKind.DO_STATEMENT;
            childs_=new LinkedList<JavaStatementModel>();
            JavaTermStatementModel stm=new JavaTermStatementModel(blockModel_,t.getSubtermAt(0),this,null);                      
+           extractAnonimousTypes(t.getSubtermAt(1));
        }else if(t.getName().equals("ForStatement")){
            kind_=JavaStatementKind.FOR_STATEMENT;
            Term loopHead=t.getSubtermAt(0);
-           extractLocalVariableFromLoopHead(loopHead);
+           extractLocalVariableAndAnonimousTypesFromLoopHead(loopHead);          
            Term st=t.getSubtermAt(1);
        }else if(t.getName().equals("BreakStatement")){
            kind_=JavaStatementKind.BREAK_STATEMENT;
@@ -109,9 +120,13 @@ public class JavaTermStatementModel implements JavaStatementModel
        }else if(t.getName().equals("ReturnStatement")){
            kind_=JavaStatementKind.RETURN_STATEMENT;
            childs_=JavaModelConstants.STATEMENT_EMPTY_LIST;
+           if (t.getArity()>0) {
+               extractAnonimousTypes(t.getSubtermAt(0));
+           }
        }else if(t.getName().equals("ThrowStatement")){
            kind_=JavaStatementKind.THROW_STATEMENT;
            childs_=JavaModelConstants.STATEMENT_EMPTY_LIST;
+           extractAnonimousTypes(t.getSubtermAt(0));
        }else if(t.getName().equals("SynchronizedStatement")){
            kind_=JavaStatementKind.SYNCHRONIZED_STATEMENT;
            childs_=new LinkedList<JavaStatementModel>();
@@ -156,7 +171,7 @@ public class JavaTermStatementModel implements JavaStatementModel
        }else if(t.getName().equals("LocalVariableDeclaration")){
            kind_=JavaStatementKind.LOCAL_VARIABLE_DECLARATION;
            childs_=JavaModelConstants.STATEMENT_EMPTY_LIST;
-           extractLocalVariableFromLocalVariableDeclaration(t);
+           extractLocalVariablesAndAnonimousTypesFromLocalVariableDeclaration(t);           
        }else if(t.getName().equals("ClassOrInterfaceDeclaration")){
            kind_=JavaStatementKind.CLASS_OR_INTERFACE_DECLARATION;
            childs_=JavaModelConstants.STATEMENT_EMPTY_LIST;
@@ -204,7 +219,7 @@ public class JavaTermStatementModel implements JavaStatementModel
       return localType_;
     }
     
-    private void extractLocalVariableFromLoopHead(Term loopHead) throws TermWareException
+    private void extractLocalVariableAndAnonimousTypesFromLoopHead(Term loopHead) throws TermWareException
     {
         if (loopHead.getName().equals("TraditionalForLoopHead")){
            Term initTerm=loopHead.getSubtermAt(0);
@@ -212,7 +227,7 @@ public class JavaTermStatementModel implements JavaStatementModel
                return;
            }else{
                if (initTerm.getName().equals("LocalVariableDeclaration")) {
-                   extractLocalVariableFromLocalVariableDeclaration(initTerm);
+                   extractLocalVariablesAndAnonimousTypesFromLocalVariableDeclaration(initTerm);
                }else{
                    return;
                }
@@ -222,12 +237,14 @@ public class JavaTermStatementModel implements JavaStatementModel
            Term identifierTerm = loopHead.getSubtermAt(1);
            String name=identifierTerm.getName();
            localVariables_.add(new JavaTermLocalVariableModel(name,JavaLocalVariableKind.FOR_EACH_LOOP_HEAD,typeTerm,loopHead.getSubtermAt(2), this));
+           Term exprTerm = loopHead.getSubtermAt(2);
+           extractAnonimousTypes(exprTerm);
         }else{
             throw new AssertException("Invalid loop head:"+TermHelper.termToString(loopHead));
         }
     }
     
-    private void extractLocalVariableFromLocalVariableDeclaration(Term dcl) throws TermWareException
+    private void extractLocalVariablesAndAnonimousTypesFromLocalVariableDeclaration(Term dcl) throws TermWareException
     {
        Term typeTerm = dcl.getSubtermAt(1);
        Term dclList=dcl.getSubtermAt(2);
@@ -254,6 +271,7 @@ public class JavaTermStatementModel implements JavaStatementModel
            Term initTerm=TermWare.getInstance().getTermFactory().createNIL();
            if (vdcl.getArity()>1) {
                initTerm=vdcl.getSubtermAt(1);
+               extractAnonimousTypes(initTerm);
            }
            String name=identifier.getSubtermAt(0).getString();
            localVariables_.add(new JavaTermLocalVariableModel(name,JavaLocalVariableKind.LOCAL_VARIABLE_DCL,refTypeTerm,initTerm,this));
@@ -262,8 +280,8 @@ public class JavaTermStatementModel implements JavaStatementModel
     
     private void extractLocalVariableFromFormalParameter(Term fp) throws TermWareException
     {
-        Term typeTerm = fp.getSubtermAt(0);
-        Term vid = fp.getSubtermAt(1);
+        Term typeTerm = fp.getSubtermAt(1);
+        Term vid = fp.getSubtermAt(2);
         Term refTypeTerm=typeTerm;
         Term init = TermWare.getInstance().getTermFactory().createNil();
         Term idTerm;
@@ -285,6 +303,25 @@ public class JavaTermStatementModel implements JavaStatementModel
         localVariables_.add(new JavaTermLocalVariableModel(name,JavaLocalVariableKind.CATCH_EXCEPTION,refTypeTerm,init,this));        
     }
     
+    private void extractAnonimousTypes(Term expr) throws TermWareException
+    {
+      if (expr.isComplexTerm()) {
+          if (expr.getName().equals("AllocationExpression")) {
+              Term acb = expr.getSubtermAt(3);
+              if (!acb.isNil()) {
+                  JavaTermAnonimousTypeModel tm = new JavaTermAnonimousTypeModel(this,expr);
+                  // tm added to parent in constructor. so - do nothing.
+              }
+          }else{
+             // run on subterms. 
+             // possible in fututr: optimize, by knowning expression model.
+             for(int i=0; i< expr.getArity(); ++i) {
+                 extractAnonimousTypes(expr.getSubtermAt(i));
+             }
+          }
+      }
+    }
+    
     private void addLocalType(JavaTermClassOrInterfaceModel localType)
     {
       localType_=localType;      
@@ -294,11 +331,11 @@ public class JavaTermStatementModel implements JavaStatementModel
     private JavaStatementKind kind_;
     private Term              t_;
     private JavaTermTopLevelBlockModel blockModel_;
-    private JavaTermStatementModel parent_;
-    private JavaTermStatementModel previous_;
+    private JavaTermStatementModel parent_=null;
+    private JavaTermStatementModel previous_=null;
     
     private List<JavaStatementModel> childs_;
-    private List<JavaLocalVariableModel> localVariables_;
+    private List<JavaLocalVariableModel> localVariables_=new LinkedList<JavaLocalVariableModel>();
     private JavaTypeModel localType_=null;
     
 }

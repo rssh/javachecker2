@@ -126,7 +126,7 @@ public class JavaClassTypeModel extends JavaTypeModel
     if (theClass_.getSuperclass()!=null)  {
         return new JavaClassTypeModel(theClass_.getSuperclass());
     }else{
-        return JavaUnknownTypeModel.INSTANCE;
+        return JavaNullTypeModel.INSTANCE;
     }
   }
   
@@ -191,16 +191,16 @@ public class JavaClassTypeModel extends JavaTypeModel
   /**
    * key of return values is name of methods.   
    */
-  public Map<String,List<JavaMethodAbstractModel> >   getMethodModels() throws NotSupportedException
+  public Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException
   {
-     Map<String, List<JavaMethodAbstractModel> > retval = new TreeMap<String, List<JavaMethodAbstractModel> >();
+     Map<String, List<JavaMethodModel> > retval = new TreeMap<String, List<JavaMethodModel> >();
      Method[] methods = theClass_.getMethods();
      for(int i=0; i<methods.length; ++i) {
          Method m=methods[i];
          String name=m.getName();         
-         List<JavaMethodAbstractModel> methodModels=retval.get(name);
+         List<JavaMethodModel> methodModels=retval.get(name);
          if (methodModels==null) {
-             methodModels = new LinkedList<JavaMethodAbstractModel>();
+             methodModels = new LinkedList<JavaMethodModel>();
              retval.put(name,methodModels);
          }
          methodModels.add(new JavaClassMethodModel(m,this));             
@@ -210,9 +210,9 @@ public class JavaClassTypeModel extends JavaTypeModel
   }
     
   
-  public List<JavaMethodAbstractModel>  findMethodModels(String name) throws EntityNotFoundException, NotSupportedException
+  public List<JavaMethodModel>  findMethodModels(String name) throws EntityNotFoundException, NotSupportedException
   {
-    List<JavaMethodAbstractModel> methodModels = new LinkedList<JavaMethodAbstractModel>();  
+    List<JavaMethodModel> methodModels = new LinkedList<JavaMethodModel>();  
     Method[] methods = theClass_.getMethods();  
     boolean found=false;
     for(int i=0; i<methods.length; ++i) {
@@ -236,23 +236,37 @@ public class JavaClassTypeModel extends JavaTypeModel
       }
   }
   
-  public Map<String,JavaMemberVariableAbstractModel> getMemberVariableModels() throws NotSupportedException
+  public Map<String, JavaMemberVariableModel> getMemberVariableModels() throws NotSupportedException
   {
     Field[] fields=theClass_.getFields();
-    Map<String,JavaMemberVariableAbstractModel> retval = new TreeMap<String,JavaMemberVariableAbstractModel>();
+    Map<String,JavaMemberVariableModel> retval = new TreeMap<String,JavaMemberVariableModel>();
     for(int i=0; i<fields.length; ++i) {
         retval.put(fields[i].getName(),new JavaClassFieldModel(fields[i],this));
     }
     return retval;
   }
   
-  public JavaMemberVariableAbstractModel findMemberVariableModel(String name) throws EntityNotFoundException, NotSupportedException
+  public JavaMemberVariableModel findMemberVariableModel(String name) throws EntityNotFoundException, NotSupportedException
   {
     try {  
      return new JavaClassFieldModel(theClass_.getField(name),null);
     }catch(NoSuchFieldException ex){
       throw new EntityNotFoundException("Field ",name,"in "+this.getFullName());  
     }
+  }
+  
+  public Map<String,JavaEnumConstantModel>  getEnumConstantModels() throws NotSupportedException
+  {
+     if (!theClass_.isEnum()) {
+         throw new NotSupportedException();
+     }     
+     Object[] enumConstants = theClass_.getEnumConstants();
+     Map<String,JavaEnumConstantModel> retval = new TreeMap<String,JavaEnumConstantModel>();
+     for(int i=0; i<enumConstants.length; ++i) {
+         JavaClassEnumConstantModel ce = new JavaClassEnumConstantModel(enumConstants[i],this);
+         retval.put(ce.getName(),ce);
+     }
+     return retval;
   }
   
   public boolean isNested()
@@ -349,6 +363,29 @@ public class JavaClassTypeModel extends JavaTypeModel
         return retval;   
     }else if (type instanceof Class<?>) {
         Class<?> ctype = (Class<?>)type;
+        if (ctype.isPrimitive()) {
+            if (ctype.equals(Boolean.TYPE)) {
+                return JavaPrimitiveTypeModel.BOOLEAN;
+            }else if (ctype.equals(Character.TYPE)) {
+                return JavaPrimitiveTypeModel.CHAR;                
+            }else if (ctype.equals(Byte.TYPE)) {
+                return JavaPrimitiveTypeModel.BYTE;
+            }else if (ctype.equals(Short.TYPE)) {
+                return JavaPrimitiveTypeModel.SHORT;
+            }else if (ctype.equals(Integer.TYPE)) {
+                return JavaPrimitiveTypeModel.INT;
+            }else if (ctype.equals(Long.TYPE)) {
+                return JavaPrimitiveTypeModel.LONG;
+            }else if (ctype.equals(Float.TYPE)) {
+                return JavaPrimitiveTypeModel.FLOAT;
+            }else if (ctype.equals(Double.TYPE)) {
+                return JavaPrimitiveTypeModel.DOUBLE;
+            }else if (ctype.equals(Void.TYPE)) {
+                return JavaPrimitiveTypeModel.VOID;
+            }else{
+                throw new AssertException("Invalid primitive type:"+ctype.getName());
+            }
+        }
         return new JavaClassTypeModel(ctype);
     }else{
         throw new AssertException("Impossible Java type");

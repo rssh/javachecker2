@@ -69,6 +69,7 @@ public class JavaPackageModel {
        }
        // get types       
        while (i<compilationUnit.getArity() && !inImport) {
+           t=compilationUnit.getSubtermAt(i);
            JavaTypeModel javaTypeModel=null;          
            if (t.getName().equals("TypeDeclaration")) {
              if (t.getArity()>0) {  
@@ -90,8 +91,9 @@ public class JavaPackageModel {
                  if (ref.getTypeModelRef()==null) {
                      ref.setTypeModelRef(javaTypeModel);
                  }  
-               }
+               }               
                compilationUnitModel.addTypeModel(javaTypeModel);               
+               javaTypeModel.setUnitModel(compilationUnitModel);
              }
            }else{
                throw new AssertException("TypeDeclaration expected");
@@ -122,11 +124,14 @@ public class JavaPackageModel {
       
       // 2. try to load from source directories
       boolean found=false;
-      for(String inputDir: owner_.getPackagesStore().getSourceDirs()) {
+      
+      for(String inputDir: owner_.getPackagesStore().getSourceDirs()) {          
           String directory = JUtils.createDirectoryNameFromPackageName(inputDir,this.getName());
           String resource = JUtils.createSourceFileNameFromClassName(name);
           String fname=directory+File.separator+resource;
+          
           File f = new File(fname);
+          //System.err.println("try to read file:"+f.getAbsolutePath());
           if (f.exists()) {
               Term t=JUtils.readSourceFile(f);
               JavaCompilationUnitModel cu = new JavaCompilationUnitModel(fname);

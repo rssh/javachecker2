@@ -46,8 +46,8 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
           }
         }
 
-        methodModels_=new TreeMap<String,List<JavaMethodAbstractModel> >();
-        fieldModels_=new TreeMap<String,JavaMemberVariableAbstractModel>();
+        methodModels_=new TreeMap<String,List<JavaMethodModel> >();
+        fieldModels_=new TreeMap<String,JavaMemberVariableModel>();
         nestedTypes_=new TreeMap<String,JavaTypeModel>();
         constructors_=new LinkedList<JavaTermConstructorModel>();
         typeVariables_=new LinkedList<JavaTypeVariableAbstractModel>();
@@ -98,13 +98,13 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
       }
 
       
-      for(List<JavaMethodAbstractModel> l : methodModels_.values()) {
-          for(JavaMethodAbstractModel m: l) {
+      for(List<JavaMethodModel> l : methodModels_.values()) {
+          for(JavaMethodModel m: l) {
               retval &= m.check();
           }
       }  
       
-      for(JavaMemberVariableAbstractModel f: fieldModels_.values()) {
+      for(JavaMemberVariableModel f: fieldModels_.values()) {
           retval &= f.check();
       }
       
@@ -120,7 +120,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
         return true;
     }
     
-    public Map<String,List<JavaMethodAbstractModel> > getMethodModels() throws NotSupportedException
+    public Map<String, List<JavaMethodModel>> getMethodModels() throws NotSupportedException
     {
         return methodModels_;
     }
@@ -128,7 +128,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     public boolean hasMemberVariableModels()
     { return true; }
     
-    public Map<String,JavaMemberVariableAbstractModel> getMemberVariableModels()
+    public Map<String, JavaMemberVariableModel> getMemberVariableModels()
     { return fieldModels_; }
 
     public boolean isNested()
@@ -297,11 +297,11 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     
     public void addMethodDeclaration(int modifiers, Term methodDeclaration) throws TermWareException
     {                       
-     JavaMethodAbstractModel methodModel=new JavaTermMethodModel(modifiers,methodDeclaration,this);
+     JavaMethodModel methodModel=new JavaTermMethodModel(modifiers,methodDeclaration,this);
      String methodName=methodModel.getName();
-     List<JavaMethodAbstractModel> l=methodModels_.get(methodName);                 
+     List<JavaMethodModel> l=methodModels_.get(methodName);                 
      if (l==null) {
-         l=new LinkedList<JavaMethodAbstractModel>();
+         l=new LinkedList<JavaMethodModel>();
          methodModels_.put(methodName,l);
      }
      l.add(methodModel);
@@ -384,14 +384,14 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     protected List<JavaTypeModel>  resolvedSuperInterfaces_ = null;
     
     
-    private JavaTypeModel parentType_=null;
-    private TreeMap<String,List<JavaMethodAbstractModel> > methodModels_;
-    private TreeMap<String,JavaMemberVariableAbstractModel> fieldModels_;
-    private List<JavaTermInitializerModel>                  initializers_;
-    private List<JavaTermConstructorModel>                  constructors_;
-    private List<JavaTypeVariableAbstractModel>             typeVariables_;
+    protected JavaTypeModel parentType_=null;
+    protected TreeMap<String, List<JavaMethodModel>> methodModels_;
+    protected TreeMap<String, JavaMemberVariableModel> fieldModels_;
+    protected List<JavaTermInitializerModel>                  initializers_;
+    protected List<JavaTermConstructorModel>                  constructors_;
+    protected List<JavaTypeVariableAbstractModel>             typeVariables_;
     
-    private TreeMap<String,JavaTypeModel>                   nestedTypes_;
+    protected TreeMap<String,JavaTypeModel>                   nestedTypes_;
    
     
     private JavaModifiersModel modifiers_;

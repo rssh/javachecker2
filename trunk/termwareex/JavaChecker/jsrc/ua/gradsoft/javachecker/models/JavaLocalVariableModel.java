@@ -10,6 +10,8 @@
 
 package ua.gradsoft.javachecker.models;
 
+import ua.gradsoft.termware.TermWareException;
+
 /**
  *Model for java local variable, defined in block.
  * @author Ruslan Shevchenko
@@ -19,7 +21,7 @@ public interface JavaLocalVariableModel extends JavaVariableModel
 
     public String getName();
     
-    public JavaTypeModel  getTypeModel();
+    public JavaTypeModel  getTypeModel() throws TermWareException;
         
     public JavaStatementModel getStatement();
     

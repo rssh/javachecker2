@@ -124,34 +124,44 @@ public abstract class JavaTypeModel {
   public abstract boolean hasMethodModels();
     
   /**
-   * key of return values is name of methods.  
+   * key of return values are names of methods.  
    *When type is unappropriative for methods (example - TypeVariable) throws NotSupportedException 
    */
-  public abstract Map<String,List<JavaMethodAbstractModel> >   getMethodModels() throws NotSupportedException;
+  public abstract Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException;
     
   
-  public List<JavaMethodAbstractModel>  findMethodModels(String name) throws EntityNotFoundException, NotSupportedException
+  public List<JavaMethodModel>  findMethodModels(String name) throws EntityNotFoundException, NotSupportedException
   {
-    List<JavaMethodAbstractModel> retval=getMethodModels().get(name);
+    List<JavaMethodModel> retval=getMethodModels().get(name);
     if (retval==null) {
-        throw new EntityNotFoundException("Method",name," in"+this.getFullName());
+        throw new EntityNotFoundException("method",name, " in"+this.getFullName());
     }
     return retval;
   }
 
   public abstract boolean hasMemberVariableModels();
   
-  public abstract Map<String,JavaMemberVariableAbstractModel> getMemberVariableModels() throws NotSupportedException;
+  /***
+   * key of return values are names of member variables.
+   *When type is unappropriative for methods - throws NotSupportedException
+   */
+  public abstract Map<String, JavaMemberVariableModel> getMemberVariableModels() throws NotSupportedException;
   
   
-  public JavaMemberVariableAbstractModel findMemberVariableModel(String name) throws EntityNotFoundException, NotSupportedException
+  public JavaMemberVariableModel findMemberVariableModel(String name) throws EntityNotFoundException, NotSupportedException
   {
-    JavaMemberVariableAbstractModel retval=getMemberVariableModels().get(name);
+    JavaMemberVariableModel retval=getMemberVariableModels().get(name);
     if (retval==null) {
         throw new EntityNotFoundException("Member variable",name,"in "+this.getFullName());
     }
     return retval;
   }
+  
+  /***
+   * key of return values are names of enum constants.
+   *When type is not enum - throws NotSupportedException
+   */  
+  public abstract Map<String,JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException;
   
   /**
    * return true if this type is nested inside some other type.

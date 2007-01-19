@@ -22,7 +22,11 @@ import ua.gradsoft.termware.TermWareException;
  */
 public class JavaTermTopLevelBlockModel implements JavaTopLevelBlockModel
 {
-    
+
+   /**
+    * build top level block.
+    *t must be a list of sequences. 
+    */ 
    public JavaTermTopLevelBlockModel(JavaTermTopLevelBlockOwnerModel owner, Term t) throws TermWareException
    {
      owner_=owner;      
@@ -45,13 +49,12 @@ public class JavaTermTopLevelBlockModel implements JavaTopLevelBlockModel
       return statements_;   
     }
        
+    
     private void build(Term t) throws TermWareException
-    {
-      //System.err.println("build top level block:"+TermHelper.termToString(t));
+    {      
       JavaTermStatementModel prevS=null;  
       while(!t.isNil()) {
-          Term statementTerm = t.getSubtermAt(0);
-          //System.err.println("Statement term:"+TermHelper.termToString(statementTerm));
+          Term statementTerm = t.getSubtermAt(0);          
           t=t.getSubtermAt(1);
           JavaTermStatementModel ts = new JavaTermStatementModel(this,statementTerm,null,prevS);
           statements_.add(ts);

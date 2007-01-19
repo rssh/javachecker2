@@ -68,11 +68,18 @@ public class JavaCompilationUnitModel extends JavaUnitModel
               String className=JUtils.getJavaNameAsString(nameTerm);
               staticClassImports_.add(className);
           }else if(isStatic && !isAll){
-              if (true) {
-                throw new RuntimeException("Error: package name now list, needs rewriting");
-              }
-              String methodName=nameTerm.getSubtermAt(nameTerm.getArity()-1).getSubtermAt(0).getName();
-              String className=JUtils.getJavaNameAsString(nameTerm,nameTerm.getArity()-1);
+              int lastIndex=0;
+              Term curr=nameTerm.getSubtermAt(0);
+              String methodName=null;
+              while(!curr.isNil()) {
+                  if (curr.getSubtermAt(1).isNil()) {
+                      methodName=curr.getSubtermAt(0).getSubtermAt(0).getString();
+                  }else{
+                      ++lastIndex;
+                  }
+                  curr=curr.getSubtermAt(1);
+              }              
+              String className=JUtils.getJavaNameAsString(nameTerm,lastIndex);
               staticMethodImports_.put(methodName,className);
           }else if(!isStatic && isAll){
               String packageName=JUtils.getJavaNameAsString(nameTerm);    
@@ -102,7 +109,7 @@ public class JavaCompilationUnitModel extends JavaUnitModel
      * key is method name, value is full import class names.
      *i.e. (PI, java.lang.Math)
      */
-    public  Map<String,String>  getStaticMethodImports()
+    public  Map<String,String>  getStaticMemberImports()
     { return staticMethodImports_; }
     
     /**

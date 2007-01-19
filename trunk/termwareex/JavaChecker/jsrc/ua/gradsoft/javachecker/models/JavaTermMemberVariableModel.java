@@ -19,7 +19,7 @@ import ua.gradsoft.termware.exceptions.AssertException;
  *Model for java Member variable.
  * @author  Ruslan Shevchenko
  */
-public class JavaTermMemberVariableModel extends JavaMemberVariableAbstractModel
+public class JavaTermMemberVariableModel extends JavaMemberVariableModel
 {
     
     /**

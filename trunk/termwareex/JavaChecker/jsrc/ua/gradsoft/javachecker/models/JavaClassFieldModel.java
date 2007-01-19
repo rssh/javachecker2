@@ -16,7 +16,7 @@ import ua.gradsoft.termware.TermWareException;
  *Model for field of class
  * @author Ruslan Shevchenko
  */
-public class JavaClassFieldModel extends JavaMemberVariableAbstractModel
+public class JavaClassFieldModel extends JavaMemberVariableModel
 {
     
     /** Creates a new instance of JavaClassFieldModel */

@@ -6,8 +6,8 @@
 
 package ua.gradsoft.javachecker.models;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
@@ -141,6 +141,11 @@ public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
     
     public boolean isEnum() {
         return false; }
+
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
+        throw new NotSupportedException();
+    }
+    
     
     public boolean isAnnotationType() {
         return false; }
@@ -181,14 +186,14 @@ public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
        boolean overloadedHashCode=true;
        if (getJavaFacts().isCheckEnabled("OverloadedEqualsAndHashCode")) {
            try {
-             List<JavaMethodAbstractModel> eml=this.findMethodModels("equals");      
+             List<JavaMethodModel> eml=this.findMethodModels("equals");      
            }catch(EntityNotFoundException ex){
                overloadedEquals=false;
            }catch(NotSupportedException ex){
               ; /*impossible*/
            }
            try {
-               List<JavaMethodAbstractModel> hml=findMethodModels("hashCode");
+               List<JavaMethodModel> hml=findMethodModels("hashCode");
            }catch(EntityNotFoundException ex){
                overloadedHashCode=false;
            }catch(NotSupportedException ex){
@@ -244,6 +249,6 @@ public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
     public static int EXTENDS_TERM_INDEX=3;
     public static int IMPLEMENTS_TERM_INDEX=4;
     public static int CLASS_OR_INTERFACE_BODY_INDEX=5;
-    
-    
+        
+
 }

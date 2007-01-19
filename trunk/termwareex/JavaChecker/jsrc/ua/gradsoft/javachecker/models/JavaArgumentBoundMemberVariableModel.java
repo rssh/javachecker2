@@ -14,12 +14,12 @@ import ua.gradsoft.termware.TermWareException;
  *Member value, bound by type arument
  * @author Ruslan Shevchenko
  */
-public class JavaArgumentBoundMemberVariableModel extends JavaMemberVariableAbstractModel
+public class JavaArgumentBoundMemberVariableModel extends JavaMemberVariableModel
 {
     
     
     /** Creates a new instance of JavaArgumentBoundTypeVariableModel */
-    public JavaArgumentBoundMemberVariableModel(JavaArgumentBoundTypeModel newOwner, JavaMemberVariableAbstractModel origin) 
+    public JavaArgumentBoundMemberVariableModel(JavaArgumentBoundTypeModel newOwner, JavaMemberVariableModel origin) 
     {
        origin_=origin;
     }
@@ -50,7 +50,7 @@ public class JavaArgumentBoundMemberVariableModel extends JavaMemberVariableAbst
     public boolean check()
     { return true; }
     
-    private JavaMemberVariableAbstractModel origin_;
+    private JavaMemberVariableModel origin_;
     private JavaArgumentBoundTypeModel      owner_;
     
 }

@@ -13,6 +13,7 @@ package ua.gradsoft.javachecker.models;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import ua.gradsoft.termware.TermWareException;
 
 /**
  *
@@ -90,7 +91,7 @@ public class JavaArgumentBoundStatementModel implements JavaStatementModel
     /**
      *get local type, defined in this statements.
      */
-    public JavaTypeModel getLocalType()
+    public JavaTypeModel getLocalType()  throws TermWareException
     {
       return blockModel_.getSubstitution().substitute(origin_.getLocalType());  
     }

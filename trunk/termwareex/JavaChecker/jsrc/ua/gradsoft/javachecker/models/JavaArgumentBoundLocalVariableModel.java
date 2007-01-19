@@ -10,6 +10,8 @@
 
 package ua.gradsoft.javachecker.models;
 
+import ua.gradsoft.termware.TermWareException;
+
 /**
  *Local variable with type substitutions.
  * @author Ruslan Shevchenko
@@ -35,7 +37,7 @@ public class JavaArgumentBoundLocalVariableModel implements JavaLocalVariableMod
       return origin_.getKind();  
     }
     
-    public JavaTypeModel  getTypeModel()
+    public JavaTypeModel  getTypeModel() throws TermWareException
     { 
         return statement_.getArgumentBoundTopLevelBlockModel().getSubstitution().substitute(origin_.getTypeModel());
     }

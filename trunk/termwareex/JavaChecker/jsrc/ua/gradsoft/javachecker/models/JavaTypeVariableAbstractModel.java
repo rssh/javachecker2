@@ -106,7 +106,7 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     /**
      * throws NotSupportedException
      */
-    public Map<String,List<JavaMethodAbstractModel> >   getMethodModels() throws NotSupportedException {
+    public Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException {
         throw new NotSupportedException();
     }
     
@@ -114,9 +114,16 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     public boolean hasMemberVariableModels() {
         return false; }
     
-    public Map<String,JavaMemberVariableAbstractModel> getMemberVariableModels() throws NotSupportedException {
+    public Map<String, JavaMemberVariableModel> getMemberVariableModels() throws NotSupportedException {
         throw new NotSupportedException(); }
-    
+
+    /**
+     * throws NotSupportedException
+     */
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
+        throw new NotSupportedException();
+    }
+       
     
     public boolean isNested() {
         return false; }
@@ -144,4 +151,5 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() {
         return new LinkedList<JavaTypeVariableAbstractModel>();
     }
+
 }

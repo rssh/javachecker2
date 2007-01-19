@@ -47,6 +47,14 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         createTermTypeArguments(resolvedTypeArguments);
     }
     
+    public JavaArgumentBoundTypeModel(JavaTypeModel origin,JavaTypeArgumentsSubstitution substitution) throws TermWareException
+    {
+      super(origin.getPackageModel());
+      origin_=origin;
+      substitution_=substitution;
+      resolvedTypeArguments_=substitution_.substitute(origin_.getTypeParameters());
+    }
+    
     
     public String getName() {
         String sTypeArguments=null;
@@ -151,14 +159,14 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
     
     
     
-    public  Map<String,List<JavaMethodAbstractModel> >   getMethodModels() throws NotSupportedException {
+    public  Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException {
         if (boundMethodModels_!=null) {
             return boundMethodModels_;
         }
-        Map<String,List<JavaMethodAbstractModel> > retval = new HashMap<String,List<JavaMethodAbstractModel> >();
-        for(Map.Entry<String,List<JavaMethodAbstractModel> > me: origin_.getMethodModels().entrySet()) {
-            LinkedList<JavaMethodAbstractModel> mappedList=new LinkedList<JavaMethodAbstractModel>();
-            for(JavaMethodAbstractModel cm : me.getValue()) {
+        Map<String,List<JavaMethodModel> > retval = new HashMap<String,List<JavaMethodModel> >();
+        for(Map.Entry<String, List<JavaMethodModel>> me: origin_.getMethodModels().entrySet()) {
+            LinkedList<JavaMethodModel> mappedList=new LinkedList<JavaMethodModel>();
+            for(JavaMethodModel cm : me.getValue()) {
                 JavaClassArgumentBoundMethodModel mm=new JavaClassArgumentBoundMethodModel(this,cm);
                 mappedList.add(mm);
             }
@@ -172,18 +180,24 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
     public boolean hasMemberVariableModels() {
         return origin_.hasMemberVariableModels(); }
     
-    public Map<String,JavaMemberVariableAbstractModel> getMemberVariableModels() throws NotSupportedException {
+    public Map<String, JavaMemberVariableModel> getMemberVariableModels() throws NotSupportedException {
         if (boundMemberVariables_!=null) {
             return boundMemberVariables_;
         }
-        Map<String,JavaMemberVariableAbstractModel> retval=new HashMap<String,JavaMemberVariableAbstractModel>();
-        for(JavaMemberVariableAbstractModel c : origin_.getMemberVariableModels().values()) {
+        Map<String,JavaMemberVariableModel> retval=new HashMap<String,JavaMemberVariableModel>();
+        for(JavaMemberVariableModel c : origin_.getMemberVariableModels().values()) {
             JavaArgumentBoundMemberVariableModel mc=new JavaArgumentBoundMemberVariableModel(this,c);
             retval.put(mc.getName(),mc);
         }
         boundMemberVariables_=retval;
         return retval;
     }
+
+    
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException
+    {
+      return origin_.getEnumConstantModels();
+    }    
     
     public boolean isNested() {
         return origin_.isNested();
@@ -364,8 +378,8 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
     private JavaTypeModel  boundSuperClassModel_=null;
     private List<JavaTypeModel>  boundSuperInterfacesModels_=null;
     
-    private Map<String,List<JavaMethodAbstractModel> >   boundMethodModels_=null;
-    private Map<String,JavaMemberVariableAbstractModel > boundMemberVariables_=null;
+    private Map<String, List<JavaMethodModel>>   boundMethodModels_=null;
+    private Map<String, JavaMemberVariableModel> boundMemberVariables_=null;
     private Term          typeArguments_;
     private JavaTypeModel where_;
     private JavaTypeArgumentsSubstitution substitution_;

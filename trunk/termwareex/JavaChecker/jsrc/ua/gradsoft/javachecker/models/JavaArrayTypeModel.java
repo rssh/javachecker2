@@ -104,15 +104,19 @@ public class JavaArrayTypeModel extends JavaTypeModel
   /**
    * key of return values is name of methods.   
    */
-  public Map<String,List<JavaMethodAbstractModel> >   getMethodModels() throws NotSupportedException
+  public Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException
   { throw new NotSupportedException(); }
         
   public boolean hasMemberVariableModels()
   { return false; }
   
-  public Map<String,JavaMemberVariableAbstractModel> getMemberVariableModels() throws NotSupportedException
+  public Map<String, JavaMemberVariableModel> getMemberVariableModels() throws NotSupportedException
   { throw new NotSupportedException(); }        
-    
+
+  public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
+      throw new NotSupportedException();
+    }
+  
   public boolean isNested()
   { return false; }
   
@@ -136,7 +140,8 @@ public class JavaArrayTypeModel extends JavaTypeModel
   { return false; }
   
   public JavaStatementModel getEnclosedStatement()
-  { return null; }
+  { return null; } 
   
     private JavaTypeModel referencedType_;
+
 }

@@ -1,5 +1,5 @@
 /*
- * JavaMemberVariableAbstractModel.java
+ * JavaMemberVariableModel.java
  *
  * Copyright (c) 2004-2005 GradSoft  Ukraine
  * All Rights Reserved
@@ -14,7 +14,7 @@ import ua.gradsoft.termware.TermWareException;
  *Abstract model for member variable.
  * @author Ruslan Shevchenko
  */
-public abstract class JavaMemberVariableAbstractModel implements JavaVariableModel
+public abstract class JavaMemberVariableModel implements JavaVariableModel
 {
     
     public abstract JavaModifiersModel getModifiersModel();

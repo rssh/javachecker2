@@ -42,19 +42,19 @@ public class JavaPlaceContext {
     /**
      * get method, inside which we situated.
      */
-    public  JavaMethodAbstractModel  getMethodModel()
+    public  JavaMethodModel  getMethodModel()
     {
       return methodModel_;  
     }
     
-    public void setMethodModel(JavaMethodAbstractModel methodModel)
+    public void setMethodModel(JavaMethodModel methodModel)
     {
       methodModel_=methodModel;  
     }
     
     private JavaPackageModel  packageModel_=null;
     private JavaTypeModel     typeModel_=null;
-    private JavaMethodAbstractModel   methodModel_=null;
+    private JavaMethodModel   methodModel_=null;
     
     
 }

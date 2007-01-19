@@ -25,6 +25,11 @@ import ua.gradsoft.termware.exceptions.AssertException;
  */
 public class JavaTypeArgumentsSubstitution {
     
+    public JavaTypeArgumentsSubstitution()
+    {
+     map_=new TreeMap<JavaTypeVariableAbstractModel,JavaTypeModel>(TypeVariableComparator.INSTANCE);   
+    }
+    
     public JavaTypeArgumentsSubstitution(List<JavaTypeVariableAbstractModel> typeVariables,
                                          List<JavaTypeModel> typeValues) throws TermWareException
     {
@@ -63,12 +68,34 @@ public class JavaTypeArgumentsSubstitution {
       }
     }
     
-    public JavaTypeModel substitute(JavaTypeModel x)
+    public JavaTypeModel substitute(JavaTypeModel x) throws TermWareException
     {
-      throw new RuntimeException("Not implemented");  
+      if (x.isTypeArgument()) {
+          JavaTypeVariableAbstractModel m = (JavaTypeVariableAbstractModel)x;
+          JavaTypeModel sx = get(m);
+          return (sx!=null) ? sx : x;
+      }else if(x.isWildcardBounds()){
+          JavaWildcardBoundsTypeModel wx=(JavaWildcardBoundsTypeModel)x;
+          if (wx.getKind()!=JavaWildcardBoundsKind.OBJECT) {
+              JavaTypeModel bound = wx.getBoundTypeModel();
+              JavaTypeModel substitutedBound = substitute(bound);
+              if (bound==substitutedBound) {
+                  return wx;
+              }else{
+                  return new JavaWildcardBoundsTypeModel(wx.getKind(),substitutedBound);
+              }
+          }
+      }else if(x.hasTypeParameters()) {
+         // List<JavaTypeVariableAbstractModel> tps = x.getTypeParameters();
+         // boolean changed=true;          
+          return new JavaArgumentBoundTypeModel(x,this);          
+      }else{
+          return x;
+      }
+      return x;
     }
     
-    public List<JavaTypeModel>  substitute(List<JavaTypeModel> l)
+    public List<JavaTypeModel>  substitute(List<? extends JavaTypeModel> l) throws TermWareException
     {
       ArrayList<JavaTypeModel> retval = new ArrayList<JavaTypeModel>(l.size());  
       for(JavaTypeModel t: l){
@@ -77,17 +104,19 @@ public class JavaTypeArgumentsSubstitution {
       return retval;
     }
     
-    public List<JavaTypeVariableAbstractModel>  substituteTypeVariables(List<JavaTypeVariableAbstractModel> l)
+    
+    /**
+     *@return substitition for x or null if one is not found
+     */
+    public JavaTypeModel get(JavaTypeVariableAbstractModel x)
     {
-      ArrayList<JavaTypeVariableAbstractModel> retval = new ArrayList<JavaTypeVariableAbstractModel>(l.size());    
-      for(JavaTypeVariableAbstractModel t: l){
-          JavaTypeModel m = substitute(t);
-          // result of TypeVariable substitution is always Type Variable
-          retval.add((JavaTypeVariableAbstractModel)m);
-      }
-      return retval;      
+      return map_.get(x);  
     }
     
+    public void put(JavaTypeVariableAbstractModel v,JavaTypeModel t)
+    {
+      map_.put(v,t);  
+    }
     
     static class TypeVariableComparator implements Comparator<JavaTypeVariableAbstractModel>
     {

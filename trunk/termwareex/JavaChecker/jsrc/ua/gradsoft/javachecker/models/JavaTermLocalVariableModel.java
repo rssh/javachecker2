@@ -10,7 +10,9 @@
 
 package ua.gradsoft.javachecker.models;
 
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermWareException;
 
 /**
  *Model of local variable.
@@ -35,7 +37,11 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
     public JavaVariableKind getKind()
     { return JavaVariableKind.LOCAL_VARIABLE; }
     
-    public JavaTypeModel getTypeModel()
+    /**
+     * get type model.
+     *(if type can't be resolved - return JavaUnknonwTypeModel.INSTANCE)
+     */
+    public JavaTypeModel getTypeModel() throws TermWareException
     { return resolveType(); }
     
     public JavaStatementModel getStatement()
@@ -44,9 +50,13 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
     public boolean isForHead()
     { return statement_.getKind()==JavaStatementKind.FOR_STATEMENT; }
     
-    private JavaTypeModel resolveType()
+    private JavaTypeModel resolveType() throws TermWareException
     {
-      throw new RuntimeException("Not Implemented");
+      try {  
+        return JavaResolver.resolveTypeToModel(typeTerm_,statement_);
+      }catch(EntityNotFoundException ex){
+          return JavaUnknownTypeModel.INSTANCE;
+      }
     }
     
     private String name_;

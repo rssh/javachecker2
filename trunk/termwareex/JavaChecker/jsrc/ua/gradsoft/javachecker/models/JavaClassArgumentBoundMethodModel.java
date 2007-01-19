@@ -19,11 +19,11 @@ import ua.gradsoft.termware.TermWareException;
  *Java method, whith argument bounds of subclass.
  * @author Ruslan Shevchenko
  */
-public class JavaClassArgumentBoundMethodModel extends JavaMethodAbstractModel implements JavaArgumentBoundTopLevelBlockOwnerModel
+public class JavaClassArgumentBoundMethodModel extends JavaMethodModel implements JavaArgumentBoundTopLevelBlockOwnerModel
 {
     
     /** Creates a new instance of JavaArgumentBoundToTypeMethodModel */
-    public JavaClassArgumentBoundMethodModel(JavaArgumentBoundTypeModel typeModel,JavaMethodAbstractModel origin) {
+    public JavaClassArgumentBoundMethodModel(JavaArgumentBoundTypeModel typeModel,JavaMethodModel origin) {
         super(typeModel);
         origin_=origin;
     }
@@ -64,6 +64,12 @@ public class JavaClassArgumentBoundMethodModel extends JavaMethodAbstractModel i
        return retval;
     }
     
+    public List<JavaTypeModel> getFormalParametersTypes() throws TermWareException
+    {
+      List<JavaTypeModel> ofps = origin_.getFormalParametersTypes();         
+      return getArgumentBoundTypeModel().getSubstitution().substitute(ofps);
+    }
+    
     public boolean canCheck()
     { return false; }
     
@@ -83,7 +89,7 @@ public class JavaClassArgumentBoundMethodModel extends JavaMethodAbstractModel i
                                              );
     }
     
-    private JavaMethodAbstractModel origin_;
+    private JavaMethodModel origin_;
     private JavaTypeModel    resultType_=null;
     private List<JavaTypeModel> formalParametersTypes_=null;
     

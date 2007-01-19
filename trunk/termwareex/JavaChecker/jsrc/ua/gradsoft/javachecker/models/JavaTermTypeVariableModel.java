@@ -15,6 +15,7 @@ import ua.gradsoft.javachecker.FileAndLine;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -47,8 +48,13 @@ public class JavaTermTypeVariableModel extends JavaTypeVariableAbstractModel
         }
     }
     
+    /**
+     *addTypeBound.
+     *t must be in form "TypeBound([b1,b2,...])"
+     */
     private void addTypeBounds(Term t,JavaTypeModel where) throws TermWareException
-    {
+    {     
+      t=t.getSubtermAt(0);
       while(!t.isNil()) {
           Term classOrInterfaceType=t.getSubtermAt(0);
           t=t.getSubtermAt(1);

@@ -10,7 +10,9 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
@@ -52,6 +54,11 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
     public boolean isEnum()
     { return false; }
 
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
+        throw new NotSupportedException();
+    }
+
+    
     public boolean isInterface()
     { return false; }
     
@@ -72,6 +79,10 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
              superTypeModel=JavaResolver.resolveTypeToModel(extendsOrImplements,statement_);
           }catch(EntityNotFoundException ex){
               superTypeModel=JavaUnknownTypeModel.INSTANCE;
+          }
+          Term ta=t_.getSubtermAt(TYPE_ARGUMENTS_TERM_INDEX);
+          if (!ta.isNil()) {
+              superTypeModel = new JavaArgumentBoundTypeModel(superTypeModel,ta,this);
           }
           if (superTypeModel.isInterface()) {
               this.addSuperInterface(extendsOrImplements);
@@ -129,6 +140,9 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
     
     public static final int CLASS_OR_INTERFACE_TERM_INDEX=0;
     public static final int TYPE_ARGUMENTS_TERM_INDEX=1;
-    public static final int CLASS_OR_INTEFACE_BODY_TERM_INDEX=4;
+    public static final int CLASS_OR_INTEFACE_BODY_TERM_INDEX=3;
+    
+    
+
     
 }

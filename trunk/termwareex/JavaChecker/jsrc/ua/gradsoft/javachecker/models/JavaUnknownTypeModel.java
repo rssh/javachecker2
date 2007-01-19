@@ -127,7 +127,7 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     /**
      * throws NotSupportedException
      */
-    public Map<String,List<JavaMethodAbstractModel> >   getMethodModels() throws NotSupportedException
+    public Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException
     {
         throw new NotSupportedException();
     }
@@ -139,7 +139,7 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
       return false;  
     }
     
-    public Map<String, JavaMemberVariableAbstractModel> getMemberVariableModels() throws NotSupportedException
+    public Map<String, JavaMemberVariableModel> getMemberVariableModels() throws NotSupportedException
     {
         throw new NotSupportedException();
     }
@@ -158,6 +158,14 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     {
       throw new NotSupportedException();  
     }
+
+    /**
+     * throw NotSupportedException
+     */ 
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
+        throw new NotSupportedException();  
+    }
+    
     
     public boolean hasTypeParameters()
     { return false; }
@@ -168,5 +176,8 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     }        
     
     static final public JavaUnknownTypeModel INSTANCE = new JavaUnknownTypeModel();
+    
+    
+
     
 }

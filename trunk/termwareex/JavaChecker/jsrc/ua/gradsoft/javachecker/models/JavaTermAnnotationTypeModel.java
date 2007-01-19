@@ -18,6 +18,7 @@ import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *Model of annotation type which holds term.
+ *TODO: build body. now body is not build at all.
  * @author Ruslan Shevchenko
  */
 public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
@@ -26,6 +27,7 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
     public JavaTermAnnotationTypeModel(int modifiers, Term t, JavaPackageModel packageModel) throws TermWareException
     {
       super(modifiers,t,packageModel);
+      name_=t.getSubtermAt(0).getSubtermAt(0).getString();
     }
     
     public boolean isClass()
@@ -66,13 +68,20 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
     { return JavaModelConstants.TYPEMODEL_EMPTY_LIST; }
     
     
-    public Map<String,List<JavaMethodAbstractModel> > getMethodModels() throws NotSupportedException
+    public Map<String, List<JavaMethodModel>> getMethodModels() throws NotSupportedException
     {
       throw new NotSupportedException();
     }
+
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
+        throw new NotSupportedException();
+    }
+    
+    
     
     public boolean hasTypeParameters()
     { return false; }
+
     
     
 }

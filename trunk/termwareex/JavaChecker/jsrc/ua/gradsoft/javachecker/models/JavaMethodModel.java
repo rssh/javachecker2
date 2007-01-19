@@ -1,5 +1,5 @@
 /*
- * JavaMethodAbstractModel.java
+ * JavaMethodModel.java
  *
  * Created on п'€тниц€, 27, лютого 2004, 12:27
  */
@@ -15,13 +15,13 @@ import ua.gradsoft.termware.TermWareException;
  * Model for method
  * @author  Ruslan Shevchenko
  */
-public abstract class JavaMethodAbstractModel implements JavaTopLevelBlockOwnerModel 
+public abstract class JavaMethodModel implements JavaTopLevelBlockOwnerModel 
 {
     
     /**
-     * Creates a new instance of JavaMethodAbstractModel
+     * Creates a new instance of JavaMethodModel
      */
-    public JavaMethodAbstractModel(JavaTypeModel typeModel) 
+    public JavaMethodModel(JavaTypeModel typeModel) 
     {
      typeModel_=typeModel;
     }
@@ -33,8 +33,11 @@ public abstract class JavaMethodAbstractModel implements JavaTopLevelBlockOwnerM
     public abstract List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException;
  
     public abstract JavaTypeModel  getResultType() throws TermWareException;
-        
+    
+    public abstract List<JavaTypeModel> getFormalParametersTypes() throws TermWareException;
+    
     public abstract Map<String,JavaFormalParameterModel>  getFormalParameters() throws TermWareException;
+        
     
     public abstract boolean canCheck();
     
