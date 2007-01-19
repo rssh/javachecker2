@@ -20,6 +20,6 @@ public class EntityNotFoundException extends Exception {
      * @param msg the detail message.
      */
     public EntityNotFoundException(String entityType, String entityName, String msg) {
-        super("entity "+entityName +" ("+entityName+") is not found "+msg);
+        super("entity "+entityName +" ("+entityType+") is not found "+msg);
     }
 }

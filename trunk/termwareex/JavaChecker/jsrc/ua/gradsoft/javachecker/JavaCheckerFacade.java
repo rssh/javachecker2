@@ -17,9 +17,16 @@ package ua.gradsoft.javachecker;
 public class JavaCheckerFacade {
     
     /**
-     * create new instance of JavaChecker
+     *Mark class as singleton.
      */
-    public JavaCheckerFacade() throws ConfigException
+    private JavaCheckerFacade()
+    {}
+    
+    /**
+     * initialize JavaCheker.
+     *Must be called before any operation on it.
+     */
+    public static void init() throws ConfigException
     {
       main_=new Main();  
       main_.init(new String[0]);
@@ -28,7 +35,7 @@ public class JavaCheckerFacade {
     /**
      *add input directory
      */
-    public void addInputDirectory(String inputDirectory)
+    public static void addInputDirectory(String inputDirectory)
     {
       main_.addInputDirectory(inputDirectory);   
     }
@@ -36,12 +43,12 @@ public class JavaCheckerFacade {
     /**
      *get packages store
      */
-    public PackagesStore getPackagesStore()
+    public static PackagesStore getPackagesStore()
     {
       return main_.getFacts().getPackagesStore();  
     }
     
     
-    private Main main_;
+    private static Main main_;
     
 }
