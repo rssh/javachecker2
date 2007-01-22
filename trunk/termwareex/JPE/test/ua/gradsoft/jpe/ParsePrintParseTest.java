@@ -73,6 +73,21 @@ public class ParsePrintParseTest extends TestCase
         assertTrue("all files are read",nReadedFiles>0);
     }
     
+    public void testExample4() throws Exception
+    {
+        Configuration configuration = new Configuration();
+        configuration.setJPEHome(".");
+        configuration.setInputDir("testdata/example4");
+        configuration.setOutputDir("output/id-example4");
+        configuration.setTransformationName("ID");
+        configuration.setCreateOutputDir(true);
+        Main main = new Main();
+        main.init(configuration);
+        main.run();
+        int nReadedFiles = checkAllSourcesAreParsed("output/id-example4");
+        assertTrue("all files are read",nReadedFiles>0);        
+    }
+    
     
     private int checkAllSourcesAreParsed(String fname) throws Exception
     {
