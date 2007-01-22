@@ -1726,7 +1726,7 @@ public class JavaPrinter extends AbstractPrinter {
     
     public void writeMethodCall(Term t, int level) throws TermWareException
     {
-      writeTerm(t.getSubtermAt(0),level);
+      writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
       out_.print(".");
       writeTerm(t.getSubtermAt(1),level);
       writeTerm(t.getSubtermAt(2),level);
@@ -1734,43 +1734,44 @@ public class JavaPrinter extends AbstractPrinter {
     
     public void writeSpecializedMethodCall(Term t, int level) throws TermWareException
     {
-      writeTerm(t.getSubtermAt(0),level);
+      writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
       out_.print(".");
       writeTerm(t.getSubtermAt(1),level); 
-      writeTerm(t.getSubtermAt(2),level);
+      writeTerm(t.getSubtermAt(2),level,ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
       writeTerm(t.getSubtermAt(3),level);
     }
     
     public void writeField(Term t, int level) throws TermWareException
     {
-      writeTerm(t.getSubtermAt(0),level);
+        
+      writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
       out_.print(".");
-      writeTerm(t.getSubtermAt(1),level);
+      writeTerm(t.getSubtermAt(1),level,ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
     }
     
     public void writeSpecializedField(Term t, int level) throws TermWareException
     {
-      writeTerm(t.getSubtermAt(0),level);
+      writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
       out_.print(".");
-      writeTerm(t.getSubtermAt(1),level);
-      writeTerm(t.getSubtermAt(2),level);
+      writeTerm(t.getSubtermAt(1),level,ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
+      writeTerm(t.getSubtermAt(2),level,ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
     }
     
     public void writeThis(Term t, int level) throws TermWareException
     {
-      writeTerm(t.getSubtermAt(0),level);
+      writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
       out_.print(".this");
     }
     
     public void writeSuper(Term t, int level) throws TermWareException
     {
       out_.print("super.");
-      writeTerm(t.getSubtermAt(0),level);
+      writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.POSTFIX_EXPRESSION_PRIORITY);
     }
     
     public void writeClassLiteral(Term t, int level) throws TermWareException
     {
-      writeTerm(t.getSubtermAt(0),level);
+      writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
       out_.print(".class");
     }
     
