@@ -209,6 +209,8 @@ public class JavaPrinter extends AbstractPrinter {
             writeIntegerLiteral(t,level);
         }else if(t.getName().equals("BooleanLiteral")){
             writeBooleanLiteral(t,level);
+        }else if(t.getName().equals("FloatingPointLiteral")){
+            writeFloatingPointLiteral(t,level);
         }else if(t.getName().equals("FieldDeclaration")) {
             writeFieldDeclaration(t,level);
         }else if(t.getName().equals("Expression")) {
@@ -263,6 +265,8 @@ public class JavaPrinter extends AbstractPrinter {
             writePreDecrementExpression(t,level,currentPriority);
         }else if(t.getName().equals("StatementExpressionList")){
             writeStatementExpressionList(t,level);
+        }else if(t.getName().equals("PrimaryPrefix")){
+            writePrimaryPrefix(t,level,currentPriority);
         }else if(t.getName().equals("NullLiteral")) {
             writeNullLiteral(t,level);
         }else if(t.getName().equals("ExplicitSuperConstructorInvocation")) {
@@ -287,6 +291,26 @@ public class JavaPrinter extends AbstractPrinter {
             writeEnumBody(t,level);
         }else if(t.getName().equals("EnumConstant")){
             writeEnumConstant(t,level);
+        }else if (t.getName().equals("Allocation")) {
+            writeAllocation(t,level);
+        }else if (t.getName().equals("FunctionCall")){
+            writeFunctionCall(t,level);
+        }else if (t.getName().equals("MethodCall")) {
+            writeMethodCall(t,level);
+        }else if (t.getName().equals("SpecializedMethodCall")) {
+            writeSpecializedMethodCall(t,level);
+        }else if (t.getName().equals("Field")){
+            writeField(t,level);
+        }else if (t.getName().equals("SpecializedField")){
+            writeSpecializedField(t,level);
+        }else if (t.getName().equals("This")) {
+            writeThis(t,level);
+        }else if (t.getName().equals("Super")) {
+            writeSuper(t,level);
+        }else if (t.getName().equals("ClassLiteral")){
+            writeClassLiteral(t,level);
+        }else if (t.getName().equals("ArrayIndex")){
+            writeArrayIndex(t,level);
         }else{
             // yet not implemented or not java.
             t.print(out_);
@@ -325,7 +349,9 @@ public class JavaPrinter extends AbstractPrinter {
     }
     
     public void writeTypeBound(Term t,int level) throws TermWareException {
+        
         out_.print("extends ");
+        t=t.getSubtermAt(0);
         while(!t.isNil()) {
             if (t.getArity() == 1) {
                 writeTerm(t.getSubtermAt(0),level);
@@ -363,8 +389,7 @@ public class JavaPrinter extends AbstractPrinter {
     public void writeWildcardBounds(Term t,int level) throws TermWareException {
         Term ct=t.getSubtermAt(0);
         writeTerm(ct,level);
-        out_.print(" ");
-        
+        out_.print(" ");        
     }
     
     public void writeReferenceType(Term t,int level) throws TermWareException {
@@ -946,7 +971,7 @@ public class JavaPrinter extends AbstractPrinter {
            Term l=t.getSubtermAt(1);
            while(!l.isNil()) {
                writeIdent(level+1);
-               Term st = t.getSubtermAt(0);
+               Term st = l.getSubtermAt(0);
                writeTerm(st,level+1);
                if (st.getName().equals("LocalVariableDeclaration")) {
                    out_.print(";");
@@ -1338,9 +1363,9 @@ public class JavaPrinter extends AbstractPrinter {
         if (t.getArity()==2) {
           String op=t.getSubtermAt(0).getString();
           out_.print(op);
-          writeTerm(t.getSubtermAt(1),level);
+          writeTerm(t.getSubtermAt(1),level,ExpressionPriorities.UNARY_EXPRESSION_PRIORITY);
         }else{
-          writeTerm(t.getSubtermAt(0),level);
+          writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.UNARY_EXPRESSION_PRIORITY);
         }
         if (quoted) out_.print(")");
     }
@@ -1417,6 +1442,30 @@ public class JavaPrinter extends AbstractPrinter {
         if (quoted) { out_.print(")"); }
     }
     
+    public void writePrimaryPrefix(Term t, int level, int topPriority) throws TermWareException
+    {
+        boolean quoted = (topPriority > ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
+        if (quoted) { out_.print("("); }
+        if (t.getArity()==2) {
+            Term t0=t.getSubtermAt(0);
+            Term t1=t.getSubtermAt(1);
+            if (t0.isAtom() && t0.getName().equals("super")) {
+               out_.print("super.");                    
+               writeTerm(t1,level,ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
+            }else if (t1.isAtom() && t1.getName().equals("class")) {
+               writeTerm(t0,level,ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);     
+               out_.print(".class");
+            }else{
+                throw new AssertException("Invalid PrimaryPrefix:"+TermHelper.termToString(t));
+            }                            
+        }else if (t.getArity()==1) {
+            writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
+        }else{
+            throw new AssertException("Invalid PrimaryPrefix:"+TermHelper.termToString(t));            
+        }
+        if (quoted) { out_.print(")"); }
+    }
+    
     public void writeFieldSelector(Term t, int level) throws TermWareException {
         out_.print(".");
         writeTerm(t.getSubtermAt(0),level);
@@ -1426,6 +1475,13 @@ public class JavaPrinter extends AbstractPrinter {
         out_.print("[");
         writeTerm(t.getSubtermAt(0),level);
         out_.print("]");
+    }
+    
+    public void writeArrayIndex(Term t, int level) throws TermWareException {
+        writeTerm(t.getSubtermAt(0),level);
+        out_.print("[");
+        writeTerm(t.getSubtermAt(1),level);
+        out_.print("]");        
     }
     
     public void writeAllocationExpression(Term t, int level) throws TermWareException {
@@ -1438,6 +1494,13 @@ public class JavaPrinter extends AbstractPrinter {
         if (!t.getSubtermAt(3).isNil()){
             writeTerm(t.getSubtermAt(3),level);
         }
+    }
+    
+    public void writeAllocation(Term t, int level) throws TermWareException
+    {
+        writeTerm(t.getSubtermAt(0),level);
+        out_.print(".");
+        writeTerm(t.getSubtermAt(1),level);
     }
     
     public void writeArguments(Term t, int level)  throws TermWareException {
@@ -1472,6 +1535,15 @@ public class JavaPrinter extends AbstractPrinter {
         }
     }
     
+    public void writeFloatingPointLiteral(Term t, int level) throws TermWareException
+    {
+        Term ct = t.getSubtermAt(0);
+        if (ct.isString()) {
+            out_.print(ct.getString());
+        }else{
+            writeTerm(ct,level);
+        }
+    }
     
     public void writeIntegerLiteral(Term t,int level) throws TermWareException {
         Term ct=t.getSubtermAt(0);
@@ -1482,6 +1554,7 @@ public class JavaPrinter extends AbstractPrinter {
         }
     }
     
+       
     public void writeBooleanLiteral(Term t, int level) throws TermWareException {
         Term ct=t.getSubtermAt(0);
         if (t.isBoolean()) {
@@ -1494,6 +1567,7 @@ public class JavaPrinter extends AbstractPrinter {
             writeTerm(ct,level);
         }
     }
+   
     
     public void writeFieldDeclaration(Term t, int level) throws TermWareException {
         writeTerm(t.getSubtermAt(0),level);
@@ -1645,14 +1719,72 @@ public class JavaPrinter extends AbstractPrinter {
       out_.print("}");
     }
     
+    public void writeFunctionCall(Term t, int level) throws TermWareException
+    {
+      writeSubterms(t,"",level);
+    }
+    
+    public void writeMethodCall(Term t, int level) throws TermWareException
+    {
+      writeTerm(t.getSubtermAt(0),level);
+      out_.print(".");
+      writeTerm(t.getSubtermAt(1),level);
+      writeTerm(t.getSubtermAt(2),level);
+    }
+    
+    public void writeSpecializedMethodCall(Term t, int level) throws TermWareException
+    {
+      writeTerm(t.getSubtermAt(0),level);
+      out_.print(".");
+      writeTerm(t.getSubtermAt(1),level); 
+      writeTerm(t.getSubtermAt(2),level);
+      writeTerm(t.getSubtermAt(3),level);
+    }
+    
+    public void writeField(Term t, int level) throws TermWareException
+    {
+      writeTerm(t.getSubtermAt(0),level);
+      out_.print(".");
+      writeTerm(t.getSubtermAt(1),level);
+    }
+    
+    public void writeSpecializedField(Term t, int level) throws TermWareException
+    {
+      writeTerm(t.getSubtermAt(0),level);
+      out_.print(".");
+      writeTerm(t.getSubtermAt(1),level);
+      writeTerm(t.getSubtermAt(2),level);
+    }
+    
+    public void writeThis(Term t, int level) throws TermWareException
+    {
+      writeTerm(t.getSubtermAt(0),level);
+      out_.print(".this");
+    }
+    
+    public void writeSuper(Term t, int level) throws TermWareException
+    {
+      out_.print("super.");
+      writeTerm(t.getSubtermAt(0),level);
+    }
+    
+    public void writeClassLiteral(Term t, int level) throws TermWareException
+    {
+      writeTerm(t.getSubtermAt(0),level);
+      out_.print(".class");
+    }
+    
     public void writeEnumConstant(Term t, int level) throws TermWareException
     {
         writeTerm(t.getSubtermAt(0),level);
         out_.print(" ");
         if (t.getArity() > 1) {
-            writeTerm(t.getSubtermAt(1),level);
-        }
-        out_.print(" ");
+            Term arguments=t.getSubtermAt(1);
+            if (!arguments.isNil()) {
+              writeTerm(arguments,level);
+            }
+            out_.print(" ");
+        }        
         if (t.getArity() > 2) {
             writeTerm(t.getSubtermAt(2),level);
         }

@@ -71,70 +71,72 @@ public interface JJTJavaParserTreeConstants
   public int JJTPOSTFIXEXPRESSION = 64;
   public int JJTCASTEXPRESSION = 65;
   public int JJTPRIMARYEXPRESSION = 66;
-  public int JJTMEMBERSELECTOR = 67;
-  public int JJTPRIMARYPREFIX = 68;
-  public int JJTPRIMARYSUFFIX = 69;
-  public int JJTTHISSELECTOR = 70;
-  public int JJTALLOCATIONSELECTOR = 71;
-  public int JJTFIELDSELECTOR = 72;
-  public int JJTARRAYINDEXSELECTOR = 73;
-  public int JJTLITERAL = 74;
-  public int JJTINTEGERLITERAL = 75;
-  public int JJTCHARACTERLITERAL = 76;
-  public int JJTFLOATINGPOINTLITERAL = 77;
-  public int JJTSTRINGLITERAL = 78;
-  public int JJTBOOLEANLITERAL = 79;
-  public int JJTNULLLITERAL = 80;
-  public int JJTARGUMENTS = 81;
-  public int JJTARGUMENTLIST = 82;
-  public int JJTALLOCATIONEXPRESSION = 83;
-  public int JJTARRAYDIMSANDINITS = 84;
-  public int JJTARRAYDIMS = 85;
-  public int JJTARRAYDIM = 86;
-  public int JJTSTATEMENT = 87;
-  public int JJTSTATEMENTEXPRESSIONSTATEMENT = 88;
-  public int JJTASSERTSTATEMENT = 89;
-  public int JJTLABELEDSTATEMENT = 90;
-  public int JJTBLOCK = 91;
-  public int JJTBLOCKSTATEMENT = 92;
-  public int JJTLOCALVARIABLEDECLARATION = 93;
-  public int JJTEMPTYSTATEMENT = 94;
-  public int JJTSTATEMENTEXPRESSION = 95;
-  public int JJTSWITCHSTATEMENT = 96;
-  public int JJTSWITCHSTATEMENTLABELBLOCK = 97;
-  public int JJTSWITCHLABEL = 98;
-  public int JJTIFSTATEMENT = 99;
-  public int JJTWHILESTATEMENT = 100;
-  public int JJTDOSTATEMENT = 101;
-  public int JJTFORSTATEMENT = 102;
-  public int JJTFOREACHLOOPHEAD = 103;
-  public int JJTTRADITIONALFORLOOPHEAD = 104;
-  public int JJTFORINIT = 105;
-  public int JJTSTATEMENTEXPRESSIONLIST = 106;
-  public int JJTFORUPDATE = 107;
-  public int JJTBREAKSTATEMENT = 108;
-  public int JJTCONTINUESTATEMENT = 109;
-  public int JJTRETURNSTATEMENT = 110;
-  public int JJTTHROWSTATEMENT = 111;
-  public int JJTSYNCHRONIZEDSTATEMENT = 112;
-  public int JJTTRYSTATEMENT = 113;
-  public int JJTCATCHSEQUENCE = 114;
-  public int JJTCATCH = 115;
-  public int JJTRUNSIGNEDSHIFT = 116;
-  public int JJTRSIGNEDSHIFT = 117;
-  public int JJTANNOTATION = 118;
-  public int JJTNORMALANNOTATION = 119;
-  public int JJTMARKERANNOTATION = 120;
-  public int JJTSINGLEMEMBERANNOTATION = 121;
-  public int JJTMEMBERVALUEPAIRS = 122;
-  public int JJTMEMBERVALUEPAIR = 123;
-  public int JJTMEMBERVALUE = 124;
-  public int JJTMEMBERVALUEARRAYINITIALIZER = 125;
-  public int JJTANNOTATIONTYPEDECLARATION = 126;
-  public int JJTANNOTATIONTYPEBODY = 127;
-  public int JJTANNOTATIONTYPEMEMBERDECLARATION = 128;
-  public int JJTDEFAULTVALUE = 129;
-  public int JJTIDENTIFIER = 130;
+  public int JJTSUPER = 67;
+  public int JJTCLASSLITERAL = 68;
+  public int JJTIDENTIFIERORFUNCTIONCALL = 69;
+  public int JJTMETHODCALL = 70;
+  public int JJTPRIMARYSUFFIX = 71;
+  public int JJTTHISSELECTOR = 72;
+  public int JJTALLOCATIONSELECTOR = 73;
+  public int JJTMEMBERSELECTOR = 74;
+  public int JJTARRAYINDEXSELECTOR = 75;
+  public int JJTLITERAL = 76;
+  public int JJTINTEGERLITERAL = 77;
+  public int JJTCHARACTERLITERAL = 78;
+  public int JJTFLOATINGPOINTLITERAL = 79;
+  public int JJTSTRINGLITERAL = 80;
+  public int JJTBOOLEANLITERAL = 81;
+  public int JJTNULLLITERAL = 82;
+  public int JJTARGUMENTS = 83;
+  public int JJTARGUMENTLIST = 84;
+  public int JJTALLOCATIONEXPRESSION = 85;
+  public int JJTARRAYDIMSANDINITS = 86;
+  public int JJTARRAYDIMS = 87;
+  public int JJTARRAYDIM = 88;
+  public int JJTSTATEMENT = 89;
+  public int JJTSTATEMENTEXPRESSIONSTATEMENT = 90;
+  public int JJTASSERTSTATEMENT = 91;
+  public int JJTLABELEDSTATEMENT = 92;
+  public int JJTBLOCK = 93;
+  public int JJTBLOCKSTATEMENT = 94;
+  public int JJTLOCALVARIABLEDECLARATION = 95;
+  public int JJTEMPTYSTATEMENT = 96;
+  public int JJTSTATEMENTEXPRESSION = 97;
+  public int JJTSWITCHSTATEMENT = 98;
+  public int JJTSWITCHSTATEMENTLABELBLOCK = 99;
+  public int JJTSWITCHLABEL = 100;
+  public int JJTIFSTATEMENT = 101;
+  public int JJTWHILESTATEMENT = 102;
+  public int JJTDOSTATEMENT = 103;
+  public int JJTFORSTATEMENT = 104;
+  public int JJTFOREACHLOOPHEAD = 105;
+  public int JJTTRADITIONALFORLOOPHEAD = 106;
+  public int JJTFORINIT = 107;
+  public int JJTSTATEMENTEXPRESSIONLIST = 108;
+  public int JJTFORUPDATE = 109;
+  public int JJTBREAKSTATEMENT = 110;
+  public int JJTCONTINUESTATEMENT = 111;
+  public int JJTRETURNSTATEMENT = 112;
+  public int JJTTHROWSTATEMENT = 113;
+  public int JJTSYNCHRONIZEDSTATEMENT = 114;
+  public int JJTTRYSTATEMENT = 115;
+  public int JJTCATCHSEQUENCE = 116;
+  public int JJTCATCH = 117;
+  public int JJTRUNSIGNEDSHIFT = 118;
+  public int JJTRSIGNEDSHIFT = 119;
+  public int JJTANNOTATION = 120;
+  public int JJTNORMALANNOTATION = 121;
+  public int JJTMARKERANNOTATION = 122;
+  public int JJTSINGLEMEMBERANNOTATION = 123;
+  public int JJTMEMBERVALUEPAIRS = 124;
+  public int JJTMEMBERVALUEPAIR = 125;
+  public int JJTMEMBERVALUE = 126;
+  public int JJTMEMBERVALUEARRAYINITIALIZER = 127;
+  public int JJTANNOTATIONTYPEDECLARATION = 128;
+  public int JJTANNOTATIONTYPEBODY = 129;
+  public int JJTANNOTATIONTYPEMEMBERDECLARATION = 130;
+  public int JJTDEFAULTVALUE = 131;
+  public int JJTIDENTIFIER = 132;
 
 
   public String[] jjtNodeName = {
@@ -205,12 +207,14 @@ public interface JJTJavaParserTreeConstants
     "PostfixExpression",
     "CastExpression",
     "PrimaryExpression",
-    "MemberSelector",
-    "PrimaryPrefix",
+    "Super",
+    "ClassLiteral",
+    "IdentifierOrFunctionCall",
+    "MethodCall",
     "PrimarySuffix",
     "ThisSelector",
     "AllocationSelector",
-    "FieldSelector",
+    "MemberSelector",
     "ArrayIndexSelector",
     "Literal",
     "IntegerLiteral",

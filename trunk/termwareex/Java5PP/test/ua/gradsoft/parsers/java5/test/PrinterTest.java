@@ -60,11 +60,11 @@ public class PrinterTest extends TestCase
       Term nil=TermWare.getInstance().getTermFactory().createNIL();
       source=TermWare.getInstance().getParserFactory("Java").createParser(reader,fname,nil,TermWare.getInstance()).readTerm();
       String s0=TermHelper.termToPrettyString(source);
-      //System.out.println("!!!!----!!!!!");
-      //System.out.println(s0);
+      System.out.println("!!!!----!!!!!");
+      System.out.println(s0);
       String s = TermHelper.termToPrettyString(source,"Java",TermWare.getInstance().getTermFactory().createNIL());
-      //System.out.println("!!!!----!!!!!");
-      //System.out.println(s);
+      System.out.println("!!!!----!!!!!");
+      System.out.println(s);
       Term source1=TermWare.getInstance().getParserFactory("Java").createParser(new StringReader(s),"s",nil,TermWare.getInstance()).readTerm();
       assertTrue("printed source is not parsed",!source1.isNil());
     }

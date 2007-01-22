@@ -15,6 +15,7 @@ import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermSystem;
 import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.TransformationContext;
 import ua.gradsoft.termware.exceptions.AssertException;
 import ua.gradsoft.termware.strategies.BTStrategy;
 
@@ -32,10 +33,38 @@ public class ASTTransformers {
     public ASTTransformers() {
     }
     
+    public class ASTFacts extends DefaultFacts
+    {
+        public ASTFacts() throws TermWareException
+        {super(); }
+        
+        public boolean isIdentifier(Term t)
+        {
+          return t.getName().equals("Identifier");
+        }
+
+        public boolean isName(Term t)
+        {
+          return t.getName().equals("Name");  
+        }
+        
+        public void append(TransformationContext ctx,Term result,Term n,Term x) throws TermWareException
+        {
+          Term[] newBody = new Term[n.getArity()+1];
+          for(int i=0; i<n.getArity(); ++i){
+              newBody[i]=n.getSubtermAt(i);              
+          }
+          newBody[n.getArity()]=x;
+          Term retval = n.createSame(newBody);
+          ctx.getCurrentSubstitution().put(result,retval);  
+        }
+        
+    }
+    
     void init() throws TermWareException {
         BTStrategy strategy=new BTStrategy();
         //FirstTopStrategy strategy=new FirstTopStrategy();
-        IFacts  facts=new DefaultFacts();
+        IFacts  facts=new ASTFacts();
         
         simplifier_=new TermSystem(strategy,facts,TermWare.getInstance());
         //simplifier_.setDebugEntity("All");
@@ -58,8 +87,8 @@ public class ASTTransformers {
         simplifier_.addRule("UnaryExpressionNotPlusMinus($x) -> $x");
         simplifier_.addRule("PostfixExpression($x) -> $x");
         simplifier_.addRule("PrimaryExpression($x) -> $x");
-        simplifier_.addRule("PrimaryPrefix($x) -> $x");
-        simplifier_.addRule("PrimarySuffix($x) -> $x");
+        //simplifier_.addRule("PrimaryPrefix($x) -> $x");
+        //simplifier_.addRule("PrimarySuffix($x) -> $x");
         simplifier_.addRule("Literal($x) -> $x");
         
         simplifier_.addRule("Statement($x) -> $x");
@@ -71,7 +100,39 @@ public class ASTTransformers {
         simplifier_.addRule("VariableInitializer($x) -> $x");
         
         simplifier_.addRule("ExplicitConstructorInvocation($x) -> $x");
+
+        simplifier_.addRule("ExplicitConstructorInvocation($x) -> $x");
+
+        simplifier_.addRule("IdentifierOrFunctionCall($x,$y) -> FunctionCall($x,$y)");
+        simplifier_.addRule("IdentifierOrFunctionCall($x) -> $x");
+               
+        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(ThisSelector(),$y)) -> PrimaryExpression(This($x),$y)");
+        simplifier_.addRule("PrimaryExpression($x,ThisSelector()) -> PrimaryExpression(This($x))");
+
+        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(AllocationSelector($y),$z)) -> PrimaryExpression(Allocation($x,$y),$z)");
+        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(AllocationSelector($y))) -> PrimaryExpression(Allocation($x,$y))");
+       
+        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(MethodCallSelector($y,$z),$w)) -> PrimaryExpression(MethodCall($x,$y,$z),$w)");
+        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(MethodCallSelector($y,$z))) -> PrimaryExpression(MethodCall($x,$y,$z))");
         
+        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(SpecializedMethodCallSelector($ta,$y,$z),$w)) -> PrimaryExpression(SpecializedMethodCall($x,$ta,$y,$z),$w)");
+        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(SpecializedMethodCallSelector($ta,$y,$z))) -> PrimaryExpression(SpecializedMethodCall($x,$ta,$y,$z))");
+       
+        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(FieldSelector($y),$w)) -> PrimaryExpression(Field($x,$y),$w)");
+        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(FieldSelector($y))) -> PrimaryExpression(Field($x,$y))");
+        
+        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(SpecializedFieldSelector($ta,$y),$w)) -> PrimaryExpression(SpecializedField($x,$ta,$y),$w)");
+        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(SpecializedFieldSelector($ta,$y))) -> PrimaryExpression(SpecializedField($x,$ta,$y))");       
+
+        simplifier_.addRule("MemberSelector($x,$y,$z) [ isNil($x) ] -> MethodCallSelector($y,$z) !-> SpecializedMethodCallSelector($x,$y,$z)");        
+        simplifier_.addRule("MemberSelector($x,$y) [ isNil($x) ] -> FieldSelector($y) !-> SpecializedFieldSelector($x,$y)"); 
+        
+        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(ArrayIndexSelector($y),$w)) -> PrimaryExpression(ArrayIndex($x,$y),$w)");
+        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(ArrayIndexSelector($y))) -> PrimaryExpression(ArrayIndex($x,$y))");                        
+        
+        simplifier_.addRule("Field($x,$y) [isIdentifier($x) && isIdentifier($y)] -> Name($x,$y)");
+        simplifier_.addRule("Field($x,$y) [isName($x) && isIdentifier($y) ] -> $z [ append($z,$x,$y) ] ");
+                
         initialized_=true;
     }
     
