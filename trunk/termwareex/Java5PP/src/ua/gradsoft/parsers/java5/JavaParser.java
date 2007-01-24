@@ -28,8 +28,8 @@ public class JavaParser implements IParser
     
     public Term  readTerm()  throws TermWareException
     {      
-      try {  
-        jjtJavaParser_.CompilationUnit();
+      try {            
+          syntaxElement_.callParser(jjtJavaParser_);
       }catch(ParseException ex){
           throw new TermParseException(ex.getMessage());
       }
@@ -74,11 +74,15 @@ public class JavaParser implements IParser
     }
     
     private void checkOptionString(String option) throws TermWareException
-    {
+    {        
         if (option.equals("simplify")) {
             simplify_=true;
-        }else{
-            throw new AssertException("Invalid Java Parser option:"+option);
+        }else {
+            try {
+                syntaxElement_=JavaSyntaxElement.valueOf(option);
+            }catch(IllegalArgumentException ex){
+                throw new AssertException("Invalid Java Parser option:"+option);
+            }            
         }
     }
     
@@ -87,6 +91,7 @@ public class JavaParser implements IParser
     
     private JJTJavaParser jjtJavaParser_;
     private JavaParserFactory     owner_;
+    private JavaSyntaxElement     syntaxElement_=JavaSyntaxElement.CompilationUnit;
     private boolean eof_;
     
 }

@@ -119,9 +119,10 @@ public interface JJTJavaParserConstants {
   int RUNSIGNEDSHIFT = 122;
   int RSIGNEDSHIFT = 123;
   int GT = 124;
-  int BLOCK_PLACEHOLDER = 125;
-  int EXPRESSION_PLACEHOLDER = 126;
-  int IDENTIFIER_PLACEHOLDER = 127;
+  int TYPE_DECLARATION_PLACEHOLDER = 125;
+  int BLOCK_PLACEHOLDER = 126;
+  int EXPRESSION_PLACEHOLDER = 127;
+  int IDENTIFIER_PLACEHOLDER = 128;
 
   int DEFAULT = 0;
   int IN_SINGLE_LINE_COMMENT = 1;
@@ -254,6 +255,7 @@ public interface JJTJavaParserConstants {
     "\">>>\"",
     "\">>\"",
     "\">\"",
+    "\"%%TYPE_DECLARATION\"",
     "\"%%BLOCK\"",
     "\"%%EXPRESSION\"",
     "\"%%IDENTIFIER\"",

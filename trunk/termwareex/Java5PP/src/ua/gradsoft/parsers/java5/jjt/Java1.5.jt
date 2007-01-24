@@ -449,11 +449,13 @@ TOKEN :
 /* JavaChecker placeholders in rules.  */
 TOKEN:
 {
+  < TYPE_DECLARATION_PLACEHOLDER: "%%TYPE_DECLARATION" >
+  |
   < BLOCK_PLACEHOLDER: "%%BLOCK" >
   |
   < EXPRESSION_PLACEHOLDER: "%%EXPRESSION" >
   |
-  <IDENTIFIER_PLACEHOLDER: "%%IDENTIFIER"  >
+  < IDENTIFIER_PLACEHOLDER: "%%IDENTIFIER"  >
 }
 
 /*****************************************
@@ -611,6 +613,8 @@ void TypeDeclaration():
      EnumDeclaration(modifiers.getSubtermAt(0).getInt())
    |
      AnnotationTypeDeclaration(modifiers.getSubtermAt(0).getInt())
+   |
+     <TYPE_DECLARATION_PLACEHOLDER> "(" Identifier() ")"
   )
   { 
      jjtThis.setAttribute("comment",modifiers.getAttribute("comment")); 

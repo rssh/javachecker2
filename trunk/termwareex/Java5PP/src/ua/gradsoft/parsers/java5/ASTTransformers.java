@@ -98,6 +98,7 @@ public class ASTTransformers {
         simplifier_.addRule("PrimitiveType($x)->$x");
         simplifier_.addRule("ClassOrInterfaceType($x) -> $x");
         simplifier_.addRule("VariableInitializer($x) -> $x");
+        simplifier_.addRule("ArgumentList($x) -> $x");
         
         simplifier_.addRule("ExplicitConstructorInvocation($x) -> $x");
 
