@@ -8,11 +8,11 @@
 
 package ua.gradsoft.javachecker.models;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -87,6 +87,15 @@ public class JavaClassArgumentBoundMethodModel extends JavaMethodModel implement
                                                      origin_.getTopLevelBlockModel(),
                                                      getArgumentBoundTypeModel().getSubstitution()           
                                              );
+    }
+    
+    /**
+     * return ClassTypeArgumentBoundMethodModel(context)
+     */
+    public  Term getModelTerm() throws TermWareException
+    {
+        Term ctx=TermUtils.createJTerm(JavaPlaceContextFactory.createNewMethodContext(this));
+        return TermUtils.createTerm("ClassTypeArgumentBoundMethodModel",ctx);
     }
     
     private JavaMethodModel origin_;

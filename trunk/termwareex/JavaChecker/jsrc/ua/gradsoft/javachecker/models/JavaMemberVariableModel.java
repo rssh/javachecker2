@@ -8,6 +8,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -30,7 +31,7 @@ public abstract class JavaMemberVariableModel implements JavaVariableModel
     public JavaVariableKind  getKind()
     {
         return JavaVariableKind.MEMBER_VARIABLE;
-    }
+    }        
     
     public abstract JavaTypeModel getTypeModel() throws TermWareException;
     
@@ -39,5 +40,7 @@ public abstract class JavaMemberVariableModel implements JavaVariableModel
     public abstract boolean canCheck();
     
     public abstract boolean check() throws TermWareException;
+    
+    public abstract Term getModelTerm() throws TermWareException;
     
 }

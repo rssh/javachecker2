@@ -10,10 +10,9 @@
 
 package ua.gradsoft.javachecker.models;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import ua.gradsoft.termware.Term;
-import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -49,6 +48,19 @@ public class JavaTermTopLevelBlockModel implements JavaTopLevelBlockModel
       return statements_;   
     }
        
+    /**
+     * cons(StatementModel,....)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+        Term retval=TermUtils.createNil();
+        for(JavaStatementModel ts:getStatements()) {
+            Term statementModelTerm = ts.getModelTerm();
+            retval=TermUtils.createTerm("cons",statementModelTerm,retval);
+        }
+        return TermUtils.reverseListTerm(retval);
+    }
+   
     
     private void build(Term t) throws TermWareException
     {      
@@ -63,6 +75,6 @@ public class JavaTermTopLevelBlockModel implements JavaTopLevelBlockModel
     }
    
     private JavaTermTopLevelBlockOwnerModel           owner_;
-    private List<JavaStatementModel>  statements_  = new LinkedList<JavaStatementModel>();    
+    private List<JavaStatementModel>  statements_  = new ArrayList<JavaStatementModel>();    
     
 }

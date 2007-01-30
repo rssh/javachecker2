@@ -8,6 +8,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.NotSupportedException;
@@ -133,14 +134,22 @@ public class JavaArrayTypeModel extends JavaTypeModel
   
   public List<JavaTypeModel> getSuperInterfaces()
   {
-     return JavaModelConstants.TYPEMODEL_EMPTY_LIST; 
+     return Collections.emptyList(); 
   }
   
   public boolean isLocal()
   { return false; }
   
+  public boolean isAnonimous()
+  { return false; }
+  
   public JavaStatementModel getEnclosedStatement()
   { return null; } 
+  
+  public Term getModelTerm() throws TermWareException
+  {
+    return TermUtils.createTerm("ReferencedType",referencedType_.getModelTerm());  
+  }
   
     private JavaTypeModel referencedType_;
 

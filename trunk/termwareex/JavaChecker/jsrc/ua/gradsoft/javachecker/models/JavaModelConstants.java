@@ -16,9 +16,15 @@ import java.util.List;
  * @author Ruslan Shevchenko
  */
 public class JavaModelConstants {
-   
-   public final static List<JavaStatementModel>            STATEMENT_EMPTY_LIST = new LinkedList<JavaStatementModel>();
-   public final static List<JavaTypeVariableAbstractModel> TYPEVARIABLE_EMPTY_LIST = new LinkedList<JavaTypeVariableAbstractModel>();
-   public final static List<JavaTypeModel>                 TYPEMODEL_EMPTY_LIST    = new LinkedList<JavaTypeModel>();
+
+    public final static int CLASSORINTERFACE_MODEL_KIND_INDEX = 0;
+    public final static int CLASSORINTERFACE_MODEL_NAME_INDEX = 1;
+    public final static int CLASSORINTERFACE_MODEL_TYPE_ARGUMENTS_INDEX = 2;
+    public final static int CLASSORINTERFACE_MODEL_EXTENDS_INDEX = 3;
+    public final static int CLASSORINTERFACE_MODEL_IMPLEMENTS_INDEX = 4;
+    public final static int CLASSORINTERFACE_MODEL_BODY_INDEX = 5;
+    
+    public final static int CONSTRUCTOR_MODEL_BLOCK_INDEX = 5;
+    public final static int CONSTRUCTOR_MODEL_CONTEXT_INDEX = 6;
     
 }

@@ -9,6 +9,7 @@
 package ua.gradsoft.javachecker.models;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -227,7 +228,7 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         if (resolvedTypeArguments_.size() < l.size()) {
             return origin_.getTypeParameters().subList(resolvedTypeArguments_.size(),origin_.getTypeParameters().size());
         }else{
-            return JavaModelConstants.TYPEVARIABLE_EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
     
@@ -263,6 +264,8 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
     public boolean isLocal()
     { return origin_.isLocal(); }
 
+    public boolean isAnonimous()
+    { return origin_.isAnonimous(); }
     
    public JavaStatementModel  getEnclosedStatement()
    { return origin_.getEnclosedStatement(); }
@@ -368,7 +371,17 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         typeArguments_=TermWare.getInstance().getTermFactory().createTerm("TypeArguments",l);
     }
     
-    
+    /**
+     * TypeArgumentBoundTypeModel(ClassOrInterfaceType(originModel,list(typeModels)),placeContext)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+        Term originModelTerm=origin_.getModelTerm();
+        Term argsModelTerms=JavaTypeModelHelper.createModelTermList(resolvedTypeArguments_);
+        Term classOrInterfaceType=TermUtils.createTerm("ClassOrInterfaceType",originModelTerm,argsModelTerms);
+        Term retval=TermUtils.createTerm("TypeArgumentBoundTypeModel",classOrInterfaceType,TermUtils.createJTerm(JavaPlaceContextFactory.createNewTypeContext(this)));
+        return retval;
+    }
     
     //TODO:private void createTermTypeArguments()
     

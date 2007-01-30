@@ -76,5 +76,15 @@ public class VarResolvingTest extends TestCase
         assertEquals("owner of x is Hd1","Hd1",xvmm.getOwner().getName());        
      }
     
+     public void testSystemOutPrintln() throws Exception
+     {
+         JavaTypeModel tm = JavaResolver.resolveTypeModelByFullClassName("java.io.PrintStream");
+         List<JavaMethodModel> printlnModels=tm.findMethodModels("println");
+         assertTrue("we must have few models of println",printlnModels.size()>1);
+         //for(JavaMethodModel tmm: printlnModels) {
+         //    tmm.print(System.out);
+         //    System.out.println();
+         //}
+     }
      
 }

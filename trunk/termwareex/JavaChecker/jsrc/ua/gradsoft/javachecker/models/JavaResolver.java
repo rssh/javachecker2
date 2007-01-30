@@ -146,7 +146,7 @@ public class JavaResolver {
         return curModel;
     }
     
-    public static JavaTypeModel resolveTypeModelByName(String name,JavaTypeModel where,List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException, TermWareException {
+    public static JavaTypeModel resolveTypeModelByName(String name, JavaTypeModel where,List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException, TermWareException {
         //0. try to find among type variables.
         if (typeVariables!=null) {
             for(JavaTypeVariableAbstractModel tv: typeVariables) {
@@ -387,21 +387,18 @@ public class JavaResolver {
      * variable of enclosed statement for local and anonimous classes)
      */
     public static JavaVariableModel resolveVariableByName(String name,JavaTypeModel where) throws TermWareException, EntityNotFoundException
-    {
-      System.err.println("resolveVariableByName:"+name+","+where.getName());  
+    {      
       // check member variable.  
       try {
           return resolveMemberVariableByName(name,where);
       }catch(EntityNotFoundException ex){
           ;
       }  
-
-      System.err.println("resolveVariableByName:"+name+","+where.getName()+":1");  
+     
       
       // now, may be we have enclosed statement ?
       JavaTypeModel currWhere = where;
-      while (currWhere.isNested()) {
-         System.err.println("resolveVariableByName:"+name+","+currWhere.getName()+":2");   
+      while (currWhere.isNested()) {         
          JavaStatementModel st = currWhere.getEnclosedStatement();
          if (st!=null) {
              try {
@@ -418,16 +415,13 @@ public class JavaResolver {
              break;
          }
       }
-      
-      System.err.println("resolveVariableByName:"+name+","+where.getName()+":3");  
-      
+            
       // now try to get static imports.
      JavaUnitModel um=where.getUnitModel();
      if (um==null) {
          // strange
          System.out.println("um is null for "+where.getFullName());
-     } else if (um instanceof JavaCompilationUnitModel) {
-         System.err.println("resolveVariableByName:"+name+","+where.getName()+":4");  
+     } else if (um instanceof JavaCompilationUnitModel) {      
          JavaCompilationUnitModel cum=(JavaCompilationUnitModel)um;
          
          Map<String,String> staticMemberImports = cum.getStaticMemberImports();
@@ -446,7 +440,7 @@ public class JavaResolver {
          
          //search such fields in static class imports
          Set<String> staticClassImports = cum.getStaticClassImports();
-         for (String s:staticClassImports) {
+         for (String s:staticClassImports) {             
              JavaTypeModel st=null;
              try {
                 st=resolveTypeModelByFullClassName(s); 
@@ -463,7 +457,6 @@ public class JavaResolver {
              }
          }
          // if we still here, than static import does not work for us.
-         System.err.println("resolveVariableByName:"+name+","+where.getName()+":5");  
      }
       
      throw new EntityNotFoundException("variable",name,where.getFullName());
@@ -512,6 +505,16 @@ public class JavaResolver {
       return resolveVariableByName(name,statement.getTopLevelBlockModel().getOwnerModel().getTypeModel());
     }
     
+    public static JavaFormalParameterModel resolveFormalParameterByName(String name, JavaTopLevelBlockOwnerModel ownerModel) throws EntityNotFoundException, TermWareException
+    {
+      Map<String,JavaFormalParameterModel> fpm = ownerModel.getFormalParameters();
+      JavaFormalParameterModel fp = fpm.get(name);
+      if (fp!=null) {
+          return fp;
+      }
+      throw new EntityNotFoundException("formal parameter",name,ownerModel.getTypeModel().getFullName()+"."+ownerModel.getName());   
+    }
+    
     
     /**
      * resolve method call to where (in where and all superclasses) and build substitutuion of method type arguments if needed.
@@ -535,9 +538,9 @@ public class JavaResolver {
         if (candidates!=null) {
             int nArguments=argumentTypes.size();
             for(JavaMethodModel candidate:candidates) {
-                List<JavaTypeModel> fpts = candidate.getFormalParametersTypes();
+                List<JavaTypeModel> fpts = candidate.getFormalParametersTypes();                
                 if (nArguments!=fpts.size()) {
-                    break;
+                    continue;
                 }
                 //TODO: copy substitution.
                 if (match(fpts,argumentTypes,substitution)) {
@@ -587,7 +590,7 @@ public class JavaResolver {
           Map<String,String> methodClassImports = cum.getStaticMemberImports();
           if (methodClassImports.get(methodName)!=null) {
               String fullClassName = methodClassImports.get(methodName);
-              System.err.println("full class name is:"+fullClassName);
+              //System.err.println("full class name is:"+fullClassName);
               JavaTypeModel importedType = null;              
               try {
                  importedType = JavaResolver.resolveTypeModelByFullClassName(fullClassName);    
@@ -625,10 +628,78 @@ public class JavaResolver {
             
       // we still here ?
       //  ok, it means that notning is found.
-      throw new EntityNotFoundException("method",methodName, "in class "+where.getName());
+      //  let's prepare full method name and throw exception
+      StringBuilder sb = new StringBuilder();
+      sb.append(methodName);
+      sb.append('(');
+      for(JavaTypeModel tm: argumentTypes) {
+          sb.append(tm.getFullName());
+      }
+      sb.append(')');
+      String fullMethodName=sb.toString();
+      throw new EntityNotFoundException("method",fullMethodName, "in class "+where.getFullName());
     }        
     
     
+    public static JavaTypeModel resolveTypeTerm(Term t, JavaPlaceContext ctx) throws EntityNotFoundException, TermWareException
+    {
+      if (ctx.getStatementModel()!=null) {
+          return resolveTypeToModel(t,ctx.getStatementModel());
+      }else if (ctx.getTopLeveBlockOwnerModel()!=null) {
+          return resolveTypeToModel(t,ctx.getTypeModel(),ctx.getTopLeveBlockOwnerModel().getTypeParameters());
+      }else if (ctx.getTypeModel()!=null) {
+          return resolveTypeToModel(t,ctx.getTypeModel(),null);
+      }else if (ctx.getPackageModel()!=null) {
+          throw new AssertException("Can't resolve type model without enclosing type");
+      }else{
+          return resolveTypeModelWithFullPackage(t,null);
+      }
+    }
+    
+    /**
+     *resolve type of Java expression.
+     *@param t - term, which must be java expression.
+     *@param ctx - place context for resolving names.
+     */
+    public static JavaTypeModel resolveExpressionType(Term t, JavaPlaceContext ctx) throws EntityNotFoundException, TermWareException
+    {
+        return JavaExpressionHelper.resolveExpressionType(t,ctx);
+    }
+    
+    public static JavaTypeModel resolveTypeModelByName(String name, JavaPlaceContext ctx) throws EntityNotFoundException, TermWareException
+    {
+      if (ctx.getStatementModel()!=null) {
+          return resolveTypeModelByName(name,ctx.getTypeModel(),ctx.getTopLeveBlockOwnerModel().getTypeParameters(),new LocalTypesIterable(ctx.getStatementModel()));
+      }else if (ctx.getTopLeveBlockOwnerModel()!=null) {
+          return resolveTypeModelByName(name,ctx.getTypeModel(),ctx.getTopLeveBlockOwnerModel().getTypeParameters(),null);
+      }else if (ctx.getTypeModel()!=null) {
+          return resolveTypeModelByName(name,ctx.getTypeModel(),null,null);
+      }else if (ctx.getPackageModel()!=null) {
+          try {
+              return resolveTypeModelFromPackage(name,ctx.getPackageModel().getName());
+          }catch(EntityNotFoundException ex){
+              ;
+          }
+      }    
+      return resolveTypeModelFromPackage(name,"java.lang");      
+    }
+    
+    public static JavaVariableModel resolveVariableByName(String name, JavaPlaceContext ctx) throws EntityNotFoundException, TermWareException
+    {
+        if (ctx.getStatementModel()!=null) {
+            return resolveVariableByName(name,ctx.getStatementModel());
+        }else if (ctx.getTopLeveBlockOwnerModel()!=null){
+            try {
+                return resolveFormalParameterByName(name,ctx.getTopLeveBlockOwnerModel());
+            }catch(EntityNotFoundException ex){
+                return resolveVariableByName(name,ctx.getTypeModel());
+            }
+        }else if (ctx.getTypeModel()!=null) {
+            return resolveVariableByName(name,ctx.getTypeModel());
+        }else{
+            throw new AssertException("Can't resolve variable outsde type model");
+        }        
+    }
     
     /**
      * match patern type with x and fill substitution if needed.
@@ -636,36 +707,45 @@ public class JavaResolver {
      */
     public static boolean match(JavaTypeModel pattern, JavaTypeModel x,JavaTypeArgumentsSubstitution substitution) throws TermWareException
     {
+      System.err.println("match("+pattern.getFullName()+","+x.getFullName()+")");
+      boolean retval=true;
       if (pattern.isTypeArgument()) {
           JavaTypeVariableAbstractModel vpattern = (JavaTypeVariableAbstractModel)pattern;
           JavaTypeModel matched=substitution.get(vpattern);
           if (matched!=null) {
-              return match(matched,x,substitution);
+              retval=match(matched,x,substitution);
           }else{
               List<JavaTypeModel> bounds = vpattern.getBounds();
               for(JavaTypeModel bound: bounds) {
                   if (!match(bound,x,substitution)) {
-                      return false;
+                      retval=false;
+                      break;
                   }
               } 
-              substitution.put(vpattern,x);
-              return true;
+              if (retval) {
+                substitution.put(vpattern,x);
+              }             
           }          
       }else if (pattern.isWildcardBounds()) {
           JavaWildcardBoundsTypeModel wpattern = (JavaWildcardBoundsTypeModel)pattern;
           switch(wpattern.getKind()) {
               case OBJECT: 
-                  return true;
+                  retval=true;
+                  break;
               case EXTENDS:
-                  return JavaTypeModelHelper.subtypeOrSame(x,wpattern.getBoundTypeModel());
+                  retval=JavaTypeModelHelper.subtypeOrSame(x,wpattern.getBoundTypeModel());
+                  break;
               case SUPER:
-                  return JavaTypeModelHelper.subtypeOrSame(wpattern.getBoundTypeModel(),x);
+                  retval=JavaTypeModelHelper.subtypeOrSame(wpattern.getBoundTypeModel(),x);
+                  break;
               default:
                   throw new AssertException("Impossible: invalid JavaWildcardBoundsKind");
           }
       }else{
-          return JavaTypeModelHelper.subtypeOrSame(x,pattern);
+          retval=JavaTypeModelHelper.subtypeOrSame(x,pattern);
       } 
+      System.err.println("match return "+retval);
+      return retval;
     }
     
     /**

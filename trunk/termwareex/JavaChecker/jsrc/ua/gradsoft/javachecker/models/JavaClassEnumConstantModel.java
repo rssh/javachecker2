@@ -10,6 +10,9 @@
 
 package ua.gradsoft.javachecker.models;
 
+import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermWareException;
+
 /**
  *Enum constant from class.
  * @author Ruslan Shevchenko
@@ -43,6 +46,16 @@ public class JavaClassEnumConstantModel extends JavaEnumConstantModel
     
     public boolean check()
     { return true; }
+    
+    /**
+     * ClassEnumConstantModel(this)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+        Term tthis=TermUtils.createJTerm(this);
+        Term retval=TermUtils.createTerm("ClassEnumConstantModel",tthis);
+        return retval;
+    }
     
     private Object instance_;
     private JavaClassTypeModel owner_;

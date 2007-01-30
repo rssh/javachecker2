@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -95,6 +96,16 @@ public class JavaClassMethodModel extends JavaMethodModel
      public boolean         isSupportBlockModel()
      { return false; }
     
+    /**
+     * ClassMethod(context)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+       JavaPlaceContext ctx=JavaPlaceContextFactory.createNewMethodContext(this);
+       Term tctx = TermUtils.createJTerm(ctx);
+       return TermUtils.createTerm("ClassMethod",tctx);
+    }
+     
     public JavaTopLevelBlockModel  getTopLevelBlockModel() throws NotSupportedException
     { throw new NotSupportedException(); }
 

@@ -8,6 +8,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
@@ -65,7 +66,7 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
     
     
     public List<JavaTypeModel>  getSuperInterfaces() 
-    { return JavaModelConstants.TYPEMODEL_EMPTY_LIST; }
+    { return Collections.emptyList(); }
     
     
     public Map<String, List<JavaMethodModel>> getMethodModels() throws NotSupportedException
@@ -75,6 +76,19 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
 
     public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
         throw new NotSupportedException();
+    }
+
+    /**
+     * AnnotationTypeDeclarationModel(name,[...],context)
+     *where AnnotationTypeBodyModel is list,
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+        Term nameTerm=t_.getSubtermAt(0);
+        Term typeBodyModel=getMemberModelsList();
+        JavaPlaceContext context = JavaPlaceContextFactory.createNewTypeContext(this);
+        Term tcontext = TermUtils.createJTerm(context);
+        return TermUtils.createTerm("AnnotationTypeModel",nameTerm,typeBodyModel,tcontext);
     }
     
     

@@ -19,42 +19,88 @@ public class JavaPlaceContext {
     
     
     /**
+     * can be called only by Factory from this package
+     */
+    JavaPlaceContext()
+    {}
+    
+    /**
      * get package, inside which we situated.
      */ 
     public JavaPackageModel getPackageModel()
     { return packageModel_; }
     
     /**
-     * set package
+     * set package model (and reset type, blockOwner and statement models)
      */
-    public  void  setPackageModel(JavaPackageModel packageModel)
-    { packageModel_=packageModel; }
+    void  setPackageModel(JavaPackageModel packageModel)
+    { packageModel_=packageModel; 
+      typeModel_=null;
+      topLevelBlockOwnerModel_=null;
+      statementModel_=null;
+    }
     
     /**
      * get type model, inside which we situated.
      */
     public  JavaTypeModel  getTypeModel()
-    { return typeModel_; }
-    
-    public  void  setTypeModel(JavaTypeModel typeModel)
-    { typeModel_=typeModel; }
-    
-    /**
-     * get method, inside which we situated.
-     */
-    public  JavaMethodModel  getMethodModel()
-    {
-      return methodModel_;  
+    { return typeModel_; 
     }
     
-    public void setMethodModel(JavaMethodModel methodModel)
+    /**
+     *set type model, inside which we situated.
+     *package model is set to package of this type, blockOwner and statements
+     *models are erased.
+     */
+    void  setTypeModel(JavaTypeModel typeModel)
+    { typeModel_=typeModel; 
+      packageModel_=typeModel.getPackageModel();
+      topLevelBlockOwnerModel_=null;
+      statementModel_=null;
+    }
+    
+    /**
+     * get top-level block, in which we situated or null if one 
+     *was not defined.
+     */
+    public  JavaTopLevelBlockOwnerModel  getTopLeveBlockOwnerModel()
     {
-      methodModel_=methodModel;  
+      return topLevelBlockOwnerModel_;
+    }
+    
+    /**
+     *set topLevelBlockModel. typeModel and packageModel will be setted appropriatively.
+     *statement model is cleared.
+     */
+    void setTopLevelBlockOwnerModel(JavaTopLevelBlockOwnerModel topLevelBlockOwnerModel)
+    {       
+      topLevelBlockOwnerModel_=topLevelBlockOwnerModel;  
+      typeModel_=topLevelBlockOwnerModel.getTypeModel();
+      packageModel_=typeModel_.getPackageModel();
+    }
+    
+    /**
+     * return statement model, in which we situated or null 
+     *if we outside statement
+     */
+    public JavaStatementModel getStatementModel()
+    {
+      return statementModel_;  
+    }
+    
+    void setStatementModel(JavaStatementModel statementModel)
+    {
+        statementModel_=statementModel;
+        topLevelBlockOwnerModel_=statementModel.getTopLevelBlockModel().getOwnerModel();
+        typeModel_=topLevelBlockOwnerModel_.getTypeModel();
+        packageModel_=typeModel_.getPackageModel();        
     }
     
     private JavaPackageModel  packageModel_=null;
     private JavaTypeModel     typeModel_=null;
-    private JavaMethodModel   methodModel_=null;
+    private JavaTopLevelBlockOwnerModel   topLevelBlockOwnerModel_=null;
+    private JavaStatementModel       statementModel_=null;
+    
     
     
 }

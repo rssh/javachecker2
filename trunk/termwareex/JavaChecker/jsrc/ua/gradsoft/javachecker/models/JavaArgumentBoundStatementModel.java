@@ -13,6 +13,7 @@ package ua.gradsoft.javachecker.models;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -101,7 +102,19 @@ public class JavaArgumentBoundStatementModel implements JavaStatementModel
     {
       return origin_;  
     }
+
     
+    /**
+     * TypeArgumentBoundStatementModel(originModel,ctx)
+     */
+    public Term getModelTerm() throws TermWareException 
+    {
+        Term originModelTerm = origin_.getModelTerm();
+        JavaPlaceContext ctx = JavaPlaceContextFactory.createNewStatementContext(this);
+        Term tctx=TermUtils.createJTerm(ctx);
+        Term retval=TermUtils.createTerm("TypeArgumentBoundStatementModel",originModelTerm,tctx);
+        return retval;
+    }
     
     private JavaArgumentBoundTopLevelBlockModel blockModel_;
     private JavaStatementModel          origin_;

@@ -8,6 +8,9 @@
 
 package ua.gradsoft.javachecker.models;
 
+import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermWareException;
+
 /**
  *Model for Java Modifiers
  * @author Ruslan Shevchenko
@@ -109,6 +112,11 @@ public class JavaModifiersModel {
      public int getIntValue()
      { return modifiers_; }
     
+     public  Term getModelTerm() throws TermWareException
+     {
+         return TermUtils.createTerm("Modifiers",TermUtils.createInt(modifiers_));
+     }
+     
     private int modifiers_;
     
 }

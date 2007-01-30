@@ -8,7 +8,8 @@
 
 package ua.gradsoft.javachecker.models;
 
-import java.util.LinkedList;
+import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.Main;
@@ -93,7 +94,7 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     { return JavaNullTypeModel.INSTANCE; }
     
     public List<JavaTypeModel> getSuperInterfaces()
-    { return JavaModelConstants.TYPEMODEL_EMPTY_LIST; }
+    { return Collections.emptyList(); }
 
     
     public boolean canCheck() {
@@ -134,6 +135,9 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     public boolean isLocal()
     { return false; }
     
+    public boolean isAnonimous()
+    { return false; }
+    
     public JavaStatementModel getEnclosedStatement()
     { return null; }
     
@@ -149,7 +153,28 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
      *@return empty list
      */
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() {
-        return new LinkedList<JavaTypeVariableAbstractModel>();
+        return Collections.<JavaTypeVariableAbstractModel>emptyList();
     }
 
+    public void print(PrintWriter writer)
+    {
+      try {  
+      writer.print(getName());
+      if (!getBounds().isEmpty()) {
+          writer.print(" extends ");
+          boolean frs=true;
+          for(JavaTypeModel bound: getBounds()) {
+              if (!frs) {
+                  writer.print("&");
+              }else{
+                  frs=false;
+              }
+              writer.print(bound.getFullName());
+          }
+      }
+      }catch(TermWareException ex){
+          writer.print("error");
+      }
+    }
+    
 }

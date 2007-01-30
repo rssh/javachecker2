@@ -23,15 +23,58 @@ import ua.gradsoft.termware.exceptions.AssertException;
  */
 public class JavaPlaceContextFactory {
     
-    public static JavaPlaceContext  createInPackageContext(String packageName) throws TermWareException
+    public static JavaPlaceContext  createNewPackageContext(String packageName) throws TermWareException
     {
         JavaPlaceContext retval = new JavaPlaceContext();
         JavaPackageModel packageModel = Main.getFacts().getPackagesStore().findOrAddPackage(packageName);
         retval.setPackageModel(packageModel);
         return retval;
     }
+
+    public static JavaPlaceContext  createNewPackageContext(JavaPackageModel packageModel) throws TermWareException
+    {
+        JavaPlaceContext retval = new JavaPlaceContext();
+        retval.setPackageModel(packageModel);
+        return retval;
+    }
     
-    public static JavaPlaceContext  createInTypeContext(String className, JavaPlaceContext previous) throws TermWareException
+    
+    public static JavaPlaceContext  createNewTypeContext(JavaTypeModel typeModel)
+    {
+        JavaPlaceContext retval = new JavaPlaceContext();
+        retval.setTypeModel(typeModel);
+        return retval;
+    }
+    
+    public static JavaPlaceContext createNewMethodContext(JavaMethodModel methodModel)
+    {
+        JavaPlaceContext retval = new JavaPlaceContext();
+        retval.setTopLevelBlockOwnerModel(methodModel);
+        return retval;
+    }
+    
+    public static JavaPlaceContext createNewConstructorContext(JavaConstructorModel constructorModel)
+    {
+        JavaPlaceContext retval = new JavaPlaceContext();
+        retval.setTopLevelBlockOwnerModel(constructorModel);
+        return retval;
+    }
+    
+    public static JavaPlaceContext createNewInitializerContext(JavaInitializerModel initializerModel)
+    {
+        JavaPlaceContext retval = new JavaPlaceContext();
+        retval.setTopLevelBlockOwnerModel(initializerModel);
+        return retval;
+    }
+    
+    public static JavaPlaceContext createNewTopLevelBlockOwnerContext(JavaTopLevelBlockOwnerModel model)
+    {
+        JavaPlaceContext retval = new JavaPlaceContext();
+        retval.setTopLevelBlockOwnerModel(model);
+        return retval;        
+    }
+    
+    public static JavaPlaceContext  createTypeContext(String className, JavaPlaceContext previous) throws TermWareException
     {
       if (previous.getPackageModel()==null)  {
           throw new AssertException("package does not set, before class entering");
@@ -61,6 +104,13 @@ public class JavaPlaceContextFactory {
         retval.setTypeModel(where);
       }
       return retval;
+    }
+    
+    public static JavaPlaceContext createNewStatementContext(JavaStatementModel statement)
+    {
+        JavaPlaceContext retval = new JavaPlaceContext();
+        retval.setStatementModel(statement);
+        return retval;
     }
     
     /**

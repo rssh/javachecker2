@@ -7,7 +7,10 @@
 package ua.gradsoft.javachecker;
 
 import java.io.File;
+import java.io.Reader;
 import java.util.logging.Logger;
+import ua.gradsoft.termware.IParser;
+import ua.gradsoft.termware.IParserFactory;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWare;
@@ -115,6 +118,9 @@ public final class JUtils {
     public static String getJavaNameAsString(Term t) throws TermWareException
     { return getJavaNameAsString(t,-1); }           
     
+    /**
+     *return first <code> lastIndex </code> components of list t as complext java name as string
+     */
     public static String getJavaNameAsString(Term t, int lastIndex) throws TermWareException        
     { 
         if (!t.getName().equals("Name")) {
@@ -200,26 +206,21 @@ public final class JUtils {
      return new FileAndLine(fname,line);
     }
     
-    
- //   public static boolean isFoundJavaAttribute(Term propertiesList,String attributeName) throws TermWareException
- //   {
- //     if (propertiesList.getName().equals("empty_list")) {
- //         return false;
- //     }
- //     while(!propertiesList.isNil()) {
- //         if (propertiesList.getName().equals("cons")) {
- //             Term frs=propertiesList.getSubtermAt(0);
- //             Term snd=propertiesList.getSubtermAt(1);
- //             if (frs.getName().equals(attributeName)) {
- //                 return true;
- //             }
- //             propertiesList=snd;
- //         }else{
- //             throw new AssertException("invalid list of java attributes");
- //         }
- //     }
- //     return false;
- //   }
+
+    /**
+     *Read java language element.
+     *@param reader -- reader.
+     *@param languageElementName -- name of Java Language Element. Must be one of names
+     *of ua.gradsoft.parsers.java.JavaSyntaxElement enum. (See TermWareJPP project for details)
+     */
+    public static Term parseJavaLanguageElement(Reader reader,String languageElementName) throws TermWareException
+    {      
+      Term optionTerm = TermWare.getInstance().getTermFactory().createAtom(languageElementName);
+      IParserFactory parserFactory = TermWare.getInstance().getParserFactory("Java");
+      IParser parser = parserFactory.createParser(reader,"inline",optionTerm,TermWare.getInstance());
+      Term t = parser.readTerm();
+      return t;
+    }
 
     
     /**

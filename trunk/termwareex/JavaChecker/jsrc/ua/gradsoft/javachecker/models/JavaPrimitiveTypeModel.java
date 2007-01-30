@@ -8,12 +8,12 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
-import ua.gradsoft.termware.TermWareException;
 
 /**
  *
@@ -80,6 +80,10 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
     
     public boolean isLocal()
     { return false; }
+
+    public boolean isAnonimous()
+    { return false; }
+    
     
     public JavaStatementModel  getEnclosedStatement()
     { return null; }
@@ -129,14 +133,18 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
         return false; }
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() {
-        return JavaModelConstants.TYPEVARIABLE_EMPTY_LIST; }
+        return Collections.emptyList(); }
 
     public JavaTypeModel getSuperClass()
     { return JavaNullTypeModel.INSTANCE; }
 
     public List<JavaTypeModel> getSuperInterfaces()
-    { return JavaModelConstants.TYPEMODEL_EMPTY_LIST; }
+    { return Collections.emptyList(); }
     
+    public Term getModelTerm()
+    {
+        return TermUtils.createAtom(name_);
+    }
     
     private String name_;
         

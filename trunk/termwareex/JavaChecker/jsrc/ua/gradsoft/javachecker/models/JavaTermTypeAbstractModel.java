@@ -8,6 +8,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -213,7 +214,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     {
       if (resolvedSuperInterfaces_==null) {
           if (superInterfacesTerms_==null) {
-              resolvedSuperInterfaces_=JavaModelConstants.TYPEMODEL_EMPTY_LIST;
+              resolvedSuperInterfaces_=Collections.emptyList();
           }else{
             try {  
               resolvedSuperInterfaces_=new LinkedList<JavaTypeModel>();
@@ -339,6 +340,11 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     public int getLastAnonimousTypeIndex()
     { return anonimousTypeIndex_; }
     
+    public boolean isAnonimous()
+    {
+       return isAnonimous(); 
+    }
+    
     int nextAnonimousTypeIndex()
     {
       return ++anonimousTypeIndex_;  
@@ -346,6 +352,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     
     public Term getTerm()
     { return t_; }
+    
     
     void setIsLocal(JavaTermStatementModel statement)
     {
@@ -375,6 +382,68 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
       for(JavaTypeModel nested: nestedTypes_.values()) {
           nested.setUnitModel(unitModel);
       }
+    }
+    
+    public Term getMemberModelsList() throws TermWareException
+    {
+       Term retval=TermUtils.createNil();       
+       if (initializers_!=null) {
+          for(JavaInitializerModel x: initializers_) {
+              retval=TermUtils.createTerm("cons",x.getModelTerm(),retval);
+          }          
+       }   
+       if (constructors_!=null) {
+           for(JavaConstructorModel x: constructors_) {
+               retval=TermUtils.createTerm("cons",x.getModelTerm(),retval);
+           }
+       }
+       if (methodModels_!=null) {
+           for(Map.Entry<String,List<JavaMethodModel>> e: methodModels_.entrySet()) {
+               for(JavaMethodModel x: e.getValue()) {
+                   retval=TermUtils.createTerm("cons",x.getModelTerm(),retval);
+               }
+           }
+       }
+       if (fieldModels_!=null) {
+           for(Map.Entry<String, JavaMemberVariableModel> e:fieldModels_.entrySet()) {
+               JavaMemberVariableModel x = e.getValue();
+               retval=TermUtils.createTerm("cons",x.getModelTerm(),retval);
+           }
+       }
+       if (nestedTypes_!=null) {
+           for(Map.Entry<String,JavaTypeModel> e: nestedTypes_.entrySet()) {
+              JavaTypeModel x = e.getValue();
+              if (!x.isAnonimous() && !x.isLocal()) {
+                  retval=TermUtils.createTerm("cons",x.getModelTerm(),retval);
+              }
+           }
+       }
+       retval=TermUtils.reverseListTerm(retval);
+       return retval;
+    }
+    
+    /**
+     * return type parameters model.
+     *(for now - return unchanged typeParametersTerm, in future - return term,
+     *where references to other types are substituted to TypeRef(name,typeModel))
+     */
+    public Term getTypeParametersModel(Term typeParametersTerm)
+    {
+      return typeParametersTerm;  
+      /*  
+      List<JavaTypeVariableAbstractModel> tvs=getTypeParameters();  
+      Term retval=TermUtils.createNil();
+      if (tvs.isEmpty()) {
+          return retval;
+      }
+      Term typeParametersList=typeParametersTerm.getSubtermAt(0);
+      Iterator<JavaTypeVariableAbstractModel> tvsit = tvs.iterator();
+      while(!typeParametersList.isNil()) {
+          Term tp=typeParametersList.getSubtermAt(0);
+          typeParametersList=typeParametersList.getSubtermAt(1);
+          
+      }
+      */
     }
     
     protected Term  superClassTerm_ = null;

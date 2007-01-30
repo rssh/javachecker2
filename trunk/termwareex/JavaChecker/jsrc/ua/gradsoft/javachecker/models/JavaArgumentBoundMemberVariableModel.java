@@ -8,10 +8,11 @@
 
 package ua.gradsoft.javachecker.models;
 
+import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
- *Member value, bound by type arument
+ *Member value, bound by type argument
  * @author Ruslan Shevchenko
  */
 public class JavaArgumentBoundMemberVariableModel extends JavaMemberVariableModel
@@ -22,6 +23,7 @@ public class JavaArgumentBoundMemberVariableModel extends JavaMemberVariableMode
     public JavaArgumentBoundMemberVariableModel(JavaArgumentBoundTypeModel newOwner, JavaMemberVariableModel origin) 
     {
        origin_=origin;
+       owner_=newOwner;
     }
 
     
@@ -49,6 +51,18 @@ public class JavaArgumentBoundMemberVariableModel extends JavaMemberVariableMode
     
     public boolean check()
     { return true; }
+    
+    /**
+     * TypeArgumentBoundMemberVariableModel(originModelTerm,ownerModelTerm)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+        Term originModelTerm = origin_.getModelTerm();
+        Term ownerModelTerm = owner_.getModelTerm();
+        Term retval=TermUtils.createTerm("TypeArgumentBoundMemberVariableModel",
+                                          originModelTerm,ownerModelTerm);
+        return retval;
+    }
     
     private JavaMemberVariableModel origin_;
     private JavaArgumentBoundTypeModel      owner_;

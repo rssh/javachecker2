@@ -7,10 +7,9 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import ua.gradsoft.javachecker.EntityNotFoundException;
-import ua.gradsoft.javachecker.JavaFacts;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
@@ -92,6 +91,9 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     
     public boolean isLocal()
     { return false; }
+    
+    public boolean isAnonimous()
+    { return false; }
 
     public JavaStatementModel getEnclosedStatement()
     { return null; }
@@ -110,7 +112,7 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     { return JavaResolver.resolveJavaLangObject(); }
     
     public List<JavaTypeModel> getSuperInterfaces()
-    { return JavaModelConstants.TYPEMODEL_EMPTY_LIST; }
+    { return Collections.emptyList(); }
     
     public boolean canCheck()
     { return false; }
@@ -150,6 +152,16 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     
     public boolean hasNestedTypeModels()
     { return false; }
+    
+    /**
+     * UnknownTypeModel(context)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+      JavaPlaceContext ctx = JavaPlaceContextFactory.createNewTypeContext(this);
+      Term tctx = TermUtils.createJTerm(ctx);
+      return TermUtils.createTerm("UnknownTypeModel",tctx);
+    }
 
     /**
      * throw NotSupportedException
@@ -172,7 +184,7 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters()
     {
-      return JavaModelConstants.TYPEVARIABLE_EMPTY_LIST;  
+      return Collections.emptyList();
     }        
     
     static final public JavaUnknownTypeModel INSTANCE = new JavaUnknownTypeModel();

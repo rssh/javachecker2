@@ -11,7 +11,8 @@
 package ua.gradsoft.javachecker.models;
 
 import java.util.List;
-import java.util.Map;
+import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermWareException;
 
 /**
  *Model for top-level block of Java Code.
@@ -27,5 +28,9 @@ public  interface JavaTopLevelBlockModel {
      */
     public List<JavaStatementModel> getStatements();
         
+    /**
+     * return model term (which is sequence of statement models)    
+     */
+    public Term getModelTerm() throws TermWareException;
     
 }

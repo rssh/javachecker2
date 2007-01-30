@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -88,6 +89,19 @@ public class JavaArgumentBoundMethodModel extends JavaMethodModel implements Jav
     public JavaArgumentBoundTopLevelBlockModel getTopLevelBlockModel() throws NotSupportedException {
         return new JavaArgumentBoundTopLevelBlockModel(this,origin_.getTopLevelBlockModel(),substitution_);
     }
+    
+    /**
+     * TypeArgumentBoundMethodModel(originModel,substitution, context);
+     */
+    public Term getModelTerm() throws TermWareException
+    {        
+       Term mTerm=origin_.getModelTerm();
+       Term sTerm = TermUtils.createJTerm(substitution_);
+       Term jTerm = TermUtils.createJTerm(JavaPlaceContextFactory.createNewMethodContext(this));
+       return TermUtils.createTerm("TypeArgumentBoundMethodModel",mTerm,sTerm,jTerm);
+    }
+    
+    
     
     private JavaMethodModel origin_;
     private JavaTypeArgumentsSubstitution substitution_;

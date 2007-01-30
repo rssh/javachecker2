@@ -7,10 +7,9 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import ua.gradsoft.javachecker.EntityNotFoundException;
-import ua.gradsoft.javachecker.JavaFacts;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
@@ -92,6 +91,9 @@ public class JavaNullTypeModel extends JavaTypeModel {
     public boolean isLocal()
     { return false; }
     
+    public boolean isAnonimous()
+    { return false; }
+    
     public JavaStatementModel  getEnclosedStatement()
     { return null; }
     
@@ -161,15 +163,17 @@ public class JavaNullTypeModel extends JavaTypeModel {
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters()
     {
-      return JavaModelConstants.TYPEVARIABLE_EMPTY_LIST;  
+      return Collections.emptyList();  
     }        
     
     public JavaTypeModel getSuperClass()
     { return INSTANCE; }
     
     public List<JavaTypeModel> getSuperInterfaces()
-    { return JavaModelConstants.TYPEMODEL_EMPTY_LIST; }
+    { return Collections.emptyList(); }
     
+    public Term getModelTerm() throws TermWareException
+    { return TermUtils.createTerm("NullType",TermUtils.createJTerm(JavaPlaceContextFactory.createNewTypeContext(this))); }
     
     static final public JavaNullTypeModel INSTANCE = new JavaNullTypeModel();
     

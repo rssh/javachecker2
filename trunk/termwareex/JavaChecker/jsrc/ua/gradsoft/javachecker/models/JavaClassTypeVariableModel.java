@@ -12,6 +12,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.LinkedList;
 import java.util.List;
+import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -48,7 +49,17 @@ public class JavaClassTypeVariableModel extends JavaTypeVariableAbstractModel
         return true;
     }
     
-    
+    /**
+     * TypeParameter(Identifier(name),boundsModelTerms)
+     */
+    public Term getModelTerm() throws TermWareException
+    {        
+        Term idt = TermUtils.createIdentifier(typeVariable_.getName());
+        Term boundsModelTerm=JavaTypeModelHelper.createModelTermList(getBounds());
+        Term typeParameter=TermUtils.createTerm("TypeParameter",idt,boundsModelTerm);
+        return typeParameter;
+    }
+
     
     private TypeVariable<?> typeVariable_;
     

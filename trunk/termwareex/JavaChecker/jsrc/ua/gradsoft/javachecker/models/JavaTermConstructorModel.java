@@ -28,6 +28,11 @@ public class JavaTermConstructorModel implements JavaConstructorModel, JavaTermT
         build(constructor);
     }
     
+    public String getName()
+    {
+      return getTypeModel().getName();  
+    }
+    
     public JavaTypeModel getTypeModel()
     { return owner_; }
     
@@ -62,7 +67,35 @@ public class JavaTermConstructorModel implements JavaConstructorModel, JavaTermT
    
     private void build(Term t) throws TermWareException
     {
+      Term blockTerm=t.getSubtermAt(BLOCK_TERM_INDEX);      
+      if (!t.getSubtermAt(EXPLICIT_CONSTRUCTOR_INVOCATION_TERM_INDEX).isNil()) {
+          blockTerm=TermUtils.createTerm("cons",t.getSubtermAt(EXPLICIT_CONSTRUCTOR_INVOCATION_TERM_INDEX),blockTerm);
+      }
       blockModel_=new JavaTermTopLevelBlockModel(this,t.getSubtermAt(BLOCK_TERM_INDEX));      
+    }
+    
+    /**
+     *ConstructorModel(modifiers,TypeParameters,identifier,FormalParameters,trowsNameList,BlockModel,context)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+      Term modifiersModelTerm = modifiers_.getModelTerm();  
+      Term typeParametersModelTerm = TermUtils.buildTypeParametersModelTerm(getTypeParameters(),t_.getSubtermAt(TYPE_PARAMETERS_TERM_INDEX));
+      Term identifierTerm = t_.getSubtermAt(IDENTIFIER_TERM_INDEX);
+      Term formalParametersTerm = t_.getSubtermAt(FORMAL_PARAMETERS_TERM_INDEX);
+      Term throwsNameList = t_.getSubtermAt(THROWS_NAMELIST_TERM_INDEX);
+      Term blockModelTerm = blockModel_.getModelTerm();
+      JavaPlaceContext context = JavaPlaceContextFactory.createNewConstructorContext(this);
+      Term tcontext = TermUtils.createJTerm(context);
+      Term modelTerm=TermUtils.createTerm("ConstructorModel",
+                                             modifiersModelTerm,
+                                             typeParametersModelTerm,
+                                             identifierTerm,
+                                             formalParametersTerm,
+                                             throwsNameList,
+                                             blockModelTerm,
+                                             tcontext);
+      return modelTerm;
     }
     
     private JavaTermTypeAbstractModel      owner_;
@@ -71,7 +104,10 @@ public class JavaTermConstructorModel implements JavaConstructorModel, JavaTermT
     private JavaTermTopLevelBlockModel blockModel_;
     
     public static final int TYPE_PARAMETERS_TERM_INDEX=0;
+    public static final int IDENTIFIER_TERM_INDEX=1;
     public static final int FORMAL_PARAMETERS_TERM_INDEX=2;
+    public static final int THROWS_NAMELIST_TERM_INDEX=3;
+    public static final int EXPLICIT_CONSTRUCTOR_INVOCATION_TERM_INDEX=4;
     public static final int BLOCK_TERM_INDEX=5;
     
     

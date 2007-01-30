@@ -11,6 +11,8 @@
 package ua.gradsoft.javachecker.models;
 
 import java.util.List;
+import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermWareException;
 
 /**
  *TypeVariable, which is result by substitution of bounds by other type varibale.
@@ -39,6 +41,17 @@ public class JavaArgumentBoundTypeVariableModel extends JavaTypeVariableAbstract
     
     public boolean check()
     { return true; }
+    
+    /**
+     * TypeParameter(originModelTerm,boundsModelTerms)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+        Term originModelTerm=origin_.getModelTerm();
+        Term boundsModelTerm=JavaTypeModelHelper.createModelTermList(bounds_);
+        Term typeParameter=TermUtils.createTerm("TypeParameter",originModelTerm,boundsModelTerm);
+        return typeParameter;
+    }
     
     private JavaTypeVariableAbstractModel origin_;
     private List<JavaTypeModel> bounds_;

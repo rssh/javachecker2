@@ -6,6 +6,9 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.JavaFacts;
@@ -37,11 +40,60 @@ public abstract class JavaMethodModel implements JavaTopLevelBlockOwnerModel
     public abstract List<JavaTypeModel> getFormalParametersTypes() throws TermWareException;
     
     public abstract Map<String,JavaFormalParameterModel>  getFormalParameters() throws TermWareException;
-        
-    
+            
     public abstract boolean canCheck();
     
     public abstract boolean check() throws TermWareException;   
+    
+    public void print(PrintWriter writer) 
+    {
+        List<JavaTypeVariableAbstractModel> tps;
+        boolean wasError=false;
+        try {
+            tps=getTypeParameters();            
+        }catch(TermWareException ex){
+            tps=Collections.emptyList();
+            writer.print("error:"+ex.getMessage());
+            wasError=true;
+        }
+        if (!tps.isEmpty()) {
+            writer.print("<");
+            boolean frs=true;
+            for(JavaTypeVariableAbstractModel tv:tps) {
+                if (!frs) {
+                    writer.print(",");
+                }else{
+                    frs=false;
+                }
+                tv.print(writer);
+                writer.print(">");
+            }
+        }                    
+        writer.print(getName());
+        writer.print("(");
+        boolean frs=true;
+        List<JavaTypeModel> fpts;
+        try {
+            fpts=getFormalParametersTypes();
+        }catch(TermWareException ex){
+            fpts=Collections.emptyList();
+            writer.print("error:"+ex.getMessage());
+        }
+        for(JavaTypeModel tm: fpts) {
+            if (!frs) {
+                writer.print(',');
+            }else{
+                frs=false;
+            }
+            writer.print(tm.getFullName());
+        }
+        writer.print(")");        
+    }
+    
+    public void print(PrintStream out) 
+    {
+        print(new PrintWriter(out));
+    }
     
     public JavaFacts getJavaFacts()
     { return typeModel_.getJavaFacts(); }

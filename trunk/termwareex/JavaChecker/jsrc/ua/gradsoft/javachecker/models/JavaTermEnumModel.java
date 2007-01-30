@@ -8,6 +8,8 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -74,9 +76,42 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
         return enumConstants_;
     }
     
+    /**
+     * EnumModel(identifier,superInterfaces, EnumConstantsList,membersList,context)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+        Term identifierTerm=t_.getSubtermAt(QENUM_IDENTIFIER_INDEX_);
+        List<JavaTypeModel> si = getSuperInterfaces();
+        Term implementsList = t_.getSubtermAt(IMPLEMENTS_INDEX_);
+        Iterator<JavaTypeModel> siit = si.iterator();
+        Term implementsListModel = TermUtils.createNil();
+        while(!implementsList.isNil()) {
+            Term siname = implementsList.getSubtermAt(0);
+            implementsList=implementsList.getSubtermAt(1);
+            JavaTypeModel tm = siit.next();
+            Term ttm = TermUtils.createJTerm(tm);
+            Term typeRefTerm = TermUtils.createTerm("TypeRef",siname,ttm);
+            implementsListModel = TermUtils.createTerm("cons",typeRefTerm,implementsListModel);            
+        }
+        implementsListModel = TermUtils.reverseListTerm(implementsListModel);
+        Term enumConstantsList = TermUtils.createNil();
+        for(Map.Entry<String,JavaEnumConstantModel> e:enumConstants_.entrySet()) {
+            Term enumConstantModelTerm = e.getValue().getModelTerm();
+            enumConstantsList = TermUtils.createTerm("cons",enumConstantModelTerm,enumConstantsList);
+        }
+        enumConstantsList = TermUtils.reverseListTerm(enumConstantsList);
+        Term membersList = getMemberModelsList();
+        JavaPlaceContext ctx = JavaPlaceContextFactory.createNewTypeContext(this);
+        Term tctx=TermUtils.createJTerm(ctx);
+        return TermUtils.createTerm("EnumDeclarationModel",
+                identifierTerm, implementsListModel,
+                enumConstantsList, membersList,tctx
+                );
+    }
     
     private void build(Term t) throws TermWareException {
-        System.out.println("JavaTermEnumModel::build:"+TermHelper.termToString(t));
+        //System.out.println("JavaTermEnumModel::build:"+TermHelper.termToString(t));
         
         Term identifierTerm=t.getSubtermAt(QENUM_IDENTIFIER_INDEX_);
         Term implementsList=t.getSubtermAt(IMPLEMENTS_INDEX_);

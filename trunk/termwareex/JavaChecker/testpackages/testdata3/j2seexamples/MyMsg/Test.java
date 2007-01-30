@@ -1,7 +1,7 @@
 // Static import user-defined static fields. 
 import j2seexamples.MyMsg.*; 
  
-import static MyMsg.Msg.*;  
+import static j2seexamples.MyMsg.Msg.*;  
  
 class Test {  
   public static void main(String args[]) {  

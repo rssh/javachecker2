@@ -278,6 +278,28 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     { return true; }
 
     /**
+     * MethodModel(modifiers,typeParameters,ResultType,name,formalParameters,throws,block,context)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+      Term mt = modifiers_.getModelTerm();
+      Term tpt = TermUtils.buildTypeParametersModelTerm(getTypeParameters(),t_.getSubtermAt(TYPE_PARAMETERS_TERM_INDEX));
+      Term rt = TermUtils.createTerm("TypeRef",getResultTypeAsTerm(),TermUtils.createJTerm(getResultType()));
+      Term identifier = t_.getSubtermAt(METHOD_DECLARATOR_INDEX).getSubtermAt(METHOD_DECLARATOR__IDENTIFIER_INDEX);
+      Term ofp = t_.getSubtermAt(METHOD_DECLARATOR_INDEX).getSubtermAt(METHOD_DECLARATOR__FORMAL_PARAMETERS_INDEX);
+      Term fp = ofp; /*buildFormalParametersModelTerm(formalParameters_,ofp);*/
+      Term tht = t_.getSubtermAt(THROWS_SPECIFICATION_INDEX);
+      Term blockModelTerm = TermUtils.createNil();
+      if (blockModel_!=null) {
+          blockModelTerm=blockModel_.getModelTerm();
+      }
+      JavaPlaceContext ctx = JavaPlaceContextFactory.createNewMethodContext(this);
+      Term tctx = TermUtils.createJTerm(ctx);
+      Term retval = TermUtils.createTerm("MethodModel",mt,tpt,rt,identifier,fp,tht,blockModelTerm,tctx);
+      return retval;
+    }
+    
+    /**
      *return top-level block of method or null if one is not defined.
      *(for abstract method)
      *@Nullable

@@ -117,6 +117,7 @@ public class JavaTypeArgumentsSubstitution {
     {
       map_.put(v,t);  
     }
+                
     
     static class TypeVariableComparator implements Comparator<JavaTypeVariableAbstractModel>
     {

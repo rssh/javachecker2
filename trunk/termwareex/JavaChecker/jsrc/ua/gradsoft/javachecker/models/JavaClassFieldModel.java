@@ -10,6 +10,7 @@ package ua.gradsoft.javachecker.models;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -47,6 +48,16 @@ public class JavaClassFieldModel extends JavaMemberVariableModel
         Type fieldType = field_.getGenericType();
         return JavaClassTypeModel.createTypeModel(fieldType);
     }
+    
+    /**
+     * ClassField(this)
+     */
+    public Term getModelTerm() throws TermWareException
+    {       
+       Term tctx = TermUtils.createJTerm(this);
+       return TermUtils.createTerm("ClassField",tctx);
+    }
+    
     
     public boolean canCheck()
     { return false; }

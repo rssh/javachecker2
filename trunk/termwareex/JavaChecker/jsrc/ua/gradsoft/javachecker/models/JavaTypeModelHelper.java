@@ -11,6 +11,7 @@ package ua.gradsoft.javachecker.models;
 import java.util.Iterator;
 import java.util.List;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 import ua.gradsoft.termware.exceptions.AssertException;
 
@@ -277,7 +278,72 @@ public class JavaTypeModelHelper {
         }            
         return false;
     }
+
     
+    public static boolean isBoolean(JavaTypeModel x)
+    {
+        return x.equals(JavaPrimitiveTypeModel.BOOLEAN) || x.getFullName().equals("java.lang.Boolean");
+    }
+
+    public static boolean isByte(JavaTypeModel x)
+    {
+       return x.equals(JavaPrimitiveTypeModel.BYTE) || x.getFullName().equals("java.lang.Byte");
+    }
+    
+    
+    public static boolean isShort(JavaTypeModel x)
+    {
+       return x.equals(JavaPrimitiveTypeModel.SHORT) || x.getFullName().equals("java.lang.Short");
+    }
+
+    
+    public static  boolean isInt(JavaTypeModel x)
+    {
+        return x.equals(JavaPrimitiveTypeModel.INT) || x.getFullName().equals("java.lang.Integer");
+    }
+    
+    public static  boolean isLong(JavaTypeModel x)
+    {
+        return x.equals(JavaPrimitiveTypeModel.INT) || x.getFullName().equals("java.lang.Long");        
+    }
+
+    public static boolean isFloat(JavaTypeModel x)
+    {
+        return x.equals(JavaPrimitiveTypeModel.FLOAT) || x.getFullName().equals("java.lang.Float");
+    }
+
+    public static boolean isDouble(JavaTypeModel x)
+    {
+        return x.equals(JavaPrimitiveTypeModel.DOUBLE) || x.getFullName().equals("java.lang.Double");
+    }
+    
+    public static boolean isChar(JavaTypeModel x)
+    {
+        return x.equals(JavaPrimitiveTypeModel.CHAR) || x.getFullName().equals("java.lang.Char");
+    }
+
+    public static JavaTypeModel unboxingConversion(JavaTypeModel x)
+    {
+            if (isBoolean(x)) {
+                return JavaPrimitiveTypeModel.BOOLEAN;
+            }else if (isByte(x)) {
+                return JavaPrimitiveTypeModel.BYTE;
+            }else if (isChar(x)){
+                return JavaPrimitiveTypeModel.CHAR;
+            }else if (isShort(x)){
+                return JavaPrimitiveTypeModel.SHORT;
+            }else if (isInt(x)) {
+                return JavaPrimitiveTypeModel.INT;
+            }else if (isLong(x)) {
+                return JavaPrimitiveTypeModel.LONG;
+            }else if (isFloat(x)){
+                return JavaPrimitiveTypeModel.FLOAT;
+            }else if (isDouble(x)){
+                return JavaPrimitiveTypeModel.DOUBLE;
+            }else{
+                return x;
+            }
+    }
     
     private static boolean subtypeOrSameWithSameName(JavaTypeModel x, JavaTypeModel y) throws TermWareException
     {
@@ -360,10 +426,22 @@ public class JavaTypeModelHelper {
       }
     }
     
-    private static boolean sameNames(JavaTypeModel x,JavaTypeModel y)
+    public static boolean sameNames(JavaTypeModel x,JavaTypeModel y)
     {
       return x.getName().equals(y.getName()) && 
               x.getPackageModel().getName().equals(y.getPackageModel().getName());  
+    }
+
+    
+    public static Term createModelTermList(List<JavaTypeModel> l) throws TermWareException
+    {
+      Term retval=TermUtils.createNil();
+      int size=l.size();
+      for(int i=0; i<size;++i){
+          JavaTypeModel tm = l.get(size-i-1);
+          retval=TermUtils.createTerm("cons",tm.getModelTerm(),retval);
+      }
+      return retval;
     }
     
     private static boolean samePrimaryName(JavaTypeModel x,JavaTypeModel y)
@@ -378,5 +456,6 @@ public class JavaTypeModelHelper {
         }
         return sameNames(x,y);
     }
+    
     
 }

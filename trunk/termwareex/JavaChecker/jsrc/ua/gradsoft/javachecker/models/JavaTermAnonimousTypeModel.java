@@ -10,6 +10,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.NotSupportedException;
@@ -133,6 +134,40 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
       
     }
     
+    /**
+     * AnonimousClassModel(name_,super, membersList,ctx)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+        Term idTerm=TermUtils.createIdentifier(name_);
+        Term superTerm=null;
+        JavaTypeModel superClass = getSuperClass();
+        List<JavaTypeModel> superInterfaces = getSuperInterfaces();
+        if (superInterfaces.isEmpty()) {
+            Term tsc=TermUtils.createJTerm(superClass);
+            Term scTerm = t_.getSubtermAt(CLASS_OR_INTERFACE_TERM_INDEX);
+            Term taTerm = t_.getSubtermAt(TYPE_ARGUMENTS_TERM_INDEX);
+            if (!taTerm.isNil()) {
+                Term sclTerm=TermUtils.createTerm("cons",scTerm,TermUtils.createTerm("cons",taTerm,TermUtils.createNil()));
+                scTerm=TermUtils.createTerm("ClassOrInterfaceType",sclTerm);
+            }
+            superTerm=TermUtils.createTerm("TypeRef",scTerm,tsc);            
+        }else{
+            JavaTypeModel superInterface=superInterfaces.get(0);
+            Term tsc=TermUtils.createJTerm(superInterface);
+            Term scTerm = t_.getSubtermAt(CLASS_OR_INTERFACE_TERM_INDEX);
+            Term taTerm = t_.getSubtermAt(TYPE_ARGUMENTS_TERM_INDEX);
+            if (!taTerm.isNil()) {
+                Term sclTerm=TermUtils.createTerm("cons",scTerm,TermUtils.createTerm("cons",taTerm,TermUtils.createNil()));
+                scTerm=TermUtils.createTerm("ClassOrInterfaceType",sclTerm);
+            }            
+            superTerm=TermUtils.createTerm("TypeRef",scTerm,tsc); 
+        }
+        Term membersList=getMemberModelsList();
+        JavaPlaceContext ctx=JavaPlaceContextFactory.createNewTypeContext(this);
+        Term tctx=TermUtils.createJTerm(ctx);
+        return TermUtils.createTerm("AnonimousClassModel",idTerm,superTerm,membersList,tctx);
+    }
 
     private String name_;    
     private int     anonimousIndexInParent_;        
@@ -140,9 +175,6 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
     
     public static final int CLASS_OR_INTERFACE_TERM_INDEX=0;
     public static final int TYPE_ARGUMENTS_TERM_INDEX=1;
-    public static final int CLASS_OR_INTEFACE_BODY_TERM_INDEX=3;
-    
-    
-
+    public static final int CLASS_OR_INTEFACE_BODY_TERM_INDEX=3;        
     
 }

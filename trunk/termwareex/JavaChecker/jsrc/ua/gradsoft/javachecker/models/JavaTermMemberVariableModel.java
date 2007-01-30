@@ -32,7 +32,15 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
         }
         type_=type;
         variableDeclarator_=variableDeclarator;
-        Term identifierTerm = variableDeclarator.getSubtermAt(0).getSubtermAt(0);
+        Term variableDeclaratorId=variableDeclarator.getSubtermAt(0);
+        Term identifierTerm = variableDeclaratorId.getSubtermAt(0);
+        if (variableDeclaratorId.getArity() > 1) {
+            int nReferences = variableDeclaratorId.getSubtermAt(1).getInt();
+            while(nReferences > 0) {
+                type_=TermUtils.createTerm("ReferenceType",type_);
+                --nReferences;
+            }
+        }        
         name_=identifierTerm.getSubtermAt(0).getName();
         owner_=owner;      
         modifiersModel_=new JavaModifiersModel(modifiers);        
@@ -93,6 +101,23 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
       return retval;
     }
     
+    /**
+     * MemberVariableModel(modifiers, TypeRef, name, initializer,this)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+        Term modifiersModelTerm = modifiersModel_.getModelTerm();
+        JavaTypeModel tm = getTypeModel();
+        Term ttm= TermUtils.createJTerm(tm);
+        Term typeRef = TermUtils.createTerm("TypeRef",type_,ttm);
+        Term identifierTerm = variableDeclarator_.getSubtermAt(0).getSubtermAt(0);
+        Term initializer = TermUtils.createNil();
+        if (variableDeclarator_.getArity()>1) {
+            initializer = variableDeclarator_.getSubtermAt(1);
+        }               
+        Term tthis = TermUtils.createJTerm(this);
+        return TermUtils.createTerm("MemberVariableModel",modifiersModelTerm,typeRef,identifierTerm,initializer,tthis);
+    }
     
     private String  name_;
     private Term    type_=null;

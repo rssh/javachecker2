@@ -24,9 +24,14 @@ public class JavaTermEnumConstantModel extends JavaEnumConstantModel
     {
       
       owner_=owner;
-      Term idTerm = enumConstantTerm.getSubtermAt(IDENTIFIER_TERM_INDEX);
-      name_ = idTerm.getSubtermAt(0).getString();
-      System.err.println("enum constant "+name_+", arity="+enumConstantTerm.getArity());  
+      identifierTerm_ = enumConstantTerm.getSubtermAt(IDENTIFIER_TERM_INDEX);
+      name_ = identifierTerm_.getSubtermAt(0).getString();
+      if (enumConstantTerm.getArity()>=ARGUMENTS_TERM_INDEX+1) {
+          argumentsTerm_ = enumConstantTerm.getSubtermAt(ARGUMENTS_TERM_INDEX);
+      }else{
+          argumentsTerm_ = TermUtils.createNil();
+      }
+      //System.err.println("enum constant "+name_+", arity="+enumConstantTerm.getArity());  
       if (enumConstantTerm.getArity()>=CLASSORINTERFACE_BODY_TERM_INDEX+1) {
           subtype_=new JavaTermEnumAnonimousTypeModel(name_,enumConstantTerm.getSubtermAt(CLASSORINTERFACE_BODY_TERM_INDEX),owner); 
       }
@@ -46,6 +51,14 @@ public class JavaTermEnumConstantModel extends JavaEnumConstantModel
     public JavaTypeModel getOwner()
     { return owner_; }
         
+    /**
+     * EnumConstantModel(identifierTerm,arguments,subtype)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+       Term subtypeModelTerm = (subtype_==null) ? TermUtils.createNil() : subtype_.getModelTerm();
+       return TermUtils.createTerm("EnumConstantModel",identifierTerm_,argumentsTerm_,subtypeModelTerm);
+    }
     
     public boolean canCheck()
     { return false; }
@@ -54,6 +67,8 @@ public class JavaTermEnumConstantModel extends JavaEnumConstantModel
     { return true; }
     
     private String               name_;
+    private Term                 identifierTerm_;
+    private Term                 argumentsTerm_;
     private JavaTermEnumModel    owner_;
     private JavaTermEnumAnonimousTypeModel subtype_=null;
     

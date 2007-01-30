@@ -12,6 +12,8 @@ package ua.gradsoft.javachecker.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermWareException;
 
 /**
  *Model for block with type-variables argument bound
@@ -56,7 +58,20 @@ public class JavaArgumentBoundTopLevelBlockModel implements JavaTopLevelBlockMod
     
     public JavaTypeArgumentsSubstitution getSubstitution()
     { return substitution_; }
-        
+    
+    
+    /**
+     * TypeArgumentBoundTopLevelBlock(origin,ctx)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+        Term blockModelTerm = origin_.getModelTerm();
+        JavaPlaceContext ctx = JavaPlaceContextFactory.createNewTopLevelBlockOwnerContext(owner_);
+        Term tctx=TermUtils.createJTerm(ctx);
+        Term retval = TermUtils.createTerm("TypeArgumentBoundTopLevelBlock",blockModelTerm,tctx);
+        return retval;
+    }
+    
     private JavaArgumentBoundTopLevelBlockOwnerModel owner_;
     private JavaTopLevelBlockModel origin_;
     private List<JavaStatementModel> statements_=null;

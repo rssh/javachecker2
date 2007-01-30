@@ -8,6 +8,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,11 @@ public class TermUtils {
     public static final Term createNil()
     {
       return getTermFactory().createNil();  
+    }
+    
+    public static final Term createInt(int x)
+    {
+      return getTermFactory().createInt(x);
     }
     
     public static final Term createAtom(String name)
@@ -63,10 +69,25 @@ public class TermUtils {
     {
       return getTermFactory().createTerm(name,t1,t2);
     }
+
+    public static final Term createTerm(String name, Term t1,Term t2, Term t3) throws TermWareException
+    {
+      return getTermFactory().createTerm(name,t1,t2,t3);
+    }
+    
+    public static final Term createTerm(String name, Term ... subterms) throws TermWareException
+    {
+      return getTermFactory().createTerm(name,subterms);
+    }
     
     public static final Term createTerm(String name, Term t1, int i2) throws TermWareException
     {
       return getTermFactory().createTerm(name,t1,getTermFactory().createInt(i2));
+    }
+    
+    public static final Term createJTerm(Object o) throws TermWareException
+    {
+      return getTermFactory().createJTerm(o);
     }
     
     public static final Term addTermToList(Term list, Term object) throws TermWareException
@@ -89,7 +110,7 @@ public class TermUtils {
      public static List<JavaTypeVariableAbstractModel>  buildTypeParameters(Term tpt, JavaTypeModel typeModel) throws TermWareException
     {         
         if (tpt.isNil()) {
-            return JavaModelConstants.TYPEVARIABLE_EMPTY_LIST;
+            return Collections.emptyList();
         }
         if (!tpt.getName().equals("TypeParameters")) {
             throw new AssertException("TypeParameters required instead "+TermHelper.termToString(tpt));
@@ -108,6 +129,13 @@ public class TermUtils {
         return retval;
     }
 
+     /**
+      *TODO: change type names in bounds to type-ref
+      */
+     public static Term buildTypeParametersModelTerm(List<JavaTypeVariableAbstractModel> tvams, Term tpt)
+     {
+       return tpt;  
+     }
 
      public static Map<String,JavaFormalParameterModel> buildFormalParameters(Term formalParametersList,JavaTopLevelBlockOwnerModel executable) throws TermWareException
     {
@@ -146,5 +174,14 @@ public class TermUtils {
       return retval;
     }            
 
+    public static Term reverseListTerm(Term t) throws TermWareException
+    {
+      Term retval=TermUtils.createNil();
+      while(!t.isNil()) {
+          retval = getTermFactory().createConsTerm(t.getSubtermAt(0),retval);
+          t=t.getSubtermAt(1);
+      }
+      return retval;
+    }
      
 }

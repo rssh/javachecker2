@@ -8,7 +8,7 @@
 
 package ua.gradsoft.javachecker.models;
 
-import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
@@ -156,6 +156,9 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
       public boolean isLocal()
       { return false; }
       
+      public boolean isAnonimous()
+      { return false; }
+      
       public JavaStatementModel getEnclosedStatement()
       { return null; }
       
@@ -174,7 +177,7 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
       }
       
       public List<JavaTypeModel> getSuperInterfaces()
-      { return JavaModelConstants.TYPEMODEL_EMPTY_LIST; }
+      { return Collections.emptyList(); }
       
       
   /**
@@ -251,15 +254,32 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
             return boundTypeModel_.hasTypeParameters();
         }
     }
+        
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() {
         if (kind_==JavaWildcardBoundsKind.SUPER) {
-           return JavaModelConstants.TYPEVARIABLE_EMPTY_LIST; 
+           return Collections.emptyList();
         }else{
             return boundTypeModel_.getTypeParameters();
         }
     }
-              
+    
+    /**
+     *WildCardBoundsModel(super|extends,TypeRef(boundTypeModel_))
+     */
+    public  Term getModelTerm() throws TermWareException
+    {
+        Term kt=null;
+        if (kind_==JavaWildcardBoundsKind.SUPER) {
+            kt=TermUtils.createAtom("super");
+        }else{
+            kt=TermUtils.createAtom("extends");
+        }
+        Term typeRef = TermUtils.createTerm("TypeRef",boundTypeModel_.getShortNameAsTerm(),TermUtils.createJTerm(boundTypeModel_));
+        Term retval = TermUtils.createTerm("WildCardBoundsModel",kt,typeRef);
+        return retval;
+    }
+    
     private JavaWildcardBoundsKind      kind_;
     private JavaTypeModel boundTypeModel_=null;
         

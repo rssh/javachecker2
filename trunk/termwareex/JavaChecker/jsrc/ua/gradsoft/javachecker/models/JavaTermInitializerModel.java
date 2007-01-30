@@ -10,9 +10,9 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -40,6 +40,8 @@ public class JavaTermInitializerModel implements JavaInitializerModel, JavaTermT
     public JavaTypeModel  getTypeModel()
     { return owner_; }
     
+    public String getName()  { return "Initializer"; }
+    
     public JavaTermTypeAbstractModel getTermTypeAbstractModel()
     { return owner_; }
     
@@ -48,7 +50,7 @@ public class JavaTermInitializerModel implements JavaInitializerModel, JavaTermT
      */
     public List<JavaTypeVariableAbstractModel> getTypeParameters()
     {
-      return JavaModelConstants.TYPEVARIABLE_EMPTY_LIST;  
+      return Collections.emptyList(); 
     }
 
     /**
@@ -56,7 +58,7 @@ public class JavaTermInitializerModel implements JavaInitializerModel, JavaTermT
      */
     public Map<String,JavaFormalParameterModel> getFormalParameters()
     {
-      return new TreeMap<String,JavaFormalParameterModel>();  
+      return Collections.emptyMap();  
     }
     
     
@@ -76,6 +78,17 @@ public class JavaTermInitializerModel implements JavaInitializerModel, JavaTermT
     public JavaTopLevelBlockModel getTopLevelBlockModel()
     { return blockModel_; }
     
+    /**
+     *InitializerModel(modifiersTerm,blockModelTerm,ctx);
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+        Term mt=modifiersModel_.getModelTerm();
+        Term bmt = blockModel_.getModelTerm();
+        JavaPlaceContext ctx=JavaPlaceContextFactory.createNewInitializerContext(this);
+        Term tctx = TermUtils.createJTerm(ctx);
+        return TermUtils.createTerm("InitializerModel",mt,bmt,tctx);
+    }
     
     private void build(Term t) throws TermWareException
     {
@@ -84,6 +97,7 @@ public class JavaTermInitializerModel implements JavaInitializerModel, JavaTermT
         Term blockTerm = t.getSubtermAt(1);
         blockModel_ = new JavaTermTopLevelBlockModel(this,blockTerm);
     }
+    
     
     private JavaTermTypeAbstractModel owner_;
     private JavaModifiersModel modifiersModel_;

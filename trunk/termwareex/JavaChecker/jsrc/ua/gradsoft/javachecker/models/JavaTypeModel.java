@@ -87,6 +87,11 @@ public abstract class JavaTypeModel {
   
   public abstract boolean isNull();
   
+  /**
+   *return true, if this is unknown typemodel.
+   *(clients of library can create Unknonwn model, when it is not possible
+   * to resolve entity, but resolving is not critical in context)
+   */
   public abstract boolean isUnknown();
   
   /**
@@ -109,7 +114,15 @@ public abstract class JavaTypeModel {
   public abstract JavaTypeModel  getEnclosedType() throws NotSupportedException, TermWareException;
   
   
+  /**
+   *true, if this is local type
+   */
   public abstract boolean isLocal();
+  
+  /**
+   *true, if this is anonimous type.
+   */
+  public abstract boolean isAnonimous();
   
   /**
    *@return referenced type. Works only if isArray()==true, otherwise
@@ -204,20 +217,26 @@ public abstract class JavaTypeModel {
    *statement - return enclosed statement, otherwise - null
    */
   public abstract  JavaStatementModel  getEnclosedStatement();
-  
-  
-  
+     
+  /**
+   *return model of package
+   */
   public  JavaPackageModel  getPackageModel()
   { return packageModel_; }
+  
+  /**
+   *return TypeModel term.
+   *TypeModel is a term which have next form:
+   * TypeModel( Model-of-ASTTree, PlaceContext )
+   */
+  public  abstract Term  getModelTerm() throws TermWareException;
   
   public  JavaUnitModel  getUnitModel()
   { return unitModel_; }
   
   public  void setUnitModel(JavaUnitModel unitModel)
   { unitModel_=unitModel; }
-  
-  
-  
+    
   
   public  JavaFacts  getJavaFacts()
   { return packageModel_.getFacts(); }

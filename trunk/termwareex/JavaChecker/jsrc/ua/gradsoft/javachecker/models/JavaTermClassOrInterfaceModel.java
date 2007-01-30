@@ -6,6 +6,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
@@ -155,6 +156,41 @@ public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
         return true; }
     
 
+    /**
+     * ClassOrInterfaceModel("class"|"interface",Identifier,typeParameters,extendsList,ImplementsList,ClassOrInterfaceBody(membersList),context)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+       Term classOrInterface=t_.getSubtermAt(CLASS_OR_INTERFACE_TERM_INDEX);
+       Term nameTerm=t_.getSubtermAt(NAME_IDENTIFIER_TERM_INDEX);
+       Term typeParametersTerm = getTypeParametersModel(t_.getSubtermAt(TYPE_PARAMETERS_TERM_INDEX));
+       JavaTypeModel superClass = getSuperClass();
+       Term extendsListModel = TermUtils.createNil();
+       if (!JavaTypeModelHelper.same(JavaResolver.resolveJavaLangObject(),superClass)) {
+           Term oel = t_.getSubtermAt(EXTENDS_TERM_INDEX);
+           Term oe = oel.getSubtermAt(0);
+           Term superClassTypeRef=TermUtils.createTerm("TypeRef",oe,TermUtils.createJTerm(superClass));
+           extendsListModel=TermUtils.createTerm("cons",superClassTypeRef,extendsListModel);
+       }
+       Term implementsListModel = TermUtils.createNil();
+       List<JavaTypeModel> superInterfaces = getSuperInterfaces();
+       Term oimplementsList = t_.getSubtermAt(IMPLEMENTS_TERM_INDEX);
+       if (!oimplementsList.isNil()) {
+           oimplementsList=oimplementsList.getSubtermAt(0);
+           Iterator<JavaTypeModel> siit = superInterfaces.iterator();
+           while(!oimplementsList.isNil()) {
+              Term tpi=oimplementsList.getSubtermAt(0);
+              oimplementsList=oimplementsList.getSubtermAt(1);
+              Term tjt = TermUtils.createJTerm(siit.next());
+              Term tr = TermUtils.createTerm("TypeRef",tpi,tjt);
+              implementsListModel=TermUtils.createTerm("cons",tr,implementsListModel);
+           }
+       }
+       Term membersList=getMemberModelsList();
+       Term classOrInterfaceBody=TermUtils.createTerm("ClassOrInterfaceBody",membersList);
+       return TermUtils.createTerm("ClassOrInterfaceModel",classOrInterface,nameTerm,typeParametersTerm,extendsListModel,implementsListModel,classOrInterfaceBody);
+    }
+    
     
     public boolean check() throws TermWareException {
         boolean retval=true;

@@ -23,8 +23,7 @@ import ua.gradsoft.termware.exceptions.AssertException;
  */
 public class JavaTermEnumAnonimousTypeModel extends JavaTermTypeAbstractModel
 {
-    
-    
+        
 
     public boolean isAnnotationType() {
         return false;
@@ -64,7 +63,18 @@ public class JavaTermEnumAnonimousTypeModel extends JavaTermTypeAbstractModel
     public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
         return getEnclosedType().getEnumConstantModels();
     }
-        
+    
+    /**
+     * EnumAnonimousTypeModel(identifier,membersList,context)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+        Term identifierName=TermUtils.createIdentifier(constantName_);
+        Term membersListModel=getMemberModelsList();
+        JavaPlaceContext ctx=JavaPlaceContextFactory.createNewTypeContext(this);
+        Term tctx=TermUtils.createJTerm(ctx);
+        return TermUtils.createTerm("EnumAnonimousTypeModel",identifierName,membersListModel,tctx);
+    }
     
     private void fillModels(Term t) throws TermWareException
     {

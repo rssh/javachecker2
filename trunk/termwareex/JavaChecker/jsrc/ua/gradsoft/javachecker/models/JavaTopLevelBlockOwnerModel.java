@@ -12,6 +12,7 @@ package ua.gradsoft.javachecker.models;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -22,6 +23,11 @@ public interface JavaTopLevelBlockOwnerModel
 {
 
     public JavaTypeModel  getTypeModel();
+    
+    /**
+     *return name of method or 'Initializer' or 'Constructor'
+     */
+    public String getName();
     
     /*
      * get list of type parameters.
@@ -42,5 +48,10 @@ public interface JavaTopLevelBlockOwnerModel
      *otherwise throws NotSupportedException
      */
     public JavaTopLevelBlockModel  getTopLevelBlockModel() throws NotSupportedException;
+    
+    /**
+     * return model term.
+     */
+    public Term  getModelTerm() throws TermWareException;
     
 }

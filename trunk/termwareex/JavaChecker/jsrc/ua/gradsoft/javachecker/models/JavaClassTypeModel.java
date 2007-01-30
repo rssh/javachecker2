@@ -16,6 +16,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -134,7 +135,7 @@ public class JavaClassTypeModel extends JavaTypeModel
   {
       Type[] rfinterfaces =theClass_.getGenericInterfaces();
       if (rfinterfaces.length==0) {
-          return JavaModelConstants.TYPEMODEL_EMPTY_LIST;
+          return Collections.emptyList();
       }else{
           List retval=new LinkedList();
           for(int i=0; i<rfinterfaces.length;++i){
@@ -296,6 +297,9 @@ public class JavaClassTypeModel extends JavaTypeModel
   public boolean isLocal()
   { return theClass_.isLocalClass(); }
   
+  public boolean isAnonimous()
+  { return theClass_.isAnonymousClass(); }
+  
   public JavaStatementModel  getEnclosedStatement()
   { return null; }
   
@@ -315,6 +319,13 @@ public class JavaClassTypeModel extends JavaTypeModel
       return retval;
   }
   
+  /**
+   * return "ClassTypeModel(context)"
+   */
+  public Term getModelTerm() throws TermWareException
+  {
+      return TermUtils.createTerm("ClassTypeModel",TermUtils.createJTerm(JavaPlaceContextFactory.createNewTypeContext(this)));
+  }
   
   static public JavaTypeModel createTypeModel(Type type) throws TermWareException
   {

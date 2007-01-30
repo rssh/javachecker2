@@ -11,6 +11,7 @@
 package ua.gradsoft.javachecker.models;
 
 import java.util.List;
+import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -60,4 +61,8 @@ public interface JavaStatementModel {
      */
     public JavaTypeModel getLocalType() throws TermWareException;
     
+    /**
+     * Model term
+     */
+    public Term  getModelTerm() throws TermWareException;
 }
