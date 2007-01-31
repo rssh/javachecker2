@@ -71,7 +71,7 @@ public class JavaTermConstructorModel implements JavaConstructorModel, JavaTermT
       if (!t.getSubtermAt(EXPLICIT_CONSTRUCTOR_INVOCATION_TERM_INDEX).isNil()) {
           blockTerm=TermUtils.createTerm("cons",t.getSubtermAt(EXPLICIT_CONSTRUCTOR_INVOCATION_TERM_INDEX),blockTerm);
       }
-      blockModel_=new JavaTermTopLevelBlockModel(this,t.getSubtermAt(BLOCK_TERM_INDEX));      
+      blockModel_=new JavaTermTopLevelBlockModel(this,blockTerm);      
     }
     
     /**

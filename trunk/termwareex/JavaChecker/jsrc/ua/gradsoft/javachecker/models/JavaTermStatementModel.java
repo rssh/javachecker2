@@ -108,12 +108,16 @@ public class JavaTermStatementModel implements JavaStatementModel
            kind_=JavaStatementKind.DO_STATEMENT;
            childs_=new LinkedList<JavaStatementModel>();
            JavaTermStatementModel stm=new JavaTermStatementModel(blockModel_,t.getSubtermAt(0),this,null);                      
+           childs_.add(stm);
            extractAnonimousTypes(t.getSubtermAt(1));
        }else if(t.getName().equals("ForStatement")){
            kind_=JavaStatementKind.FOR_STATEMENT;
            Term loopHead=t.getSubtermAt(0);
            extractLocalVariableAndAnonimousTypesFromLoopHead(loopHead);          
            Term st=t.getSubtermAt(1);
+           childs_=new LinkedList<JavaStatementModel>();
+           JavaStatementModel stm = new JavaTermStatementModel(blockModel_,st,this,null);
+           childs_.add(stm);
        }else if(t.getName().equals("BreakStatement")){
            kind_=JavaStatementKind.BREAK_STATEMENT;
            childs_=Collections.emptyList();
@@ -130,6 +134,7 @@ public class JavaTermStatementModel implements JavaStatementModel
            kind_=JavaStatementKind.THROW_STATEMENT;
            childs_=Collections.emptyList();
            extractAnonimousTypes(t.getSubtermAt(0));
+           
        }else if(t.getName().equals("SynchronizedStatement")){
            kind_=JavaStatementKind.SYNCHRONIZED_STATEMENT;
            childs_=new LinkedList<JavaStatementModel>();
@@ -149,6 +154,7 @@ public class JavaTermStatementModel implements JavaStatementModel
            JavaTermStatementModel block = new JavaTermStatementModel(blockModel_,t.getSubtermAt(0),this,null);
            childs_.add(block);
            JavaTermStatementModel catchSeq = new JavaTermStatementModel(blockModel_,t.getSubtermAt(1),this,block);
+           childs_.add(catchSeq);
            if (t.getArity()>2) {
                JavaTermStatementModel fb=new JavaTermStatementModel(blockModel_,t.getSubtermAt(2),this,catchSeq);
                childs_.add(fb);
@@ -180,6 +186,12 @@ public class JavaTermStatementModel implements JavaStatementModel
            childs_=Collections.emptyList();
            JavaTermClassOrInterfaceModel iTypeModel = new JavaTermClassOrInterfaceModel(0,t,blockModel_.getOwnerModel().getTypeModel().getPackageModel()); 
            addLocalType(iTypeModel);
+       }else if(t.getName().equals("ExplicitSuperConstructorInvocation")){
+           kind_=JavaStatementKind.EXPLICIT_SUPER_CONSTRUCTOR_INVOCATION;
+           childs_=Collections.emptyList();
+       }else if(t.getName().equals("ExplicitThisConstructorInvocation")){
+           kind_=JavaStatementKind.EXPLICIT_THIS_CONSTRUCTOR_INVOCATION;
+           childs_=Collections.emptyList();
        }else{
            throw new AssertException("Invalid Statement:"+TermHelper.termToString(t));
        }
@@ -228,9 +240,175 @@ public class JavaTermStatementModel implements JavaStatementModel
      */
     public Term getModelTerm() throws TermWareException
     {        
-      JavaPlaceContext ctx = JavaPlaceContextFactory.createNewStatementContext(this);
+      JavaPlaceContext ctx = JavaPlaceContextFactory.createNewStatementContext(this);      
       Term tctx=TermUtils.createJTerm(ctx);
-      Term retval = TermUtils.createTerm("StatementModel",t_,tctx);
+      Term retval=null;
+      switch(getKind()) {
+          case ASSERT_STATEMENT:
+              retval = TermUtils.createTerm("AssertStatementModel",t_,tctx);
+              break;
+          case BLOCK:
+              {
+                Term childsListTerm=TermUtils.createNil();
+                for(JavaStatementModel child: getChildStatements()) {
+                    Term cmt=child.getModelTerm();
+                    childsListTerm=TermUtils.createTerm("cons",cmt,childsListTerm);
+                }
+                childsListTerm=TermUtils.reverseListTerm(childsListTerm);
+                retval = TermUtils.createTerm("BlockStatementModel",childsListTerm,tctx);
+              }          
+              break;
+          case BREAK_STATEMENT:
+          {
+              Term breakLabel = TermUtils.createNil();
+              if (t_.getArity() > 0) {
+                  breakLabel = t_.getSubtermAt(0);
+              }
+              retval = TermUtils.createTerm("BreakStatementModel",breakLabel,tctx);
+          }
+              break;
+          case CATCH:
+          {
+              Term fp = t_.getSubtermAt(0);
+              Term blockModel = childs_.get(0).getModelTerm();
+              retval = TermUtils.createTerm("CatchModel",fp,blockModel,tctx);              
+          }
+          break;
+          case CATCH_SEQUENCE:
+          {
+             Term cl=TermUtils.createNil();
+             for(JavaStatementModel st: childs_) {
+                 Term smt = st.getModelTerm();
+                 cl=TermUtils.createTerm("cons",smt,cl);
+             }
+             cl=TermUtils.reverseListTerm(cl);
+             retval = TermUtils.createTerm("CatchSequenceModel",cl,tctx);
+          }
+          break;
+          case CLASS_OR_INTERFACE_DECLARATION:
+          {
+              retval = TermUtils.createTerm("ClassOrInterfaceDeclarationModel",getLocalType().getModelTerm(),tctx);
+          }
+          break;
+          case CONTINUE_STATEMENT:
+          {
+              Term label = TermUtils.createNil();
+              if (t_.getArity() > 0) {
+                  label = t_.getSubtermAt(0);
+              }
+              retval = TermUtils.createTerm("ContinueStatementModel",label,tctx);
+          }
+                  break;
+          case DO_STATEMENT:
+          {
+              Term im = childs_.get(0).getModelTerm();
+              retval = TermUtils.createTerm("DoStatementModel",im,t_.getSubtermAt(1),tctx);             
+          }
+          break;
+          case EMPTY_STATEMENT:
+              retval = TermUtils.createTerm("EmptyStatementModel",tctx);
+              break;
+          case EXPLICIT_SUPER_CONSTRUCTOR_INVOCATION:
+              retval = TermUtils.createTerm("ExplicitSuperInvocationModel",t_.getSubtermAt(0),tctx);
+              break;
+          case EXPLICIT_THIS_CONSTRUCTOR_INVOCATION:
+              retval = TermUtils.createTerm("ExplicitThisInvocationModel",t_.getSubtermAt(0),tctx);
+              break;
+          case FOR_STATEMENT:
+          {
+              Term stm=childs_.get(0).getModelTerm();
+              retval = TermUtils.createTerm("ForStatementModel",t_.getSubtermAt(0),stm,tctx);
+          }
+          break;
+          case IF_STATEMENT:
+          {
+              Term exprTerm = t_.getSubtermAt(0);
+              Term ifTrue = childs_.get(0).getModelTerm();
+              Term ifFalse = TermUtils.createNil();
+              if (t_.getArity()==3) {
+                  ifFalse = childs_.get(1).getModelTerm();                  
+              }
+              retval = TermUtils.createTerm("IfStatementModel",exprTerm,ifTrue,ifFalse,tctx);
+          }
+          break;
+          case LABELED_STATEMENT:
+          {
+              Term id=t_.getSubtermAt(0);
+              Term st=childs_.get(0).getModelTerm();
+              retval = TermUtils.createTerm("LabeledStatementModel",id,st,tctx);
+          }
+          break;
+          case LOCAL_VARIABLE_DECLARATION:
+          {
+              Term modifiersTerm = t_.getSubtermAt(0);
+              Term typeTerm = t_.getSubtermAt(1);
+              Term listTerm = t_.getSubtermAt(2);
+              retval = TermUtils.createTerm("LocalVariableDeclarationModel",modifiersTerm,typeTerm,listTerm);
+          }
+          break;
+          case RETURN_STATEMENT:
+          {
+              Term expr = TermUtils.createNil();
+              if (t_.getArity()>0) {
+                  expr = t_.getSubtermAt(0);
+              }
+              retval = TermUtils.createTerm("ReturnStatementModel",expr,tctx);
+          }
+          break;
+          case STATEMENT_EXPRESSION_STATEMENT:
+          {
+              retval = TermUtils.createTerm("StatementExpressionStatement",t_.getSubtermAt(0),tctx);
+          }
+          break;
+          case SWITCH_STATEMENT:
+          {
+              Term mslbl = TermUtils.createNil();
+              int i=0;
+              Term oslbl = t_.getSubtermAt(1);
+              while(!oslbl.isNil()) {
+                  Term stm = childs_.get(i).getModelTerm();
+                  Term label = oslbl.getSubtermAt(0).getSubtermAt(1);
+                  Term lbl = TermUtils.createTerm("SwitchStatementLabelBlock",label,stm);
+                  mslbl = TermUtils.createTerm("cons",lbl,mslbl);
+                  oslbl=oslbl.getSubtermAt(1);
+                  ++i;
+              }
+              mslbl = TermUtils.reverseListTerm(mslbl);
+              retval = TermUtils.createTerm("SwitchStatementModel",t_.getSubtermAt(0),mslbl,tctx);
+          }
+          break;
+          case SYNCHRONIZED_STATEMENT:
+          {
+              Term stm = childs_.get(0).getModelTerm();
+              retval = TermUtils.createTerm("SynchronizedStatementModel",t_.getSubtermAt(0),stm,tctx);
+          }
+          break;
+          case THROW_STATEMENT:
+          {
+              retval = TermUtils.createTerm("ThrowStatementModel",t_.getSubtermAt(0),tctx);
+          }
+          break;
+          case TRY_STATEMENT:
+          {
+              Term blockModel = childs_.get(0).getModelTerm();
+              Term catchSequenceModel = childs_.get(1).getModelTerm();
+              Term finallyModel = TermUtils.createNil();
+              if (t_.getArity()==3) {
+                  finallyModel = childs_.get(2).getModelTerm();
+              }
+              retval = TermUtils.createTerm("TryStatementModel",blockModel,catchSequenceModel,finallyModel,tctx);
+          }
+          break;
+          case WHILE_STATEMENT:
+          {
+              Term expr = t_.getSubtermAt(0);
+              Term child = childs_.get(0).getModelTerm();
+              retval = TermUtils.createTerm("WhileStatementModel",expr,child,tctx);
+          }
+          break;
+          default:    
+              throw new AssertException("Unknown Statement Type:"+getKind().toString());
+      }      
       return retval;
     }
     
@@ -340,7 +518,7 @@ public class JavaTermStatementModel implements JavaStatementModel
     private void addLocalType(JavaTermClassOrInterfaceModel localType)
     {
       localType_=localType;      
-      localType.setIsLocal(this);
+      localType.setIsLocal(this);      
     }
       
     private JavaStatementKind kind_;

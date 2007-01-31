@@ -67,7 +67,15 @@ public class JavaResolver {
                 throw new AssertException("Atom type model must be primitive, instead:"+TermHelper.termToString(t));
             }
         }else if (t.isComplexTerm()) {
-            if (t.getName().equals("ReferenceType")) {
+            if (t.getName().equals("TypeRef")) {
+                // already resolved type is a second argument.
+                Term jt = t.getSubtermAt(1);
+                if (!jt.isJavaObject()) {
+                    throw new AssertException("second TypeRef argument must be java object");
+                }
+                Object o = jt.getJavaObject();
+                return (JavaTypeModel)o;
+            } else if (t.getName().equals("ReferenceType")) {
                 Term t1=t.getSubtermAt(1);
                 JavaTypeModel tm=resolveTypeToModel(t1,where,typeVariables);
                 int referenceLevel=t.getSubtermAt(0).getInt();
@@ -124,8 +132,8 @@ public class JavaResolver {
         JavaTypeModel curModel=prevModel;
         while(!t.isNil()) {
             Term ct=t.getSubtermAt(0);
-            if (ct.getName().equals("Idendifier")) {
-                String name=t.getSubtermAt(0).getString();
+            if (ct.getName().equals("Identifier")) {
+                String name=ct.getSubtermAt(0).getString();
                 //TODO: think about typeArguments among classOrInterfaceType ?
                 if (curModel.hasNestedTypeModels()) {
                     try {

@@ -34,7 +34,9 @@ public enum JavaStatementKind {
     CATCH_SEQUENCE(true),
     CATCH(true),
     LOCAL_VARIABLE_DECLARATION(false),
-    CLASS_OR_INTERFACE_DECLARATION(false)
+    CLASS_OR_INTERFACE_DECLARATION(false),
+    EXPLICIT_SUPER_CONSTRUCTOR_INVOCATION(false),
+    EXPLICIT_THIS_CONSTRUCTOR_INVOCATION(false)
     ;            
     
     JavaStatementKind(boolean haveChilds)
