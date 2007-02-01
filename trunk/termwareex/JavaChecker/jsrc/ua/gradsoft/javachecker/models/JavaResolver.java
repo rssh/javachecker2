@@ -32,7 +32,9 @@ public class JavaResolver {
     }
     
     public static JavaTypeModel resolveTypeToModel(Term t,JavaTypeModel where,List<JavaTypeVariableAbstractModel> typeVariables) throws EntityNotFoundException,TermWareException {
-        return resolveTypeToModel(t,where,typeVariables,null);
+        JavaUnitModel unitModel = where.getUnitModel();
+        JavaPackageModel packageModel = where.getPackageModel();
+        return resolveTypeToModel(t,unitModel,packageModel,where,typeVariables,null);
     }
     
     public static JavaTypeModel resolveTypeToModel(Term t, JavaStatementModel where) throws EntityNotFoundException, TermWareException {
@@ -40,10 +42,11 @@ public class JavaResolver {
         JavaTopLevelBlockOwnerModel blockOwner=where.getTopLevelBlockModel().getOwnerModel();
         List<JavaTypeVariableAbstractModel> typeVariables=blockOwner.getTypeParameters();
         Iterable<JavaTypeModel> localTypes = new LocalTypesIterable(where);
-        return resolveTypeToModel(t,ownerType,typeVariables,localTypes);
+        return resolveTypeToModel(t,ownerType.getUnitModel(),ownerType.getPackageModel(),ownerType,typeVariables,localTypes);
     }
     
-    public static JavaTypeModel resolveTypeToModel(Term t,JavaTypeModel where,List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException,TermWareException {
+    
+    public static JavaTypeModel resolveTypeToModel(Term t, JavaUnitModel unitModel, JavaPackageModel packageModel, JavaTypeModel where,List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException,TermWareException {
         if (t.isAtom()) {
             if (t.getName().equals("boolean")) {
                 return JavaPrimitiveTypeModel.BOOLEAN;
@@ -76,8 +79,8 @@ public class JavaResolver {
                 Object o = jt.getJavaObject();
                 return (JavaTypeModel)o;
             } else if (t.getName().equals("ReferenceType")) {
-                Term t1=t.getSubtermAt(1);
-                JavaTypeModel tm=resolveTypeToModel(t1,where,typeVariables);
+                Term t1=t.getSubtermAt(1);               
+                JavaTypeModel tm=resolveTypeToModel(t1,unitModel,packageModel,where,typeVariables,localTypes);
                 int referenceLevel=t.getSubtermAt(0).getInt();
                 while(referenceLevel>0) {
                     tm=new JavaArrayTypeModel(tm);
@@ -86,7 +89,11 @@ public class JavaResolver {
                 return tm;
             }else if (t.getName().equals("Identifier")) {
                 String name=t.getSubtermAt(0).getString();
-                return resolveTypeModelByName(name,where,typeVariables,localTypes);
+                if (where==null) {                    
+                    return resolveTypeModelByName(name,unitModel,packageModel);
+                }else{
+                    return resolveTypeModelByName(name,where,typeVariables,localTypes);
+                }
             }else if (t.getName().equals("ClassOrInterfaceType")) {
                 //at first, try to find class in our package or imported classes
                 Term head=t.getSubtermAt(0);
@@ -95,7 +102,11 @@ public class JavaResolver {
                 JavaTypeModel frsTypeModel=null;
                 boolean found=true;
                 try {
-                    frsTypeModel=resolveTypeModelByName(name,where,typeVariables,localTypes);
+                    if (where==null) {
+                       frsTypeModel=resolveTypeModelByName(name,unitModel,packageModel);
+                    }else{
+                       frsTypeModel=resolveTypeModelByName(name,where,typeVariables,localTypes); 
+                    }
                 }catch(EntityNotFoundException ex){
                     found=false;
                 }
@@ -104,7 +115,7 @@ public class JavaResolver {
                         return frsTypeModel;
                     }else{
                         try {
-                            return resolveRestOfClassOrInterfaceType(frsTypeModel,head.getSubtermAt(1),where,typeVariables,localTypes);
+                            return resolveRestOfClassOrInterfaceType(frsTypeModel,head.getSubtermAt(1),unitModel,packageModel,where,typeVariables,localTypes);
                         }catch(EntityNotFoundException ex){
                             found=false;
                         }
@@ -128,7 +139,7 @@ public class JavaResolver {
     }
     
     
-    private static JavaTypeModel  resolveRestOfClassOrInterfaceType(JavaTypeModel prevModel, Term t, JavaTypeModel where, List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException, TermWareException {
+    private static JavaTypeModel  resolveRestOfClassOrInterfaceType(JavaTypeModel prevModel, Term t, JavaUnitModel unitModel,JavaPackageModel packageModel,JavaTypeModel where, List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException, TermWareException {
         JavaTypeModel curModel=prevModel;
         while(!t.isNil()) {
             Term ct=t.getSubtermAt(0);
@@ -144,7 +155,7 @@ public class JavaResolver {
                 }else{
                     throw new EntityNotFoundException("type",t.getSubtermAt(0).getName(),"");
                 }
-            }else if(ct.getName().equals("TypeArguments")) {
+            }else if(ct.getName().equals("TypeArguments")) {               
                 curModel=new JavaArgumentBoundTypeModel(curModel,ct,where);
             }else{
                 throw new AssertException("Only Identifiers or TypeArgumentrs are allowed in ClassOrInterfaceType sequence, we have "+TermHelper.termToString(ct));
@@ -155,6 +166,14 @@ public class JavaResolver {
     }
     
     public static JavaTypeModel resolveTypeModelByName(String name, JavaTypeModel where,List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException, TermWareException {
+        String stv;
+        if (typeVariables==null) {
+            stv="null";
+        }else{
+            stv=typeVariables.toString();
+        }
+        System.err.println("!!!resolveTypeModelByName("+name+","+where.toString()+","+stv+")");
+        System.err.println("!!!resolveTypeModelByName("+name+","+where.getName()+","+stv+")");
         //0. try to find among type variables.
         if (typeVariables!=null) {
             for(JavaTypeVariableAbstractModel tv: typeVariables) {
@@ -166,11 +185,14 @@ public class JavaResolver {
         
         //1. may be model, where we resolve, have typeVariables
         if (where.hasTypeParameters()) {
+            System.err.println("!!!resolve from type parameters of "+where.getName()+" for "+name);
             for(JavaTypeVariableAbstractModel tv:where.getTypeParameters()) {
+                System.err.println("!!!check "+tv.getName());
                 if (tv.getName().equals(name)) {
                     return tv;
                 }
             }
+            System.err.println("!!! not type parameter");
         }
         
         //2. try to find among local types
@@ -192,6 +214,36 @@ public class JavaResolver {
                 ; /* do nothing */
             }
         }
+        
+        //3. try to find as nested in super-class        
+        JavaTypeModel superModel = null;
+        try {            
+           superModel = where.getSuperClass();
+        }catch(NotSupportedException ex) {
+            ;
+        }        
+        if (superModel!=null) {
+            
+           while(!superModel.isNull() && !(superModel.getFullName().equals("java.lang.Object"))) {
+               System.out.println("check superModel:"+superModel.getFullName());
+               if (superModel.hasNestedTypeModels()) {
+                 try {
+                    return superModel.findNestedTypeModel(name);
+                 }catch(EntityNotFoundException ex){
+                     ;
+                 }catch(NotSupportedException ex){
+                     ;
+                 }
+               }
+               try {
+                 superModel=superModel.getSuperClass();
+               }catch(NotSupportedException ex){
+                   break;
+               }
+           }  
+        }
+            
+        
         // if current class is nested, try to find next one.
         if (where.isNested()) {
             JavaTypeModel enclosed=where;
@@ -220,22 +272,50 @@ public class JavaResolver {
                 }
             }
         }
+        
         // now get current package model and try to find class in current package.
         JavaPackageModel pm=where.getPackageModel();
-        
-        try {
-            JavaTypeModel retval=pm.findTypeModel(name);
-            if (retval!=null) {
-                return retval;
-            }
-        }catch(EntityNotFoundException ex){
-            ; /* do nothing */
-        }
-        
+                
         JavaUnitModel um=where.getUnitModel();
         if (um==null) {
             System.out.println("um is null for "+where.getFullName());
+            try {
+               JavaTypeModel retval=pm.findTypeModel(name);
+               if (retval!=null) {
+                   return retval;
+               }              
+            }catch(EntityNotFoundException ex){
+               ; /* do nothing */    
+            }
+        }else{
+            return resolveTypeModelByName(name,um,pm);
         }
+                        
+        try {
+            //if all fail, try to find in "java.lang"
+            return resolveTypeModelFromPackage(name,"java.lang");
+        }catch(EntityNotFoundException ex){
+            /* do nothing */
+            ;
+        }
+                
+        //we still here - it means that class was not found in import declarations.
+        throw new EntityNotFoundException(" type ",name,"");
+    }
+    
+    public static JavaTypeModel resolveTypeModelByName(String name, JavaUnitModel um, JavaPackageModel pm) throws TermWareException, EntityNotFoundException
+    {
+        // at first find in current package
+        try {
+           JavaTypeModel retval=pm.findTypeModel(name);
+           if (retval!=null) {
+                   return retval;
+           }              
+        }catch(EntityNotFoundException ex){
+               ; /* do nothing */    
+        }
+
+        
         if (um instanceof JavaCompilationUnitModel) {
             JavaCompilationUnitModel cu=(JavaCompilationUnitModel)um;
             //at first, try to find in class imports.
@@ -265,7 +345,7 @@ public class JavaResolver {
         
         
         //we still here - it means that class was not found in import declarations.
-        throw new EntityNotFoundException(" type ",name,"");
+        throw new EntityNotFoundException(" type ",name,"");        
     }
     
     public static JavaTypeModel resolveTypeModelWithFullPackage(Term t, JavaTypeModel where) throws EntityNotFoundException, TermWareException {
@@ -312,7 +392,7 @@ public class JavaResolver {
         String packageName=sb.toString();
         JavaTypeModel retval=resolveTypeModelFromPackage(classShortName,packageName);
         if (!head.isNil()) {
-            return resolveRestOfClassOrInterfaceType(retval,head,where,null,null);
+            return resolveRestOfClassOrInterfaceType(retval,head,where.getUnitModel(),where.getPackageModel(),where,null,null);
         }
         return retval;
     }

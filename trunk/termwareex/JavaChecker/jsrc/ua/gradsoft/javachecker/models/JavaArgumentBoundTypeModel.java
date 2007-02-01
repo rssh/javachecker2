@@ -35,6 +35,9 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         origin_=origin;
         typeArguments_=typeArguments;
         where_=where;
+        if (where_==null) {
+            where_=origin;
+        }              
         createResolvedTypeArguments(typeArguments);
         createSubstitution();
     }
@@ -45,15 +48,23 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         origin_=origin;
         resolvedTypeArguments_=resolvedTypeArguments;
         where_=where;
+        if (where_==null) {
+            where_=origin;
+        }
         createTermTypeArguments(resolvedTypeArguments);
     }
     
-    public JavaArgumentBoundTypeModel(JavaTypeModel origin,JavaTypeArgumentsSubstitution substitution) throws TermWareException
+    public JavaArgumentBoundTypeModel(JavaTypeModel origin,JavaTypeArgumentsSubstitution substitution, JavaTypeModel where) throws TermWareException
     {
       super(origin.getPackageModel());
       origin_=origin;
       substitution_=substitution;
       resolvedTypeArguments_=substitution_.substitute(origin_.getTypeParameters());
+      where_=where;
+      if (where_==null) {
+          where_=origin;
+      }      
+      createTermTypeArguments(resolvedTypeArguments_);
     }
     
     
@@ -210,8 +221,8 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
     
     public Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException, TermWareException {
         Map<String,JavaTypeModel> retval = new TreeMap<String,JavaTypeModel>();
-        for(JavaTypeModel otm: origin_.getNestedTypeModels().values()) {
-            JavaTypeModel wrappedOtm=new JavaArgumentBoundTypeModel(otm,typeArguments_,where_);
+        for(JavaTypeModel otm: origin_.getNestedTypeModels().values()) {            
+            JavaTypeModel wrappedOtm=substitution_.substitute(otm);
             retval.put(wrappedOtm.getName(),wrappedOtm);
         }
         return retval;

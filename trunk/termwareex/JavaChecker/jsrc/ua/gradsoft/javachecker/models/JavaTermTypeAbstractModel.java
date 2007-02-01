@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import javax.crypto.NullCipher;
 import ua.gradsoft.javachecker.CheckerComment;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.InvalidCheckerCommentException;
@@ -52,6 +53,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
         nestedTypes_=new TreeMap<String,JavaTypeModel>();
         constructors_=new LinkedList<JavaTermConstructorModel>();
         typeVariables_=new LinkedList<JavaTypeVariableAbstractModel>();
+        initializers_=new LinkedList<JavaTermInitializerModel>();
     }
     
     public String getName()
@@ -189,15 +191,19 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
           if (isClass()) {
               if (superClassTerm_==null) {
                   resolvedSuperClass_=JavaResolver.resolveJavaLangObject();              
-              }else{
+              }else{                  
                   try {
-                     resolvedSuperClass_=JavaResolver.resolveTypeToModel(superClassTerm_,this);
+                     if (isNested()) {
+                         resolvedSuperClass_=JavaResolver.resolveTypeToModel(superClassTerm_,getEnclosedType());
+                     }else{  
+                         resolvedSuperClass_=JavaResolver.resolveTypeToModel(superClassTerm_,getUnitModel(),getPackageModel(),null,null,null);
+                     }
                   }catch(EntityNotFoundException ex){
-                      throw new AssertException(ex.getMessage());
+                      throw new AssertException(ex.getMessage(),ex);
                   }
               }
           }else if(isEnum()) {
-              
+              resolvedSuperClass_=JavaResolver.resolveJavaLangObject(); 
           }else{
               resolvedSuperClass_=JavaResolver.resolveJavaLangObject();
           }
@@ -342,7 +348,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     
     public boolean isAnonimous()
     {
-       return isAnonimous(); 
+       return isAnonimous_; 
     }
     
     int nextAnonimousTypeIndex()

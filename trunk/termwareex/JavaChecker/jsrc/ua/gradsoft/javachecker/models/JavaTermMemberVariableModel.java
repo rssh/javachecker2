@@ -36,9 +36,9 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
         Term identifierTerm = variableDeclaratorId.getSubtermAt(0);
         if (variableDeclaratorId.getArity() > 1) {
             int nReferences = variableDeclaratorId.getSubtermAt(1).getInt();
-            while(nReferences > 0) {
-                type_=TermUtils.createTerm("ReferenceType",type_);
-                --nReferences;
+            if (nReferences > 0) {
+                Term nReferencesTerm = TermUtils.createInt(nReferences);
+                type_=TermUtils.createTerm("ReferenceType",nReferencesTerm,type_);                
             }
         }        
         name_=identifierTerm.getSubtermAt(0).getName();

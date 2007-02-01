@@ -157,10 +157,11 @@ public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
     
 
     /**
-     * ClassOrInterfaceModel("class"|"interface",Identifier,typeParameters,extendsList,ImplementsList,ClassOrInterfaceBody(membersList),context)
+     * ClassOrInterfaceModel(modifiers,"class"|"interface",Identifier,typeParameters,extendsList,ImplementsList,ClassOrInterfaceBody(membersList),context)
      */
     public Term getModelTerm() throws TermWareException
     {
+       Term modifiers = getModifiersModel().getModelTerm(); 
        Term classOrInterface=t_.getSubtermAt(CLASS_OR_INTERFACE_TERM_INDEX);
        Term nameTerm=t_.getSubtermAt(NAME_IDENTIFIER_TERM_INDEX);
        Term typeParametersTerm = getTypeParametersModel(t_.getSubtermAt(TYPE_PARAMETERS_TERM_INDEX));
@@ -188,7 +189,7 @@ public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
        }
        Term membersList=getMemberModelsList();
        Term classOrInterfaceBody=TermUtils.createTerm("ClassOrInterfaceBody",membersList);
-       return TermUtils.createTerm("ClassOrInterfaceModel",classOrInterface,nameTerm,typeParametersTerm,extendsListModel,implementsListModel,classOrInterfaceBody);
+       return TermUtils.createTerm("ClassOrInterfaceModel",modifiers,classOrInterface,nameTerm,typeParametersTerm,extendsListModel,implementsListModel,classOrInterfaceBody);
     }
     
     

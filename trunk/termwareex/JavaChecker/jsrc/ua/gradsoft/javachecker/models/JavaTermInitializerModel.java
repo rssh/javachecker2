@@ -93,9 +93,10 @@ public class JavaTermInitializerModel implements JavaInitializerModel, JavaTermT
     private void build(Term t) throws TermWareException
     {
         Term modifiersTerm = t.getSubtermAt(0);
-        modifiersModel_ = new JavaModifiersModel(modifiersTerm.getInt());
+        modifiersModel_ = new JavaModifiersModel(modifiersTerm.getSubtermAt(0).getInt());
         Term blockTerm = t.getSubtermAt(1);
-        blockModel_ = new JavaTermTopLevelBlockModel(this,blockTerm);
+        Term listStatements = blockTerm.getSubtermAt(0);
+        blockModel_ = new JavaTermTopLevelBlockModel(this,listStatements);
     }
     
     

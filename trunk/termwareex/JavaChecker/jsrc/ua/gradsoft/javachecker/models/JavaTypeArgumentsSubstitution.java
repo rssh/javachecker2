@@ -88,7 +88,7 @@ public class JavaTypeArgumentsSubstitution {
       }else if(x.hasTypeParameters()) {
          // List<JavaTypeVariableAbstractModel> tps = x.getTypeParameters();
          // boolean changed=true;          
-          return new JavaArgumentBoundTypeModel(x,this);          
+          return new JavaArgumentBoundTypeModel(x,this,x);          
       }else{
           return x;
       }
