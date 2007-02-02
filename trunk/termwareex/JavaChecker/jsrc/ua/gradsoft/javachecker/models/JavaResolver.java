@@ -174,6 +174,12 @@ public class JavaResolver {
         //}
         //System.err.println("!!!resolveTypeModelByName("+name+","+where.toString()+","+stv+")");
         //System.err.println("!!!resolveTypeModelByName("+name+","+where.getName()+","+stv+")");
+        
+        //0. may be this is where
+       // if (name.equals(where.getName())) {
+       //     return where;
+       // }
+        
         //0. try to find among type variables.
         if (typeVariables!=null) {
             for(JavaTypeVariableAbstractModel tv: typeVariables) {
@@ -326,9 +332,17 @@ public class JavaResolver {
         if (um instanceof JavaCompilationUnitModel) {
             JavaCompilationUnitModel cu=(JavaCompilationUnitModel)um;
             //at first, try to find in class imports.
-            String packageName=cu.getClassImports().get(name);
-            if (packageName!=null) {
-                return resolveTypeModelFromPackage(name,packageName);
+            JavaCompilationUnitModel.ClassImportSuffix suffix = cu.getClassImports().get(name);            
+            if (suffix!=null) {
+                JavaTypeModel tm = suffix.getTypeModel();
+                if (tm!=null) {
+                    return tm;
+                }else{
+                    String fullClassName = suffix.getFullClassName();
+                    tm = JavaResolver.resolveTypeModelByFullClassName(fullClassName);
+                    suffix.setTypeModel(tm);
+                    return tm;
+                }                
             }
             
             // try to get Type Model from any aviable packages.
@@ -358,6 +372,12 @@ public class JavaResolver {
         if (!t.getName().equals("ClassOrInterfaceType")) {
             throw new AssertException("argument of resolveTypeModelWithFullPackageName must be ClassOrInterfaceType, we have:"+TermHelper.termToString(t));
         }
+        JavaUnitModel unitModel=null;
+        JavaPackageModel packageModel=null;
+        if (where!=null) {
+            unitModel=where.getUnitModel();
+            packageModel=where.getPackageModel();
+        }                
         Term head=t.getSubtermAt(0);
         Term prev=null;
         int fi=0;
@@ -381,10 +401,14 @@ public class JavaResolver {
         
         StringBuffer sb=new StringBuffer();
         head=t.getSubtermAt(0);
+        Term revList=TermUtils.createNil();
+        int index=0;
         boolean frs=true;
         while(!head.isNil()) {
             Term ct=head.getSubtermAt(0);
+            revList=TermUtils.createTerm("cons",ct,revList);
             head=head.getSubtermAt(1);
+            ++index;
             if (ct==prev) {
                 break;
             }
@@ -396,11 +420,34 @@ public class JavaResolver {
             sb.append(ct.getSubtermAt(0).getString());
         }
         String packageName=sb.toString();
-        JavaTypeModel retval=resolveTypeModelFromPackage(classShortName,packageName);
-        if (!head.isNil()) {
-            return resolveRestOfClassOrInterfaceType(retval,head,where.getUnitModel(),where.getPackageModel(),where,null,null);
+        try {    
+            JavaTypeModel retval=resolveTypeModelFromPackage(classShortName,packageName);
+            if (!head.isNil()) {
+               return resolveRestOfClassOrInterfaceType(retval,head,unitModel,packageModel,where,null,null);
+            }
+            return retval;
+        }catch(EntityNotFoundException ex){
+            for(;;) {
+              int lastDotIndex=packageName.lastIndexOf(".");              
+              if (lastDotIndex==-1) {
+                  throw new EntityNotFoundException("type",TermHelper.termToString(t),"");                  
+              }
+              String candidateName = packageName.substring(lastDotIndex+1);
+              packageName = packageName.substring(0,lastDotIndex);
+              System.err.println("candidateName:"+candidateName+",packageName="+packageName);
+              Term ct = revList.getSubtermAt(0);
+              revList = revList.getSubtermAt(1);
+              head=TermUtils.createTerm("cons",ct,head);
+              try {
+                JavaTypeModel retval=resolveTypeModelFromPackage(candidateName,packageName);  
+                if (!head.isNil()) {
+                   return resolveRestOfClassOrInterfaceType(retval,head,unitModel,packageModel,where,null,null);
+                }
+              }catch(EntityNotFoundException ex1){
+                ; //ignore
+              }
+            }
         }
-        return retval;
     }
         
     
@@ -411,14 +458,24 @@ public class JavaResolver {
     }
     
     public static JavaTypeModel  resolveTypeModelByFullClassName(String name) throws EntityNotFoundException, TermWareException
-    {
-       int lastDotIndex=name.lastIndexOf('.');
+    {        
+       int lastDotIndex=name.lastIndexOf('.');       
        if (lastDotIndex!=-1) {
            String packageName = name.substring(0,lastDotIndex);
            String className = name.substring(lastDotIndex+1);
-           return resolveTypeModelFromPackage(className,packageName);
+           try {
+              return resolveTypeModelFromPackage(className,packageName);
+           }catch(EntityNotFoundException ex){
+               // this can be request to nested class.
+               JavaTypeModel enclosingModel = resolveTypeModelByFullClassName(packageName);
+               try {
+                  return enclosingModel.findNestedTypeModel(className);
+               }catch(NotSupportedException ex1){
+                   throw new EntityNotFoundException("type",name,"");
+               }
+           }
        }else{
-           throw new AssertException("argument of resolveTypeModelByFullClassName must contains dots");
+           throw new EntityNotFoundException("type",name,"");
        }
     }
     

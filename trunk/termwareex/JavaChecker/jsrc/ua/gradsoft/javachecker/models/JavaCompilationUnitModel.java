@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
@@ -26,13 +27,54 @@ import ua.gradsoft.termware.exceptions.AssertException;
  */
 public class JavaCompilationUnitModel extends JavaUnitModel
 {
+    
+    /**
+     *class import can consists not only from package name and imported
+     * class, but from package name and some sequences of classes, which
+     *are enclosing for imported.
+     *So, we keep in class import full resolved type model, if resolving 
+     *is possible. (if no - keep null and try to resolve later)    
+     */
+    public static class ClassImportSuffix
+    {
+        private String   fullClassName_;        
+        private JavaTypeModel typeModel_;
+        
+        public ClassImportSuffix(String fullClassName)
+        {
+           fullClassName_=fullClassName;
+           typeModel_=null;
+        }
+                
+        public ClassImportSuffix(JavaTypeModel typeModel)
+        {
+           fullClassName_=typeModel.getFullName();
+           typeModel_=typeModel;
+        }
+        
+        public String getFullClassName()
+        {
+           return fullClassName_; 
+        }
+       
+        public JavaTypeModel getTypeModel()
+        {
+           return typeModel_; 
+        }
+        
+        void setTypeModel(JavaTypeModel typeModel)
+        {
+           typeModel_=typeModel; 
+        }
+        
+    }
 
     public  JavaCompilationUnitModel(String fname)
     {
         fname_=fname;
         staticMethodImports_ = new TreeMap<String,String>();
         staticClassImports_ = new TreeSet<String>();
-        classImports_ = new TreeMap<String,String>();
+        classImports_ = new TreeMap<String,ClassImportSuffix>();
         packageImports_ = new TreeSet<String>();       
         typeModels_ = new ArrayList<JavaTypeModel>();
     }
@@ -95,9 +137,10 @@ public class JavaCompilationUnitModel extends JavaUnitModel
                       ++lastIndex;                      
                   }
                   curr=curr.getSubtermAt(1);
-              }                            
-              String packageName=JUtils.getJavaNameAsString(nameTerm,lastIndex);
-              classImports_.put(className,packageName);
+              }                             
+              String fullName=JUtils.getJavaNameAsString(nameTerm);
+              // do not call resolver here to prevenet recursive loop.
+              classImports_.put(className,new ClassImportSuffix(fullName));
           }
       }else{
           throw new AssertException("arity of import declaration must be 2, term:"+TermHelper.termToString(t));
@@ -123,7 +166,7 @@ public class JavaCompilationUnitModel extends JavaUnitModel
      *@return map of class imports.
      *key is name of class, value is package name.
      */
-    public Map<String,String>   getClassImports()
+    public Map<String,ClassImportSuffix>   getClassImports()
     { return classImports_; }
     
     /**
@@ -169,7 +212,7 @@ public class JavaCompilationUnitModel extends JavaUnitModel
     /**
      * key is short class name, value is full name.
      */
-    private Map<String,String>  classImports_;
+    private Map<String,ClassImportSuffix>  classImports_;
     
     /**
      * key is package name.

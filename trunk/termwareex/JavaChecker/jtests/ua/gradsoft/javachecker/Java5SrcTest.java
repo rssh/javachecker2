@@ -47,7 +47,7 @@ public class Java5SrcTest extends TestCase
             ex.printStackTrace();
             disabled_=true;
         } 
-        disabled_=true;
+        //disabled_=true;
     }
     
     public void testAllJava5Models() throws Exception
@@ -103,18 +103,6 @@ public class Java5SrcTest extends TestCase
     }
 
 
-    public void testLauncherJava5Models() throws Exception
-    {
-      JavaCheckerFacade.init();      
-      int prevLoadedFiles = nLoadedFiles_;
-      if (!disabled_) {
-          JavaCheckerFacade.addInputDirectory(javaSrcHome_);
-          String dirName = javaSrcHome_ + File.separator +"launcher";
-          File f = new File(dirName);         
-          readAndGetModelForSources(javaSrcHome_,"launcher",f);
-          assertTrue(nLoadedFiles_>prevLoadedFiles);
-      }  
-    }
 
 
     public void testOrgJava5Models() throws Exception

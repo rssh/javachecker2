@@ -95,5 +95,17 @@ public class MTData6Test extends TestCase
           Term mttm = tm.getModelTerm();
        }
 
+       public void testR() throws Exception
+       {
+          JavaTypeModel tm=JavaResolver.resolveTypeModelByFullClassName("r.R");  
+          Term mttm = tm.getModelTerm();
+       }
+       
+       public void testS() throws Exception
+       {
+          JavaTypeModel tm=JavaResolver.resolveTypeModelByFullClassName("s.x.X");  
+          Term mttm = tm.getModelTerm();
+       }
+       
        
 }
