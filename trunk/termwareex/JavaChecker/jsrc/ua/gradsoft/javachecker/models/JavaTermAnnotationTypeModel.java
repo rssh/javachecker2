@@ -25,9 +25,9 @@ import ua.gradsoft.termware.exceptions.AssertException;
 public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
 {
             
-    public JavaTermAnnotationTypeModel(int modifiers, Term t, JavaPackageModel packageModel) throws TermWareException
+    public JavaTermAnnotationTypeModel(int modifiers, Term t, JavaPackageModel packageModel, JavaUnitModel unitModel) throws TermWareException
     {
-      super(modifiers,t,packageModel);
+      super(modifiers,t,packageModel,unitModel);
       name_=t.getSubtermAt(0).getSubtermAt(0).getString();
     }
     

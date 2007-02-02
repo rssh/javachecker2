@@ -33,7 +33,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
 {
     
     /** Creates a new instance of JavaTermTypeAbstractModel */
-    public JavaTermTypeAbstractModel(int modifiers, Term t, JavaPackageModel packageModel) throws TermWareException
+    public JavaTermTypeAbstractModel(int modifiers, Term t, JavaPackageModel packageModel, JavaUnitModel cuModel) throws TermWareException
     {
         super(packageModel);
         modifiers_=new JavaModifiersModel(modifiers);
@@ -54,6 +54,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
         constructors_=new LinkedList<JavaTermConstructorModel>();
         typeVariables_=new LinkedList<JavaTypeVariableAbstractModel>();
         initializers_=new LinkedList<JavaTermInitializerModel>();
+        setUnitModel(cuModel);
     }
     
     public String getName()
@@ -228,7 +229,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
                   resolvedSuperInterfaces_.add(JavaResolver.resolveTypeToModel(t,this));
               }
             }catch(EntityNotFoundException ex){
-                throw new AssertException(ex.getMessage(),ex);
+                throw new AssertException(ex.getMessage()+" in "+getName(),ex);
             }
           }
       } 
@@ -275,7 +276,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     */
     public void addClassOrInterfaceDeclaration(int modifiers, Term declaration) throws TermWareException
     {
-      JavaTermClassOrInterfaceModel newModel=new JavaTermClassOrInterfaceModel(modifiers,declaration,this.getPackageModel());
+      JavaTermClassOrInterfaceModel newModel=new JavaTermClassOrInterfaceModel(modifiers,declaration,this.getPackageModel(),this.getUnitModel());
       newModel.setParentType(this);
       nestedTypes_.put(newModel.getName(),newModel); 
       newModel.setUnitModel(getUnitModel());
@@ -286,7 +287,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     */
     public void addEnumDeclaration(int modifiers, Term declaration)  throws TermWareException
     {
-      JavaTermEnumModel newModel=new JavaTermEnumModel(modifiers,declaration,this.getPackageModel());
+      JavaTermEnumModel newModel=new JavaTermEnumModel(modifiers,declaration,this.getPackageModel(), this.getUnitModel());
       newModel.setParentType(this);
       nestedTypes_.put(newModel.getName(),newModel);   
       newModel.setUnitModel(getUnitModel());

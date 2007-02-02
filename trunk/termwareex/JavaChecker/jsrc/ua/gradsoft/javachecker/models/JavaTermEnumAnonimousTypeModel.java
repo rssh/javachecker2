@@ -44,7 +44,7 @@ public class JavaTermEnumAnonimousTypeModel extends JavaTermTypeAbstractModel
     
     public JavaTermEnumAnonimousTypeModel(String constantName,Term body,JavaTermEnumModel owner) throws TermWareException
     {
-      super(0,body,owner.getPackageModel());  
+      super(0,body,owner.getPackageModel(),owner.getUnitModel());  
       constantName_=constantName;        
       fillModels(body);
       superClassTerm_ = owner.getShortNameAsTerm();

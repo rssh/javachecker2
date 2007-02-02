@@ -27,7 +27,9 @@ public final class JUtils {
 
      public static Term readSourceFile(File f) throws TermWareException
      {
-      logger_.info("reading file:"+f.getAbsolutePath());   
+      if (false) {
+        logger_.info("reading file:"+f.getAbsolutePath());   
+      }
       Term parserOption=TermWare.getInstance().getTermFactory().createAtom("simplify");
       Term source=TermWare.getInstance().load(f.getAbsolutePath(),TermWare.getInstance().getParserFactory("Java"),parserOption);
       return source;

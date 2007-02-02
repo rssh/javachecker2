@@ -33,7 +33,9 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
      */
     public JavaTermAnonimousTypeModel(JavaTermStatementModel statement, Term t) throws TermWareException
     {   
-        super(0,t,statement.getTermTopLevelBlockModel().getOwnerTermModel().getTermTypeAbstractModel().getPackageModel());
+        super(0,t,statement.getTermTopLevelBlockModel().getOwnerTermModel().getTermTypeAbstractModel().getPackageModel(),
+                  statement.getTermTopLevelBlockModel().getOwnerTermModel().getTermTypeAbstractModel().getUnitModel()
+                );
         statement_=statement;       
         fillModels();          
         JavaTermTypeAbstractModel parent = statement.getTermTopLevelBlockModel().getOwnerTermModel().getTermTypeAbstractModel();        
@@ -71,28 +73,10 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
       return !t_.getSubtermAt(TYPE_ARGUMENTS_TERM_INDEX).isNil();
     }
     
+        
     private void fillModels() throws TermWareException
     {
-      Term extendsOrImplements = t_.getSubtermAt(CLASS_OR_INTERFACE_TERM_INDEX);  
-      if (extendsOrImplements.getName().equals("ClassOrInterfaceType")||extendsOrImplements.getName().equals("Identifier")) {                    
-          JavaTypeModel superTypeModel=null;
-          try{
-             superTypeModel=JavaResolver.resolveTypeToModel(extendsOrImplements,statement_);
-          }catch(EntityNotFoundException ex){
-              superTypeModel=JavaUnknownTypeModel.INSTANCE;
-          }
-          Term ta=t_.getSubtermAt(TYPE_ARGUMENTS_TERM_INDEX);
-          if (!ta.isNil()) {
-              superTypeModel = new JavaArgumentBoundTypeModel(superTypeModel,ta,this);
-          }
-          if (superTypeModel.isInterface()) {
-              this.addSuperInterface(extendsOrImplements);
-          }else{
-              this.addSuperClass(extendsOrImplements);
-          }          
-      }else{
-          throw new AssertException("is not valid super of anonimous class:"+TermHelper.termToString(extendsOrImplements));
-      }
+    
       Term classOrInterfaceBody = t_.getSubtermAt(CLASS_OR_INTEFACE_BODY_TERM_INDEX);
       Term membersList = classOrInterfaceBody.getSubtermAt(0);
       
@@ -134,6 +118,54 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
       
     }
     
+   
+    public JavaTypeModel getSuperClass() throws TermWareException
+    {
+       if (!supersAreInitialized_) {
+           lazyInitSupers();
+           supersAreInitialized_=true;
+       } 
+       return super.getSuperClass();
+    }
+    
+    public List<JavaTypeModel> getSuperInterfaces() throws TermWareException
+    {
+        if (!supersAreInitialized_) {
+            lazyInitSupers();
+            supersAreInitialized_=true;
+        }
+        return super.getSuperInterfaces();
+    }
+    
+    /**
+     * we must call resolving of type names after fully reading of type model,
+     *to prevent recursive loading of the same class, when anonimpus class extends
+     *own public enclosing class. 
+     */
+    private void lazyInitSupers() throws TermWareException
+    {
+      Term extendsOrImplements = t_.getSubtermAt(CLASS_OR_INTERFACE_TERM_INDEX);        
+      if (extendsOrImplements.getName().equals("ClassOrInterfaceType")||extendsOrImplements.getName().equals("Identifier")) {                    
+          JavaTypeModel superTypeModel=null;
+          try{
+             superTypeModel=JavaResolver.resolveTypeToModel(extendsOrImplements,statement_);
+          }catch(EntityNotFoundException ex){
+              superTypeModel=JavaUnknownTypeModel.INSTANCE;
+          }
+          Term ta=t_.getSubtermAt(TYPE_ARGUMENTS_TERM_INDEX);
+          if (!ta.isNil()) {
+              superTypeModel = new JavaArgumentBoundTypeModel(superTypeModel,ta,this);
+          }
+          if (superTypeModel.isInterface()) {
+              this.addSuperInterface(extendsOrImplements);
+          }else{
+              this.addSuperClass(extendsOrImplements);
+          }                    
+      }else{
+          throw new AssertException("is not valid super of anonimous class:"+TermHelper.termToString(extendsOrImplements));
+      }        
+    }
+    
     /**
      * AnonimousClassModel(name_,super, membersList,ctx)
      */
@@ -172,6 +204,8 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
     private String name_;    
     private int     anonimousIndexInParent_;        
     private JavaTermStatementModel statement_;
+    private boolean supersAreInitialized_=false;
+    
     
     public static final int CLASS_OR_INTERFACE_TERM_INDEX=0;
     public static final int TYPE_ARGUMENTS_TERM_INDEX=1;

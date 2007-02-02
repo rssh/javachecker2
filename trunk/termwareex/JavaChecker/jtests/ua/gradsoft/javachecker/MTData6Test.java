@@ -70,4 +70,30 @@ public class MTData6Test extends TestCase
            Term mttm = tm.getModelTerm();
        }
        
+       public void testZVector() throws Exception
+       {
+          JavaTypeModel tm=JavaResolver.resolveTypeModelByFullClassName("z.ZVector"); 
+          Term mttm = tm.getModelTerm();
+       }
+
+
+       public void testWE() throws Exception
+       {
+          JavaTypeModel tm=JavaResolver.resolveTypeModelByFullClassName("w.WE"); 
+          Term mttm = tm.getModelTerm();
+       }
+
+       public void testV() throws Exception
+       {
+          JavaTypeModel tm=JavaResolver.resolveTypeModelByFullClassName("v.V1"); 
+          Term mttm = tm.getModelTerm();
+       }
+
+       public void testT() throws Exception
+       {
+          JavaTypeModel tm=JavaResolver.resolveTypeModelByFullClassName("t.y.B"); 
+          Term mttm = tm.getModelTerm();
+       }
+
+       
 }

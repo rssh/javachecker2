@@ -25,8 +25,8 @@ import ua.gradsoft.termware.exceptions.AssertException;
  */
 public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     
-    JavaTermEnumModel(int modifiers, Term t,JavaPackageModel packageModel) throws TermWareException {
-        super(modifiers,t,packageModel);
+    JavaTermEnumModel(int modifiers, Term t,JavaPackageModel packageModel, JavaUnitModel unitModel) throws TermWareException {
+        super(modifiers,t,packageModel,unitModel);
         enumConstants_=new TreeMap<String,JavaEnumConstantModel>();
         build(t);
     }

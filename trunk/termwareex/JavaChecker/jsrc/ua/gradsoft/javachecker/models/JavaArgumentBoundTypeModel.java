@@ -150,11 +150,11 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         return origin_.isUnknown(); }
     
     public JavaTypeModel  getEnclosedType() throws NotSupportedException, TermWareException {
-        return new JavaArgumentBoundTypeModel(origin_.getEnclosedType(),typeArguments_,where_);
+        return substitution_.substitute(origin_.getEnclosedType());
     }
     
     public JavaTypeModel  getReferencedType() throws NotSupportedException, TermWareException {
-        return new JavaArgumentBoundTypeModel(origin_.getReferencedType(),typeArguments_,where_);
+        return substitution_.substitute(origin_.getReferencedType());
     }
     
     public  boolean canCheck() {

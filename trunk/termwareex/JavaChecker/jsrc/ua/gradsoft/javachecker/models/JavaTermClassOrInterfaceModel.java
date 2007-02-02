@@ -25,8 +25,8 @@ public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
     
     
     /** Creates a new instance of JavaClassModel */
-    public JavaTermClassOrInterfaceModel(int modifiers, Term t, JavaPackageModel packageModel) throws TermWareException {
-        super(modifiers, t, packageModel);
+    public JavaTermClassOrInterfaceModel(int modifiers, Term t, JavaPackageModel packageModel, JavaUnitModel cuModel) throws TermWareException {
+        super(modifiers, t, packageModel, cuModel);
         fillModels();
     }
     

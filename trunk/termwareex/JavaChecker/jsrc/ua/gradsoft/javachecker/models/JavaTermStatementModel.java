@@ -184,7 +184,8 @@ public class JavaTermStatementModel implements JavaStatementModel
        }else if(t.getName().equals("ClassOrInterfaceDeclaration")){
            kind_=JavaStatementKind.CLASS_OR_INTERFACE_DECLARATION;
            childs_=Collections.emptyList();
-           JavaTermClassOrInterfaceModel iTypeModel = new JavaTermClassOrInterfaceModel(0,t,blockModel_.getOwnerModel().getTypeModel().getPackageModel()); 
+           JavaTypeModel ownerTypeModel = blockModel_.getOwnerModel().getTypeModel();
+           JavaTermClassOrInterfaceModel iTypeModel = new JavaTermClassOrInterfaceModel(0,t,ownerTypeModel.getPackageModel(),ownerTypeModel.getUnitModel()); 
            addLocalType(iTypeModel);
        }else if(t.getName().equals("ExplicitSuperConstructorInvocation")){
            kind_=JavaStatementKind.EXPLICIT_SUPER_CONSTRUCTOR_INVOCATION;

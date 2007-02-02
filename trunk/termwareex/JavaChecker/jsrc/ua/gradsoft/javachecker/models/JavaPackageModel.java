@@ -76,11 +76,11 @@ public class JavaPackageModel {
                int modifiers=t.getSubtermAt(MODIFIERS_TERM_INDEX).getSubtermAt(0).getInt();
                Term typeType=t.getSubtermAt(1);
                if (typeType.getName().equals("ClassOrInterfaceDeclaration")) {
-                   javaTypeModel=new JavaTermClassOrInterfaceModel(modifiers,typeType,this);                                      
+                   javaTypeModel=new JavaTermClassOrInterfaceModel(modifiers,typeType,this,compilationUnitModel);                                      
                }else if(typeType.getName().equals("EnumDeclaration")) {
-                   javaTypeModel=new JavaTermEnumModel(modifiers,typeType,this);
+                   javaTypeModel=new JavaTermEnumModel(modifiers,typeType,this, compilationUnitModel);
                }else if(typeType.getName().equals("AnnotationTypeDeclaration")) {
-                   javaTypeModel=new JavaTermAnnotationTypeModel(modifiers, typeType,this);
+                   javaTypeModel=new JavaTermAnnotationTypeModel(modifiers, typeType,this,compilationUnitModel);
                }else{
                    throw new AssertException("Type must be one of ClassOrInterfaceDeclaration,EnumDeclaration,AnnotationTypeDeclaration");
                }               
@@ -131,14 +131,13 @@ public class JavaPackageModel {
           String fname=directory+File.separator+resource;
           
           File f = new File(fname);
-          //System.err.println("try to read file:"+f.getAbsolutePath());
           if (f.exists()) {
               Term t=JUtils.readSourceFile(f);
               JavaCompilationUnitModel cu = new JavaCompilationUnitModel(fname);
               cu.setPackageModel(this);              
               AnalyzedUnitRef newRef = new AnalyzedUnitRef(AnalyzedUnitType.SOURCE,directory,resource,cu);              
               this.addCompilationUnit(t,cu,newRef);
-              for(JavaTypeModel tm: newRef.getJavaUnitModel().getTypeModels() ) {
+              for(JavaTypeModel tm: cu.getTypeModels() ) {
                   typeModelRefs_.put(tm.getName(),new JavaTypeModelRef(name,newRef,tm));
                   if (tm.getName().equals(name)) {
                       retval=tm;                                            

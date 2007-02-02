@@ -166,14 +166,14 @@ public class JavaResolver {
     }
     
     public static JavaTypeModel resolveTypeModelByName(String name, JavaTypeModel where,List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException, TermWareException {
-        String stv;
-        if (typeVariables==null) {
-            stv="null";
-        }else{
-            stv=typeVariables.toString();
-        }
-        System.err.println("!!!resolveTypeModelByName("+name+","+where.toString()+","+stv+")");
-        System.err.println("!!!resolveTypeModelByName("+name+","+where.getName()+","+stv+")");
+        //String stv;
+        //if (typeVariables==null) {
+        //    stv="null";
+        //}else{
+        //    stv=typeVariables.toString();
+        //}
+        //System.err.println("!!!resolveTypeModelByName("+name+","+where.toString()+","+stv+")");
+        //System.err.println("!!!resolveTypeModelByName("+name+","+where.getName()+","+stv+")");
         //0. try to find among type variables.
         if (typeVariables!=null) {
             for(JavaTypeVariableAbstractModel tv: typeVariables) {
@@ -185,14 +185,11 @@ public class JavaResolver {
         
         //1. may be model, where we resolve, have typeVariables
         if (where.hasTypeParameters()) {
-            System.err.println("!!!resolve from type parameters of "+where.getName()+" for "+name);
             for(JavaTypeVariableAbstractModel tv:where.getTypeParameters()) {
-                System.err.println("!!!check "+tv.getName());
                 if (tv.getName().equals(name)) {
                     return tv;
                 }
             }
-            System.err.println("!!! not type parameter");
         }
         
         //2. try to find among local types
@@ -225,7 +222,6 @@ public class JavaResolver {
         if (superModel!=null) {
             
            while(!superModel.isNull() && !(superModel.getFullName().equals("java.lang.Object"))) {
-               System.out.println("check superModel:"+superModel.getFullName());
                if (superModel.hasNestedTypeModels()) {
                  try {
                     return superModel.findNestedTypeModel(name);
@@ -263,6 +259,7 @@ public class JavaResolver {
                         }
                     }
                 }
+
                 
                 try {
                     enclosed=enclosed.getEnclosedType();
@@ -270,6 +267,15 @@ public class JavaResolver {
                     // impossible, becouse encloused is nested.
                     throw new AssertException("getEnclosedType is not supported, when type is nested");
                 }
+
+                // and try to resolve one in enclosed.
+                try {
+                  return resolveTypeModelByName(name, enclosed, null, null);
+                }catch(EntityNotFoundException ex){
+                  // do nothing.
+                  ;
+                }                
+
             }
         }
         
@@ -305,6 +311,7 @@ public class JavaResolver {
     
     public static JavaTypeModel resolveTypeModelByName(String name, JavaUnitModel um, JavaPackageModel pm) throws TermWareException, EntityNotFoundException
     {
+        //System.err.println("resolveTypeModelByName("+name+","+um.toString()+","+pm.getName()+")");
         // at first find in current package
         try {
            JavaTypeModel retval=pm.findTypeModel(name);
@@ -342,7 +349,6 @@ public class JavaResolver {
             /* do nothing */
             ;
         }
-        
         
         //we still here - it means that class was not found in import declarations.
         throw new EntityNotFoundException(" type ",name,"");        
@@ -795,7 +801,7 @@ public class JavaResolver {
      */
     public static boolean match(JavaTypeModel pattern, JavaTypeModel x,JavaTypeArgumentsSubstitution substitution) throws TermWareException
     {
-      System.err.println("match("+pattern.getFullName()+","+x.getFullName()+")");
+     // System.err.println("match("+pattern.getFullName()+","+x.getFullName()+")");
       boolean retval=true;
       if (pattern.isTypeArgument()) {
           JavaTypeVariableAbstractModel vpattern = (JavaTypeVariableAbstractModel)pattern;
@@ -832,7 +838,7 @@ public class JavaResolver {
       }else{
           retval=JavaTypeModelHelper.subtypeOrSame(x,pattern);
       } 
-      System.err.println("match return "+retval);
+      //System.err.println("match return "+retval);
       return retval;
     }
     
