@@ -60,5 +60,15 @@ public class JavaModelConstants {
     public final static int METHOD_MODEL_BLOCK_INDEX=6;
     public final static int METHOD_MODEL_CONTEXT_INDEX=6;
 
+    /**
+    * AnnotationTypeDeclarationModel(modifiers, name,[...],context)
+    */
+    public final static int ANNOTATION_TYPE_MODEL_MODIFIERS_INDEX = 0;
+    public final static int ANNOTATION_TYPE_MODEL_NAME_INDEX = 2;
+    public final static int ANNOTATION_TYPE_MODEL_MEMBERS_INDEX = 3;
+    public final static int ANNOTATION_TYPE_MODEL_CONTEXT_INDEX = 4;
+    
+    
+    
     
 }

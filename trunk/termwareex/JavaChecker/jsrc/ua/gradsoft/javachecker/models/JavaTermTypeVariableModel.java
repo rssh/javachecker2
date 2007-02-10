@@ -32,15 +32,19 @@ public class JavaTermTypeVariableModel extends JavaTypeVariableAbstractModel
      */
     public JavaTermTypeVariableModel(Term t,JavaTypeModel where) throws TermWareException
     {
-        bounds_=new LinkedList<JavaTypeModel>();
+        //bounds_=new LinkedList<JavaTypeModel>();
+        bounds_=null;
+        termBounds_=TermUtils.createNil();
         if (t.getName().equals("Identifier")) {
             name_=t.getSubtermAt(0).getString();                                                
         }else if(t.getName().equals("TypeParameter")){
             name_=t.getSubtermAt(0).getSubtermAt(0).getString();
             if (t.getArity()>1) {
-                addTypeBounds(t.getSubtermAt(1),where);
+                termBounds_=t.getSubtermAt(1);
+                //addTypeBounds(t.getSubtermAt(1),where);
             }
         }
+        where_=where;
         fileAndLine_=JUtils.getFileAndLine(t);
         if (fileAndLine_==null) {
             // impossible ?
@@ -58,7 +62,7 @@ public class JavaTermTypeVariableModel extends JavaTypeVariableAbstractModel
       while(!t.isNil()) {
           Term classOrInterfaceType=t.getSubtermAt(0);
           t=t.getSubtermAt(1);
-          JavaTypeModel bound;
+          JavaTypeModel bound;          
           try {
               bound=JavaResolver.resolveTypeToModel(classOrInterfaceType,where);              
           }catch(EntityNotFoundException ex){
@@ -71,8 +75,14 @@ public class JavaTermTypeVariableModel extends JavaTypeVariableAbstractModel
     public String getName()
     { return name_; }
     
-    public List<JavaTypeModel> getBounds() 
+    public List<JavaTypeModel> getBounds() throws TermWareException 
     {
+      if (bounds_==null) {
+          bounds_=new LinkedList<JavaTypeModel>();
+          if (!termBounds_.isNil()) {
+            addTypeBounds(termBounds_,where_);
+          }
+      }
       return bounds_;  
     }
     
@@ -95,7 +105,7 @@ public class JavaTermTypeVariableModel extends JavaTypeVariableAbstractModel
     {
         Term idTerm = TermUtils.createIdentifier(name_);
         Term boundsList = TermUtils.createNil();
-        for(JavaTypeModel tm: bounds_) {
+        for(JavaTypeModel tm: getBounds()) {
             Term typeRef = TermUtils.createTerm("TypeRef",tm.getShortNameAsTerm(),TermUtils.createJTerm(tm));
             boundsList = TermUtils.createTerm("cons",typeRef,boundsList);
         }
@@ -107,5 +117,7 @@ public class JavaTermTypeVariableModel extends JavaTypeVariableAbstractModel
     private String name_;
     private FileAndLine  fileAndLine_;
     private List<JavaTypeModel> bounds_;
+    private Term           termBounds_;
+    private JavaTypeModel  where_;
     
 }

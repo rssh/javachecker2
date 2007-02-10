@@ -46,7 +46,9 @@ public class JavaResolver {
     }
     
     
-    public static JavaTypeModel resolveTypeToModel(Term t, JavaUnitModel unitModel, JavaPackageModel packageModel, JavaTypeModel where,List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException,TermWareException {
+    public static JavaTypeModel resolveTypeToModel(Term t, JavaUnitModel unitModel, JavaPackageModel packageModel, JavaTypeModel where,List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException,TermWareException {        
+        
+        //System.err.println("resolveTypeToModel, t="+TermHelper.termToString(t)+"+ in "+ (where==null ? "null" : where.getName()));
         if (t.isAtom()) {
             if (t.getName().equals("boolean")) {
                 return JavaPrimitiveTypeModel.BOOLEAN;
@@ -116,7 +118,8 @@ public class JavaResolver {
                     }else{
                         try {
                             return resolveRestOfClassOrInterfaceType(frsTypeModel,head.getSubtermAt(1),unitModel,packageModel,where,typeVariables,localTypes);
-                        }catch(EntityNotFoundException ex){
+                        }catch(EntityNotFoundException ex){     
+                            //System.err.println("failed resolveRestOfClassAndInterfaceType");
                             found=false;
                         }
                     }
@@ -135,11 +138,13 @@ public class JavaResolver {
         }else{
             throw new AssertException("Primitive non-atom type term:"+TermHelper.termToString(t));
         }
+        //System.err.println("failed resolveTypeToModel, t="+TermHelper.termToString(t)+"+ in "+ (where==null ? "null" : where.getName()));
         throw new EntityNotFoundException("type",TermHelper.termToString(t),"");
     }
     
     
     private static JavaTypeModel  resolveRestOfClassOrInterfaceType(JavaTypeModel prevModel, Term t, JavaUnitModel unitModel,JavaPackageModel packageModel,JavaTypeModel where, List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException, TermWareException {
+        //System.err.println("resolveRestOfClassOrInterfaceType "+TermHelper.termToString(t)+", prevModel="+prevModel.getName());
         JavaTypeModel curModel=prevModel;
         while(!t.isNil()) {
             Term ct=t.getSubtermAt(0);
@@ -153,25 +158,29 @@ public class JavaResolver {
                         throw new AssertException("impossible, hasNestedTypeMopdels but getNestedTypeModels throws NotSupported");
                     }
                 }else{
+                    //System.err.println("failed resolveRestOfCalssAndInterfaceType");
                     throw new EntityNotFoundException("type",t.getSubtermAt(0).getName(),"");
                 }
-            }else if(ct.getName().equals("TypeArguments")) {               
+            }else if(ct.getName().equals("TypeArguments")) {  
+                //System.err.println("creating new ArgumentBoundTypeModel");
                 curModel=new JavaArgumentBoundTypeModel(curModel,ct,where);
+                //System.err.println("created");
             }else{
                 throw new AssertException("Only Identifiers or TypeArgumentrs are allowed in ClassOrInterfaceType sequence, we have "+TermHelper.termToString(ct));
             }
             t=t.getSubtermAt(1);
         }
+        //System.err.println("resolveRestOfCalssAndInterfaceType succesfull");
         return curModel;
     }
     
     public static JavaTypeModel resolveTypeModelByName(String name, JavaTypeModel where,List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException, TermWareException {
-        //String stv;
-        //if (typeVariables==null) {
-        //    stv="null";
-        //}else{
-        //    stv=typeVariables.toString();
-        //}
+        String stv;
+        if (typeVariables==null) {
+            stv="null";
+        }else{
+            stv=typeVariables.toString();
+        }
         //System.err.println("!!!resolveTypeModelByName("+name+","+where.toString()+","+stv+")");
         //System.err.println("!!!resolveTypeModelByName("+name+","+where.getName()+","+stv+")");
         
@@ -184,15 +193,18 @@ public class JavaResolver {
         if (typeVariables!=null) {
             for(JavaTypeVariableAbstractModel tv: typeVariables) {
                 if (tv.getName().equals(name)) {
+                    //System.err.println("found in type variables");
                     return tv;
                 }
             }
         }
         
+        
         //1. may be model, where we resolve, have typeVariables
         if (where.hasTypeParameters()) {
             for(JavaTypeVariableAbstractModel tv:where.getTypeParameters()) {
                 if (tv.getName().equals(name)) {
+                    //System.err.println("found in type parameters");
                     return tv;
                 }
             }
@@ -202,6 +214,7 @@ public class JavaResolver {
         if (localTypes!=null) {
             for(JavaTypeModel tm: localTypes) {
                 if (tm.getName().equals(name)) {
+                    //System.err.println("found in local types");
                     return tm;
                 }
             }
@@ -209,13 +222,16 @@ public class JavaResolver {
         
         //2. try to find subtype of current type.
         if (where.hasNestedTypeModels()) {
+            //System.err.println("try to search in nested type models");
             try {
-                return where.findNestedTypeModel(name);
+                return where.findNestedTypeModel(name);                
             }catch(EntityNotFoundException ex){
+                
                 ; /* do nothing */
             }catch(NotSupportedException ex){
                 ; /* do nothing */
             }
+            //System.err.println("failed");
         }
         
         //3. try to find as nested in super-class        
@@ -227,7 +243,10 @@ public class JavaResolver {
         }        
         if (superModel!=null) {
             
-           while(!superModel.isNull() && !(superModel.getFullName().equals("java.lang.Object"))) {
+           while(!superModel.isNull() 
+                   && !(superModel.getFullName().equals("java.lang.Object"))
+                   && !(superModel.getFullName().equals("java.lang.Enum"))
+                   ) {
                if (superModel.hasNestedTypeModels()) {
                  try {
                     return superModel.findNestedTypeModel(name);
@@ -244,7 +263,46 @@ public class JavaResolver {
                }
            }  
         }
-            
+        
+        //or in super-interfaces
+        //System.err.println("!!!check for nested types of interfaces "+name+" in "+where.getName());
+        LinkedList<JavaTypeModel> allSuperInterfaces=new LinkedList<JavaTypeModel>();
+        try {
+           allSuperInterfaces.addAll(where.getSuperInterfaces());
+        }catch(NotSupportedException ex){
+            ;
+        }
+        while(!allSuperInterfaces.isEmpty()) {
+            JavaTypeModel curr = allSuperInterfaces.removeFirst();
+            if (curr.hasNestedTypeModels()) {
+                try {
+                    
+                    JavaTypeModel retval = curr.findNestedTypeModel(name);
+                    //System.err.println("!!found "+retval.getFullName()+" in "+where.getName());
+                    return retval;
+                }catch(EntityNotFoundException ex){
+                    ;
+                }catch(NotSupportedException ex){
+                    ;
+                }
+                //System.err.println("failed search of "+name+" as nested in "+curr.getName());
+            }
+            try {
+              allSuperInterfaces.addAll(curr.getSuperInterfaces());
+            }catch(NotSupportedException ex){
+                ;
+            }            
+            if (curr.isNested()) {
+                // add nested type.
+                try {
+                  allSuperInterfaces.add(curr.getEnclosedType());
+                }catch(NotSupportedException ex){
+                    // impossible, do nothing.
+                }
+            }
+        }
+        
+        
         
         // if current class is nested, try to find next one.
         if (where.isNested()) {
@@ -276,11 +334,13 @@ public class JavaResolver {
 
                 // and try to resolve one in enclosed.
                 try {
-                  return resolveTypeModelByName(name, enclosed, null, null);
+                  return resolveTypeModelByName(name, enclosed, typeVariables, localTypes);
                 }catch(EntityNotFoundException ex){
                   // do nothing.
                   ;
                 }                
+                
+                
 
             }
         }
@@ -310,7 +370,8 @@ public class JavaResolver {
             /* do nothing */
             ;
         }
-                
+          
+        //System.err.println("!!!failed resolving of "+name+" in "+where.getName());
         //we still here - it means that class was not found in import declarations.
         throw new EntityNotFoundException(" type ",name,"");
     }
@@ -364,6 +425,7 @@ public class JavaResolver {
             ;
         }
         
+        //System.err.println("failed searcho of type "+name+" outside class ");
         //we still here - it means that class was not found in import declarations.
         throw new EntityNotFoundException(" type ",name,"");        
     }
@@ -434,7 +496,7 @@ public class JavaResolver {
               }
               String candidateName = packageName.substring(lastDotIndex+1);
               packageName = packageName.substring(0,lastDotIndex);
-              System.err.println("candidateName:"+candidateName+",packageName="+packageName);
+              //System.err.println("candidateName:"+candidateName+",packageName="+packageName);
               Term ct = revList.getSubtermAt(0);
               revList = revList.getSubtermAt(1);
               head=TermUtils.createTerm("cons",ct,head);

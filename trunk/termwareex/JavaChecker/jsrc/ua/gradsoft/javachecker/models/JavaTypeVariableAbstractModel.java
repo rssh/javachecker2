@@ -9,6 +9,7 @@
 package ua.gradsoft.javachecker.models;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -176,5 +177,15 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
           writer.print("error");
       }
     }
+   
+    
+    public String toString()
+    {
+      StringWriter sw = new StringWriter(); 
+      PrintWriter swr = new PrintWriter(sw);
+      this.print(swr);
+      return sw.toString();
+    }
+    
     
 }

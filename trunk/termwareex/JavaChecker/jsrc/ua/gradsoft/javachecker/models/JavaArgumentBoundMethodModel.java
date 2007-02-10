@@ -86,7 +86,7 @@ public class JavaArgumentBoundMethodModel extends JavaMethodModel implements Jav
     public boolean isSupportBlockModel()
     { return origin_.isSupportBlockModel(); }
     
-    public JavaArgumentBoundTopLevelBlockModel getTopLevelBlockModel() throws NotSupportedException {
+    public JavaArgumentBoundTopLevelBlockModel getTopLevelBlockModel() throws TermWareException, NotSupportedException {
         return new JavaArgumentBoundTopLevelBlockModel(this,origin_.getTopLevelBlockModel(),substitution_);
     }
     

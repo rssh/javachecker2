@@ -47,9 +47,10 @@ public class Java5SrcTest extends TestCase
             ex.printStackTrace();
             disabled_=true;
         } 
-        //disabled_=true;
+        disabled_=true;
     }
-    
+   
+    /*
     public void testAllJava5Models() throws Exception
     {
       JavaCheckerFacade.init();      
@@ -59,6 +60,7 @@ public class Java5SrcTest extends TestCase
           assertTrue(nLoadedFiles_>0);
       }  
     }
+     */
 
 
     public void testComJava5Models() throws Exception
@@ -75,20 +77,42 @@ public class Java5SrcTest extends TestCase
     }
 
 
-    public void testJavaJava5Models() throws Exception
+    
+    
+    public void testJavaJava5Model() throws Exception
+    {
+        _testDirJava5Models("java");
+    }
+    
+    public void _testDirJava5Models(String pkg) throws Exception
     {
       JavaCheckerFacade.init();      
       int prevLoadedFiles = nLoadedFiles_;
       if (!disabled_) {
           JavaCheckerFacade.addInputDirectory(javaSrcHome_);
-          String dirName = javaSrcHome_ + File.separator +"java";
+          String dirName = javaSrcHome_ + File.separator +pkg;
           File f = new File(dirName);         
-          readAndGetModelForSources(javaSrcHome_,"java",f);
+          readAndGetModelForSources(javaSrcHome_,pkg,f);
           assertTrue(nLoadedFiles_>prevLoadedFiles);
       }  
     }
 
 
+    public void _testDirJava5Models(String pkg1, String pkg2) throws Exception
+    {
+      JavaCheckerFacade.init();      
+      int prevLoadedFiles = nLoadedFiles_;
+      if (!disabled_) {
+          JavaCheckerFacade.addInputDirectory(javaSrcHome_);
+          String dirName = javaSrcHome_ + File.separator +pkg1 + File.separator + pkg2;
+          File f = new File(dirName);         
+          readAndGetModelForSources(javaSrcHome_,pkg1+"."+pkg2,f);          
+          assertTrue(nLoadedFiles_>prevLoadedFiles);
+      }  
+    }
+    
+    
+/*
     public void testJavaxJava5Models() throws Exception
     {
       JavaCheckerFacade.init();      
@@ -101,10 +125,10 @@ public class Java5SrcTest extends TestCase
           assertTrue(nLoadedFiles_>prevLoadedFiles);
       }  
     }
+*/
 
 
-
-
+/*
     public void testOrgJava5Models() throws Exception
     {
       JavaCheckerFacade.init();      
@@ -131,7 +155,7 @@ public class Java5SrcTest extends TestCase
           assertTrue(nLoadedFiles_>prevLoadedFiles);
       }  
     }
-
+*/
 
     
     private void readAndGetModelForSources() throws ConfigException, TermWareException

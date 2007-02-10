@@ -120,5 +120,6 @@ public class J2seexamplesTest extends TestCase
       JavaTypeModel myAnnoTypeModel = JavaResolver.resolveTypeModelByFullClassName("j2seexamples.ex5.MyAnno");
       assertTrue("myAnno must be annotation",myAnnoTypeModel.isAnnotationType());
     }
+        
     
 }

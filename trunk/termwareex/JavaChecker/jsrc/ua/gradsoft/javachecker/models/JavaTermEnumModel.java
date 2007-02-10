@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
@@ -161,7 +162,11 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     
     public  JavaTypeModel getSuperClass() throws TermWareException
     {
-      return JavaResolver.resolveJavaLangObject();  
+      try {   
+        return JavaResolver.resolveTypeModelByFullClassName("java.lang.Enum");
+      }catch(EntityNotFoundException ex){
+          throw new AssertException("java.lang.Enum is not found");
+      }
     }
       
     

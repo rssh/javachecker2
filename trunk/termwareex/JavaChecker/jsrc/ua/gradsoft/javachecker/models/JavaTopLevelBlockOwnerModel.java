@@ -47,7 +47,7 @@ public interface JavaTopLevelBlockOwnerModel
      * return block model, if storing of block model is supported, 
      *otherwise throws NotSupportedException
      */
-    public JavaTopLevelBlockModel  getTopLevelBlockModel() throws NotSupportedException;
+    public JavaTopLevelBlockModel  getTopLevelBlockModel() throws TermWareException, NotSupportedException;
     
     /**
      * return model term.

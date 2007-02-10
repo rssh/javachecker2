@@ -37,7 +37,7 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
     
     
     
-    public JavaWildcardBoundsTypeModel(Term t, JavaTypeModel where) throws TermWareException {
+    public JavaWildcardBoundsTypeModel(Term t, JavaTypeModel where, List<JavaTypeVariableAbstractModel> typeParameters) throws TermWareException {
         super(where.getPackageModel());
         if (t.getName().equals("WildcardBounds")) {
             String stype=t.getSubtermAt(0).getName();
@@ -49,7 +49,7 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
                 throw new AssertException("'extends' or 'super' is expected as the 0 subterm of "+TermHelper.termToString(t));
             }
             try {
-              boundTypeModel_=JavaResolver.resolveTypeToModel(t.getSubtermAt(1),where);
+              boundTypeModel_=JavaResolver.resolveTypeToModel(t.getSubtermAt(1),where,typeParameters);
             }catch(EntityNotFoundException ex){
                 boundTypeModel_=JavaUnknownTypeModel.INSTANCE;
             }
@@ -247,7 +247,8 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
       }
     
     
-    public boolean hasTypeParameters() {
+    public boolean hasTypeParameters() throws TermWareException
+    {
         if (kind_==JavaWildcardBoundsKind.SUPER) {
             return false;
         }else{
@@ -256,7 +257,8 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
     }
         
     
-    public List<JavaTypeVariableAbstractModel>  getTypeParameters() {
+    public List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException
+    {
         if (kind_==JavaWildcardBoundsKind.SUPER) {
            return Collections.emptyList();
         }else{

@@ -204,13 +204,13 @@ public abstract class JavaTypeModel {
   /**
    * if this type hase type parameters ?
    */
-  public abstract boolean hasTypeParameters();
+  public abstract boolean hasTypeParameters() throws TermWareException;
   
   /**
    * return type parameters. (i. e.  for class<U,B> { ... }  definitions are <U,B> )
    *in case of absence of type paramters return empty list
    */
-  public abstract  List<JavaTypeVariableAbstractModel>  getTypeParameters();
+  public abstract  List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException;
   
   /**
    *if this is local or anonimous class and it is possible to get enclosing

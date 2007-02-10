@@ -93,10 +93,10 @@ public class JavaArrayTypeModel extends JavaTypeModel
   { return referencedType_.check(); }
 
   
-  public boolean hasTypeParameters()
+  public boolean hasTypeParameters() throws TermWareException
   { return referencedType_.hasTypeParameters(); }
   
-  public List<JavaTypeVariableAbstractModel>  getTypeParameters()
+  public List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException
   { return referencedType_.getTypeParameters(); }
 
   public boolean hasMethodModels()
