@@ -25,9 +25,11 @@
 
 
  <!-- external tasks -->
- 
+
+<!-- 
  <taskdef name="izpack" classpath="${izpackhome}/lib/compiler.jar"
          classname="com.izforge.izpack.ant.IzPackTask"/>
+-->
 
  <!-- targets -->
 
