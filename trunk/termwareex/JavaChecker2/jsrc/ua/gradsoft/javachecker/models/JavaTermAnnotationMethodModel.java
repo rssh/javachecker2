@@ -69,7 +69,12 @@ public class JavaTermAnnotationMethodModel extends JavaMethodModel
       return Collections.emptyList();  
     }
     
-    public Map<String,JavaFormalParameterModel>  getFormalParameters() throws TermWareException
+    public List<JavaFormalParameterModel> getFormalParametersList()
+    {
+      return Collections.emptyList();  
+    }
+    
+    public Map<String,JavaFormalParameterModel>  getFormalParametersMap() throws TermWareException
     {
       return Collections.emptyMap();  
     }                

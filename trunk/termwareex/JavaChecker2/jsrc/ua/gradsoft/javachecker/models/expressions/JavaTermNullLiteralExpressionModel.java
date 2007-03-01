@@ -54,6 +54,14 @@ public class JavaTermNullLiteralExpressionModel extends JavaTermExpressionModel 
         return Collections.emptyList();
     }
     
+    /**
+     * NullLiteral()
+     */
+    public Term getModelTerm()
+    {
+      return t_;  
+    }
+    
     public String getString()
     { return "null"; }
                 

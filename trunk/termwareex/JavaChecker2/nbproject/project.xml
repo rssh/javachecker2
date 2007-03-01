@@ -36,6 +36,11 @@
                     <target>test</target>
                 </action>
             </ide-actions>
+            <export>
+                <type>jar</type>
+                <location>jlib/JavaChecker2.jar</location>
+                <build-target>build</build-target>
+            </export>
             <view>
                 <items>
                     <source-folder style="packages">
@@ -56,6 +61,10 @@
                     <ide-action name="javadoc"/>
                     <ide-action name="rebuild"/>
                     <ide-action name="test"/>
+                    <action>
+                        <label>test-debug</label>
+                        <target>test-debug</target>
+                    </action>
                 </context-menu>
             </view>
             <subprojects/>
@@ -64,6 +73,7 @@
             <compilation-unit>
                 <package-root>jsrc</package-root>
                 <classpath mode="compile">jlib/TermWare2.jar;jlib/TermWareJPP.jar</classpath>
+                <built-to>jlib/JavaChecker2.jar</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
             <compilation-unit>

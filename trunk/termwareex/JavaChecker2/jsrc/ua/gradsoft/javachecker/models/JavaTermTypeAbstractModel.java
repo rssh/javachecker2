@@ -191,24 +191,34 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
       if (resolvedSuperClass_==null) {
           if (isClass()) {
               if (superClassTerm_==null) {
-                  resolvedSuperClass_=JavaResolver.resolveJavaLangObject();              
+                  resolvedSuperClass_=JavaResolver.resolveJavaLangObject();   
+                  // we can read jdk sources ;)
+                  if (getName().equals("Object")) {
+                      if (getPackageModel().getName().equals("java.lang")) {
+                          resolvedSuperClass_=JavaNullTypeModel.INSTANCE;
+                      }
+                  }
               }else{                  
                   try {
                      if (isNested()) {
-                         resolvedSuperClass_=JavaResolver.resolveTypeToModel(superClassTerm_,getEnclosedType());
+                         resolvedSuperClass_=JavaResolver.resolveTypeToModel(superClassTerm_,getEnclosedType(),getTypeParameters());
                      }else{  
-                         resolvedSuperClass_=JavaResolver.resolveTypeToModel(superClassTerm_,getUnitModel(),getPackageModel(),null,null,null);
+                         resolvedSuperClass_=JavaResolver.resolveTypeToModel(superClassTerm_,getUnitModel(),getPackageModel(),null,getTypeParameters(),null);
                      }
                   }catch(EntityNotFoundException ex){
                       throw new AssertException(ex.getMessage(),ex);
                   }
               }
           }else if(isEnum()) {
-              resolvedSuperClass_=JavaResolver.resolveJavaLangObject(); 
+              try {
+                resolvedSuperClass_=JavaResolver.resolveTypeModelByFullClassName("java.lang.Enum"); 
+              }catch(EntityNotFoundException ex){
+                  throw new AssertException("Can't resolve java.lang.Enum");
+              }
           }else{
               resolvedSuperClass_=JavaResolver.resolveJavaLangObject();
           }
-      }  
+      }       
       return resolvedSuperClass_;
     }
     
@@ -391,7 +401,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
       }
     }
     
-    public Term getMemberModelsList() throws TermWareException
+    public Term getMemberModelsList() throws TermWareException, EntityNotFoundException
     {
        Term retval=TermUtils.createNil();       
        if (initializers_!=null) {
@@ -482,7 +492,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     private boolean isLocal_=false;
     private int     localIndexInEnclosed_=-1;        
     
-    private boolean isAnonimous_=false;
+    protected boolean isAnonimous_=false;
     
     /**
      * statement, in which this class is defined if this is local or anonimous class.

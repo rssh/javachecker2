@@ -20,6 +20,7 @@ import ua.gradsoft.javachecker.models.JavaTopLevelBlockModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.javachecker.models.JavaVariableKind;
 import ua.gradsoft.javachecker.models.JavaVariableModel;
+import ua.gradsoft.termware.Term;
 
 /**
  *
@@ -86,5 +87,43 @@ public class VarResolvingTest extends TestCase
          //    System.out.println();
          //}
      }
+
+     public void testHd3() throws Exception
+     {
+        JavaTypeModel hd3tm = JavaResolver.resolveTypeModelFromPackage("Hd3","hd");                 
+        JavaMethodModel mm = hd3tm.findMethodModels("main").get(0);
+        JavaTopLevelBlockModel tplb=mm.getTopLevelBlockModel();
+        List<JavaStatementModel> statements=tplb.getStatements();
+        JavaStatementModel last=statements.get(statements.size()-1);
+        JavaVariableModel xvm = JavaResolver.resolveVariableByName("otherArgs",last);
+        assertEquals("otherArgs is local variable",JavaVariableKind.LOCAL_VARIABLE,xvm.getKind());
+        
+        // now check then we can resolve otherArgs form anopnimous class.
+        //  (building of ModelTerm will resolve all references inside)
+        Term mt = hd3tm.getModelTerm();
+        
+     }
+     
+     public void testHd4() throws Exception
+     {
+        JavaTypeModel hd4tm = JavaResolver.resolveTypeModelFromPackage("Hd4","hd");                 
+        
+        // now check then we can resolve y from switch statement
+        //  (building of ModelTerm will resolve all references inside)
+        Term mt = hd4tm.getModelTerm();
+        
+     }
+     
+     public void testHd5() throws Exception
+     {
+        JavaTypeModel hd5tm = JavaResolver.resolveTypeModelFromPackage("Hd5","hd");                 
+        
+        // now check then we can resolve y from switch statement
+        //  (building of ModelTerm will resolve all references inside)
+        Term mt = hd5tm.getModelTerm();
+        
+     }
+     
+     
      
 }

@@ -21,6 +21,7 @@ import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -34,7 +35,7 @@ public class JavaTermInstanceOfExpressionModel extends JavaTermExpressionModel
     public JavaTermInstanceOfExpressionModel(Term t,JavaTermStatementModel st,JavaTypeModel enclosedType) throws TermWareException
     {
        super(t,st,enclosedType);
-       JavaTermExpressionModel subExpression=JavaTermExpressionModel.create(t.getSubtermAt(0),st,enclosedType);
+       subExpression_=JavaTermExpressionModel.create(t.getSubtermAt(0),st,enclosedType);
        typeTerm_=t.getSubtermAt(1);
        resolvedType_=null;
     }
@@ -67,6 +68,21 @@ public class JavaTermInstanceOfExpressionModel extends JavaTermExpressionModel
         JavaExpressionModel e = subExpression_;
         return Collections.singletonList(e);
     }
+    
+    
+    /**
+     * InstanceOfExpressionModel(typeRef,expression,ctx)
+     */
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+        JavaTypeModel instanceOfType = getInstanceOfType();
+        Term typeRef = TermUtils.createTerm("TypeRef",typeTerm_,TermUtils.createJTerm(instanceOfType));
+        Term at = subExpression_.getModelTerm();        
+        Term tctx = TermUtils.createJTerm(this.createPlaceContext());
+        Term retval = TermUtils.createTerm("InstanceOfExpressionModel",typeRef,at,tctx);
+        return retval;
+    }
+    
     
     private JavaTermExpressionModel subExpression_;
     private Term                    typeTerm_;

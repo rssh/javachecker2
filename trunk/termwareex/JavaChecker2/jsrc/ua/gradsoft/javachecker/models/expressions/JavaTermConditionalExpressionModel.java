@@ -19,6 +19,7 @@ import ua.gradsoft.javachecker.models.JavaNullTypeModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -59,6 +60,19 @@ public class JavaTermConditionalExpressionModel extends JavaTermExpressionModel
        retval.add(ifTrue_);
        retval.add(ifFalse_);
        return retval;
+    }
+    
+    /**
+     * ConditionalExpressionModel(condition,ifTrue,ifFalse,tctx)
+     */
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+      Term x = condition_.getModelTerm();
+      Term y = ifTrue_.getModelTerm();
+      Term z = ifFalse_.getModelTerm();
+      Term tctx = TermUtils.createJTerm(createPlaceContext());
+      Term retval = TermUtils.createTerm("ConditionalExpressionModel",x,y,z,tctx);
+      return retval;
     }
     
     private JavaTermExpressionModel condition_;

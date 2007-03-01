@@ -24,7 +24,7 @@ import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
- *
+ *Model for floating point literal expression
  * @author Ruslan Shevchenko
  */
 public class JavaTermFloatingPointLiteralExpressionModel extends JavaTermExpressionModel implements JavaLiteralModel
@@ -54,6 +54,12 @@ public class JavaTermFloatingPointLiteralExpressionModel extends JavaTermExpress
     {
         return Collections.emptyList();
     }
+    
+    /**
+     * FloatingPointLiteral(<string>)
+     */
+    public Term getModelTerm()
+    { return getTerm(); }
     
     public String getString()
     { return t_.getSubtermAt(0).getString(); }

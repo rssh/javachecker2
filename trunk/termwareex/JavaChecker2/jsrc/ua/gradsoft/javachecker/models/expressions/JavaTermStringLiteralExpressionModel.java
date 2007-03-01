@@ -58,5 +58,10 @@ public class JavaTermStringLiteralExpressionModel extends JavaTermExpressionMode
     public String getString()
     { return t_.getSubtermAt(0).getString(); }
                         
+    /**
+     * StringLiteral(String)
+     */
+    public Term getModelTerm()
+    { return t_; }
     
 }

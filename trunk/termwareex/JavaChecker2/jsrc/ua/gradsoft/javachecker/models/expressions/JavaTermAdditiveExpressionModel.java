@@ -19,6 +19,7 @@ import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
@@ -64,6 +65,9 @@ public class JavaTermAdditiveExpressionModel extends JavaTermExpressionModel
     {
       JavaTypeModel x = subExpressions_.get(0).getType();
       JavaTypeModel y = subExpressions_.get(1).getType();
+      if (x.getFullName().equals("java.lang.String")) {
+          return x;
+      }
       return JavaExpressionHelper.resolveBinaryNumericPromotion(x,y);          
     }
     
@@ -73,6 +77,18 @@ public class JavaTermAdditiveExpressionModel extends JavaTermExpressionModel
     
     public List<JavaExpressionModel>  getSubExpressions()
     { return subExpressions_; }
+    
+    /**
+     * AdditiveExpressionModel(x,y,op,ctx);
+     */
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+        Term frs=subExpressions_.get(0).getModelTerm();
+        Term snd=subExpressions_.get(1).getModelTerm();
+        Term kindTerm = TermUtils.createString(additiveKind_.getString());
+        Term ctx = TermUtils.createJTerm(createPlaceContext());
+        return TermUtils.createTerm("AdditiveExpressionModel",frs,snd,kindTerm,ctx);
+    }
     
     private List<JavaExpressionModel> subExpressions_;
     private JavaAdditiveOperatorKind     additiveKind_;            

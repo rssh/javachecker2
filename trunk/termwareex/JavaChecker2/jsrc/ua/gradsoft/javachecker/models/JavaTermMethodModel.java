@@ -184,23 +184,33 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     public  Term  getResultTypeAsTerm() throws TermWareException
     { return t_.getSubtermAt(RESULT_TYPE_TERM_INDEX); }
     
-    public  Term  getFormalParametersList() throws TermWareException
+    public  Term  getFormalParametersTerm() throws TermWareException
     {        
         return t_.getSubtermAt(METHOD_DECLARATOR_INDEX).getSubtermAt(METHOD_DECLARATOR__FORMAL_PARAMETERS_INDEX).getSubtermAt(0);
     }
-        
-    public Map<String,JavaFormalParameterModel> getFormalParameters() throws TermWareException
+
+    
+    public List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException
     {      
-      if (formalParameters_==null) {
-        Term formalParametersList = getFormalParametersList();
-        formalParameters_ = TermUtils.buildFormalParameters(formalParametersList,this);
+      if (formalParametersList_==null) {
+        Term formalParametersTerm = getFormalParametersTerm();
+        formalParametersList_ = TermUtils.buildFormalParametersList(formalParametersTerm,this);
       }
-      return formalParameters_;
+      return formalParametersList_;
+    }                
+        
+    public Map<String,JavaFormalParameterModel> getFormalParametersMap() throws TermWareException
+    {      
+      if (formalParametersMap_==null) {
+        Term formalParametersTerm = getFormalParametersTerm();
+        formalParametersMap_ = TermUtils.buildFormalParametersMap(formalParametersTerm,this);
+      }
+      return formalParametersMap_;
     }        
     
     public List<JavaTypeModel> getFormalParametersTypes() throws TermWareException
     {
-      Map<String,JavaFormalParameterModel> fps=getFormalParameters();
+      Map<String,JavaFormalParameterModel> fps=getFormalParametersMap();
       JavaTypeModel[] retval = new JavaTypeModel[fps.size()];
       for(Map.Entry<String,JavaFormalParameterModel> e:fps.entrySet())
       {
@@ -225,7 +235,7 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     
     public void  visitFormalParameterIdentifiers(ITermVisitor visitor,TermHolder result,HashSet<Term> hs) throws TermWareException
     {
-     Term t=getFormalParametersList();
+     Term t=getFormalParametersTerm();
      while(!t.isNil()) {
         if (t.getName().equals("cons")) {
           Term formalParameter=t.getSubtermAt(0);
@@ -280,14 +290,14 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     /**
      * MethodModel(modifiers,typeParameters,ResultType,name,formalParameters,throws,block,context)
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
       Term mt = modifiers_.getModelTerm();
       Term tpt = TermUtils.buildTypeParametersModelTerm(getTypeParameters(),t_.getSubtermAt(TYPE_PARAMETERS_TERM_INDEX));
       Term rt = TermUtils.createTerm("TypeRef",getResultTypeAsTerm(),TermUtils.createJTerm(getResultType()));
       Term identifier = t_.getSubtermAt(METHOD_DECLARATOR_INDEX).getSubtermAt(METHOD_DECLARATOR__IDENTIFIER_INDEX);
       Term ofp = t_.getSubtermAt(METHOD_DECLARATOR_INDEX).getSubtermAt(METHOD_DECLARATOR__FORMAL_PARAMETERS_INDEX);
-      Term fp = ofp; /*buildFormalParametersModelTerm(formalParameters_,ofp);*/
+      Term fp = ofp; /*buildFormalParametersModelTerm(formalParametersMap_,ofp);*/
       Term tht = t_.getSubtermAt(THROWS_SPECIFICATION_INDEX);
       Term blockModelTerm = TermUtils.createNil();
       if (blockModel_!=null) {
@@ -314,7 +324,8 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     private JavaModifiersModel   modifiers_=null;    
     
     // some cashed valuse
-    private Map<String,JavaFormalParameterModel> formalParameters_=null;
+    private Map<String,JavaFormalParameterModel> formalParametersMap_=null;
+    private List<JavaFormalParameterModel>       formalParametersList_=null;
     
     public static int TYPE_PARAMETERS_TERM_INDEX=0;
     public static int RESULT_TYPE_TERM_INDEX=1;

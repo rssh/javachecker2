@@ -52,6 +52,14 @@ public class JavaTermBooleanLiteralExpressionModel  extends JavaTermExpressionMo
         return Collections.emptyList();
     }
     
+    /**
+     * BooleanLiteral(<string>)
+     */
+    public Term getModelTerm()
+    {
+        return t_;
+    }
+    
     public String getString()
     { return t_.getSubtermAt(0).getString(); }
                         

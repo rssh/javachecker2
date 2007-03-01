@@ -32,7 +32,7 @@ public class JavaExpressionHelper {
     /**
      * return type of expression (
      *
-     */   
+     */
     public static JavaTypeModel resolveExpressionType(Term expr, JavaPlaceContext context) throws EntityNotFoundException, TermWareException {
         if (expr.getName().equals("Expression"))  {
             if (expr.getArity()==1) {
@@ -40,6 +40,9 @@ public class JavaExpressionHelper {
             }else if (expr.getArity()==2) {
                 JavaTypeModel frs = resolveExpressionType(expr.getSubtermAt(0),context);
                 // we can just return frs.
+                return frs;
+            }else if (expr.getArity()==3) {
+                JavaTypeModel frs = resolveExpressionType(expr.getSubtermAt(2),context);
                 return frs;
             }else{
                 throw new AssertException("arity of expression must be 1 or 2:"+TermHelper.termToString(expr));
@@ -71,7 +74,8 @@ public class JavaExpressionHelper {
                 if (JavaTypeModelHelper.isBoolean(t0)) {
                     return t0;
                 }else{
-                    return resolveBinaryNumericPromotionInList(t0,expr.getSubtermAt(1),context);
+                    JavaTypeModel t1 = resolveExpressionType(expr.getSubtermAt(2),context);
+                    return resolveBinaryNumericPromotion(t0,t1);
                 }
             }else{
                 throw new InvalidJavaTermException("arity of InclusiveOrExpression must be 1 or 2",expr);
@@ -82,7 +86,8 @@ public class JavaExpressionHelper {
             }else if (expr.getArity()==2) {
                 JavaTypeModel t0 = resolveExpressionType(expr.getSubtermAt(0),context);
                 if (JavaTypeModelHelper.isBoolean(t0)) return t0;
-                return resolveBinaryNumericPromotionInList(t0,expr.getSubtermAt(1),context);
+                JavaTypeModel t1 = resolveExpressionType(expr.getSubtermAt(2),context);
+                return resolveBinaryNumericPromotion(t0,t1);
             }else{
                 throw new InvalidJavaTermException("arity of ExclusiveOrExpression must be 1 or 2",expr);
             }
@@ -92,7 +97,8 @@ public class JavaExpressionHelper {
             }else if (expr.getArity()==2) {
                 JavaTypeModel t0 = resolveExpressionType(expr.getSubtermAt(0),context);
                 if (JavaTypeModelHelper.isBoolean(t0)) return t0;
-                return resolveBinaryNumericPromotionInList(t0,expr.getSubtermAt(1),context);
+                JavaTypeModel t1 = resolveExpressionType(expr.getSubtermAt(2),context);
+                return resolveBinaryNumericPromotion(t0,t1);
             }else{
                 throw new InvalidJavaTermException("arity of AndExpression must be 1 or 2",expr);
             }
@@ -125,10 +131,11 @@ public class JavaExpressionHelper {
                 return resolveExpressionType(expr.getSubtermAt(0),context);
             }else{
                 JavaTypeModel t0 = resolveExpressionType(expr.getSubtermAt(0),context);
-                if (JavaTypeModelHelper.same(t0,JavaResolver.resolveTypeModelByFullClassName("java.lang.String"))) {                    
+                if (JavaTypeModelHelper.same(t0,JavaResolver.resolveTypeModelByFullClassName("java.lang.String"))) {
                     return JavaResolver.resolveTypeModelByFullClassName("java.lang.String");
                 }else{
-                    return resolveBinaryNumericPromotionInList1(t0,expr.getSubtermAt(1),1,context);
+                    JavaTypeModel t1 = resolveExpressionType(expr.getSubtermAt(2),context);
+                    return resolveBinaryNumericPromotion(t0,t1);
                 }
             }
         }else if (expr.getName().equals("MultiplicativeExpression")) {
@@ -136,7 +143,8 @@ public class JavaExpressionHelper {
                 return resolveExpressionType(expr.getSubtermAt(0),context);
             }else{
                 JavaTypeModel t0 = resolveExpressionType(expr.getSubtermAt(0),context);
-                return resolveBinaryNumericPromotionInList1(t0,expr.getSubtermAt(1),1,context);
+                JavaTypeModel t1 = resolveExpressionType(expr.getSubtermAt(2),context);
+                return resolveBinaryNumericPromotion(t0,t1);
             }
         }else if (expr.getName().equals("UnaryExpression")) {
             if (expr.getArity()==1) {
@@ -198,13 +206,13 @@ public class JavaExpressionHelper {
             }
         }else if (expr.getName().equals("Super")) {
             if (context.getTypeModel()!=null) {
-             try {   
-                JavaTypeModel superTypeModel=context.getTypeModel().getSuperClass();
-                JavaPlaceContext newContext = JavaPlaceContextFactory.createNewTypeContext(superTypeModel);
-                return resolveExpressionType(expr.getSubtermAt(0),newContext);
-             }catch(NotSupportedException ex){
-                 throw new AssertException("'super' is not applicable in context");
-             }
+                try {
+                    JavaTypeModel superTypeModel=context.getTypeModel().getSuperClass();
+                    JavaPlaceContext newContext = JavaPlaceContextFactory.createNewTypeContext(superTypeModel);
+                    return resolveExpressionType(expr.getSubtermAt(0),newContext);
+                }catch(NotSupportedException ex){
+                    throw new AssertException("'super' is not applicable in context");
+                }
             }else{
                 throw new AssertException("'super' is not applicable in context");
             }
@@ -217,7 +225,7 @@ public class JavaExpressionHelper {
         }else if (expr.getName().equals("FunctionCall")) {
             List<JavaTypeModel> argTypes = resolveArgumentTypes(expr.getSubtermAt(1),context);
             JavaTypeArgumentsSubstitution s = new JavaTypeArgumentsSubstitution();
-            JavaTypeModel where = context.getTypeModel();
+            JavaTypeModel where = context.getTypeModel();           
             JavaMethodModel method = JavaResolver.resolveMethod(expr.getSubtermAt(0).getString(),argTypes,s,where);
             return s.substitute(method.getResultType());
         }else if (expr.getName().equals("Identifier")) {
@@ -288,7 +296,7 @@ public class JavaExpressionHelper {
                 throw new InvalidJavaTermException("argument of ArrayIndex must be array",expr);
             }else{
                 try {
-                  return arrayType.getReferencedType();
+                    return arrayType.getReferencedType();
                 }catch(NotSupportedException ex){
                     // impossible.
                     throw new AssertException("isArray but getReferencedType() is not supported in"+arrayType.getFullName());
@@ -299,50 +307,31 @@ public class JavaExpressionHelper {
         }else{
             throw new InvalidJavaTermException("Invalid expression",expr);
         }
-        
     }
     
     
-    static public JavaTypeModel getIntegerLiteralType(String s)
-    {
-      if (s.endsWith("L")||s.endsWith("l")) {
-          return JavaPrimitiveTypeModel.LONG;                  
-      }else{
-          return JavaPrimitiveTypeModel.INT;
-      }
-    }
-    
-    static public JavaTypeModel getFloatingPointLiteralType(String s)
-    {
-      if (s.endsWith("f")||s.endsWith("F"))  {
-          return JavaPrimitiveTypeModel.FLOAT;
-      }else{
-          return JavaPrimitiveTypeModel.DOUBLE;
-      }
-    }
-    
-    /**
-     * resolve widest integer from expression, where list have form:
-     *[expr1,expr2,...]
-     */    
-    static JavaTypeModel resolveBinaryNumericPromotionInList(JavaTypeModel t0, Term list, JavaPlaceContext context) throws EntityNotFoundException, TermWareException
-    {
-        JavaTypeModel retval=t0;
-        while(!list.isNil()) {
-            Term subexpr = list.getSubtermAt(0);
-            list=list.getSubtermAt(1);
-            JavaTypeModel t1=resolveExpressionType(subexpr,context);
-            retval = resolveBinaryNumericPromotion(retval,t1);            
+    static public JavaTypeModel getIntegerLiteralType(String s) {
+        if (s.endsWith("L")||s.endsWith("l")) {
+            return JavaPrimitiveTypeModel.LONG;
+        }else{
+            return JavaPrimitiveTypeModel.INT;
         }
-        return retval;
     }
-
-    static public JavaTypeModel resolveBinaryNumericPromotion(JavaTypeModel t1, JavaTypeModel t2)
-    {
+    
+    static public JavaTypeModel getFloatingPointLiteralType(String s) {
+        if (s.endsWith("f")||s.endsWith("F"))  {
+            return JavaPrimitiveTypeModel.FLOAT;
+        }else{
+            return JavaPrimitiveTypeModel.DOUBLE;
+        }
+    }
+    
+    
+    static public JavaTypeModel resolveBinaryNumericPromotion(JavaTypeModel t1, JavaTypeModel t2) {
         JavaTypeModel x = JavaTypeModelHelper.unboxingConversion(t1);
         JavaTypeModel y = JavaTypeModelHelper.unboxingConversion(t2);
         if (x.equals(JavaPrimitiveTypeModel.SHORT)) {
-           return y;
+            return y;
         }else if (x.equals(JavaPrimitiveTypeModel.INT)) {
             if (y.equals(JavaPrimitiveTypeModel.SHORT)) {
                 return x;
@@ -364,58 +353,56 @@ public class JavaExpressionHelper {
                 return x;
             }
         }else{
-            return y;   
-        }    
+            return y;
+        }
     }
     
-    static JavaTypeModel resolveNameExpressionType(Term t, boolean allowsTypes,JavaPlaceContext ctx) throws TermWareException, EntityNotFoundException
-    {
-      Term list=t.getSubtermAt(0);      
-      String firstName=list.getSubtermAt(0).getSubtermAt(0).getString();      
-      try{
-          JavaVariableModel v = JavaResolver.resolveVariableByName(firstName,ctx);
-          // then this can be subfield.
-          return resolveFieldInName(v,list.getSubtermAt(1));
-      }catch(EntityNotFoundException ex){
-          /* ignore, try other possibilities */
-          ;
-      }
-      
-      // try to resolve first identifier as class.
-      try {
-         JavaTypeModel tm = JavaResolver.resolveTypeModelByName(firstName,ctx);
-         // then this can be subclasses or fields.
-         return resolveSubclassesAndStaticFieldsInName(tm,list.getSubtermAt(1));
-      } catch (EntityNotFoundException ex) {
-          ;
-      }
-      
-      // try to resolve first few identifiers as names of classes with full package.
-      Term curr=list.getSubtermAt(1);
-      StringBuilder packageName=new StringBuilder();
-      packageName.append(firstName);
-      String currentClassName=curr.getSubtermAt(0).getSubtermAt(0).getString();
-
-      while(!curr.isNil()) {
-          try {
-              JavaTypeModel tm=JavaResolver.resolveTypeModelFromPackage(currentClassName,packageName.toString());              
-              return resolveSubclassesAndStaticFieldsInName(tm,curr.getSubtermAt(1));    
-          }catch(EntityNotFoundException ex){
-              ;
-          }
-          packageName.append(".");
-          packageName.append(currentClassName);
-          curr=curr.getSubtermAt(1);
-          currentClassName=curr.getSubtermAt(0).getSubtermAt(0).getString();
-      }
-      
-      //nothing found. die.
-      
-      throw new EntityNotFoundException(" name ", TermHelper.termToString(t), "expression");
+    static JavaTypeModel resolveNameExpressionType(Term t, boolean allowsTypes,JavaPlaceContext ctx) throws TermWareException, EntityNotFoundException {
+        Term list=t.getSubtermAt(0);
+        String firstName=list.getSubtermAt(0).getSubtermAt(0).getString();
+        try{
+            JavaVariableModel v = JavaResolver.resolveVariableByName(firstName,ctx);
+            // then this can be subfield.
+            return resolveFieldInName(v,list.getSubtermAt(1));
+        }catch(EntityNotFoundException ex){
+            /* ignore, try other possibilities */
+            ;
+        }
+        
+        // try to resolve first identifier as class.
+        try {
+            JavaTypeModel tm = JavaResolver.resolveTypeModelByName(firstName,ctx);
+            // then this can be subclasses or fields.
+            return resolveSubclassesAndStaticFieldsInName(tm,list.getSubtermAt(1));
+        } catch (EntityNotFoundException ex) {
+            ;
+        }
+        
+        // try to resolve first few identifiers as names of classes with full package.
+        Term curr=list.getSubtermAt(1);
+        StringBuilder packageName=new StringBuilder();
+        packageName.append(firstName);
+        String currentClassName=curr.getSubtermAt(0).getSubtermAt(0).getString();
+        
+        while(!curr.isNil()) {
+            try {
+                JavaTypeModel tm=JavaResolver.resolveTypeModelFromPackage(currentClassName,packageName.toString());
+                return resolveSubclassesAndStaticFieldsInName(tm,curr.getSubtermAt(1));
+            }catch(EntityNotFoundException ex){
+                ;
+            }
+            packageName.append(".");
+            packageName.append(currentClassName);
+            curr=curr.getSubtermAt(1);
+            currentClassName=curr.getSubtermAt(0).getSubtermAt(0).getString();
+        }
+        
+        //nothing found. die.
+        
+        throw new EntityNotFoundException(" name ", TermHelper.termToString(t), "expression");
     }
-
-    public static JavaTypeModel  resolveFieldInName(JavaVariableModel v, Term l) throws EntityNotFoundException, TermWareException
-    {
+    
+    public static JavaTypeModel  resolveFieldInName(JavaVariableModel v, Term l) throws EntityNotFoundException, TermWareException {
         if (l.isNil()) {
             return v.getTypeModel();
         }else{
@@ -426,77 +413,52 @@ public class JavaExpressionHelper {
         }
     }
     
-    public static JavaTypeModel resolveSubclassesAndStaticFieldsInName(JavaTypeModel tm,Term l) throws EntityNotFoundException, TermWareException
-    {
-       if (l.isNil()) {
-           return tm;
-       }else{
-           String name=l.getSubtermAt(0).getSubtermAt(0).getString();           
-           try {
-               JavaMemberVariableModel mv=JavaResolver.resolveMemberVariableByName(name,tm);
-               // TODO: check that one is static.
-               return resolveSubclassesAndStaticFieldsInName(mv.getTypeModel(),l.getSubtermAt(1));
-           }catch(EntityNotFoundException ex){
-               ;
-           }
-           JavaTypeModel tmn = JavaResolver.resolveTypeModelByName(name,tm,null,null);
-           return resolveSubclassesAndStaticFieldsInName(tmn,l.getSubtermAt(1));                      
-       }           
+    public static JavaTypeModel resolveSubclassesAndStaticFieldsInName(JavaTypeModel tm,Term l) throws EntityNotFoundException, TermWareException {
+        if (l.isNil()) {
+            return tm;
+        }else{
+            String name=l.getSubtermAt(0).getSubtermAt(0).getString();
+            try {
+                JavaMemberVariableModel mv=JavaResolver.resolveMemberVariableByName(name,tm);
+                // TODO: check that one is static.
+                return resolveSubclassesAndStaticFieldsInName(mv.getTypeModel(),l.getSubtermAt(1));
+            }catch(EntityNotFoundException ex){
+                ;
+            }
+            JavaTypeModel tmn = JavaResolver.resolveTypeModelByName(name,tm,null,null);
+            return resolveSubclassesAndStaticFieldsInName(tmn,l.getSubtermAt(1));
+        }
     }
     
     
-    /**
-     * resolve widest integer from expression, where list have form:
-     *[F(..expr1..),F(..expr2..),...]
-     *and expr<i> located at stIndex position in subterms of terms in list.
-     *@param t0 - initial typemodel to compare
-     *@param list - list to navigate.
-     *@param stIndex - position in needed term.
-     *@param context - context where search variable names and so on.
-     */    
-    static JavaTypeModel resolveBinaryNumericPromotionInList1(JavaTypeModel t0, Term list, int stIndex,JavaPlaceContext context) throws EntityNotFoundException, TermWareException
-    {
-        JavaTypeModel retval=t0;
-        while(!list.isNil()) {
-            Term subexpr = list.getSubtermAt(0);
-            list=list.getSubtermAt(1);
-            JavaTypeModel t1=resolveExpressionType(subexpr.getSubtermAt(stIndex),context);
-            retval = resolveBinaryNumericPromotion(retval,t1);            
+    
+    public static List<JavaTypeModel>  resolveArgumentTypes(Term arguments,JavaPlaceContext context) throws EntityNotFoundException, TermWareException {
+        List<JavaTypeModel> retval;
+        // System.err.println("111:resolveArgumentTypes:"+TermHelper.termToString(arguments));
+        if (arguments.getArity()==0)  {
+            retval = Collections.emptyList();
+        }else{
+            Term argsList = arguments.getSubtermAt(0);
+            if (argsList.isNil()) {
+                retval=Collections.<JavaTypeModel>emptyList();
+            }else{
+                retval=new LinkedList<JavaTypeModel>();
+                while(!argsList.isNil()) {
+                    Term t = argsList.getSubtermAt(0);
+                    argsList = argsList.getSubtermAt(1);
+                    JavaTypeModel tm = resolveExpressionType(t,context);
+                    retval.add(tm);
+                }
+            }
         }
         return retval;
     }
-
     
-    public static List<JavaTypeModel>  resolveArgumentTypes(Term arguments,JavaPlaceContext context) throws EntityNotFoundException, TermWareException
-    {
-      List<JavaTypeModel> retval;
-      //System.err.println("111:resolveArgumentTypes:"+TermHelper.termToString(arguments));
-      if (arguments.getArity()==0)  {
-          retval = Collections.emptyList();          
-      }else{          
-          Term argsList = arguments.getSubtermAt(0);          
-          if (argsList.isNil()) {
-              retval=Collections.<JavaTypeModel>emptyList();
-          }else{
-              retval=new LinkedList<JavaTypeModel>();
-              while(!argsList.isNil()) {
-                  Term t = argsList.getSubtermAt(0);
-                  argsList = argsList.getSubtermAt(1);
-                  JavaTypeModel tm = resolveExpressionType(t,context);
-                  retval.add(tm);
-              }
-          }
-      }
-      return retval;
-    }
-    
-    static Term getTypeTermFromAllocation(Term t) throws TermWareException
-    {
+    static Term getTypeTermFromAllocation(Term t) throws TermWareException {
         return getTypeTermFromAllocationExpression(t.getSubtermAt(1));
     }
     
-    static Term getTypeTermFromAllocationExpression(Term t) throws TermWareException
-    {
+    static Term getTypeTermFromAllocationExpression(Term t) throws TermWareException {
         Term typeTerm = t.getSubtermAt(ALLOCATION_EXPRESSION_TYPE_INDEX);
         Term arrayDimsAndInit = t.getSubtermAt(ALLOCATION_EXPRESSION_ARRAY_DIMS_AND_INITS_INDEX);
         int nReferences=0;
@@ -510,12 +472,12 @@ public class JavaExpressionHelper {
                 while(!inside.isNil())  {
                     ++nReferences;
                     inside=inside.getSubtermAt(1);
-                }              
+                }
             }else if (inside.isNil()) {
                 // All ok, do nothing.
             }else{
                 throw new InvalidJavaTermException("Invalid ArrayDimsAndInit:",arrayDimsAndInit);
-            }            
+            }
         }
         if (nReferences==0) {
             return typeTerm;

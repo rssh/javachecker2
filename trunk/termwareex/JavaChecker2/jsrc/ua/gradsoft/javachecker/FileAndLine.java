@@ -24,6 +24,10 @@ public class FileAndLine {
     public int getLine()
     { return line_; }
     
+    public static final FileAndLine UNKNOWN = new FileAndLine("unknown",-1);
+    
+    
+    
     private String fname_;
     private int    line_;
 

@@ -18,6 +18,7 @@ import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -47,6 +48,19 @@ public class JavaTermThisExpressionModel extends JavaTermExpressionModel
     
     public List<JavaExpressionModel> getSubExpressions()
     { return Collections.singletonList(subexpression_); }
+    
+    
+    /**
+     * ThisModel(x,ctx)
+     */
+    public Term getModelTerm() throws  TermWareException, EntityNotFoundException
+    {
+      Term x = subexpression_.getModelTerm();
+      Term ctx = TermUtils.createJTerm(this.createPlaceContext());
+      Term retval = TermUtils.createTerm("ThisModel",x,ctx);
+      return retval;
+    }
+    
     
     private JavaExpressionModel  subexpression_;
     

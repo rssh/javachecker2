@@ -16,7 +16,15 @@ package ua.gradsoft.javachecker.models.expressions;
  */
 public enum JavaEqualityOperatorKind {
     
-    EQUALS,
+    EQUALS
+    {
+       public String getString() { return "=="; }
+    },
     NOT_EQUALS
-    
+    {
+            public String getString() { return "!="; }
+    };
+            
+    public abstract String getString();            
+  
 }

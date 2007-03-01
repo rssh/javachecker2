@@ -11,10 +11,9 @@ package ua.gradsoft.javachecker;
  *  (for example - method with some name)
  * @author  Ruslan Shevchenko
  */
-public class EntityNotFoundException extends Exception {
-    
-   
-    
+public class EntityNotFoundException extends Exception implements SourceCodeLocation
+{
+          
     /**
      * Constructs an instance of <code>EntittyNotFoundException</code> with the specified detail message.
      * @param msg the detail message.
@@ -22,4 +21,16 @@ public class EntityNotFoundException extends Exception {
     public EntityNotFoundException(String entityType, String entityName, String msg) {
         super("entity "+entityName +" ("+entityType+") is not found "+msg);
     }
+    
+    public FileAndLine getFileAndLine()
+    {
+        return fileAndLine_;
+    }
+    
+    public void setFileAndLine(FileAndLine fileAndLine)
+    {
+        fileAndLine_=fileAndLine;
+    }
+    
+    private FileAndLine fileAndLine_=FileAndLine.UNKNOWN;
 }

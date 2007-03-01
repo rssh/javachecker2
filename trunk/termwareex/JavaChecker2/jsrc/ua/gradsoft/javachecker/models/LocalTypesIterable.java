@@ -34,6 +34,9 @@ public class LocalTypesIterable implements Iterable<JavaTypeModel>
         private void findNext() {
             try {
                 next_=pos_;
+                if (next_==null) {
+                    return;
+                }
                 while(next_.getLocalType()==null && (next_.getPreviousStatementModel()!=null || next_.getParentStatementModel()!=null)) {
                     if (next_.getPreviousStatementModel()!=null) {
                         next_=next_.getPreviousStatementModel();
@@ -52,20 +55,26 @@ public class LocalTypesIterable implements Iterable<JavaTypeModel>
                 findNext();
             }
             try {
-                return (next_.getLocalType()!=null);
+                return (next_!=null && next_.getLocalType()!=null);
             }catch(TermWareException ex){
                 throw new TermWareRuntimeException(ex);
             }
         }
         
         public JavaTypeModel next() {
-            try {
+            try {                
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
                 pos_=next_;
                 next_=null;
-                return pos_.getLocalType();
+                JavaTypeModel retval = pos_.getLocalType();
+                if (pos_.getPreviousStatementModel()==null) {
+                    pos_=pos_.getParentStatementModel();
+                }else{
+                    pos_=pos_.getPreviousStatementModel();
+                }
+                return retval;
             }catch(TermWareException ex){
                 throw new TermWareRuntimeException(ex);
             }

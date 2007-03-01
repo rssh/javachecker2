@@ -12,6 +12,7 @@ package ua.gradsoft.javachecker.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -51,7 +52,7 @@ public class JavaTermTopLevelBlockModel implements JavaTopLevelBlockModel
     /**
      * cons(StatementModel,....)
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
         Term retval=TermUtils.createNil();
         for(JavaStatementModel ts:getStatements()) {

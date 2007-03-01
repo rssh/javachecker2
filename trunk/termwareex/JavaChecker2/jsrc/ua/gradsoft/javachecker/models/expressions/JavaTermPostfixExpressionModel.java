@@ -18,6 +18,7 @@ import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -31,8 +32,13 @@ public class JavaTermPostfixExpressionModel extends JavaTermExpressionModel
    public JavaTermPostfixExpressionModel(Term t,JavaTermStatementModel st,JavaTypeModel enclosedType) throws TermWareException
     {
        super(t,st,enclosedType);
-       subexpression_ =JavaTermExpressionModel.create(t.getSubtermAt(1),st,enclosedType);
-       String operator = t.getSubtermAt(0).getString();
+       subexpression_ =JavaTermExpressionModel.create(t.getSubtermAt(0),st,enclosedType);
+       String operator =null;
+       if (t.isString()) {
+          operator = t.getSubtermAt(1).getString();
+       }else{
+           operator = t.getSubtermAt(1).getName();
+       }
        operatorKind_ = JavaPostfixOperatorKind.create(operator);
     }
     
@@ -56,6 +62,18 @@ public class JavaTermPostfixExpressionModel extends JavaTermExpressionModel
     {
         JavaExpressionModel e = subexpression_;
         return Collections.singletonList(e);
+    }
+    
+    /**
+     * PostfixExpressionModel(x,op,ctx)
+     */
+    public Term getModelTerm() throws  TermWareException, EntityNotFoundException
+    {
+      Term x = subexpression_.getModelTerm();
+      Term op = TermUtils.createString(operatorKind_.getString());
+      Term ctx = TermUtils.createJTerm(this.createPlaceContext());
+      Term retval = TermUtils.createTerm("PostfixExpressionModel",x,op,ctx);
+      return retval;
     }
             
     private JavaTermExpressionModel subexpression_;

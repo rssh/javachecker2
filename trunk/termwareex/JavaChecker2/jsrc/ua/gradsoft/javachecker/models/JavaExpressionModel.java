@@ -12,6 +12,7 @@ package ua.gradsoft.javachecker.models;
 
 import java.util.List;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -22,9 +23,11 @@ public interface JavaExpressionModel {
     
     public JavaExpressionKind  getKind();
     
-    public List<JavaExpressionModel>  getSubExpressions();
+    public List<JavaExpressionModel>  getSubExpressions()  throws TermWareException, EntityNotFoundException;
     
     public JavaTypeModel  getType() throws TermWareException, EntityNotFoundException;
+    
+    public Term  getModelTerm() throws TermWareException, EntityNotFoundException;
     
     /**
      * return true, if expression represents type.
@@ -41,4 +44,6 @@ public interface JavaExpressionModel {
      */
     public JavaTypeModel  getEnclosedType();
     
+    
+       
 }

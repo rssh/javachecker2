@@ -8,6 +8,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import ua.gradsoft.javachecker.EntityNotFoundException;
@@ -15,7 +16,6 @@ import ua.gradsoft.javachecker.FileAndLine;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.termware.Term;
-import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -32,6 +32,7 @@ public class JavaTermTypeVariableModel extends JavaTypeVariableAbstractModel
      */
     public JavaTermTypeVariableModel(Term t,JavaTypeModel where) throws TermWareException
     {
+        boolean printDetails=true;               
         //bounds_=new LinkedList<JavaTypeModel>();
         bounds_=null;
         termBounds_=TermUtils.createNil();
@@ -52,21 +53,28 @@ public class JavaTermTypeVariableModel extends JavaTypeVariableAbstractModel
         }
     }
     
+    public JavaModifiersModel getModifiersModel()
+    {
+      return JavaModelConstants.PUBLIC_MODIFIERS; 
+    }
+    
     /**
      *addTypeBound.
      *t must be in form "TypeBound([b1,b2,...])"
      */
     private void addTypeBounds(Term t,JavaTypeModel where) throws TermWareException
-    {     
+    {            
       t=t.getSubtermAt(0);
       while(!t.isNil()) {
           Term classOrInterfaceType=t.getSubtermAt(0);
           t=t.getSubtermAt(1);
           JavaTypeModel bound;          
-          try {
-              bound=JavaResolver.resolveTypeToModel(classOrInterfaceType,where);              
+          try {              
+              bound=JavaResolver.resolveTypeToModel(classOrInterfaceType,where,Collections.<JavaTypeVariableAbstractModel>singletonList(this));              
           }catch(EntityNotFoundException ex){
-              bound=JavaUnknownTypeModel.INSTANCE;
+              InvalidJavaTermException ex1 = new InvalidJavaTermException(ex.getMessage(),classOrInterfaceType);
+              ex1.setFileAndLine(JUtils.getFileAndLine(classOrInterfaceType));
+              throw ex1;
           }
           bounds_.add(bound);          
       }  

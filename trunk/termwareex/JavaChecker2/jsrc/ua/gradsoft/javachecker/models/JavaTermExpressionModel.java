@@ -1,9 +1,8 @@
 /*
  * JavaTermExpressionModel.java
  *
- * Created on понеділок, 5, лютого 2007, 6:05
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006, 2007 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -13,6 +12,8 @@ package ua.gradsoft.javachecker.models;
 import ua.gradsoft.javachecker.models.expressions.JavaTermAdditiveExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermAllocationExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermAndExpressionModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermArrayIndexExpressionModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermArrayInitializerExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermAssigmentExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermBooleanLiteralExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermCastExpressionModel;
@@ -23,6 +24,7 @@ import ua.gradsoft.javachecker.models.expressions.JavaTermConditionalExpressionM
 import ua.gradsoft.javachecker.models.expressions.JavaTermConditionalOrExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermEqualityExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermExclusiveOrExpressionModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermFieldExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermFloatingPointLiteralExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermFunctionCallExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermIdentifierExpressionModel;
@@ -32,6 +34,7 @@ import ua.gradsoft.javachecker.models.expressions.JavaTermInstanceOfExpressionMo
 import ua.gradsoft.javachecker.models.expressions.JavaTermIntegerLiteralExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermMethodCallExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermMultiplicativeExpressionModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermNameExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermParentizedExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermPostfixExpressionModel;
@@ -39,6 +42,8 @@ import ua.gradsoft.javachecker.models.expressions.JavaTermPredecrementExpression
 import ua.gradsoft.javachecker.models.expressions.JavaTermPreincrementExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermRelationalExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermShiftExpressionModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermSpecializedMethodCallExpressionModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermStaticFieldExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermStringLiteralExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermSuperExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermSuperPrefixExpressionModel;
@@ -59,9 +64,12 @@ public abstract class JavaTermExpressionModel implements JavaExpressionModel
     
     public static JavaTermExpressionModel create(Term t, JavaTermStatementModel statement, JavaTypeModel enclosedType) throws TermWareException
     {
-      if (t.getName().equals("Expression")) {
+      //System.out.println("create expession for "+TermHelper.termToString(t));
+      if (t.getName().equals("Expression")||t.getName().equals("StatementExpression")) {
           if (t.getArity()==1) {
             return new JavaTermParentizedExpressionModel(t,statement,enclosedType);
+          }else if (t.getArity()==2){
+              return new JavaTermPostfixExpressionModel(t,statement,enclosedType);
           }else if (t.getArity()==3){
               return new JavaTermAssigmentExpressionModel(t,statement,enclosedType);
           }else{
@@ -230,10 +238,10 @@ public abstract class JavaTermExpressionModel implements JavaExpressionModel
               throw new InvalidJavaTermException("arity of StringLiteral must be 1",t);
           }               
       }else if(t.getName().equals("NullLiteral")){
-          if (t.getArity()==1) {
+          if (t.getArity()==0) {
               return new JavaTermNullLiteralExpressionModel(t,statement,enclosedType);
           }else{
-              throw new InvalidJavaTermException("arity of StringLiteral must be 1",t);
+              throw new InvalidJavaTermException("arity of NullLiteral must be 0",t);
           }                         
       }else if(t.getName().equals("PrimaryExpression")){
           if (t.getArity()==1) {
@@ -275,6 +283,12 @@ public abstract class JavaTermExpressionModel implements JavaExpressionModel
           }else{
               throw new InvalidJavaTermException("arity of Super must be 1",t);  
           }  
+      }else if(t.getName().equals("SuperPrefix")) {
+          if (t.getArity()==0) {
+              return new JavaTermSuperPrefixExpressionModel(t,statement,enclosedType);
+          }else{
+              throw new InvalidJavaTermException("arity of SuperPrefix must be 0",t);  
+          }
       }else if(t.getName().equals("MethodCall")){
           if (t.getArity()==3) {
               return new JavaTermMethodCallExpressionModel(t,statement,enclosedType);
@@ -282,11 +296,41 @@ public abstract class JavaTermExpressionModel implements JavaExpressionModel
               throw new InvalidJavaTermException("arity of MethodCall must be 3",t);  
           }    
       }else if(t.getName().equals("SpecializedMethodCall")) {
-          if (t.getArity()==3) {
-              return new JavaTermMethodCallExpressionModel(t,statement,enclosedType);
+          if (t.getArity()==4) {
+              return new JavaTermSpecializedMethodCallExpressionModel(t,statement,enclosedType);
           }else{
-              throw new InvalidJavaTermException("arity of MethodCall must be 3",t);  
-          }              
+              throw new InvalidJavaTermException("arity of SpecializedMethodCall must be 4",t);  
+          }        
+      }else if(t.getName().equals("Field")) {
+          if (t.getArity()==2) {
+              return new JavaTermFieldExpressionModel(t,statement,enclosedType);
+          }else{
+              throw new InvalidJavaTermException("arity of Field must be 2",t);  
+          }
+     // }else if (t.getName().equals("StaticField")) {
+     //     if (t.getArity()==2){
+     //         return new JavaTermStaticFieldExpressionModel(t,statement,enclosedType);
+     //     }else{
+     //         throw new InvalidJavaTermException("arity of StaticField must be 2",t);  
+     //     }
+      }else if (t.getName().equals("ArrayIndex")) {
+          if (t.getArity()==2) {
+              return new JavaTermArrayIndexExpressionModel(t,statement,enclosedType);
+          }else{              
+              throw new InvalidJavaTermException("arity of ArrayIndex must be 2",t);  
+          }
+      }else if (t.getName().equals("ArrayInitializer")) {
+          if (t.getArity()==1) {
+              return new JavaTermArrayInitializerExpressionModel(t,statement,enclosedType);
+          }else{
+              throw new InvalidJavaTermException("arity of ArrayIndex must be 2",t); 
+          }
+      }else if (t.getName().equals("Name")) {
+          if (t.getArity()==1) {
+              return new JavaTermNameExpressionModel(t,statement,enclosedType);
+          }else{
+              throw new InvalidJavaTermException("arity of Name must be 1",t);  
+          }
       }else if(t.isAtom()) {
           if (t.getName().equals("this")) {
               return new JavaTermThisPrefixExpressionModel(t,statement,enclosedType);
@@ -299,6 +343,8 @@ public abstract class JavaTermExpressionModel implements JavaExpressionModel
           throw new InvalidJavaTermException("Invalid expression term",t);
       }
     }
+    
+    
     
     protected JavaTermExpressionModel(Term t, JavaTermStatementModel statement, JavaTypeModel enclosedType)
     {
@@ -333,4 +379,5 @@ public abstract class JavaTermExpressionModel implements JavaExpressionModel
     protected Term t_;
     protected JavaTermStatementModel statement_;
     protected JavaTypeModel  enclosedType_;
+    
 }

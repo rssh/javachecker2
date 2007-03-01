@@ -41,6 +41,14 @@ public class JavaPackageModel {
     }
     
     /**
+     *@return number of model references to types, which was resolved in this package.
+     */
+    public int  getNumberOfLoadedReferences()
+    {
+      return typeModelRefs_.size();  
+    }
+    
+    /**
      * Add compilation unit to package, if one not already currently in soft hash.
      *In parallel parse <code> compilationUnit </code> and fill <code> compilationUnitModel </code>
      */
@@ -114,10 +122,12 @@ public class JavaPackageModel {
     
     public JavaTypeModel findTypeModel(String name) throws TermWareException, EntityNotFoundException
     {
+     // System.err.println("call of packageModel ("+this.getName()+") findTypeModel for "+name);  
       JavaTypeModel retval=null;  
       // 1. try to get from hash.
-      JavaTypeModelRef ref = typeModelRefs_.get(name);
+      JavaTypeModelRef ref = typeModelRefs_.get(name);      
       if (ref!=null) {
+          //System.err.println("foundRef, ref.getTypeModel.getName()="+ref.getTypeModel().getName());
           retval=ref.getTypeModel();
           return retval;
       }
@@ -138,7 +148,7 @@ public class JavaPackageModel {
               AnalyzedUnitRef newRef = new AnalyzedUnitRef(AnalyzedUnitType.SOURCE,directory,resource,cu);              
               this.addCompilationUnit(t,cu,newRef);
               for(JavaTypeModel tm: cu.getTypeModels() ) {
-                  typeModelRefs_.put(tm.getName(),new JavaTypeModelRef(name,newRef,tm));
+                  typeModelRefs_.put(tm.getName(),new JavaTypeModelRef(tm.getName(),newRef,tm));
                   if (tm.getName().equals(name)) {
                       retval=tm;                                            
                   }
@@ -160,7 +170,7 @@ public class JavaPackageModel {
         AnalyzedUnitRef newRef = new AnalyzedUnitRef(AnalyzedUnitType.CLASS,null,theClass.getName(),cu);
         this.addClassUnit(cu,newRef);
         for(JavaTypeModel tm: newRef.getJavaUnitModel().getTypeModels()) {
-            typeModelRefs_.put(tm.getName(),new JavaTypeModelRef(name,newRef,tm));
+            typeModelRefs_.put(tm.getName(),new JavaTypeModelRef(tm.getName(),newRef,tm));
             if (tm.getName().equals(name)) {
                 retval=tm;                
             }

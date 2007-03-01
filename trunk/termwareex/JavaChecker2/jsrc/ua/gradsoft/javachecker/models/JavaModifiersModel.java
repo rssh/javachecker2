@@ -38,6 +38,7 @@ public class JavaModifiersModel {
      public static final int TRANSIENT = 0x0100;
      public static final int VOLATILE = 0x0200;
      public static final int STRICTFP = 0x1000;
+     public static final int VARARGS = 0x2000;
 
      /** A set of accessors that indicate whether the specified modifier
          is in the set. */
@@ -97,6 +98,11 @@ public class JavaModifiersModel {
        return (modifiers_ & VOLATILE) != 0;
      }
 
+     public boolean isVarArgs()
+     {
+       return (modifiers_ & VARARGS) != 0;  
+     }
+     
      /**
       * Removes the given modifier.
       */

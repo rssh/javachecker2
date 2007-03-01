@@ -94,6 +94,9 @@ public abstract class JavaTypeModel {
    */
   public abstract boolean isUnknown();
   
+  
+  public abstract JavaModifiersModel  getModifiersModel();
+  
   /**
    *get superclass.  
    *does not supported for primitive types, type arguments, wildcard bounds
@@ -229,7 +232,7 @@ public abstract class JavaTypeModel {
    *TypeModel is a term which have next form:
    * TypeModel( Model-of-ASTTree, PlaceContext )
    */
-  public  abstract Term  getModelTerm() throws TermWareException;
+  public  abstract Term  getModelTerm() throws TermWareException, EntityNotFoundException;
   
   public  JavaUnitModel  getUnitModel()
   { return unitModel_; }

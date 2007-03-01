@@ -25,12 +25,16 @@ import ua.gradsoft.termware.Term;
 public class MTData6Test extends TestCase
 {
     
+    
        protected void setUp() throws Exception
        {
         JavaCheckerFacade.init();
         JavaCheckerFacade.addInputDirectory("testpackages/testdata6");
        }
 
+       /**
+        * This is the main test
+        */
        public void testOutliner() throws Exception
        {
            JavaTypeModel tm=JavaResolver.resolveTypeModelByFullClassName("x.Outliner");
@@ -42,7 +46,7 @@ public class MTData6Test extends TestCase
        }
        
        public void testAttributedIndexed() throws Exception
-       {
+       {          
            JavaTypeModel tm=JavaResolver.resolveTypeModelByFullClassName("y.AttributedIndexed");
            JavaTypeModel tmSuper = tm.getSuperClass();
            List<JavaTypeModel> tmSuperInterfaces = tm.getSuperInterfaces();
@@ -54,7 +58,7 @@ public class MTData6Test extends TestCase
            JavaTypeModel tm=JavaResolver.resolveTypeModelByFullClassName("y.Attributed");
            JavaTypeModel tmSuper = tm.getSuperClass();
            List<JavaTypeModel> tmSuperInterfaces = tm.getSuperInterfaces();
-           Term mttm=tm.getModelTerm();
+           Term mttm=tm.getModelTerm();           
        }
        
     
@@ -74,6 +78,13 @@ public class MTData6Test extends TestCase
        {
           JavaTypeModel tm=JavaResolver.resolveTypeModelByFullClassName("z.ZVector"); 
           Term mttm = tm.getModelTerm();
+       }
+       
+       public void testZVectorExpr1() throws Exception
+       {
+           JavaTypeModel tm = JavaResolver.resolveTypeModelByFullClassName("z.ZVector");
+           String sexpr = "super.subList(1,2)";
+           
        }
 
 

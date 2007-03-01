@@ -20,6 +20,7 @@ import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -63,6 +64,17 @@ public class JavaTermClassLiteralExpressionModel extends JavaTermExpressionModel
     public List<JavaExpressionModel> getSubExpressions()
     {
         return Collections.emptyList();
+    }
+    
+    /**
+     * ClassLiteralModel(TypeRef,tctx)
+     */
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+        Term typeRefTerm = TermUtils.createTerm("TypeRef",typeTerm_,TermUtils.createJTerm(getClassLiteralType()));
+        Term tctx = TermUtils.createJTerm(createPlaceContext());
+        Term retval = TermUtils.createTerm("ClassLiteralModel",typeRefTerm,tctx);
+        return retval;
     }
         
     private Term                    typeTerm_;

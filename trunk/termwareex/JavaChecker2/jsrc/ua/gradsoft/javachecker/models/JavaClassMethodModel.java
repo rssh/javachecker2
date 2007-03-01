@@ -11,6 +11,7 @@ package ua.gradsoft.javachecker.models;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +71,26 @@ public class JavaClassMethodModel extends JavaMethodModel
         return retval;
     }            
     
-    public Map<String,JavaFormalParameterModel> getFormalParameters() throws TermWareException
+    public List<JavaFormalParameterModel> getFormalParametersList()throws TermWareException
+    {
+        Type[] parameterTypes=method_.getGenericParameterTypes();
+        List<JavaFormalParameterModel> retval = new ArrayList<JavaFormalParameterModel>(parameterTypes.length);
+        for(int i=0; i<parameterTypes.length; ++i) {
+            String name="fp"+i;
+            JavaTypeModel c = JavaClassTypeModel.createTypeModel(parameterTypes[i]);
+            int parameterModifiers=0;
+            if (i==parameterTypes.length-1) {
+                if (method_.isVarArgs()) {
+                    parameterModifiers |= JavaModifiersModel.VARARGS;
+                }
+            }
+            retval.add(new JavaFormalParameterModel(parameterModifiers,name,c,this,i));
+        }
+        return retval;
+    }
+    
+    
+    public Map<String,JavaFormalParameterModel> getFormalParametersMap() throws TermWareException
     {
        Map<String,JavaFormalParameterModel> retval = new TreeMap<String,JavaFormalParameterModel>(); 
        Type[] parameterTypes=method_.getGenericParameterTypes();

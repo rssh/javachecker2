@@ -79,6 +79,37 @@
 
  <target name="test" depends="build-test-classes">
      <junit printsummary="yes" showoutput="true" fork="true" dir="." >  
+         <jvmarg value="-Xmx512M"/>
+<!--
+         <jvmarg value="-Dcom.sun.management.jmxremote"/>
+         <jvmarg value="-Dcom.sun.management.jmxremote.port=22223"/>
+         <jvmarg value="-Dcom.sun.management.jmxremote.ssl=false"/>
+-->
+         <classpath>
+             <pathelement location="jtests" />
+             <pathelement location="jlib/JavaChecker2.jar" />
+             <pathelement location="jlib/TermWare2.jar" />
+             <pathelement location="jlib/TermWareJPP.jar" />
+             <pathelement location="jlib/junit.jar" />
+             <pathelement location="${java.class.path}/"/>                
+         </classpath>
+         <formatter type="xml" usefile="false" />
+         <batchtest  >
+             <fileset dir="jtests"  >
+                  <include name="ua/**/*Test.java"/> 
+             </fileset>
+         </batchtest>
+     </junit>
+ </target>
+
+
+ <target name="test-debug" depends="build-test-classes">
+     <junit printsummary="yes" showoutput="true" fork="true" forkmode="once" dir="." >
+            <jvmarg value="-Xmx512M"/>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xnoagent"/>
+            <jvmarg value="-Djava.compiler=none"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,address=22222,server=y"/>
          <classpath>
              <pathelement location="jtests" />
              <pathelement location="jlib/JavaChecker2.jar" />
@@ -96,6 +127,7 @@
      </junit>
  </target>
  
+
  <target name="declareJavaChecker"  depends="build-classes">
     <taskdef name="JavaChecker"  classname="ua.kiev.gradsoft.JavaChecker.ant.JavaCheckerTask">
      <classpath>

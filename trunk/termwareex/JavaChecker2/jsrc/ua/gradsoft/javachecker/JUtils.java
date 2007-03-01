@@ -188,6 +188,9 @@ public final class JUtils {
      Term lineTerm=TermHelper.getAttribute(markedIdentifier,"line");
      String fname="unknown, entry is:";
      int    line=-1;
+     if (fileTerm.isNil() && lineTerm.isNil()) {
+         return FileAndLine.UNKNOWN;
+     }
      if (!fileTerm.isNil()) {
          fname=fileTerm.getString();
      }else{

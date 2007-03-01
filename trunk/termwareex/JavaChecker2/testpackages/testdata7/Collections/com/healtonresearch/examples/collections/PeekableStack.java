@@ -1,4 +1,4 @@
-package com.heatonresearch.examples.collections;
+package com.healtonresearch.examples.collections;
 
 import java.util.*;
 

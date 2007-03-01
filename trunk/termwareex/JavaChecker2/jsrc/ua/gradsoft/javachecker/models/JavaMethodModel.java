@@ -37,9 +37,17 @@ public abstract class JavaMethodModel implements JavaTopLevelBlockOwnerModel
  
     public abstract JavaTypeModel  getResultType() throws TermWareException;
     
+    /**
+     *return list of forma-parameters types.  Note, that type for varargs parameters are arrays.
+     */
     public abstract List<JavaTypeModel> getFormalParametersTypes() throws TermWareException;
     
-    public abstract Map<String,JavaFormalParameterModel>  getFormalParameters() throws TermWareException;
+    /**
+     *get list of formal parameters. 
+     */
+    public abstract List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException;
+    
+    public abstract Map<String,JavaFormalParameterModel>  getFormalParametersMap() throws TermWareException;
             
     public abstract boolean canCheck();
     
@@ -92,7 +100,10 @@ public abstract class JavaMethodModel implements JavaTopLevelBlockOwnerModel
     
     public void print(PrintStream out) 
     {
-        print(new PrintWriter(out));
+        PrintWriter writer = new PrintWriter(out);
+        print(writer);
+        writer.flush();
+ //       writer.close();
     }
     
     public JavaFacts getJavaFacts()

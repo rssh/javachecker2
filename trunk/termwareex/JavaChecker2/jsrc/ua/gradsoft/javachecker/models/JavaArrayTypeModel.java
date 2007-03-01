@@ -11,6 +11,7 @@ package ua.gradsoft.javachecker.models;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
@@ -25,7 +26,8 @@ public class JavaArrayTypeModel extends JavaTypeModel
     /** Creates a new instance of JavaArrayTypeModel */
     public JavaArrayTypeModel(JavaTypeModel referencedType) {
        super(referencedType.getPackageModel());
-       referencedType_=referencedType;
+       referencedType_=referencedType;     
+       lengthModel_=new LengthMemberVariableModel();
     }
     
     public String getName()
@@ -33,7 +35,7 @@ public class JavaArrayTypeModel extends JavaTypeModel
   
     public Term getShortNameAsTerm() throws TermWareException
     {
-       return TermUtils.createTerm("ReferenceType",referencedType_.getShortNameAsTerm(),1); 
+       return TermUtils.createTerm("ReferenceType",TermUtils.createInt(1), referencedType_.getShortNameAsTerm()); 
     }
   
     /*
@@ -43,6 +45,8 @@ public class JavaArrayTypeModel extends JavaTypeModel
     }
      */
   
+    public JavaModifiersModel getModifiersModel()
+    { return JavaModelConstants.PUBLIC_MODIFIERS; }
     
     public boolean isClass()
     { return false; }
@@ -109,10 +113,12 @@ public class JavaArrayTypeModel extends JavaTypeModel
   { throw new NotSupportedException(); }
         
   public boolean hasMemberVariableModels()
-  { return false; }
+  { return true; }
   
   public Map<String, JavaMemberVariableModel> getMemberVariableModels() throws NotSupportedException
-  { throw new NotSupportedException(); }        
+  { 
+    return Collections.<String,JavaMemberVariableModel>singletonMap("length",lengthModel_);  
+  }        
 
   public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
       throw new NotSupportedException();
@@ -146,11 +152,55 @@ public class JavaArrayTypeModel extends JavaTypeModel
   public JavaStatementModel getEnclosedStatement()
   { return null; } 
   
-  public Term getModelTerm() throws TermWareException
+  public Term getModelTerm() throws TermWareException, EntityNotFoundException
   {
     return TermUtils.createTerm("ReferencedType",referencedType_.getModelTerm());  
   }
   
+  class LengthMemberVariableModel extends JavaMemberVariableModel
+  {
+    public JavaModifiersModel getModifiersModel()
+    {
+        return JavaModelConstants.PUBLIC_MODIFIERS;
+    }
+
+    /**
+     *@return name of member variable.
+     */
+    public String getName()
+    {
+       return "length"; 
+    }
+        
+    public JavaTypeModel getTypeModel() 
+    {
+        return JavaPrimitiveTypeModel.INT;
+    }
+    
+    public  JavaTypeModel getOwner()
+    {
+        return JavaArrayTypeModel.this;
+    }
+    
+    public boolean canCheck()
+    {
+        return false;
+    }
+    
+    public boolean check() { return true; }
+    
+    /**
+     * ArrayLength
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+       return TermUtils.createAtom("ArrayLength"); 
+    }
+      
+  }
+  
     private JavaTypeModel referencedType_;
+    private LengthMemberVariableModel lengthModel_;
+       
 
 }

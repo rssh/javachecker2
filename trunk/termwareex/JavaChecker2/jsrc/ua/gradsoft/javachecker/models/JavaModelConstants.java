@@ -69,6 +69,7 @@ public class JavaModelConstants {
     public final static int ANNOTATION_TYPE_MODEL_CONTEXT_INDEX = 4;
     
     
-    
+    public final static JavaModifiersModel PUBLIC_MODIFIERS = new JavaModifiersModel(JavaModifiersModel.PUBLIC);
+    public final static JavaModifiersModel PUBLIC_STATIC_MODIFIERS = new JavaModifiersModel(JavaModifiersModel.PUBLIC|JavaModifiersModel.STATIC);
     
 }

@@ -8,8 +8,8 @@ package ua.gradsoft.javachecker.models;
 
 import java.util.List;
 import java.util.Map;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
-import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -50,11 +50,18 @@ public class JavaTermConstructorModel implements JavaConstructorModel, JavaTermT
     Term tpt = t_.getSubtermAt(TYPE_PARAMETERS_TERM_INDEX);
     return TermUtils.buildTypeParameters(tpt,getTypeModel());
    }
-   
-    public Map<String,JavaFormalParameterModel> getFormalParameters() throws TermWareException
+
+    public List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException
     {
         Term formalParametersList = t_.getSubtermAt(FORMAL_PARAMETERS_TERM_INDEX).getSubtermAt(0);  
-        return TermUtils.buildFormalParameters(formalParametersList,this);
+        return TermUtils.buildFormalParametersList(formalParametersList,this);
+    }
+   
+   
+    public Map<String,JavaFormalParameterModel> getFormalParametersMap() throws TermWareException
+    {
+        Term formalParametersList = t_.getSubtermAt(FORMAL_PARAMETERS_TERM_INDEX).getSubtermAt(0);  
+        return TermUtils.buildFormalParametersMap(formalParametersList,this);
     }
     
     public  boolean isSupportBlockModel()
@@ -77,7 +84,7 @@ public class JavaTermConstructorModel implements JavaConstructorModel, JavaTermT
     /**
      *ConstructorModel(modifiers,TypeParameters,identifier,FormalParameters,trowsNameList,BlockModel,context)
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
       Term modifiersModelTerm = modifiers_.getModelTerm();  
       Term typeParametersModelTerm = TermUtils.buildTypeParametersModelTerm(getTypeParameters(),t_.getSubtermAt(TYPE_PARAMETERS_TERM_INDEX));

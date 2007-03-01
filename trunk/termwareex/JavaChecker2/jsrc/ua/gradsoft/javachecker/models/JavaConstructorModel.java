@@ -18,7 +18,7 @@ public interface JavaConstructorModel extends JavaTopLevelBlockOwnerModel
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException;
     
-    public Map<String,JavaFormalParameterModel> getFormalParameters() throws TermWareException;
+    public Map<String,JavaFormalParameterModel> getFormalParametersMap() throws TermWareException;
     
     public boolean canCheck();
     

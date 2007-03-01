@@ -21,6 +21,7 @@ public enum JavaStatementKind {
     EMPTY_STATEMENT (true),
     STATEMENT_EXPRESSION_STATEMENT (false),
     SWITCH_STATEMENT (true),
+    SWITCH_LABEL_BLOCK(true),
     IF_STATEMENT (true),
     WHILE_STATEMENT (true),
     DO_STATEMENT (true),

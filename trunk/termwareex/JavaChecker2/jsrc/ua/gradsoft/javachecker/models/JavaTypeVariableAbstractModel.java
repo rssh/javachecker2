@@ -184,6 +184,7 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
       StringWriter sw = new StringWriter(); 
       PrintWriter swr = new PrintWriter(sw);
       this.print(swr);
+      swr.close();
       return sw.toString();
     }
     

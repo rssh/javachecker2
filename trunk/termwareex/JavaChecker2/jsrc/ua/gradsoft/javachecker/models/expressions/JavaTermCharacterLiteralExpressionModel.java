@@ -54,6 +54,12 @@ public class JavaTermCharacterLiteralExpressionModel extends JavaTermExpressionM
         return Collections.emptyList();
     }
     
+    /**
+     * CharacterLiteral(string)
+     */
+    public Term getModelTerm()
+    { return getTerm(); }
+    
     public String getString()
     { return t_.getSubtermAt(0).getString(); }
                 

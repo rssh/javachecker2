@@ -31,6 +31,8 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
             throw new AssertException("argument of JavaMemberVariableModel constructor must be VariableDeclarator");
         }
         type_=type;
+        owner_=owner;      
+        modifiersModel_=new JavaModifiersModel(modifiers);        
         variableDeclarator_=variableDeclarator;
         Term variableDeclaratorId=variableDeclarator.getSubtermAt(0);
         Term identifierTerm = variableDeclaratorId.getSubtermAt(0);
@@ -42,8 +44,6 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
             }
         }        
         name_=identifierTerm.getSubtermAt(0).getName();
-        owner_=owner;      
-        modifiersModel_=new JavaModifiersModel(modifiers);        
     }
     
     public String getName()

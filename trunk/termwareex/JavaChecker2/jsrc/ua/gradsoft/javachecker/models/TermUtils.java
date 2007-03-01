@@ -8,6 +8,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +46,11 @@ public class TermUtils {
     public static final Term createAtom(String name)
     {
         return getTermFactory().createAtom(name);
+    }
+    
+    public static final Term createString(String value)
+    {
+       return getTermFactory().createString(value); 
     }
 
     public static final Term createTerm(String name) throws TermWareException
@@ -137,22 +143,48 @@ public class TermUtils {
        return tpt;  
      }
 
-     public static Map<String,JavaFormalParameterModel> buildFormalParameters(Term formalParametersList,JavaTopLevelBlockOwnerModel executable) throws TermWareException
+
+     public static List<JavaFormalParameterModel> buildFormalParametersList(Term formalParametersList,JavaTopLevelBlockOwnerModel executable) throws TermWareException
+    {
+      ArrayList<JavaFormalParameterModel> retval = new ArrayList<JavaFormalParameterModel>();      
+      int index=0;
+      while(!formalParametersList.isNil()) {
+          Term c = formalParametersList.getSubtermAt(0);
+          formalParametersList = formalParametersList.getSubtermAt(1);
+          JavaFormalParameterModel pm = buildFormalParameter(c,executable,index);
+          retval.add(pm);
+          ++index;
+      }
+      return retval;
+    }            
+     
+     
+     
+     public static Map<String,JavaFormalParameterModel> buildFormalParametersMap(Term formalParametersList,JavaTopLevelBlockOwnerModel executable) throws TermWareException
     {
       TreeMap<String,JavaFormalParameterModel> retval = new TreeMap<String,JavaFormalParameterModel>();      
       int index=0;
       while(!formalParametersList.isNil()) {
           Term c = formalParametersList.getSubtermAt(0);
           formalParametersList = formalParametersList.getSubtermAt(1);
-          int modifiers = c.getSubtermAt(0).getInt();
-          Term typeTerm = c.getSubtermAt(1);
+          JavaFormalParameterModel pm = buildFormalParameter(c,executable,index);
+          retval.put(pm.getName(),pm);
+          ++index;
+      }
+      return retval;
+    }            
+
+    private static JavaFormalParameterModel buildFormalParameter(Term fp,JavaTopLevelBlockOwnerModel executable,int index) throws TermWareException
+    {
+          int modifiers = fp.getSubtermAt(0).getInt();
+          Term typeTerm = fp.getSubtermAt(1);
           JavaTypeModel tm = null;
           try {
              tm = JavaResolver.resolveTypeToModel(typeTerm,executable.getTypeModel(),executable.getTypeParameters());
           }catch(EntityNotFoundException ex){
              tm = JavaUnknownTypeModel.INSTANCE;             
           }
-          Term vdi=c.getSubtermAt(2);  
+          Term vdi=fp.getSubtermAt(2);  
           String name=null;
           //System.out.println("vdi is:"+TermHelper.termToString(vdi));
           if (vdi.getName().equals("VariableDeclaratorId")) {
@@ -167,13 +199,13 @@ public class TermUtils {
           }else{
               throw new AssertException("Invalid VariableDeclaratorId in formal parameters:"+TermHelper.termToString(vdi));
           }
-          JavaFormalParameterModel pm = new JavaFormalParameterModel(modifiers,name,tm,executable,index);
-          retval.put(name,pm);
-          ++index;
-      }
-      return retval;
-    }            
-
+          if ((modifiers & JavaModifiersModel.VARARGS)!=0) {
+              tm = new JavaArrayTypeModel(tm);
+          }
+          JavaFormalParameterModel pm = new JavaFormalParameterModel(modifiers,name,tm,executable,index);        
+          return pm;
+    }
+     
     public static Term reverseListTerm(Term t) throws TermWareException
     {
       Term retval=TermUtils.createNil();

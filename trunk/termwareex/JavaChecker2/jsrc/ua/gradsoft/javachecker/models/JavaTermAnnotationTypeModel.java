@@ -84,7 +84,7 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
      * AnnotationTypeDeclarationModel(name,[...],context)
      *where AnnotationTypeBodyModel is list,
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
         Term nameTerm=t_.getSubtermAt(0);
         Term typeBodyModel=getMemberModelsList();

@@ -8,6 +8,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +16,11 @@ import java.util.Set;
 import java.util.TreeMap;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.Main;
+import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.TermWareRuntimeException;
 import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
@@ -30,6 +33,11 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
         super(modifiers,t,packageModel,unitModel);
         enumConstants_=new TreeMap<String,JavaEnumConstantModel>();
         build(t);
+        // TODO: fix case, when valueof is overloaded in user code.
+        ValuesMethodModel vmm = new ValuesMethodModel();
+        methodModels_.put(vmm.getName(),Collections.<JavaMethodModel>singletonList(vmm));
+        ValueOfMethodModel vomm = new ValueOfMethodModel();
+        methodModels_.put(vomm.getName(),Collections.<JavaMethodModel>singletonList(vomm));
     }
     
     public boolean isClass()  { return false; }
@@ -80,7 +88,7 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     /**
      * EnumModel(identifier,superInterfaces, EnumConstantsList,membersList,context)
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
         Term identifierTerm=t_.getSubtermAt(QENUM_IDENTIFIER_INDEX_);
         List<JavaTypeModel> si = getSuperInterfaces();
@@ -177,6 +185,153 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     private static final int IMPLEMENTS_INDEX_=1;
     private static final int ENUMBODY_INDEX_=2;
     
+public final class ValuesMethodModel extends JavaMethodModel 
+{    
+    /**
+     * Creates a new instance of JavaMethodModel
+     */
+    public ValuesMethodModel() 
+    {
+      super(JavaTermEnumModel.this);
+    }
     
+    public String getName()
+    { return "values"; }
+    
+    public JavaModifiersModel getModifiers()
+    { return JavaModelConstants.PUBLIC_STATIC_MODIFIERS; }
+    
+    public List<JavaTypeVariableAbstractModel>  getTypeParameters() 
+    { return Collections.emptyList(); }
+ 
+    public JavaTypeModel  getResultType() 
+    { return new JavaArrayTypeModel(JavaTermEnumModel.this); }
+    
+    public List<JavaTypeModel> getFormalParametersTypes() 
+    { return Collections.emptyList(); }
+            
+    public List<JavaFormalParameterModel> getFormalParametersList()
+    { return Collections.emptyList(); }
+    
+    public Map<String,JavaFormalParameterModel>  getFormalParametersMap() 
+    { return Collections.emptyMap(); }
+            
+    public boolean canCheck()
+    { return false; }
+    
+    public boolean check()
+    { return true; }
+    
+    public boolean         isSupportBlockModel()
+    { return false; }
+    
+    public JavaTopLevelBlockModel  getTopLevelBlockModel() throws NotSupportedException
+    { throw new NotSupportedException(); }
+    
+    /**
+     * MethodModel(modifiers,typeParameters,ResultType,name,formalParameters,throws,block,context)
+     */
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+      Term mt = getModifiers().getModelTerm();
+      Term tpt = TermUtils.createNil();
+      JavaTypeModel rtm = getResultType();
+      Term rt = TermUtils.createTerm("TypeRef",rtm.getShortNameAsTerm(),TermUtils.createJTerm(rtm));
+      Term identifier = TermUtils.createIdentifier(getName());
+      Term ofp = TermUtils.createNil();
+      Term fp = ofp; /*buildFormalParametersModelTerm(formalParametersMap_,ofp);*/
+      Term tht = TermUtils.createNil();
+      Term blockModelTerm = TermUtils.createNil();
+      JavaPlaceContext ctx = JavaPlaceContextFactory.createNewMethodContext(this);
+      Term tctx = TermUtils.createJTerm(ctx);
+      Term retval = TermUtils.createTerm("MethodModel",mt,tpt,rt,identifier,fp,tht,blockModelTerm,tctx);
+      return retval;
+    }    
+    
+  }
+
+public final class ValueOfMethodModel extends JavaMethodModel 
+{    
+    /**
+     * Creates a new instance of JavaMethodModel
+     */
+    public ValueOfMethodModel() throws TermWareException
+    {
+      super(JavaTermEnumModel.this);
+      try {
+        parameter_=new JavaFormalParameterModel(0, "name", JavaResolver.resolveTypeModelFromPackage("String","java.lang"), this, 0);
+      }catch(EntityNotFoundException ex){
+          throw new TermWareRuntimeException(ex);
+      }
+    }
+    
+    public String getName()
+    { return "valueOf"; }
+    
+    public JavaModifiersModel getModifiers()
+    { return JavaModelConstants.PUBLIC_STATIC_MODIFIERS; }
+    
+    public List<JavaTypeVariableAbstractModel>  getTypeParameters() 
+    { return Collections.emptyList(); }
+ 
+    public JavaTypeModel  getResultType() 
+    { return JavaTermEnumModel.this; }
+    
+    public List<JavaTypeModel> getFormalParametersTypes() throws TermWareException
+    { 
+      return Collections.singletonList(parameter_.getTypeModel());
+    }
+            
+    public List<JavaFormalParameterModel> getFormalParametersList()
+    { return Collections.singletonList(parameter_); }
+    
+    public Map<String,JavaFormalParameterModel>  getFormalParametersMap() 
+    { return Collections.singletonMap(parameter_.getName(),parameter_); }
+            
+    public boolean canCheck()
+    { return false; }
+    
+    public boolean check()
+    { return true; }
+    
+    public boolean         isSupportBlockModel()
+    { return false; }
+    
+    public JavaTopLevelBlockModel  getTopLevelBlockModel() throws NotSupportedException
+    { throw new NotSupportedException(); }
+    
+    /**
+     * MethodModel(modifiers,typeParameters,ResultType,name,formalParameters,throws,block,context)
+     */
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+      Term mt = getModifiers().getModelTerm();
+      Term tpt = TermUtils.createNil();
+      JavaTypeModel rtm = getResultType();
+      Term rt = TermUtils.createTerm("TypeRef",rtm.getShortNameAsTerm(),TermUtils.createJTerm(rtm));
+      Term identifier = TermUtils.createIdentifier(getName());
+      Term vid = TermUtils.createIdentifier("name");
+      vid = TermUtils.createTerm("cons",vid,TermUtils.createNil());
+      vid = TermUtils.createTerm("VariableDeclaratorId",vid);
+      Term cls = TermUtils.createNil();
+      Term cls1 = TermUtils.createTerm("Identifier",TermUtils.createString("String"));
+      cls = TermUtils.createTerm("cons",cls1,cls);
+      cls = TermUtils.createTerm("ClassOrInterfaceDeclaration",cls);
+      Term fp0 = TermUtils.createTerm("FormalParameter",TermUtils.createInt(0),cls,vid);
+      Term ofp = TermUtils.createTerm("cons",fp0,TermUtils.createNil());
+      Term fp = TermUtils.createTerm("FormalParameters",ofp);
+      Term tht = TermUtils.createNil();
+      Term blockModelTerm = TermUtils.createNil();
+      JavaPlaceContext ctx = JavaPlaceContextFactory.createNewMethodContext(this);
+      Term tctx = TermUtils.createJTerm(ctx);
+      Term retval = TermUtils.createTerm("MethodModel",mt,tpt,rt,identifier,fp,tht,blockModelTerm,tctx);
+      return retval;
+    }    
+    
+    private JavaFormalParameterModel parameter_;
+    
+    
+  }
+
     
 }

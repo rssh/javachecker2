@@ -13,13 +13,13 @@ package ua.gradsoft.javachecker;
 import java.util.List;
 import java.util.Map;
 import junit.framework.TestCase;
-import ua.gradsoft.javachecker.models.JavaArgumentBoundTypeModel;
 import ua.gradsoft.javachecker.models.JavaFormalParameterModel;
 import ua.gradsoft.javachecker.models.JavaMemberVariableModel;
 import ua.gradsoft.javachecker.models.JavaMethodModel;
 import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.javachecker.models.JavaTypeVariableAbstractModel;
+import ua.gradsoft.termware.Term;
 
 /**
  *How sources are loading.
@@ -44,7 +44,7 @@ public class LoadingTest extends TestCase
         JavaTypeModel sTypeModel = methodModel.getResultType();
         assertTrue("main result type is not void",sTypeModel.getName().equals("void"));
         //System.out.println("Z.main result type is "+sTypeModel.getFullName());
-        Map<String,JavaFormalParameterModel> mfp=methodModel.getFormalParameters();
+        Map<String,JavaFormalParameterModel> mfp=methodModel.getFormalParametersMap();
         JavaFormalParameterModel fp = mfp.get("args");
         assertTrue("main must have args parameter",fp!=null);
         JavaTypeModel argsTypeModel=fp.getTypeModel();
@@ -100,7 +100,7 @@ public class LoadingTest extends TestCase
         JavaTypeModel zzzCmrt = zzzCm.getResultType();
         assertEquals("List<java.lang.Integer>",zzzCmrt.getName());
         
-        Map<String,JavaFormalParameterModel> zzzCmfpm = zzzCm.getFormalParameters();
+        Map<String,JavaFormalParameterModel> zzzCmfpm = zzzCm.getFormalParametersMap();
         assertEquals(2,zzzCmfpm.size());
         JavaFormalParameterModel fml1=zzzCmfpm.get("l1");
         assertTrue("l1 is a first argument of createList",fml1.getIndex()==0);
@@ -114,7 +114,7 @@ public class LoadingTest extends TestCase
         assertTrue("return type of zzzPmr must be primitive",zzzPmr.isPrimitiveType());
         
         
-        Map<String,JavaFormalParameterModel> zzzPmfpm = zzzPm.getFormalParameters();
+        Map<String,JavaFormalParameterModel> zzzPmfpm = zzzPm.getFormalParametersMap();
         assertEquals("printList have 1 parameter",1,zzzPmfpm.size());
         
         JavaFormalParameterModel zzzPmfp=zzzPmfpm.get("l");
@@ -133,6 +133,26 @@ public class LoadingTest extends TestCase
      assertEquals("we must have 3 nested models there",3,ntm.size());
     }
     
+    public void testLoadingEb() throws Exception
+    {
+      JavaCheckerFacade.init();
+      JavaCheckerFacade.addInputDirectory("testpackages/testdata5");
+      JavaTypeModel ebModel = JavaResolver.resolveTypeModelFromPackage("Eb","x");
+      List<JavaTypeVariableAbstractModel> ebtp = ebModel.getTypeParameters();
+      assertTrue("Eb has type parameters",ebtp.size()!=0);
+      JavaTypeVariableAbstractModel k = ebtp.get(0);
+      assertEquals("name of K","K",k.getName());
+      List<JavaTypeModel> kBounds = k.getBounds();
+      assertTrue("Eb.K must have bounds",kBounds.size()!=0);
+      System.out.println("Eb full name:"+ebModel.getFullName()+",bounds:"+kBounds.toString());
+      JavaTypeModel kBound=kBounds.get(0);
+      assertEquals("bound is Enum","Enum<K>",kBound.getName());
+      
+     // Term x = ebModel.getModelTerm();
+    }
+    
+    /**
+     *
     public void testLoadingPPP() throws Exception
     {
       JavaCheckerFacade.init();
@@ -156,7 +176,7 @@ public class LoadingTest extends TestCase
       assertEquals("PPP.dupT() result type","Pair<Pair<Number,Integer>,Pair<Number,Integer>>",pppDupTResultModel.getName());
       
     }
-        
+      **/  
     
     
 }

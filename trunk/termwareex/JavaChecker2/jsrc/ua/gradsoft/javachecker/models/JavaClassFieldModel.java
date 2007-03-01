@@ -35,7 +35,7 @@ public class JavaClassFieldModel extends JavaMemberVariableModel
     public JavaModifiersModel getModifiersModel()
     {
         int jmodifiers=field_.getModifiers();
-        return new JavaModifiersModel(jmodifiers);
+        return new JavaModifiersModel(JavaClassTypeModel.translateModifiers(jmodifiers));
     }
     
     public JavaTypeModel getOwner()

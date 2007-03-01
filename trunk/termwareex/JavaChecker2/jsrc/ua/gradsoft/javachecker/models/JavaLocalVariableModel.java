@@ -10,6 +10,8 @@
 
 package ua.gradsoft.javachecker.models;
 
+import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -24,6 +26,13 @@ public interface JavaLocalVariableModel extends JavaVariableModel
     public JavaTypeModel  getTypeModel() throws TermWareException;
         
     public JavaStatementModel getStatement();
+    
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException;
+    
+    /**
+     *return InitExpressionModel or null if one is empty.
+     */
+    public JavaExpressionModel  getInitExpressionModel();
     
     public boolean isForHead();
 }

@@ -1,5 +1,5 @@
 /*
- * JavaArgumentBoundTypeVariableModel.java
+ * JavaTypeArgumentBoundTypeVariableModel.java
  *
  * Created on середа, 17, січня 2007, 20:32
  *
@@ -11,6 +11,7 @@
 package ua.gradsoft.javachecker.models;
 
 import java.util.List;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -19,10 +20,10 @@ import ua.gradsoft.termware.TermWareException;
  *(typical case: when bounds of method type parameter use type parameter of enclosing class)
  * @author Ruslan Shevchenko
  */
-public class JavaArgumentBoundTypeVariableModel extends JavaTypeVariableAbstractModel
+public class JavaTypeArgumentBoundTypeVariableModel extends JavaTypeVariableAbstractModel
 {
  
-    public JavaArgumentBoundTypeVariableModel(JavaTypeVariableAbstractModel origin,List<JavaTypeModel> bounds)
+    public JavaTypeArgumentBoundTypeVariableModel(JavaTypeVariableAbstractModel origin,List<JavaTypeModel> bounds)
     {
       origin_=origin;
       bounds_=bounds;
@@ -31,6 +32,9 @@ public class JavaArgumentBoundTypeVariableModel extends JavaTypeVariableAbstract
     
     public String getName()
     { return origin_.getName(); }
+    
+    public JavaModifiersModel  getModifiersModel()
+    { return origin_.getModifiersModel(); }
     
     public List<JavaTypeModel> getBounds()
     { return bounds_; }
@@ -45,7 +49,7 @@ public class JavaArgumentBoundTypeVariableModel extends JavaTypeVariableAbstract
     /**
      * TypeParameter(originModelTerm,boundsModelTerms)
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
         Term originModelTerm=origin_.getModelTerm();
         Term boundsModelTerm=JavaTypeModelHelper.createModelTermList(bounds_);

@@ -11,6 +11,7 @@
 package ua.gradsoft.javachecker.models;
 
 import java.util.List;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -31,6 +32,6 @@ public  interface JavaTopLevelBlockModel {
     /**
      * return model term (which is sequence of statement models)    
      */
-    public Term getModelTerm() throws TermWareException;
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException;
     
 }

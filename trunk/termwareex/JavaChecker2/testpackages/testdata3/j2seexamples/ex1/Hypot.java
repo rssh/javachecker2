@@ -18,6 +18,9 @@ public class Hypot {
  
     side1 = 3.0; 
     side2 = 4.0; 
+
+    //!!!
+    int x = pow(side1,2);
  
     // Here, sqrt() and pow() can be called by themselves, 
     // without their class name. 

@@ -13,6 +13,7 @@ package ua.gradsoft.javachecker.models.expressions;
 import java.util.Collections;
 import java.util.List;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.models.InvalidJavaTermException;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
@@ -31,8 +32,10 @@ public class JavaTermParentizedExpressionModel extends JavaTermExpressionModel
     public JavaTermParentizedExpressionModel(Term t, JavaTermStatementModel statement, JavaTypeModel enclosedType) throws TermWareException
     {
       super(t,statement,enclosedType); 
-      if (t.getName().equals("Expression")) {
+      if (t.getName().equals("Expression")||t.getName().equals("StatementExpression")) {
           subExpression_=JavaTermExpressionModel.create(t.getSubtermAt(0),statement,enclosedType);
+      }else{
+          throw new InvalidJavaTermException("Expexted Expression or StatementExpression ",t);
       }
     }
     
@@ -48,6 +51,14 @@ public class JavaTermParentizedExpressionModel extends JavaTermExpressionModel
     
     public List<JavaExpressionModel>  getSubExpressions()
     { return Collections.singletonList(subExpression_); }
+    
+    
+    /**
+     * model term of subexpression
+     */
+    public Term getModelTerm()  throws TermWareException, EntityNotFoundException
+    { return subExpression_.getModelTerm(); }
+    
     
     private JavaExpressionModel subExpression_;
 

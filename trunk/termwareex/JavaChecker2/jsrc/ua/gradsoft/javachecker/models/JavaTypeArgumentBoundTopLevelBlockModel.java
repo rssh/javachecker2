@@ -12,6 +12,7 @@ package ua.gradsoft.javachecker.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -19,10 +20,10 @@ import ua.gradsoft.termware.TermWareException;
  *Model for block with type-variables argument bound
  * @author Ruslan Shevchenko
  */
-public class JavaArgumentBoundTopLevelBlockModel implements JavaTopLevelBlockModel
+public class JavaTypeArgumentBoundTopLevelBlockModel implements JavaTopLevelBlockModel
 {
     
-    public JavaArgumentBoundTopLevelBlockModel(JavaArgumentBoundTopLevelBlockOwnerModel owner,
+    public JavaTypeArgumentBoundTopLevelBlockModel(JavaTypeArgumentBoundTopLevelBlockOwnerModel owner,
                                                JavaTopLevelBlockModel origin,
                                                JavaTypeArgumentsSubstitution substitution)            
     {
@@ -31,7 +32,7 @@ public class JavaArgumentBoundTopLevelBlockModel implements JavaTopLevelBlockMod
       substitution_=substitution;
     }
     
-    public JavaArgumentBoundTopLevelBlockOwnerModel  getOwnerModel()
+    public JavaTypeArgumentBoundTopLevelBlockOwnerModel  getOwnerModel()
     { return owner_; }
     
         
@@ -42,9 +43,9 @@ public class JavaArgumentBoundTopLevelBlockModel implements JavaTopLevelBlockMod
     {
       if (statements_==null) {  
         List<JavaStatementModel> retval=new ArrayList<JavaStatementModel>();       
-        JavaArgumentBoundStatementModel prevR=null;        
+        JavaTypeArgumentBoundStatementModel prevR=null;        
         for(JavaStatementModel s: origin_.getStatements()) {
-            JavaArgumentBoundStatementModel r=new JavaArgumentBoundStatementModel(this,s,null,prevR);
+            JavaTypeArgumentBoundStatementModel r=new JavaTypeArgumentBoundStatementModel(this,s,null,prevR);
             retval.add(r);            
             prevR=r;
         }
@@ -63,7 +64,7 @@ public class JavaArgumentBoundTopLevelBlockModel implements JavaTopLevelBlockMod
     /**
      * TypeArgumentBoundTopLevelBlock(origin,ctx)
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
         Term blockModelTerm = origin_.getModelTerm();
         JavaPlaceContext ctx = JavaPlaceContextFactory.createNewTopLevelBlockOwnerContext(owner_);
@@ -72,7 +73,7 @@ public class JavaArgumentBoundTopLevelBlockModel implements JavaTopLevelBlockMod
         return retval;
     }
     
-    private JavaArgumentBoundTopLevelBlockOwnerModel owner_;
+    private JavaTypeArgumentBoundTopLevelBlockOwnerModel owner_;
     private JavaTopLevelBlockModel origin_;
     private List<JavaStatementModel> statements_=null;
     private JavaTypeArgumentsSubstitution substitution_;

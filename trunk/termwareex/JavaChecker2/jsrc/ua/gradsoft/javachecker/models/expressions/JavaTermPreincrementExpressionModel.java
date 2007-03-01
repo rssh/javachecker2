@@ -18,6 +18,7 @@ import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -52,7 +53,19 @@ public class JavaTermPreincrementExpressionModel extends JavaTermExpressionModel
         JavaExpressionModel e = subexpression_;
         return Collections.singletonList(e);
     }
-            
+    
+    /**
+     * PreincrementExpressionModel(x,ctx)
+     */
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+      Term x = subexpression_.getModelTerm();
+      Term ctx = TermUtils.createJTerm(this.createPlaceContext());
+      Term retval = TermUtils.createTerm("PreincrementExpression",x,ctx);
+      return retval;
+    }
+    
+    
     private JavaTermExpressionModel subexpression_;
     
     

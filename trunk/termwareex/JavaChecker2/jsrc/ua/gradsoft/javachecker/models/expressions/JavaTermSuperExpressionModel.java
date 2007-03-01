@@ -13,6 +13,7 @@ package ua.gradsoft.javachecker.models.expressions;
 import java.util.Collections;
 import java.util.List;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.javachecker.models.InvalidJavaTermException;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
@@ -20,6 +21,7 @@ import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -40,7 +42,8 @@ public class JavaTermSuperExpressionModel extends JavaTermExpressionModel
     { return JavaExpressionKind.SUPER; }
     
     public JavaTypeModel getType() throws TermWareException, EntityNotFoundException
-    { try {
+    { 
+      try {
         return subexpression_.getType().getSuperClass(); 
       }catch(NotSupportedException ex){
           throw new InvalidJavaTermException("super call of type without superclassing",t_);
@@ -50,6 +53,16 @@ public class JavaTermSuperExpressionModel extends JavaTermExpressionModel
     public boolean isType()
     { return false; }
     
+    /**
+     * SuperModel(x,ctx)
+     */
+    public Term getModelTerm() throws  TermWareException, EntityNotFoundException
+    {
+      Term x = subexpression_.getModelTerm();
+      Term ctx = TermUtils.createJTerm(createPlaceContext());
+      Term retval = TermUtils.createTerm("SuperModel",x,ctx);
+      return retval;
+    }
     
     public List<JavaExpressionModel> getSubExpressions()
     { return Collections.singletonList(subexpression_); }

@@ -20,6 +20,7 @@ import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.javachecker.models.JavaTypeModelHelper;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -61,6 +62,19 @@ public class JavaTermInclusiveOrExpressionModel extends JavaTermExpressionModel
     
     public List<JavaExpressionModel>  getSubExpressions()
     { return subExpressions_; }
+    
+    /**
+     * InclusiveOrExpressionModel(x,y,ctx)
+     */
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+       Term x = subExpressions_.get(0).getModelTerm();
+       Term y = subExpressions_.get(1).getModelTerm();
+       Term tctx = TermUtils.createJTerm(createPlaceContext());
+       Term retval = TermUtils.createTerm("InclusiveOrExpressionModel",x,y,tctx);
+       return retval;
+    }
+    
     
     private List<JavaExpressionModel> subExpressions_;
 

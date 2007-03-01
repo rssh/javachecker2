@@ -13,7 +13,7 @@ package ua.gradsoft.javachecker.models.expressions;
 import java.util.LinkedList;
 import java.util.List;
 import ua.gradsoft.javachecker.EntityNotFoundException;
-import ua.gradsoft.javachecker.models.JavaArgumentBoundTypeModel;
+import ua.gradsoft.javachecker.models.JavaTypeArgumentBoundTypeModel;
 import ua.gradsoft.javachecker.models.JavaArrayTypeModel;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
@@ -22,6 +22,7 @@ import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -72,7 +73,7 @@ public class JavaTermInnerAllocationExpressionModel extends JavaTermExpressionMo
           resolvedOwnerType_=JavaResolver.resolveTypeTerm(typeTerm_,ctx);
           resolvedType_=JavaResolver.resolveTypeToModel(typeTerm_,resolvedOwnerType_);
           if (!typeArgumentsTerm_.isNil()) {
-              resolvedType_=new JavaArgumentBoundTypeModel(resolvedType_,typeArgumentsTerm_,enclosedType_);
+              resolvedType_=new JavaTypeArgumentBoundTypeModel(resolvedType_,typeArgumentsTerm_,enclosedType_,null,statement_);
           }
           int nReferences=nReferences_;
           while(nReferences>0) {
@@ -86,6 +87,29 @@ public class JavaTermInnerAllocationExpressionModel extends JavaTermExpressionMo
     {
         return subExpressions_;
     }
+    
+    /**
+     *
+     * InnerAllocationExpressionModel(ownerType,type,$expression-list,$ctx)
+     *
+     *where type and ownerType are TypeRefs.
+     */
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+      JavaTypeModel allocatedType = this.getAllocatedType();  
+      Term t0 = TermUtils.createTerm("TypeRef",ownerTypeTerm_,TermUtils.createJTerm(resolvedOwnerType_));
+      Term t1 = TermUtils.createTerm("TypeRef",typeTerm_,TermUtils.createJTerm(resolvedType_));
+      Term tas = TermUtils.createNil();
+      for(JavaExpressionModel e:subExpressions_) {
+          Term ta = e.getModelTerm();
+          tas=TermUtils.createTerm("cons",ta,tas);
+      }
+      tas = TermUtils.reverseListTerm(tas);
+      Term tctx = TermUtils.createJTerm(createPlaceContext());
+      Term retval = TermUtils.createTerm("InnerAllocationExpressionModel",t0,t1,tas,tctx);
+      return retval;
+    }
+    
     
     private void getArgumentsSubexpressions(Term arguments,JavaTermStatementModel st,JavaTypeModel enclosedType) throws TermWareException
     {

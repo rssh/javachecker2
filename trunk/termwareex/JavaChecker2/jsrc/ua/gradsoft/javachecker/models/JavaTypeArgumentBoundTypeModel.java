@@ -1,5 +1,5 @@
 /*
- * JavaArgumentBoundTypeModel.java
+ * JavaTypeArgumentBoundTypeModel.java
  *
  * Copyright (c) 2004-2005 GradSoft  Ukraine
  * All Rights Reserved
@@ -17,21 +17,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.TermWareRuntimeException;
 import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *
  * @author Ruslan Shevchenko
  */
-public class JavaArgumentBoundTypeModel extends JavaTypeModel {
+public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
     
-    /** Creates a new instance of JavaArgumentBoundTypeModel */
-    public JavaArgumentBoundTypeModel(JavaTypeModel origin,Term typeArguments,JavaTypeModel where) throws TermWareException {
+    /**
+     * Creates a new instance of JavaTypeArgumentBoundTypeModel
+     */
+    public JavaTypeArgumentBoundTypeModel(JavaTypeModel origin,Term typeArguments,JavaTypeModel where,List<JavaTypeVariableAbstractModel> typeVariables,JavaStatementModel statement) throws TermWareException {
         super(origin.getPackageModel());
         origin_=origin;
         typeArguments_=typeArguments;
@@ -39,7 +43,9 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         if (where_==null) {
             where_=origin;
         }              
-        resolvedTypeArguments_=null;
+        typeVariables_=typeVariables;
+        statement_=statement;
+        resolvedTypeArguments_=null;              
         substitution_=null;
         //
         // Enum<E extends Enum<E> > cause endless loop during loading of Enum.
@@ -49,20 +55,23 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         //createSubstitution();
     }
     
-    /** Creates a new instance of JavaArgumentBoundTypeModel */
-    public JavaArgumentBoundTypeModel(JavaTypeModel origin, List<JavaTypeModel> resolvedTypeArguments,JavaTypeModel where) throws TermWareException {
-        super(origin.getPackageModel());
+    /**
+     * Creates a new instance of JavaTypeArgumentBoundTypeModel
+     */
+    public JavaTypeArgumentBoundTypeModel(JavaTypeModel origin, List<JavaTypeModel> resolvedTypeArguments,JavaTypeModel where) throws TermWareException {
+        super(origin.getPackageModel());         
         origin_=origin;
         resolvedTypeArguments_=resolvedTypeArguments;
         createSubstitution();
         where_=where;
         if (where_==null) {
             where_=origin;
+            throw new AssertException("what means that where is null ?");         
         }
         createTermTypeArguments(resolvedTypeArguments);
     }
     
-    public JavaArgumentBoundTypeModel(JavaTypeModel origin,JavaTypeArgumentsSubstitution substitution, JavaTypeModel where) throws TermWareException
+    public JavaTypeArgumentBoundTypeModel(JavaTypeModel origin,JavaTypeArgumentsSubstitution substitution, JavaTypeModel where) throws TermWareException
     {
       super(origin.getPackageModel());
       origin_=origin;
@@ -71,6 +80,7 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
       where_=where;
       if (where_==null) {
           where_=origin;
+          throw new AssertException("what means that where is null ?");          
       }      
       createTermTypeArguments(resolvedTypeArguments_);
     }
@@ -126,6 +136,9 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         return retval;
     }
      */
+    
+    public JavaModifiersModel getModifiersModel()
+    { return origin_.getModifiersModel(); }
     
     public boolean isClass() {
         return origin_.isClass(); }
@@ -206,7 +219,7 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         }
         Map<String,JavaMemberVariableModel> retval=new HashMap<String,JavaMemberVariableModel>();
         for(JavaMemberVariableModel c : origin_.getMemberVariableModels().values()) {
-            JavaArgumentBoundMemberVariableModel mc=new JavaArgumentBoundMemberVariableModel(this,c);
+            JavaTypeArgumentBoundMemberVariableModel mc=new JavaTypeArgumentBoundMemberVariableModel(this,c);
             retval.put(mc.getName(),mc);
         }
         boundMemberVariables_=retval;
@@ -229,14 +242,17 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
     
     public Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException, TermWareException {
         //System.err.println("getNestedTypeModels for "+this.getName());
-        Map<String,JavaTypeModel> retval = new TreeMap<String,JavaTypeModel>();
-        for(JavaTypeModel otm: origin_.getNestedTypeModels().values()) {            
+        if (boundNestedTypeModels_==null) {
+          Map<String,JavaTypeModel> retval = new TreeMap<String,JavaTypeModel>();
+          for(JavaTypeModel otm: origin_.getNestedTypeModels().values()) {            
             JavaTypeModel wrappedOtm=getSubstitution().substitute(otm);
             retval.put(otm.getName(),wrappedOtm);
             //System.err.println("adding:"+otm.getName());
+          }
+          boundNestedTypeModels_=retval;
         }
         //System.err.println("ok, size="+retval.size());
-        return retval;
+        return boundNestedTypeModels_;
     }
     
     public boolean hasTypeParameters() 
@@ -263,7 +279,7 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
     public Term getTypeArguments() {
         return typeArguments_; }
     
-    public List<JavaTypeModel> getResolvedTypeArguments() throws TermWareException
+    public List<JavaTypeModel> getResolvedTypeArguments() throws TermWareException, EntityNotFoundException
     {
         if (resolvedTypeArguments_==null) {
             createResolvedTypeArguments(typeArguments_);
@@ -313,6 +329,7 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
     /**
      * substitute type parameters whith this.
      */
+    /*
     public JavaTypeModel substituteTypeParameters(JavaTypeModel otherType) throws TermWareException {
         if (otherType.isTypeArgument()) {
             try {
@@ -322,9 +339,14 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
                 // so return unchanged.
                 return otherType;
             }
-        }else if(otherType instanceof JavaArgumentBoundTypeModel){
-            JavaArgumentBoundTypeModel boundOtherType = (JavaArgumentBoundTypeModel)otherType;
-            List<JavaTypeModel>  oldResolvedTypes = boundOtherType.getResolvedTypeArguments();
+        }else if(otherType instanceof JavaTypeArgumentBoundTypeModel){
+            JavaTypeArgumentBoundTypeModel boundOtherType = (JavaTypeArgumentBoundTypeModel)otherType;
+            List<JavaTypeModel>  oldResolvedTypes;
+            try {
+               oldResolvedTypes = boundOtherType.getResolvedTypeArguments();
+            }catch(EntityNotFoundException ex){
+                throw new InvalidJavaTermException(ex.getMessage(),boundOtherType.getTypeArguments());                
+            }
             List<JavaTypeModel> newResolvedTypes = new ArrayList<JavaTypeModel>(oldResolvedTypes.size());
             boolean changed=false;
             for(JavaTypeModel cur : oldResolvedTypes) {
@@ -335,24 +357,31 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
                 }
             }
             if (changed) {
-                return new JavaArgumentBoundTypeModel(boundOtherType.origin_,newResolvedTypes,boundOtherType.where_);
+                return new JavaTypeArgumentBoundTypeModel(boundOtherType.origin_,newResolvedTypes,boundOtherType.where_);
             }else{
                 return otherType;
             }
         }else{
             return otherType;
         }
-    }
+    }*/
     
     
-    private void createResolvedTypeArguments(Term typeArguments) throws TermWareException {
-        //System.err.println("createTypeArguments, origin_.getName()="+origin_.getName());
+    private void createResolvedTypeArguments(Term typeArguments) throws TermWareException, EntityNotFoundException {
         resolvedTypeArguments_=new ArrayList<JavaTypeModel>();
         substitution_=new JavaTypeArgumentsSubstitution();
         Term l=typeArguments_.getSubtermAt(0);
         JavaTypeModel resolvedTypeArgument=null;
         int tpIndex=0;
         int tpSize=origin_.getTypeParameters().size();
+        List<JavaTypeVariableAbstractModel> allTypeVariables = new ArrayList<JavaTypeVariableAbstractModel>();
+        //allTypeVariables.addAll(origin_.getTypeParameters());
+        //if (where_!=null && where_!=origin_) {
+        //    allTypeVariables.addAll(where_.getTypeParameters());
+        //}
+        if (typeVariables_!=null) {
+           allTypeVariables.addAll(typeVariables_);
+        }
         while(!l.isNil()) {
             Term t=l.getSubtermAt(0);
             l=l.getSubtermAt(1);
@@ -362,26 +391,39 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
                 }else if (t.getArity()==1) {
                     Term t1=t.getSubtermAt(0);
                     if (t1.getName().equals("WildcardBounds")) {
-                        resolvedTypeArgument = new JavaWildcardBoundsTypeModel(t1,where_,origin_.getTypeParameters());
+                        resolvedTypeArgument = new JavaWildcardBoundsTypeModel(t1,where_,allTypeVariables);
                     }else{
-                        try {
-                            resolvedTypeArgument = JavaResolver.resolveTypeToModel(t1,where_,origin_.getTypeParameters());
-                        }catch(EntityNotFoundException ex){
-                            resolvedTypeArgument = JavaUnknownTypeModel.INSTANCE;
+                      try {  
+                        if (statement_==null) {  
+                           resolvedTypeArgument = JavaResolver.resolveTypeToModel(t1,where_,allTypeVariables);
+                        }else{
+                           resolvedTypeArgument = JavaResolver.resolveTypeToModel(t1,statement_); 
                         }
+                      }catch(EntityNotFoundException ex){
+                          ex.setFileAndLine(JUtils.getFileAndLine(t1));
+                          throw ex;
+                      }
                     }
                 }else{
-                    try {
-                        resolvedTypeArgument = JavaResolver.resolveTypeToModel(t,where_,origin_.getTypeParameters());
-                    }catch(EntityNotFoundException ex){
-                        resolvedTypeArgument = JavaUnknownTypeModel.INSTANCE;
-                    }
+                   try { 
+                      if (statement_==null) { 
+                         resolvedTypeArgument = JavaResolver.resolveTypeToModel(t,where_,allTypeVariables);
+                      }else{
+                         resolvedTypeArgument = JavaResolver.resolveTypeToModel(t,statement_); 
+                      }
+                   }catch(EntityNotFoundException ex){
+                       ex.setFileAndLine(JUtils.getFileAndLine(t));
+                       throw ex;
+                   }
                 }
             }else{
                 try {
-                    resolvedTypeArgument = JavaResolver.resolveTypeToModel(t,where_,origin_.getTypeParameters());
+                    resolvedTypeArgument = JavaResolver.resolveTypeToModel(t,where_,allTypeVariables);
                 }catch(EntityNotFoundException ex){
-                    resolvedTypeArgument = JavaUnknownTypeModel.INSTANCE;
+                    System.out.println("can't resolve "+TermHelper.termToString(t));
+                    ex.setFileAndLine(JUtils.getFileAndLine(t));
+                    throw ex;
+                    //resolvedTypeArgument = JavaUnknownTypeModel.INSTANCE;
                 }
             }
             resolvedTypeArguments_.add(resolvedTypeArgument);
@@ -427,7 +469,7 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
     /**
      * TypeArgumentBoundTypeModel(ClassOrInterfaceType(originModel,list(typeModels)),placeContext)
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
         Term originModelTerm=origin_.getModelTerm();
         Term argsModelTerms=JavaTypeModelHelper.createModelTermList(getResolvedTypeArguments());
@@ -441,7 +483,13 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         //System.err.println("getSubstitution, origin.getName()="+origin_.getName());
         if (substitution_==null) {            
             if (resolvedTypeArguments_==null) {
+              try {  
                createResolvedTypeArguments(typeArguments_);
+              }catch(EntityNotFoundException ex){
+                  InvalidJavaTermException ex1 = new InvalidJavaTermException(ex.getMessage()+",type="+getName(),typeArguments_,ex);
+                  ex1.setFileAndLine(JUtils.getFileAndLine(typeArguments_));
+                  throw ex1;
+              }
             }else{
                throw new AssertException("incorrect constucting ?, origin_="+origin_.getName());
             }
@@ -449,13 +497,23 @@ public class JavaArgumentBoundTypeModel extends JavaTypeModel {
         return substitution_;
     }
     
+    public JavaTypeModel getWhere()
+    { return where_; }
+    
     //TODO:private void createTermTypeArguments()
     
     private JavaTypeModel origin_;   
     private List<JavaTypeModel> resolvedTypeArguments_;
     
+    // additional type-variables, which exists in creation contest.
+    //   saved for resolving type arguments.
+    private List<JavaTypeVariableAbstractModel> typeVariables_=null;
+    // statement in context of creation, for resolving local types.
+    private JavaStatementModel  statement_=null;
+    
     private JavaTypeModel  boundSuperClassModel_=null;
     private List<JavaTypeModel>  boundSuperInterfacesModels_=null;
+    private Map<String,JavaTypeModel>  boundNestedTypeModels_=null;
     
     private Map<String, List<JavaMethodModel>>   boundMethodModels_=null;
     private Map<String, JavaMemberVariableModel> boundMemberVariables_=null;

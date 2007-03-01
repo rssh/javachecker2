@@ -20,6 +20,7 @@ import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.javachecker.models.JavaTypeModelHelper;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -55,6 +56,18 @@ public class JavaTermAndExpressionModel extends JavaTermExpressionModel
           JavaTypeModel y = subExpressions_.get(1).getType();
           return JavaExpressionHelper.resolveBinaryNumericPromotion(x,y);          
       }     
+    }
+    
+    /**
+     * AndExpressionModel(x,y,ctx)
+     */
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+      Term x=subExpressions_.get(0).getModelTerm();
+      Term y=subExpressions_.get(1).getModelTerm();
+      Term tctx = TermUtils.createJTerm(createPlaceContext());
+      Term retval = TermUtils.createTerm("AndExpressionModel",x,y,tctx);
+      return retval;
     }
     
     public boolean isType()

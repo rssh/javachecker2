@@ -42,6 +42,7 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
         setParentType(parent);
         anonimousIndexInParent_=parent.nextAnonimousTypeIndex();        
         name_="$"+anonimousIndexInParent_;
+        isAnonimous_=true;
         parent.addNestedType(name_,this);
     }
 
@@ -67,6 +68,8 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
     
     public boolean isClass()
     { return true; }
+    
+   
     
     public boolean hasTypeParameters()
     {
@@ -154,7 +157,7 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
           }
           Term ta=t_.getSubtermAt(TYPE_ARGUMENTS_TERM_INDEX);
           if (!ta.isNil()) {
-              superTypeModel = new JavaArgumentBoundTypeModel(superTypeModel,ta,this);
+              superTypeModel = new JavaTypeArgumentBoundTypeModel(superTypeModel,ta,this,null,statement_);
           }
           if (superTypeModel.isInterface()) {
               this.addSuperInterface(extendsOrImplements);
@@ -169,7 +172,7 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
     /**
      * AnonimousClassModel(name_,super, membersList,ctx)
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
         Term idTerm=TermUtils.createIdentifier(name_);
         Term superTerm=null;

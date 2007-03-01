@@ -11,6 +11,7 @@
 package ua.gradsoft.javachecker.models;
 
 import java.util.Map;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
@@ -67,7 +68,7 @@ public class JavaTermEnumAnonimousTypeModel extends JavaTermTypeAbstractModel
     /**
      * EnumAnonimousTypeModel(identifier,membersList,context)
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
         Term identifierName=TermUtils.createIdentifier(constantName_);
         Term membersListModel=getMemberModelsList();

@@ -62,7 +62,7 @@ public class Java5SrcTest extends TestCase
     }
      */
 
-
+/*
     public void testComJava5Models() throws Exception
     {
       JavaCheckerFacade.init();      
@@ -75,14 +75,14 @@ public class Java5SrcTest extends TestCase
           assertTrue(nLoadedFiles_>prevLoadedFiles);
       }  
     }
+*/
 
-
-    
-    
+      
     public void testJavaJava5Model() throws Exception
     {
         _testDirJava5Models("java");
     }
+
     
     public void _testDirJava5Models(String pkg) throws Exception
     {
@@ -158,7 +158,7 @@ public class Java5SrcTest extends TestCase
 */
 
     
-    private void readAndGetModelForSources() throws ConfigException, TermWareException
+    private void readAndGetModelForSources() throws ConfigException, TermWareException, EntityNotFoundException
    {
          String dirName = javaSrcHome_;
          File f = new File(dirName);         
@@ -178,7 +178,7 @@ public class Java5SrcTest extends TestCase
   *@param relativeDir -- package structure under sourcedir. entries are separated by '.'
   *@param File d -- current file or directory. 
   */
- private void readAndGetModelForSources(String sourceDir, String packageDir, File d) throws TermWareException
+ private void readAndGetModelForSources(String sourceDir, String packageDir, File d) throws TermWareException, EntityNotFoundException
  {     
      System.err.println("readAndGetModelForSources("+sourceDir+","+packageDir+")");
      File[] files=d.listFiles();
@@ -193,7 +193,7 @@ public class Java5SrcTest extends TestCase
      System.err.println();
  }
  
- private void readAndGetModelSourceFile(String sourceDir, String packageDirName, File f) throws TermWareException
+ private void readAndGetModelSourceFile(String sourceDir, String packageDirName, File f) throws TermWareException, EntityNotFoundException
  {
      String fname=f.getAbsolutePath();
      if (!qOption_) {
@@ -217,8 +217,9 @@ public class Java5SrcTest extends TestCase
       // empty file: possible 
       // skip
      }else{
+       System.out.print("getting package name:");  
        String packageSrcName = JUtils.getCompilationUnitPackageName(source);
-     
+       System.out.println(packageSrcName);  
           
        //if (!packageSrcName.equals(packageDirName)) {
        //  facts_.violationDiscovered("package","package name does not math directory structure",source);
@@ -231,10 +232,13 @@ public class Java5SrcTest extends TestCase
        cu.setPackageModel(pm);
        AnalyzedUnitRef ref = new AnalyzedUnitRef(AnalyzedUnitType.SOURCE,sourceDir+"/"+packageDirName.replace('.','/'),f.getName(),cu);
        pm.addCompilationUnit(source,cu,ref);   
-          
+       
+       System.out.println("start check typeModels");
+       
        List<JavaTypeModel> typeModels = cu.getTypeModels();
        for(JavaTypeModel tm:typeModels) {
            try {
+              System.out.println("get model term for "+tm.getFullName()); 
               Term modelTerm = tm.getModelTerm();
            }catch(AssertException ex){
                if (ex.getMessage().contains("ApproveSelectionAction")) {
@@ -243,7 +247,24 @@ public class Java5SrcTest extends TestCase
                    continue;
                }else{
                    System.err.println("error during getting model in file:"+fname);
+                   if (ex instanceof SourceCodeLocation) {
+                       FileAndLine fl = ((SourceCodeLocation)ex).getFileAndLine();
+                       System.err.println("file "+fl.getFname()+", line "+fl.getLine());
+                   }
                    throw ex;
+               }
+           }catch(EntityNotFoundException ex){
+               if (ex.getMessage().contains("com.sun.org.omg")) {
+                   //Yes, this is bug in JDK5 sources,
+                   // com.sun.org.omg subsystem are not included
+                   continue;
+               }else{
+                   System.err.println("error during getting model in file:"+fname);
+                   if (ex instanceof SourceCodeLocation) {
+                       FileAndLine fl = ((SourceCodeLocation)ex).getFileAndLine();
+                       System.err.println("file "+fl.getFname()+", line "+fl.getLine());
+                   }                   
+                   throw ex;                   
                }
            }
        }

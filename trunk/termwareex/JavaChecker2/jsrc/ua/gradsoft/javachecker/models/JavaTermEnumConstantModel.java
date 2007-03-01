@@ -10,6 +10,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -54,7 +55,7 @@ public class JavaTermEnumConstantModel extends JavaEnumConstantModel
     /**
      * EnumConstantModel(identifierTerm,arguments,subtype)
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
        Term subtypeModelTerm = (subtype_==null) ? TermUtils.createNil() : subtype_.getModelTerm();
        return TermUtils.createTerm("EnumConstantModel",identifierTerm_,argumentsTerm_,subtypeModelTerm);

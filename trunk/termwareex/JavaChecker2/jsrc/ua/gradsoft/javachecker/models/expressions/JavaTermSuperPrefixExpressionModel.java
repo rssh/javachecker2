@@ -19,6 +19,7 @@ import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 import ua.gradsoft.termware.exceptions.AssertException;
@@ -58,6 +59,15 @@ public class JavaTermSuperPrefixExpressionModel extends JavaTermExpressionModel
         return Collections.emptyList();
     }
     
+    /**
+     * SuperPrefixModel(ctx)
+     */
+    public Term getModelTerm() throws TermWareException
+    {
+      Term ctx = TermUtils.createJTerm(createPlaceContext());
+      Term retval = TermUtils.createTerm("SuperPrefixModel",ctx);
+      return retval;
+    }
     
     
 }

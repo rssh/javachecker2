@@ -118,6 +118,9 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
         return retval;
     }
     
+     public JavaModifiersModel getModifiersModel()
+     { return JavaModelConstants.PUBLIC_MODIFIERS; }
+    
       public  boolean isClass() 
       { return false; }
   

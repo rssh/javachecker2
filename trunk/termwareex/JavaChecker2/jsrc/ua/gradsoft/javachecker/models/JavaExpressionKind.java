@@ -194,6 +194,54 @@ public enum JavaExpressionKind
     /**
      * MethodCall
      */
-    METHOD_CALL
+    METHOD_CALL,
+            
+
+    /**
+     * SpecializedMethodCall
+     */
+    SPECIALIZED_METHOD_CALL,            
     
+    /**
+     * Field
+     */
+    FIELD,
+    
+    /**
+     * ArrayIndex
+     */
+    ARRAY_INDEX,
+            
+    /**
+     * NAME
+     */         
+    NAME,
+    
+    /**
+     * Name of type
+     */
+    TYPE_NAME,
+    
+    /**
+     * TYPE_FIELD
+     */
+    TYPE_FIELD,
+    
+    /**
+     * StaticField
+     */ 
+    STATIC_FIELD,
+            
+    /**
+     *ArrayInitializer
+     */
+    ARRAY_INITIALIZER,
+    
+    /**
+     * SwitchConstant
+     */
+    SWITCH_CONSTANT
+            
+    
+            
 }

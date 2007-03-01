@@ -44,6 +44,14 @@ public class PackagesStore
       return retval;
     }
     
+    /**
+     * remove package from set of loaded packages.
+     */
+    public  void  removePackage(String packageName)
+    {
+      packageModels_.remove(packageName);  
+    }
+    
     
     public  Map<String,JavaPackageModel>  getLoadedPackageModels()
     { return packageModels_; }

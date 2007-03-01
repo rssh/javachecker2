@@ -20,6 +20,7 @@ import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -33,7 +34,7 @@ public class JavaTermCastExpressionModel extends JavaTermExpressionModel
     public JavaTermCastExpressionModel(Term t,JavaTermStatementModel st,JavaTypeModel enclosedType) throws TermWareException
     {
        super(t,st,enclosedType);
-       JavaTermExpressionModel subExpression=JavaTermExpressionModel.create(t.getSubtermAt(1),st,enclosedType);
+       subExpression_=JavaTermExpressionModel.create(t.getSubtermAt(1),st,enclosedType);
        typeTerm_=t.getSubtermAt(0);
        resolvedType_=null;
     }
@@ -64,6 +65,18 @@ public class JavaTermCastExpressionModel extends JavaTermExpressionModel
     {
         JavaExpressionModel e = subExpression_;
         return Collections.singletonList(e);
+    }
+    
+    /**
+     * CastExpressionModel(TypeRef,subExpression,ctx)
+     */
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+        Term typeRefTerm=TermUtils.createTerm("TypeRef",typeTerm_,TermUtils.createJTerm(getCastType()));
+        Term x = subExpression_.getModelTerm();
+        Term tctx = TermUtils.createJTerm(createPlaceContext());
+        Term retval = TermUtils.createTerm("CastExpressionModel",typeRefTerm,x,tctx);
+        return retval;
     }
     
     private JavaTermExpressionModel subExpression_;

@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
@@ -69,13 +68,53 @@ public class JavaCompilationUnitModel extends JavaUnitModel
         
     }
 
+    public final static class PackageOrClassModelHolder
+    {      
+        private boolean initialized_;
+        private JavaPackageModel packageModel_;
+        private JavaTypeModel    typeModel_;
+        
+        public PackageOrClassModelHolder()
+        {
+            initialized_=false;
+            packageModel_=null;
+            typeModel_=null;
+        }
+        
+        public boolean isInitialized()
+        { return initialized_; }
+        
+        public JavaPackageModel getPackageModel()
+        {
+          return packageModel_;  
+        }
+        
+        public void  setPackageModel(JavaPackageModel packageModel)
+        {
+            initialized_=true;
+            packageModel_=packageModel;
+        }
+        
+        public JavaTypeModel  getTypeModel()
+        {
+           return typeModel_; 
+        }
+        
+        public void setTypeModel(JavaTypeModel typeModel)
+        {
+            initialized_=true;
+            typeModel_=typeModel;
+        }
+        
+    }
+    
     public  JavaCompilationUnitModel(String fname)
     {
         fname_=fname;
         staticMethodImports_ = new TreeMap<String,String>();
         staticClassImports_ = new TreeSet<String>();
         classImports_ = new TreeMap<String,ClassImportSuffix>();
-        packageImports_ = new TreeSet<String>();       
+        packageOrClassImports_ = new TreeMap<String,PackageOrClassModelHolder>();       
         typeModels_ = new ArrayList<JavaTypeModel>();
     }
     
@@ -124,8 +163,9 @@ public class JavaCompilationUnitModel extends JavaUnitModel
               String className=JUtils.getJavaNameAsString(nameTerm,lastIndex);
               staticMethodImports_.put(methodName,className);
           }else if(!isStatic && isAll){
-              String packageName=JUtils.getJavaNameAsString(nameTerm);    
-              packageImports_.add(packageName);
+              String packageOrClassName=JUtils.getJavaNameAsString(nameTerm);    
+              PackageOrClassModelHolder holder = new PackageOrClassModelHolder();
+              packageOrClassImports_.put(packageOrClassName,holder);
           }else{ //!isStatic && !isAll
               int lastIndex=0;
               Term curr=nameTerm.getSubtermAt(0);
@@ -172,8 +212,8 @@ public class JavaCompilationUnitModel extends JavaUnitModel
     /**
      *@return set of package imports.
      */
-    public Set<String>  getPackageImports()
-    { return packageImports_; }
+    public Map<String,PackageOrClassModelHolder>  getPackageOrClassImports()
+    { return packageOrClassImports_; }
     
     
     /**
@@ -188,6 +228,9 @@ public class JavaCompilationUnitModel extends JavaUnitModel
       typeModels_.add(typeModel);
     }
     
+    /**
+     * package, where this compilation unit is situated.
+     */
     private JavaPackageModel packageModel_=null;
  
     /**
@@ -215,9 +258,9 @@ public class JavaCompilationUnitModel extends JavaUnitModel
     private Map<String,ClassImportSuffix>  classImports_;
     
     /**
-     * key is package name.
+     * key is package or class name.
      */
-    private Set<String>  packageImports_;
+    private Map<String,PackageOrClassModelHolder>  packageOrClassImports_;
     
     
     

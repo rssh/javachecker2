@@ -18,6 +18,7 @@ import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -52,6 +53,20 @@ public class JavaTermAssigmentExpressionModel extends JavaTermExpressionModel
         retval.add(rightPart_);
         return retval;
     }
+    
+    /**
+     * AssigmentExpressionModel(left,right,op,ctx)
+     */
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+      Term x=leftPart_.getModelTerm();
+      Term y=rightPart_.getModelTerm();
+      Term op=TermUtils.createString(assigment_.getString());
+      Term tctx = TermUtils.createJTerm(createPlaceContext());
+      Term retval = TermUtils.createTerm("AssigmentExpressionModel",x,y,op,tctx);
+      return retval;
+    }
+
     
     private JavaTermExpressionModel         leftPart_;
     private JavaTermExpressionModel         rightPart_;

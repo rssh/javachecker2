@@ -21,13 +21,16 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
 {
     
     public JavaTermLocalVariableModel(String name,JavaLocalVariableKind kind, 
-                                      Term typeTerm, Term initOrIterateExpressionTerm,
+                                      Term typeTerm, 
+                                      Term initOrIterateExpressionTerm,
+                                      JavaTermExpressionModel initExpression,
                                       JavaTermStatementModel statement)
     {
       name_=name;
       kind_=kind;
       typeTerm_=typeTerm;
       initOrIterateExpressionTerm_=initOrIterateExpressionTerm;
+      initExpression_=initExpression;
       statement_=statement;
     }
     
@@ -50,6 +53,32 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
     public boolean isForHead()
     { return statement_.getKind()==JavaStatementKind.FOR_STATEMENT; }
     
+    public JavaExpressionModel  getInitExpressionModel()
+    { return initExpression_; }
+            
+    /**
+     * LocalVariableModel(TyeRef(),Identifier,Init)
+     */
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+        JavaTypeModel type=resolveType();
+        Term typeRef=TermUtils.createTerm("TypeRef",typeTerm_,TermUtils.createJTerm(type));
+        Term identifier=TermUtils.createIdentifier(name_);
+        Term initTerm = TermUtils.createNil();
+        if (initExpression_!=null) {
+            initTerm = initExpression_.getModelTerm();
+        }
+        Term retval = TermUtils.createTerm("LocalVariableModel",typeRef,identifier,initTerm);
+        return retval;
+    }
+    
+
+    public Term getTypeTerm()
+    { return typeTerm_; }
+    
+    public Term getInitOrIterateTerm()
+    { return initOrIterateExpressionTerm_; }
+    
     private JavaTypeModel resolveType() throws TermWareException
     {
       try {  
@@ -62,6 +91,7 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
     private String name_;
     private Term typeTerm_;
     private Term initOrIterateExpressionTerm_;
+    private JavaTermExpressionModel initExpression_;
     private JavaLocalVariableKind  kind_;    
     private JavaTermStatementModel statement_;
     

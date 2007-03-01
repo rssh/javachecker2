@@ -12,12 +12,14 @@ package ua.gradsoft.javachecker.models.expressions;
 
 import java.util.LinkedList;
 import java.util.List;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaPrimitiveTypeModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
@@ -43,9 +45,9 @@ public class JavaTermEqualityExpressionModel extends JavaTermExpressionModel
       }else{
           throw new AssertException("Invalid equality operator:"+TermHelper.termToString(op));
       }
-      if (op.equals("==")) {
+      if (s.equals("==")) {
           equalityKind_=JavaEqualityOperatorKind.EQUALS;
-      }else if(op.equals("!=")){
+      }else if(s.equals("!=")){
           equalityKind_=JavaEqualityOperatorKind.NOT_EQUALS;
       }else{
           throw new AssertException("Invalid equality operator:"+s);
@@ -73,10 +75,23 @@ public class JavaTermEqualityExpressionModel extends JavaTermExpressionModel
     
     public boolean isType()
     { return false; }
-    
+        
     
     public List<JavaExpressionModel>  getSubExpressions()
     { return subExpressions_; }
+    
+    /**
+     * EqualityExpressionModel(x,y,op,tctx)
+     */
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+      Term x = subExpressions_.get(0).getModelTerm();
+      Term y = subExpressions_.get(1).getModelTerm();
+      Term op = TermUtils.createString(equalityKind_.getString());
+      Term tctx = TermUtils.createJTerm(createPlaceContext());
+      Term retval = TermUtils.createTerm("EqualityExpressionModel",x,y,op,tctx);
+      return retval;
+    }
     
     private List<JavaExpressionModel> subExpressions_;
     private JavaEqualityOperatorKind  equalityKind_;

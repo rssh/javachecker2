@@ -8,6 +8,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -41,6 +42,6 @@ public abstract class JavaMemberVariableModel implements JavaVariableModel
     
     public abstract boolean check() throws TermWareException;
     
-    public abstract Term getModelTerm() throws TermWareException;
+    public abstract Term getModelTerm() throws TermWareException, EntityNotFoundException;
     
 }

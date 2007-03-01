@@ -8,6 +8,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -15,12 +16,12 @@ import ua.gradsoft.termware.TermWareException;
  *Member value, bound by type argument
  * @author Ruslan Shevchenko
  */
-public class JavaArgumentBoundMemberVariableModel extends JavaMemberVariableModel
+public class JavaTypeArgumentBoundMemberVariableModel extends JavaMemberVariableModel
 {
     
     
     /** Creates a new instance of JavaArgumentBoundTypeVariableModel */
-    public JavaArgumentBoundMemberVariableModel(JavaArgumentBoundTypeModel newOwner, JavaMemberVariableModel origin) 
+    public JavaTypeArgumentBoundMemberVariableModel(JavaTypeArgumentBoundTypeModel newOwner, JavaMemberVariableModel origin) 
     {
        origin_=origin;
        owner_=newOwner;
@@ -38,7 +39,8 @@ public class JavaArgumentBoundMemberVariableModel extends JavaMemberVariableMode
     public JavaTypeModel  getTypeModel() throws TermWareException
     {
       JavaTypeModel originTypeModel = origin_.getTypeModel();
-      return owner_.substituteTypeParameters(originTypeModel);
+      //return owner_.substituteTypeParameters(originTypeModel);
+      return owner_.getSubstitution().substitute(originTypeModel);
     }
 
     public JavaModifiersModel  getModifiersModel()
@@ -55,7 +57,7 @@ public class JavaArgumentBoundMemberVariableModel extends JavaMemberVariableMode
     /**
      * TypeArgumentBoundMemberVariableModel(originModelTerm,ownerModelTerm)
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
         Term originModelTerm = origin_.getModelTerm();
         Term ownerModelTerm = owner_.getModelTerm();
@@ -65,6 +67,6 @@ public class JavaArgumentBoundMemberVariableModel extends JavaMemberVariableMode
     }
     
     private JavaMemberVariableModel origin_;
-    private JavaArgumentBoundTypeModel      owner_;
+    private JavaTypeArgumentBoundTypeModel      owner_;
     
 }

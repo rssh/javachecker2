@@ -18,6 +18,7 @@ import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -57,6 +58,18 @@ public class JavaTermUnaryExpressionModel extends JavaTermExpressionModel
     {
         JavaExpressionModel e = subexpression_;
         return Collections.singletonList(e);
+    }
+    
+    /**
+     * UnaryExpressionModel(x,op,ctx)
+     */
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+      Term x = subexpression_.getModelTerm();
+      Term op = TermUtils.createString(operatorKind_.getString());
+      Term ctx = TermUtils.createJTerm(this.createPlaceContext());
+      Term retval = TermUtils.createTerm("UnaryExpressionModel",x,op,ctx);
+      return retval;
     }
             
     private JavaTermExpressionModel subexpression_;

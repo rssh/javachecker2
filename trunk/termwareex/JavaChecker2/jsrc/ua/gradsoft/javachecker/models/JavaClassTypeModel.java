@@ -27,6 +27,7 @@ import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.TermWareRuntimeException;
 import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
@@ -121,12 +122,23 @@ public class JavaClassTypeModel extends JavaTypeModel
     return false;  
   }
   
+  public JavaModifiersModel getModifiersModel()
+  {
+      return new JavaModifiersModel(translateModifiers(theClass_.getModifiers()));
+  }
   
   public JavaTypeModel  getSuperClass()
   {
     if (theClass_.getSuperclass()!=null)  {
         return new JavaClassTypeModel(theClass_.getSuperclass());
     }else{
+        if (theClass_.isInterface()) {    
+          try{  
+            return JavaResolver.resolveJavaLangObject();
+          }catch(TermWareException ex){
+              throw new TermWareRuntimeException(ex);
+          }
+        }
         return JavaNullTypeModel.INSTANCE;
     }
   }
@@ -195,7 +207,7 @@ public class JavaClassTypeModel extends JavaTypeModel
   public Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException
   {
      Map<String, List<JavaMethodModel> > retval = new TreeMap<String, List<JavaMethodModel> >();
-     Method[] methods = theClass_.getMethods();
+     Method[] methods = theClass_.getDeclaredMethods();
      for(int i=0; i<methods.length; ++i) {
          Method m=methods[i];
          String name=m.getName();         
@@ -214,7 +226,7 @@ public class JavaClassTypeModel extends JavaTypeModel
   public List<JavaMethodModel>  findMethodModels(String name) throws EntityNotFoundException, NotSupportedException
   {
     List<JavaMethodModel> methodModels = new LinkedList<JavaMethodModel>();  
-    Method[] methods = theClass_.getMethods();  
+    Method[] methods = theClass_.getDeclaredMethods();
     boolean found=false;
     for(int i=0; i<methods.length; ++i) {
         if (methods[i].getName().equals(name)) {
@@ -239,7 +251,7 @@ public class JavaClassTypeModel extends JavaTypeModel
   
   public Map<String, JavaMemberVariableModel> getMemberVariableModels() throws NotSupportedException
   {
-    Field[] fields=theClass_.getFields();
+    Field[] fields=theClass_.getDeclaredFields();
     Map<String,JavaMemberVariableModel> retval = new TreeMap<String,JavaMemberVariableModel>();
     for(int i=0; i<fields.length; ++i) {
         retval.put(fields[i].getName(),new JavaClassFieldModel(fields[i],this));
@@ -250,7 +262,7 @@ public class JavaClassTypeModel extends JavaTypeModel
   public JavaMemberVariableModel findMemberVariableModel(String name) throws EntityNotFoundException, NotSupportedException
   {
     try {  
-     return new JavaClassFieldModel(theClass_.getField(name),null);
+     return new JavaClassFieldModel(theClass_.getDeclaredField(name),this);
     }catch(NoSuchFieldException ex){
       throw new EntityNotFoundException("Field ",name,"in "+this.getFullName());  
     }
@@ -343,7 +355,7 @@ public class JavaClassTypeModel extends JavaTypeModel
             JavaTypeModel cm=createTypeModel(ta[i]);
             typeArguments.add(cm);
         }
-        return new JavaArgumentBoundTypeModel(otm,typeArguments,otm);
+        return new JavaTypeArgumentBoundTypeModel(otm,typeArguments,otm);
     }else if (type instanceof TypeVariable<?>) {
         return new JavaClassTypeVariableModel((TypeVariable)type);
     }else if (type instanceof WildcardType) {
@@ -374,7 +386,10 @@ public class JavaClassTypeModel extends JavaTypeModel
         return retval;   
     }else if (type instanceof Class<?>) {
         Class<?> ctype = (Class<?>)type;
-        if (ctype.isPrimitive()) {
+        if (ctype.isArray()) {
+            JavaTypeModel componentType = JavaClassTypeModel.createTypeModel(ctype.getComponentType());
+            return new JavaArrayTypeModel(componentType);
+        }else if (ctype.isPrimitive()) {
             if (ctype.equals(Boolean.TYPE)) {
                 return JavaPrimitiveTypeModel.BOOLEAN;
             }else if (ctype.equals(Character.TYPE)) {

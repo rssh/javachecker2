@@ -1,5 +1,5 @@
 /*
- * JavaArgumentBoundStatementModel.java
+ * JavaTypeArgumentBoundStatementModel.java
  *
  * Created on п'€тниц€, 12, с≥чн€ 2007, 2:11
  *
@@ -13,6 +13,7 @@ package ua.gradsoft.javachecker.models;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -20,13 +21,13 @@ import ua.gradsoft.termware.TermWareException;
  *
  * @author Ruslan Shevchenko
  */
-public class JavaArgumentBoundStatementModel implements JavaStatementModel
+public class JavaTypeArgumentBoundStatementModel implements JavaStatementModel
 {
     
-    public JavaArgumentBoundStatementModel(JavaArgumentBoundTopLevelBlockModel blockModel,
+    public JavaTypeArgumentBoundStatementModel(JavaTypeArgumentBoundTopLevelBlockModel blockModel,
                                            JavaStatementModel origin,
-                                           JavaArgumentBoundStatementModel parent,
-                                           JavaArgumentBoundStatementModel previous
+                                           JavaTypeArgumentBoundStatementModel parent,
+                                           JavaTypeArgumentBoundStatementModel previous
             )
     {
       blockModel_=blockModel;
@@ -44,7 +45,7 @@ public class JavaArgumentBoundStatementModel implements JavaStatementModel
          return blockModel_;
      }
      
-     public JavaArgumentBoundTopLevelBlockModel getArgumentBoundTopLevelBlockModel()
+     public JavaTypeArgumentBoundTopLevelBlockModel getArgumentBoundTopLevelBlockModel()
      {
         return blockModel_; 
      }
@@ -64,9 +65,9 @@ public class JavaArgumentBoundStatementModel implements JavaStatementModel
     {
         if (substitutedChilds_==null) {
             substitutedChilds_=new ArrayList<JavaStatementModel>();
-            JavaArgumentBoundStatementModel prevS=null;
+            JavaTypeArgumentBoundStatementModel prevS=null;
             for(JavaStatementModel s : origin_.getChildStatements()) {
-                JavaArgumentBoundStatementModel as = new JavaArgumentBoundStatementModel(blockModel_,s,this,prevS);
+                JavaTypeArgumentBoundStatementModel as = new JavaTypeArgumentBoundStatementModel(blockModel_,s,this,prevS);
                 substitutedChilds_.add(as);                
                 prevS=as;
             }
@@ -83,7 +84,7 @@ public class JavaArgumentBoundStatementModel implements JavaStatementModel
       List<JavaLocalVariableModel> localVariables = origin_.getLocalVariables();
       List<JavaLocalVariableModel> retval = new LinkedList<JavaLocalVariableModel>();
       for(JavaLocalVariableModel v: localVariables) {
-          JavaArgumentBoundLocalVariableModel av = new JavaArgumentBoundLocalVariableModel(v,this);
+          JavaTypeArgumentBoundLocalVariableModel av = new JavaTypeArgumentBoundLocalVariableModel(v,this);
           retval.add(av);
       }
       return retval;
@@ -96,18 +97,28 @@ public class JavaArgumentBoundStatementModel implements JavaStatementModel
     {
       return blockModel_.getSubstitution().substitute(origin_.getLocalType());  
     }
-            
+                
      
     public JavaStatementModel  getOrigin()
     {
       return origin_;  
     }
 
+    public List<JavaExpressionModel>  getExpressions()
+    {
+      List<JavaExpressionModel> oel = origin_.getExpressions();
+      List<JavaExpressionModel> retval = new ArrayList<JavaExpressionModel>(oel.size());
+      for(JavaExpressionModel oe:oel) {
+          JavaExpressionModel e = new JavaTypeArgumentBoundExpressionModel(oe,this);
+          retval.add(e);
+      }
+      return retval;
+    }
     
     /**
      * TypeArgumentBoundStatementModel(originModel,ctx)
      */
-    public Term getModelTerm() throws TermWareException 
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException 
     {
         Term originModelTerm = origin_.getModelTerm();
         JavaPlaceContext ctx = JavaPlaceContextFactory.createNewStatementContext(this);
@@ -116,7 +127,7 @@ public class JavaArgumentBoundStatementModel implements JavaStatementModel
         return retval;
     }
     
-    private JavaArgumentBoundTopLevelBlockModel blockModel_;
+    private JavaTypeArgumentBoundTopLevelBlockModel blockModel_;
     private JavaStatementModel          origin_;
     private JavaStatementModel          substitutedParent_=null;
     private JavaStatementModel          substitutedPrevious_=null;

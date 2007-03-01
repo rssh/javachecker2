@@ -159,7 +159,7 @@ public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
     /**
      * ClassOrInterfaceModel(modifiers,"class"|"interface",Identifier,typeParameters,extendsList,ImplementsList,ClassOrInterfaceBody(membersList),context)
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
        Term modifiers = getModifiersModel().getModelTerm(); 
        Term classOrInterface=t_.getSubtermAt(CLASS_OR_INTERFACE_TERM_INDEX);

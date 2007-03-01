@@ -12,6 +12,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.LinkedList;
 import java.util.List;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -32,6 +33,10 @@ public class JavaClassTypeVariableModel extends JavaTypeVariableAbstractModel
       return typeVariable_.getName();  
     }
     
+    public JavaModifiersModel  getModifiersModel()
+    {
+      return JavaModelConstants.PUBLIC_MODIFIERS;  
+    }
     
     public List<JavaTypeModel> getBounds() throws TermWareException
     {
@@ -52,7 +57,7 @@ public class JavaClassTypeVariableModel extends JavaTypeVariableAbstractModel
     /**
      * TypeParameter(Identifier(name),boundsModelTerms)
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {        
         Term idt = TermUtils.createIdentifier(typeVariable_.getName());
         Term boundsModelTerm=JavaTypeModelHelper.createModelTermList(getBounds());

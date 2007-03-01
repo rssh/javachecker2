@@ -42,6 +42,9 @@ public class JavaNullTypeModel extends JavaTypeModel {
         return getShortNameAsTerm();
     }
     
+    public JavaModifiersModel getModifiersModel()
+    { return JavaModelConstants.PUBLIC_MODIFIERS; }
+    
     /**
      * get canonical name, siutable for use in JVM
      */

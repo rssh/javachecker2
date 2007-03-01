@@ -13,6 +13,7 @@ package ua.gradsoft.javachecker.models;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -54,9 +55,18 @@ public class JavaTermInitializerModel implements JavaInitializerModel, JavaTermT
     }
 
     /**
+     * initializers does not have formal parameters, so return empty list.
+     */
+    public List<JavaFormalParameterModel> getFormalParametersList()
+    {
+      return Collections.emptyList();  
+    }
+    
+    
+    /**
      * initializers does not have formal parameters, so return empty map.
      */
-    public Map<String,JavaFormalParameterModel> getFormalParameters()
+    public Map<String,JavaFormalParameterModel> getFormalParametersMap()
     {
       return Collections.emptyMap();  
     }
@@ -81,7 +91,7 @@ public class JavaTermInitializerModel implements JavaInitializerModel, JavaTermT
     /**
      *InitializerModel(modifiersTerm,blockModelTerm,ctx);
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
         Term mt=modifiersModel_.getModelTerm();
         Term bmt = blockModel_.getModelTerm();
