@@ -46,6 +46,29 @@ public class JCTest extends TestCase
       Term nil=TermWare.getInstance().getTermFactory().createNIL();
       source=TermWare.getInstance().getParserFactory("Java").createParser(reader,fname,nil,TermWare.getInstance()).readTerm();
       //source.println(System.out);  
+      reader.close();
+      assertTrue("received term is not compilation unit",source.getName().equals("CompilationUnit"));
+    }
+
+    public void testAw() throws Exception
+    {
+      Term source=null;
+      String fname = "testdata/aw/AWTKeyStroke.java";
+      Reader reader = new FileReader(fname);
+      Term nil=TermWare.getInstance().getTermFactory().createNIL();
+      source=TermWare.getInstance().getParserFactory("Java").createParser(reader,fname,nil,TermWare.getInstance()).readTerm();
+      //source.println(System.out);  
+      assertTrue("received term is not compilation unit",source.getName().equals("CompilationUnit"));
+    }
+
+    public void testCr() throws Exception
+    {
+      Term source=null;
+      String fname = "testdata/cr/ORBUtilSystemException.java";
+      Reader reader = new FileReader(fname);
+      Term nil=TermWare.getInstance().getTermFactory().createNIL();
+      source=TermWare.getInstance().getParserFactory("Java").createParser(reader,fname,nil,TermWare.getInstance()).readTerm();
+      //source.println(System.out);  
       assertTrue("received term is not compilation unit",source.getName().equals("CompilationUnit"));
     }
     

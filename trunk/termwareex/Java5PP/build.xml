@@ -4,7 +4,7 @@
 
 
  <!-- set here location of JavaCC [version 4.0] -->
- <property name="javacchome" location="c:/home/rssh/packages/javacc/javacc-4.0" />
+ <property name="javacchome" location="d:/packages/javacc/javacc-4.0" />
 
 
   <!-- set here debug property -->

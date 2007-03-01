@@ -1145,18 +1145,18 @@ void AssignmentOperator():
 {
 }
 {
-  "="   { jjtThis.addTerm(createAtom("op_assign"),0); }
-  | "*=" { jjtThis.addTerm(createAtom("op_multiply_assign"),0); }
-  | "/=" { jjtThis.addTerm(createAtom("op_divide_assign"),0); }
-  | "%=" { jjtThis.addTerm(createAtom("op_module_assign"),0); }
-  | "+=" { jjtThis.addTerm(createAtom("op_plus_assign"),0); }
-  | "-=" { jjtThis.addTerm(createAtom("op_minus_assign"),0); }
-  | "<<=" { jjtThis.addTerm(createAtom("op_left_shift_assign"),0); }
-  | ">>=" { jjtThis.addTerm(createAtom("op_right_shift_assign"),0); }
-  | ">>>=" { jjtThis.addTerm(createAtom("op_left_sshift_assign"),0); }
-  | "&="   { jjtThis.addTerm(createAtom("op_right_sshift_assign"),0); }
-  | "^="   { jjtThis.addTerm(createAtom("op_xor_assign"),0); }
-  | "|="   { jjtThis.addTerm(createAtom("op_or_assign"),0); }
+  "="   { jjtThis.addTerm(createString("="),0); }
+  | "*=" { jjtThis.addTerm(createString("*="),0); }
+  | "/=" { jjtThis.addTerm(createString("/="),0); }
+  | "%=" { jjtThis.addTerm(createString("%="),0); }
+  | "+=" { jjtThis.addTerm(createString("+="),0); }
+  | "-=" { jjtThis.addTerm(createString("-="),0); }
+  | "<<=" { jjtThis.addTerm(createString("<<="),0); }
+  | ">>=" { jjtThis.addTerm(createString(">>="),0); }
+  | ">>>=" { jjtThis.addTerm(createString(">>>="),0); }
+  | "&="   { jjtThis.addTerm(createString("&="),0); }
+  | "^="   { jjtThis.addTerm(createString("^="),0); }
+  | "|="   { jjtThis.addTerm(createString("|="),0); }
 }
 
 void ConditionalExpression():
@@ -1381,9 +1381,9 @@ Token tkd=null;
 {
   PrimaryExpression() [ tki="++" | tkd="--" ]
   { if (tki!=null) {
-      jjtThis.addTerm(createAtom("increment"),0);
+      jjtThis.addTerm(createString("++"),1);
     }else if(tkd!=null){
-      jjtThis.addTerm(createAtom("decrement"),0);
+      jjtThis.addTerm(createString("--"),1);
     }
   }
 }
@@ -1431,7 +1431,7 @@ void PrimaryExpression():
 |
   tk="this"  { hasThis=true; } 
 |
-  Super()
+  SuperPrefix()
 |
   tk="(" Expression() ")" 
 |
@@ -1452,12 +1452,12 @@ void PrimaryExpression():
 }
 
 
-void Super() :
+void SuperPrefix() :
 {
  Token tk;
 }
 {
-  tk="super" "." PrimaryExpression()
+  tk="super" 
   {
    setComment(jjtThis,tk); 
   }
@@ -1494,6 +1494,9 @@ void PrimarySuffix():
   ThisSelector()  
 |
   LOOKAHEAD(2)
+  SuperSelector()
+|
+  LOOKAHEAD(2)
   AllocationSelector()  
 |
   LOOKAHEAD(3)
@@ -1509,6 +1512,13 @@ void ThisSelector():
 }
 {
   "." "this"
+}
+
+void SuperSelector():
+{
+}
+{
+ "." "super"
 }
 
 void AllocationSelector():
@@ -1862,9 +1872,9 @@ void StatementExpression():
 |
   PrimaryExpression()
   [
-    tk="++"  { jjtThis.addTerm(createAtom("post_increment"),1); }
+    tk="++"  { jjtThis.addTerm(createString("++"),1); }
   |
-    tk="--"  { jjtThis.addTerm(createAtom("post_decrement"),1); }
+    tk="--"  { jjtThis.addTerm(createString("--"),1); }
   |
     AssignmentOperator() Expression()
   ]

@@ -8,6 +8,7 @@
 
 package ua.gradsoft.parsers.java5;
 
+import java.util.LinkedList;
 import ua.gradsoft.termware.DefaultFacts;
 import ua.gradsoft.termware.IFacts;
 import ua.gradsoft.termware.Term;
@@ -33,107 +34,173 @@ public class ASTTransformers {
     public ASTTransformers() {
     }
     
-    public class ASTFacts extends DefaultFacts
-    {
-        public ASTFacts() throws TermWareException
-        {super(); }
+    public class ASTFacts extends DefaultFacts {
+        public ASTFacts() throws TermWareException {
+            super(); }
         
-        public boolean isIdentifier(Term t)
-        {
-          return t.getName().equals("Identifier");
-        }
-
-        public boolean isName(Term t)
-        {
-          return t.getName().equals("Name");  
+        public boolean isIdentifier(Term t) {
+            return t.getName().equals("Identifier");
         }
         
-        public void append(TransformationContext ctx,Term result,Term n,Term x) throws TermWareException
-        {
-          Term[] newBody = new Term[n.getArity()+1];
-          for(int i=0; i<n.getArity(); ++i){
-              newBody[i]=n.getSubtermAt(i);              
-          }
-          newBody[n.getArity()]=x;
-          Term retval = n.createSame(newBody);
-          ctx.getCurrentSubstitution().put(result,retval);  
+        public boolean isName(Term t) {
+            return t.getName().equals("Name");
+        }
+        
+        public void append(TransformationContext ctx,Term result,Term n,Term x) throws TermWareException {
+            Term[] newBody = new Term[n.getArity()+1];
+            for(int i=0; i<n.getArity(); ++i){
+                newBody[i]=n.getSubtermAt(i);
+            }
+            newBody[n.getArity()]=x;
+            Term retval = n.createSame(newBody);
+            ctx.getCurrentSubstitution().put(result,retval);
         }
         
     }
     
     void init() throws TermWareException {
-        BTStrategy strategy=new BTStrategy();
+        BTStrategy strategyBefore=new BTStrategy();
         //FirstTopStrategy strategy=new FirstTopStrategy();
         IFacts  facts=new ASTFacts();
         
-        simplifier_=new TermSystem(strategy,facts,TermWare.getInstance());
+        simplifierBefore_=new TermSystem(strategyBefore,facts,TermWare.getInstance());
+        
         //simplifier_.setDebugEntity("All");
         //simplifier_.setDebugMode(true);
         
-        simplifier_.addRule("Expression($x) -> $x");
-        simplifier_.addRule("ConditionalExpression($x) -> $x");
-        simplifier_.addRule("ConditionalOrExpression($x) -> $x");
-        simplifier_.addRule("ConditionalAndExpression($x) -> $x");
-        simplifier_.addRule("InclusiveOrExpression($x) -> $x");
-        simplifier_.addRule("ExclusiveOrExpression($x) -> $x");
-        simplifier_.addRule("AndExpression($x) -> $x");
-        simplifier_.addRule("EqualityExpression($x) -> $x");
-        simplifier_.addRule("InstanceOfExpression($x) -> $x");
-        simplifier_.addRule("RelationalExpression($x) -> $x");
-        simplifier_.addRule("ShiftExpression($x) -> $x");
-        simplifier_.addRule("AdditiveExpression($x) -> $x");
-        simplifier_.addRule("MultiplicativeExpression($x) -> $x");
-        simplifier_.addRule("UnaryExpression($x) -> $x");
-        simplifier_.addRule("UnaryExpressionNotPlusMinus($x) -> $x");
-        simplifier_.addRule("PostfixExpression($x) -> $x");
-        simplifier_.addRule("PrimaryExpression($x) -> $x");
+        simplifierBefore_.addRule("ResultType($x) -> $x");
+        
+        simplifierBefore_.addRule("Expression($x) -> $x");
+        simplifierBefore_.addRule("ConditionalExpression($x)  -> $x");
+        simplifierBefore_.addRule("ConditionalOrExpression($x) -> $x");
+        simplifierBefore_.addRule("ConditionalAndExpression($x) -> $x");
+        simplifierBefore_.addRule("InclusiveOrExpression($x) -> $x");
+        simplifierBefore_.addRule("ExclusiveOrExpression($x) -> $x");
+        simplifierBefore_.addRule("AndExpression($x) -> $x");
+        simplifierBefore_.addRule("EqualityExpression($x) -> $x");
+        simplifierBefore_.addRule("InstanceOfExpression($x) -> $x");
+        simplifierBefore_.addRule("RelationalExpression($x) -> $x");
+        simplifierBefore_.addRule("ShiftExpression($x) -> $x");
+        simplifierBefore_.addRule("AdditiveExpression($x) -> $x");
+        simplifierBefore_.addRule("MultiplicativeExpression($x) -> $x");
+        simplifierBefore_.addRule("UnaryExpression($x) -> $x");
+        simplifierBefore_.addRule("UnaryExpressionNotPlusMinus($x) -> $x");
+        simplifierBefore_.addRule("PostfixExpression($x) -> $x");
+        simplifierBefore_.addRule("PrimaryExpression($x) -> $x");
         //simplifier_.addRule("PrimaryPrefix($x) -> $x");
         //simplifier_.addRule("PrimarySuffix($x) -> $x");
-        simplifier_.addRule("Literal($x) -> $x");
+        simplifierBefore_.addRule("Literal($x) -> $x");
+         
+         
+        simplifierBefore_.addRule("Statement($x) -> $x");
+        simplifierBefore_.addRule("BlockStatement($x) -> $x");
+         
+        simplifierBefore_.addRule("Type($x) -> $x");
+        simplifierBefore_.addRule("PrimitiveType($x)->$x");
+        simplifierBefore_.addRule("ClassOrInterfaceType($x) -> $x");
+        simplifierBefore_.addRule("VariableInitializer($x) -> $x");
+        //simplifierBefore_.addRule("ArgumentList($x) -> $x");
+         
+        simplifierBefore_.addRule("AssignmentOperator($x) -> $x");
+         
+         
+        simplifierBefore_.addRule("ExplicitConstructorInvocation($x) -> $x");
+         
+        simplifierBefore_.addRule("ExplicitConstructorInvocation($x) -> $x");
+         
+        simplifierBefore_.addRule("IdentifierOrFunctionCall($x,$y) -> FunctionCall($x,$y)");
+        simplifierBefore_.addRule("IdentifierOrFunctionCall($x) -> $x");
+         
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(ThisSelector(),$y)) -> PrimaryExpression(This($x),$y)");
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(ThisSelector())) -> PrimaryExpression(This($x))");
         
-        simplifier_.addRule("Statement($x) -> $x");
-        simplifier_.addRule("BlockStatement($x) -> $x");
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(SuperSelector(),$y)) -> PrimaryExpression(Super($x),$y)");
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(SuperSelector())) -> PrimaryExpression(Super($x))");
         
-        simplifier_.addRule("Type($x) -> $x");
-        simplifier_.addRule("PrimitiveType($x)->$x");
-        simplifier_.addRule("ClassOrInterfaceType($x) -> $x");
-        simplifier_.addRule("VariableInitializer($x) -> $x");
-        simplifier_.addRule("ArgumentList($x) -> $x");
+         
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(AllocationSelector($y),$z)) -> PrimaryExpression(InnerAllocation($x,$y),$z)");
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(AllocationSelector($y))) -> PrimaryExpression(InnerAllocation($x,$y))");
+         
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(MethodCallSelector($y,$z),$w)) -> PrimaryExpression(MethodCall($x,$y,$z),$w)");
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(MethodCallSelector($y,$z))) -> PrimaryExpression(MethodCall($x,$y,$z))");
+         
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(SpecializedMethodCallSelector($ta,$y,$z),$w)) -> PrimaryExpression(SpecializedMethodCall($x,$ta,$y,$z),$w)");
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(SpecializedMethodCallSelector($ta,$y,$z))) -> PrimaryExpression(SpecializedMethodCall($x,$ta,$y,$z))");
+         
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(FieldSelector($y),$w)) -> PrimaryExpression(Field($x,$y),$w)");
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(FieldSelector($y))) -> PrimaryExpression(Field($x,$y))");
+         
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(SpecializedFieldSelector($ta,$y),$w)) -> PrimaryExpression(SpecializedField($x,$ta,$y),$w)");
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(SpecializedFieldSelector($ta,$y))) -> PrimaryExpression(SpecializedField($x,$ta,$y))");
+         
+        simplifierBefore_.addRule("MemberSelector($x,$y,$z) [ isNil($x) ] -> MethodCallSelector($y,$z) !-> SpecializedMethodCallSelector($x,$y,$z)");
+        simplifierBefore_.addRule("MemberSelector($x,$y) [ isNil($x) ] -> FieldSelector($y) !-> SpecializedFieldSelector($x,$y)");
+         
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(ArrayIndexSelector($y),$w)) -> PrimaryExpression(ArrayIndex($x,$y),$w)");
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(ArrayIndexSelector($y))) -> PrimaryExpression(ArrayIndex($x,$y))");
+         
+        simplifierBefore_.addRule("Field($x,$y) [isIdentifier($x) && isIdentifier($y)] -> Name($x,$y)");
+        simplifierBefore_.addRule("Field($x,$y) [isName($x) && isIdentifier($y) ] -> $z [ append($z,$x,$y) ] ");        
         
-        simplifier_.addRule("ExplicitConstructorInvocation($x) -> $x");
+        BTStrategy strategyAfter=new BTStrategy();
+        simplifierAfter_=new TermSystem(strategyAfter,facts,TermWare.getInstance());
+        
+       // simplifierAfter_.setDebugMode(true);
+       // simplifierAfter_.setDebugEntity("All");
+        
+        simplifierAfter_.addRule("ArgumentList($x) -> $x");
+        simplifierAfter_.addRule("Arguments() -> Arguments([])");
+        
+        
+        //simplifierAfter_.addRule("Arguments([ArgumentList($x)]) -> Arguments($x)");
+        //simplifierAfter_.addRule("Arguments(ArgumentList($x)) -> Arguments($x)");
 
-        simplifier_.addRule("ExplicitConstructorInvocation($x) -> $x");
-
-        simplifier_.addRule("IdentifierOrFunctionCall($x,$y) -> FunctionCall($x,$y)");
-        simplifier_.addRule("IdentifierOrFunctionCall($x) -> $x");
-               
-        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(ThisSelector(),$y)) -> PrimaryExpression(This($x),$y)");
-        simplifier_.addRule("PrimaryExpression($x,ThisSelector()) -> PrimaryExpression(This($x))");
-
-        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(AllocationSelector($y),$z)) -> PrimaryExpression(Allocation($x,$y),$z)");
-        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(AllocationSelector($y))) -> PrimaryExpression(Allocation($x,$y))");
-       
-        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(MethodCallSelector($y,$z),$w)) -> PrimaryExpression(MethodCall($x,$y,$z),$w)");
-        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(MethodCallSelector($y,$z))) -> PrimaryExpression(MethodCall($x,$y,$z))");
-        
-        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(SpecializedMethodCallSelector($ta,$y,$z),$w)) -> PrimaryExpression(SpecializedMethodCall($x,$ta,$y,$z),$w)");
-        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(SpecializedMethodCallSelector($ta,$y,$z))) -> PrimaryExpression(SpecializedMethodCall($x,$ta,$y,$z))");
-       
-        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(FieldSelector($y),$w)) -> PrimaryExpression(Field($x,$y),$w)");
-        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(FieldSelector($y))) -> PrimaryExpression(Field($x,$y))");
-        
-        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(SpecializedFieldSelector($ta,$y),$w)) -> PrimaryExpression(SpecializedField($x,$ta,$y),$w)");
-        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(SpecializedFieldSelector($ta,$y))) -> PrimaryExpression(SpecializedField($x,$ta,$y))");       
-
-        simplifier_.addRule("MemberSelector($x,$y,$z) [ isNil($x) ] -> MethodCallSelector($y,$z) !-> SpecializedMethodCallSelector($x,$y,$z)");        
-        simplifier_.addRule("MemberSelector($x,$y) [ isNil($x) ] -> FieldSelector($y) !-> SpecializedFieldSelector($x,$y)"); 
-        
-        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(ArrayIndexSelector($y),$w)) -> PrimaryExpression(ArrayIndex($x,$y),$w)");
-        simplifier_.addRule("PrimaryExpression($x,PrimarySuffix(ArrayIndexSelector($y))) -> PrimaryExpression(ArrayIndex($x,$y))");                        
-        
-        simplifier_.addRule("Field($x,$y) [isIdentifier($x) && isIdentifier($y)] -> Name($x,$y)");
-        simplifier_.addRule("Field($x,$y) [isName($x) && isIdentifier($y) ] -> $z [ append($z,$x,$y) ] ");
-                
+         
+        simplifierAfter_.addRule("ConditionalAndExpression([$x:$y]) -> ConditionalAndExpression($x,ConditionalAndExpression($y))");
+        simplifierAfter_.addRule("ConditionalAndExpression($x,[$y:$z]) -> ConditionalAndExpression($x,ConditionalAndExpression($y,$z))");
+        simplifierAfter_.addRule("ConditionalAndExpression([]) -> [] ");
+        simplifierAfter_.addRule("ConditionalAndExpression($x,[]) -> $x");
+         
+        simplifierAfter_.addRule("ConditionalOrExpression([$x:$y]) -> ConditionalOrExpression($x,ConditionalOrExpression($y))");
+        simplifierAfter_.addRule("ConditionalOrExpression($x,[$y:$z]) -> ConditionalOrExpression($x,ConditionalOrExpression($y,$z))");
+        simplifierAfter_.addRule("ConditionalOrExpression([]) -> []");
+        simplifierAfter_.addRule("ConditionalOrExpression($x,[]) -> $x");
+         
+        simplifierAfter_.addRule("InclusiveOrExpression([$x:$y]) -> InclusiveOrExpression($x,$y)");
+        simplifierAfter_.addRule("InclusiveOrExpression($x,[$y:$z]) -> InclusiveOrExpression($x,InclusiveOrExpression($y,$z))");
+        simplifierAfter_.addRule("InclusiveOrExpression($x,[]) -> $x");
+         
+        simplifierAfter_.addRule("ExclusiveOrExpression([$x:$y]) -> ExclusiveOrExpression($x,$y)");
+        simplifierAfter_.addRule("ExclusiveOrExpression($x,[$y:$z]) -> ExclusiveOrExpression($x,ExclusiveOrExpression($y,$z))");
+        simplifierAfter_.addRule("ExclusiveOrExpression($x,[]) -> $x");
+         
+        simplifierAfter_.addRule("AndExpression([$x:$y]) -> AndExpression($x,$y)");
+        simplifierAfter_.addRule("AndExpression($x,[$y:$z]) -> AndExpression($x,AndExpression($y,$z))");
+        simplifierAfter_.addRule("AndExpression($x,[]) -> $x");
+         
+         
+        simplifierAfter_.addRule("EqualityExpression($x,[$y:$z]) -> EqualityExpression(EqualityExpression($x,$y),$z)");
+        simplifierAfter_.addRule("EqualityExpression($x,[]) -> $x");
+        simplifierAfter_.addRule("EqualityExpression($x,EqualityExpressionOperand($op,$y)) -> EqualityExpression($x,$op,$y)");
+         
+        simplifierAfter_.addRule("RelationalExpression($x,[$y:$z]) -> RelationalExpression(RelationalExpression($x,$y),$z)");
+        simplifierAfter_.addRule("RelationalExpression($x,[]) -> $x");
+        simplifierAfter_.addRule("RelationalExpression($x,RelationalExpressionSuffix($op,$y)) -> RelationalExpression($x,$op,$y)");
+         
+        simplifierAfter_.addRule("ShiftExpression([$x:$y]) -> ShiftExpression($x,$y)");
+        simplifierAfter_.addRule("ShiftExpression($x,[$y:$z]) -> ShiftExpression(ShiftExpression($x,$y),$z)");
+        simplifierAfter_.addRule("ShiftExpression($x,[]) -> $x");
+        simplifierAfter_.addRule("ShiftExpression($x,ShiftExpressionOperand($op,$y)) -> ShiftExpression($x,$op,$y)");
+         
+         
+        simplifierAfter_.addRule("AdditiveExpression($x,[$y:$z]) -> AdditiveExpression(AdditiveExpression($x,$y),$z)");
+        simplifierAfter_.addRule("AdditiveExpression($x,AdditiveOperand($op,$y)) -> AdditiveExpression($x,$op,$y)");
+        simplifierAfter_.addRule("AdditiveExpression($x,[]) -> $x");
+         
+        simplifierAfter_.addRule("MultiplicativeExpression($x,[$y:$z])->MultiplicativeExpression(MultiplicativeExpression($x,$y),$z)");
+        simplifierAfter_.addRule("MultiplicativeExpression($x,MultiplicativeOperand($op,$y)) -> MultiplicativeExpression($x,$op,$y)");
+        simplifierAfter_.addRule("MultiplicativeExpression($x,[]) -> $x");
+                 
         initialized_=true;
     }
     
@@ -158,7 +225,7 @@ public class ASTTransformers {
                 ct=transformSeqToList(ct);
             }
             if (!ct.isNil()) {
-              list=TermWare.getInstance().getTermFactory().createTerm("cons",ct,list);
+                list=TermWare.getInstance().getTermFactory().createTerm("cons",ct,list);
             }
         }
         Term[] newBody=new Term[startFrom+1];
@@ -177,7 +244,7 @@ public class ASTTransformers {
             if (t.getName().equals("Name")) {
                 retval=javaTermArgsAsList(t,0,false);
             }else if (t.getName().equals("NameList")
-            ||t.getName().equals("FormalParameters")                                  
+            ||t.getName().equals("FormalParameters")
             ||t.getName().equals("ClassOrInterfaceType")
             ||t.getName().equals("ClassOrInterfaceBody")
             ||t.getName().equals("EnumBody")
@@ -192,6 +259,7 @@ public class ASTTransformers {
             ||t.getName().equals("ArrayDims")
             ||t.getName().equals("ArrayInitializer")
             ||t.getName().equals("CatchSequence")
+            ||t.getName().equals("AnnotationTypeBody")           
             ) {
                 retval=javaTermArgsAsList(t,0,true);
             }else if (t.getName().equals("FieldDeclaration")
@@ -207,7 +275,7 @@ public class ASTTransformers {
             ||t.getName().equals("ShiftExpression")
             ||t.getName().equals("AdditiveExpression")
             ||t.getName().equals("MultiplicativeExpression")
-            ||t.getName().equals("PrimaryExpression")
+            // ||t.getName().equals("PrimaryExpression")
             ) {
                 retval=javaTermArgsAsList(t,1,true);
                 Term frs=transformSeqToList(t.getSubtermAt(0));
@@ -239,93 +307,125 @@ public class ASTTransformers {
      *Childs of intermediate nodes became the childs of parent of such intermediate
      *node.
      */
-    public Term simplify(Term t) throws TermWareException {
+    public Term simplifyBefore(Term t) throws TermWareException {
         if (!initialized_) {
             init();
         }
-        return simplifier_.reduce(t);
+        return simplifierBefore_.reduce(t);
+    }
+    
+    public Term simplifyAfter(Term t) throws TermWareException {
+        return simplifierAfter_.reduce(t);
     }
     
     
-    public Term insertEmptyTypeParametersExtendsAndImplementLists(Term t) throws TermWareException {
-        //System.out.println("transform:"+TermHelper.termToString(t));
-        if (t.isComplexTerm()) {
-            if (t.getName().equals("ClassOrInterfaceDeclaration")) {
-                //System.out.println("transform1:"+TermHelper.termToString(t));
-                Term[] newDefBody=new Term[6];
-                int nUsed=0;
-                for(int i=0; i<t.getArity();++i) {
-                    Term st=t.getSubtermAt(i);
-                    if (st.getName().equals("class") || st.getName().equals("interface")) {
-                        newDefBody[0]=st;
-                        ++nUsed;
-                    }else if(st.getName().equals("Identifier")) {
-                        newDefBody[1]=st;
-                        ++nUsed;
-                    }else if(st.getName().equals("TypeParameters")){
-                        newDefBody[2]=st;
-                        ++nUsed;
-                    }else if(st.getName().equals("ExtendsList")) {
-                        newDefBody[3]=st;
-                        ++nUsed;
-                    }else if(st.getName().equals("ImplementsList")) {
-                        newDefBody[4]=st;
-                        ++nUsed;
-                    }else if(st.getName().equals("ClassOrInterfaceBody") || st.getName().equals("ClasOrInterfaceBodyDeclaration")) {
-                        newDefBody[5]=insertEmptyTypeParametersExtendsAndImplementLists(st);
-                        ++nUsed;
+    public Term insertEmptyTypeParametersExtendsAndImplementLists(Term x) throws TermWareException {
+        //System.out.println("[!}transform:"+TermHelper.termToString(t));
+        
+        /*
+        if (true) {
+            return x;
+        }
+         **/
+        
+        LinkedList<Term> termsToSet = new LinkedList<Term>();
+        LinkedList<Term> termsToTransform = new LinkedList<Term>();
+        LinkedList<Integer> ints = new LinkedList<Integer>();
+        
+        termsToTransform.add(x);
+        
+        Term retval=null;
+        Term t=x;
+        
+        while(!termsToTransform.isEmpty()) {
+            t = termsToTransform.removeFirst();            
+            if (t.isComplexTerm()) {
+                if (t.getName().equals("ClassOrInterfaceDeclaration")) {
+                    //System.out.println("transform1:"+TermHelper.termToString(t));
+                    Term[] newDefBody=new Term[6];
+                    int nUsed=0;
+                    for(int i=0; i<t.getArity();++i) {
+                        Term st=t.getSubtermAt(i);
+                        if (st.getName().equals("class") || st.getName().equals("interface")) {
+                            newDefBody[0]=st;
+                            ++nUsed;
+                        }else if(st.getName().equals("Identifier")) {
+                            newDefBody[1]=st;
+                            ++nUsed;
+                        }else if(st.getName().equals("TypeParameters")){
+                            newDefBody[2]=st;
+                            ++nUsed;
+                        }else if(st.getName().equals("ExtendsList")) {
+                            newDefBody[3]=st;
+                            ++nUsed;
+                        }else if(st.getName().equals("ImplementsList")) {
+                            newDefBody[4]=st;
+                            ++nUsed;
+                        }else if(st.getName().equals("ClassOrInterfaceBody") || st.getName().equals("ClasOrInterfaceBodyDeclaration")) {
+                            newDefBody[5]=insertEmptyTypeParametersExtendsAndImplementLists(st);
+                            ++nUsed;
+                        }else{
+                            throw new AssertException("Unknown subtern of ClassOrInterfaceDeclaration:"+st.getName());
+                        }
+                    }
+                    if (nUsed<6) {
+                        if (newDefBody[2]==null) {
+                            newDefBody[2]=TermWare.getInstance().getTermFactory().createNil();
+                        }
+                        if (newDefBody[3]==null) {
+                            newDefBody[3]=TermWare.getInstance().getTermFactory().createTerm("ExtendsList",
+                                    TermWare.getInstance().getTermFactory().createNil());
+                        }
+                        if (newDefBody[4]==null){
+                            newDefBody[4]=TermWare.getInstance().getTermFactory().createTerm("ImplementsList",
+                                    TermWare.getInstance().getTermFactory().createNil());
+                        }
+                        if (newDefBody[5]==null) {
+                            newDefBody[5]=TermWare.getInstance().getTermFactory().createTerm("ClassOrInterfaceBody",
+                                    TermWare.getInstance().getTermFactory().createNil());
+                        }
+                        Term newTerm=TermWare.getInstance().getTermFactory().createTerm("ClassOrInterfaceDeclaration",newDefBody);
+                        newTerm=TermHelper.copyAttributes(newTerm,t);
+                        t=newTerm;
+                    }
+                    Term t4=insertEmptyTypeParametersExtendsAndImplementLists(t.getSubtermAt(4));
+                    if (t4!=newDefBody[4]) {
+                        t.setSubtermAt(4,t4);
+                    }
+                }else if(t.getName().equals("EnumDeclaration")) {
+                    // check implements list
+                    Term t0 = t.getSubtermAt(0);
+                    Term t1=t.getSubtermAt(1);
+                    if (t1.getName().equals("EnumBody")) {
+                        // insert empty implements list.
+                        Term nilImplements = TermWare.getInstance().getTermFactory().createNIL();
+                        Term[] newBody = new Term[3];
+                        newBody[0]=t0;
+                        newBody[1]=nilImplements;
+                        newBody[2]=t1;
+                        t=TermWare.getInstance().getTermFactory().createComplexTerm("EnumDeclaration",newBody);
                     }else{
-                        throw new AssertException("Unknown subtern of ClassOrInterfaceDeclaration:"+st.getName());
+                        // this is implements list
+                        // so, this is full enum term, do nothing
                     }
-                }
-                if (nUsed<6) {
-                    if (newDefBody[2]==null) {
-                        newDefBody[2]=TermWare.getInstance().getTermFactory().createNil();
-                    }
-                    if (newDefBody[3]==null) {
-                        newDefBody[3]=TermWare.getInstance().getTermFactory().createTerm("ExtendsList",
-                                TermWare.getInstance().getTermFactory().createNil());
-                    }
-                    if (newDefBody[4]==null){
-                        newDefBody[4]=TermWare.getInstance().getTermFactory().createTerm("ImplementsList",
-                                TermWare.getInstance().getTermFactory().createNil());
-                    }
-                    if (newDefBody[5]==null) {
-                        newDefBody[5]=TermWare.getInstance().getTermFactory().createTerm("ClassOrInterfaceBody",
-                                TermWare.getInstance().getTermFactory().createNil());
-                    }
-                    Term newTerm=TermWare.getInstance().getTermFactory().createTerm("ClassOrInterfaceDeclaration",newDefBody);
-                    newTerm=TermHelper.copyAttributes(newTerm,t);
-                    t=newTerm;
-                }
-                Term t4=insertEmptyTypeParametersExtendsAndImplementLists(t.getSubtermAt(4));
-                if (t4!=newDefBody[4]) {
-                    t.setSubtermAt(4,t4);
-                }
-            }else if(t.getName().equals("EnumDeclaration")) {
-                // check implements list
-                Term t0 = t.getSubtermAt(0);
-                Term t1=t.getSubtermAt(1);
-                if (t1.getName().equals("EnumBody")) {
-                    // insert empty implements list.
-                    Term nilImplements = TermWare.getInstance().getTermFactory().createNIL();
-                    Term[] newBody = new Term[3];
-                    newBody[0]=t0;
-                    newBody[1]=nilImplements;
-                    newBody[2]=t1;
-                    t=TermWare.getInstance().getTermFactory().createComplexTerm("EnumDeclaration",newBody);
                 }else{
-                    // this is implements list
-                    // so, this is full enum term, do nothing
-                }
-            }else{
-                for(int i=0; i<t.getArity();++i) {
-                    Term st=t.getSubtermAt(i);
-                    t.setSubtermAt(i,insertEmptyTypeParametersExtendsAndImplementLists(st));
+                    for(int i=0; i<t.getArity();++i) {
+                        Term st=t.getSubtermAt(i);
+                        termsToSet.addLast(t);
+                        termsToTransform.addLast(st);
+                        ints.addLast(i);
+                    }
                 }
             }
+            if (retval==null) {
+                retval=t;
+            }else  if (!termsToSet.isEmpty())  {            
+                Term svT=termsToSet.removeFirst();
+                int index=ints.removeFirst();                
+                svT.setSubtermAt(index,t);            
+            }                       
         }
-        return t;
+        return retval; /* really unreachable, but compiler does not known about this */
     }
     
     
@@ -346,7 +446,8 @@ public class ASTTransformers {
     
     private static final Term[] EMPTY_TERM_ARRAY=new Term[0];
     
-    TermSystem simplifier_=null;
+    TermSystem simplifierAfter_=null;
+    TermSystem simplifierBefore_=null;
     boolean initialized_=false;
     
 }

@@ -49,6 +49,9 @@ public class X1test extends TestCase
         assert(idt.getName().equals("Identifier"));
         assert(idt.getSubtermAt(0).getName().equals("X"));        
      }
+  
+    
+    /*
     
     public void testFX1() throws Exception
     {
@@ -183,6 +186,7 @@ public class X1test extends TestCase
       assertTrue("file attribute of identifier must not be nil",!a1.isNil());
        
      }
+     */
      
      protected Term findClassOrInterfaceBodyDeclarationForMethod(Term t)
      {
@@ -204,6 +208,8 @@ public class X1test extends TestCase
          return TermWare.getInstance().getTermFactory().createNil();
      }
      
+     
+    
     private static String xClass="class X {}";
     
 }

@@ -199,8 +199,6 @@ public class JavaPrinter extends AbstractPrinter {
             writeAllocationExpression(t,level);
         }else if(t.getName().equals("Arguments")){
             writeArguments(t,level);
-        }else if(t.getName().equals("ArgumentList")){
-            writeArgumentList(t,level);
         }else if(t.getName().equals("StringLiteral")){
             writeStringLiteral(t,level);
         }else if(t.getName().equals("CharacterLiteral")) {
@@ -231,22 +229,16 @@ public class JavaPrinter extends AbstractPrinter {
             writeAndExpression(t,level,currentPriority);
         }else if(t.getName().equals("EqualityExpression")) {
             writeEqualityExpression(t,level,currentPriority);
-        }else if(t.getName().equals("EqualityExpressionOperand")) {
-            writeEqualityExpressionOperand(t,level);          
         }else if(t.getName().equals("InstanceOfExpression")) {
             writeInstanceOfExpression(t,level,currentPriority);
         }else if(t.getName().equals("RelationalExpression")) {
             writeRelationalExpression(t,level,currentPriority);
-        }else if(t.getName().equals("RelationalExpressionSuffix")) {
-            writeRelationalExpressionSuffix(t,level);
         }else if(t.getName().equals("ShiftExpression")){
             writeShiftExpression(t,level,currentPriority);
         }else if(t.getName().equals("ShiftExpressionOperand")){
             writeShiftExpressionOperand(t,level);            
         }else if(t.getName().equals("AdditiveExpression")) {
             writeAdditiveExpression(t,level,currentPriority);
-        }else if(t.getName().equals("AdditiveOperand")) {    
-            writeAdditiveOperand(t,level);        
         }else if(t.getName().equals("MultiplicativeExpression")) {
             writeMultiplicativeExpression(t,level,currentPriority);
         }else if(t.getName().equals("MultiplicativeOperand")) {            
@@ -388,8 +380,12 @@ public class JavaPrinter extends AbstractPrinter {
     
     public void writeWildcardBounds(Term t,int level) throws TermWareException {
         Term ct=t.getSubtermAt(0);
-        writeTerm(ct,level);
-        out_.print(" ");        
+        writeTerm(ct,level);        
+        out_.print(" ");    
+        if (t.getArity()>1) {
+            writeTerm(t.getSubtermAt(1),level);
+            out_.print(" ");
+        }
     }
     
     public void writeReferenceType(Term t,int level) throws TermWareException {
@@ -935,7 +931,7 @@ public class JavaPrinter extends AbstractPrinter {
             }
         }else if(t.getArity()==3) {
             writeTerm(t.getSubtermAt(0),level);
-            writeTerm(t.getSubtermAt(1),level);
+            writeString(t.getSubtermAt(1).getString());
             writeTerm(t.getSubtermAt(2),level);
         }else{
             throw new AssertException("arity of StatementExpression must be 1 or 2 or 3");
@@ -1228,18 +1224,16 @@ public class JavaPrinter extends AbstractPrinter {
         }
         writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.EQUALITY_EXPRESSION_PRIORITY);
         if (t.getArity()>1) {
-            writeList(t.getSubtermAt(1),"",level,ExpressionPriorities.EQUALITY_EXPRESSION_PRIORITY);
+            String op=t.getSubtermAt(1).getString();
+            out_.print(op);
+            writeTerm(t.getSubtermAt(2),level,ExpressionPriorities.EQUALITY_EXPRESSION_PRIORITY);
         }
         if (topPriority > ExpressionPriorities.EQUALITY_EXPRESSION_PRIORITY) {
           out_.print(")");
         }
     }
     
-    public void writeEqualityExpressionOperand(Term t, int level) throws TermWareException {
-        String op=t.getSubtermAt(0).getString();
-        out_.print(op);
-        writeTerm(t.getSubtermAt(1),level,ExpressionPriorities.EQUALITY_EXPRESSION_PRIORITY);
-    }
+   
     
     public void writeInstanceOfExpression(Term t, int level, int topPriority) throws TermWareException {
         if (topPriority > ExpressionPriorities.INSTANCE_OF_EXPRESSION_PRIORITY) {
@@ -1264,22 +1258,15 @@ public class JavaPrinter extends AbstractPrinter {
         }
         writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.RELATIONAL_EXPRESSION_PRIORITY);
         if (t.getArity()>1) {
-            Term ct=t.getSubtermAt(1);
-            while(!ct.isNil()) {
-                writeRelationalExpressionSuffix(ct.getSubtermAt(0),level);
-                ct=ct.getSubtermAt(1);
-            }
+            String op=t.getSubtermAt(1).getString();
+            out_.print(op);
+            writeTerm(t.getSubtermAt(2),level,ExpressionPriorities.RELATIONAL_EXPRESSION_PRIORITY);
         }
         if (topPriority > ExpressionPriorities.RELATIONAL_EXPRESSION_PRIORITY) {
            out_.print(")");
         }
     }
     
-    public void writeRelationalExpressionSuffix(Term t, int level) throws TermWareException {
-        String relOp=t.getSubtermAt(0).getString();
-        out_.print(relOp);
-        writeTerm(t.getSubtermAt(1),level,ExpressionPriorities.RELATIONAL_EXPRESSION_PRIORITY);
-    }
     
     public void writeShiftExpression(Term t, int level,int topPriority) throws TermWareException {       
         if (topPriority > ExpressionPriorities.SHIFT_EXPRESSION_PRIORITY) {
@@ -1307,19 +1294,14 @@ public class JavaPrinter extends AbstractPrinter {
         }
         writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.ADDITIVE_EXPRESSION_PRIORITY);
         if (t.getArity()>1) {
-          writeList(t.getSubtermAt(1),"",level);
+          out_.print(t.getSubtermAt(1).getString());
+          writeTerm(t.getSubtermAt(2),level,ExpressionPriorities.ADDITIVE_EXPRESSION_PRIORITY);
         }
         if (quoted) {
           out_.print(")");
         }
     }
 
-    public void writeAdditiveOperand(Term t, int level) throws TermWareException {
-        String s = t.getSubtermAt(0).getString();
-        out_.print(s);
-        writeTerm(t.getSubtermAt(1),level,ExpressionPriorities.ADDITIVE_EXPRESSION_PRIORITY);
-    }
-    
     
     public void writeMultiplicativeExpression(Term t, int level, int topPriority) throws TermWareException {
         boolean quoted=(topPriority > ExpressionPriorities.MULTIPLICATIVE_EXPRESSION_PRIORITY);
@@ -1328,7 +1310,8 @@ public class JavaPrinter extends AbstractPrinter {
         }        
         writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.MULTIPLICATIVE_EXPRESSION_PRIORITY);
         if (t.getArity()>1) {
-            writeList(t.getSubtermAt(1),"",level,ExpressionPriorities.MULTIPLICATIVE_EXPRESSION_PRIORITY);
+            out_.print(t.getSubtermAt(1).getString());
+            writeTerm(t.getSubtermAt(2),level,ExpressionPriorities.MULTIPLICATIVE_EXPRESSION_PRIORITY);
         }
         if (quoted) {
            out_.print(")");
@@ -1506,16 +1489,12 @@ public class JavaPrinter extends AbstractPrinter {
     public void writeArguments(Term t, int level)  throws TermWareException {
         out_.print("(");
         if (t.getArity()>0) {
-            writeTerm(t.getSubtermAt(0),level);
+            writeList(t.getSubtermAt(0),",",level);
         }
         out_.print(")");
     }
-    
-    public void writeArgumentList(Term t,int level) throws TermWareException {
-        writeCommaList(t.getSubtermAt(0),level);
-    }
-    
-    
+       
+        
     
     public void writeStringLiteral(Term t, int level) throws TermWareException {
         Term ct=t.getSubtermAt(0);

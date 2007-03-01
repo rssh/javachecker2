@@ -37,10 +37,11 @@ public class JavaParser implements IParser
       simplify_=true;
       if (simplify_) {
           //System.err.println("simplify is set");
-          t=owner_.getASTTransformers().simplify(t);          
+          t=owner_.getASTTransformers().simplifyBefore(t);          
           owner_.getASTTransformers().eraseJjtParents(t);
           t=owner_.getASTTransformers().transformSeqToList(t);
           t=owner_.getASTTransformers().insertEmptyTypeParametersExtendsAndImplementLists(t);
+          t=owner_.getASTTransformers().simplifyAfter(t);          
       }
       eof_=true;
       return t;

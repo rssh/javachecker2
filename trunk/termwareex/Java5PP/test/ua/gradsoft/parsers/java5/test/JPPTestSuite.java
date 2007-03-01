@@ -24,6 +24,7 @@ public class JPPTestSuite extends TestSuite
         this.addTestSuite(ASTTransformTest.class);
         this.addTestSuite(PrinterTest.class);
         this.addTestSuite(ExprTest.class);
+        //this.addTestSuite(JavaSrcTest.class);
     }
     
     
@@ -34,5 +35,6 @@ public class JPPTestSuite extends TestSuite
     {
       junit.textui.TestRunner.run(new JPPTestSuite());    
     }
+
     
 }
