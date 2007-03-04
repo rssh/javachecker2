@@ -891,7 +891,11 @@ void MethodDeclarator():
 }
 {
   Identifier() FormalParameters() ( "[" "]" { ++referenceLevel; } )*
-   { /* ignore reference level for now, later change type of formal parameter to referece type */}
+   { 
+     if (referenceLevel>0) {
+       jjtThis.addTerm(createInt(referenceLevel),0);
+     }
+   }
 }
 
 void FormalParameters():
@@ -950,6 +954,7 @@ void ExplicitConstructorInvocation():
   ExplicitThisConstructorInvocation()
 |
  /*  [ LOOKAHEAD(2) PrimaryExpression() "." ] "super" Arguments() ";" */
+  LOOKAHEAD( [ PrimaryExpression() "." ] "super" Arguments() )
   ExplicitSuperConstructorInvocation()
 }
 
@@ -1493,7 +1498,7 @@ void PrimarySuffix():
   LOOKAHEAD(2)
   ThisSelector()  
 |
-  LOOKAHEAD(2)
+  LOOKAHEAD(3)
   SuperSelector()
 |
   LOOKAHEAD(2)
@@ -1518,7 +1523,7 @@ void SuperSelector():
 {
 }
 {
- "." "super"
+ "." "super" [ Arguments() ]
 }
 
 void AllocationSelector():
@@ -1964,7 +1969,7 @@ void ForStatement():
   tk="for" "("
 
   (
-      LOOKAHEAD(Type() Identifier() ":")
+      LOOKAHEAD(["final"] Type() Identifier() ":")
       ForEachLoopHead()
     |
       TraditionalForLoopHead()
@@ -1979,7 +1984,7 @@ void ForStatement():
 void ForEachLoopHead():
 {}
 {
- Type() Identifier() ":" Expression() 
+ ["final"] Type() Identifier() ":" Expression() 
 }
 
 void TraditionalForLoopHead():

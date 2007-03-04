@@ -141,6 +141,15 @@ public class ASTTransformers {
          
         simplifierBefore_.addRule("Field($x,$y) [isIdentifier($x) && isIdentifier($y)] -> Name($x,$y)");
         simplifierBefore_.addRule("Field($x,$y) [isName($x) && isIdentifier($y) ] -> $z [ append($z,$x,$y) ] ");        
+
+        simplifierBefore_.addRule("PrimaryExpression($x,PrimarySuffix(SuperSelector($args))) -> ExplicitSuperConstructorInvocation($x,$args)");
+        simplifierBefore_.addRule("StatementExpressionStatement(ExplicitSuperConstructorInvocation($x,$y)) -> ExplicitSuperConstructorInvocation($x,$y)");
+        simplifierBefore_.addRule("Expression(ExplicitSuperConstructorInvocation($x,$y)) -> ExplicitSuperConstructorInvocation($x,$y)");
+        simplifierBefore_.addRule("StatementExpression(ExplicitSuperConstructorInvocation($x,$y)) -> ExplicitSuperConstructorInvocation($x,$y)");
+
+
+        simplifierBefore_.addRule("MethodDeclaration($tp,$rt,MethodDeclarator($x,$y,$z),$th,$bl) -> MethodDeclaration($tp,ReferenceType($x,$rt),MethodDeclarator($y,$z),$th,$bl)");
+
         
         BTStrategy strategyAfter=new BTStrategy();
         simplifierAfter_=new TermSystem(strategyAfter,facts,TermWare.getInstance());

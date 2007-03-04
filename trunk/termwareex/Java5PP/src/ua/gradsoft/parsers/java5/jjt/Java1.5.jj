@@ -1571,7 +1571,11 @@ void MethodDeclarator():
      jjtc000 = false;
    }
 /*@egen*/
-   { /* ignore reference level for now, later change type of formal parameter to referece type */}/*@bgen(jjtree)*/
+   { 
+     if (referenceLevel>0) {
+       jjtn000.addTerm(createInt(referenceLevel),0);
+     }
+   }/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -1744,6 +1748,7 @@ void ExplicitConstructorInvocation():
   ExplicitThisConstructorInvocation()
 |
  /*  [ LOOKAHEAD(2) PrimaryExpression() "." ] "super" Arguments() ";" */
+  LOOKAHEAD( [ PrimaryExpression() "." ] "super" Arguments() )
   ExplicitSuperConstructorInvocation()/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
@@ -3585,7 +3590,7 @@ try {
   LOOKAHEAD(2)
   ThisSelector()  
 |
-  LOOKAHEAD(2)
+  LOOKAHEAD(3)
   SuperSelector()
 |
   LOOKAHEAD(2)
@@ -3648,7 +3653,21 @@ void SuperSelector():
 {/*@bgen(jjtree) SuperSelector */
  try {
 /*@egen*/
- "." "super"/*@bgen(jjtree)*/
+ "." "super" [ Arguments() ]/*@bgen(jjtree)*/
+ } catch (Throwable jjte000) {
+   if (jjtc000) {
+     jjtree.clearNodeScope(jjtn000);
+     jjtc000 = false;
+   } else {
+     jjtree.popNode();
+   }
+   if (jjte000 instanceof RuntimeException) {
+     throw (RuntimeException)jjte000;
+   }
+   if (jjte000 instanceof ParseException) {
+     throw (ParseException)jjte000;
+   }
+   throw (Error)jjte000;
  } finally {
    if (jjtc000) {
      jjtree.closeNodeScope(jjtn000, true);
@@ -4909,7 +4928,7 @@ void ForStatement():
   tk="for" "("
 
   (
-      LOOKAHEAD(Type() Identifier() ":")
+      LOOKAHEAD(["final"] Type() Identifier() ":")
       ForEachLoopHead()
     |
       TraditionalForLoopHead()
@@ -4955,7 +4974,7 @@ void ForEachLoopHead():
 {/*@bgen(jjtree) ForEachLoopHead */
  try {
 /*@egen*/
- Type() Identifier() ":" Expression()/*@bgen(jjtree)*/
+ ["final"] Type() Identifier() ":" Expression()/*@bgen(jjtree)*/
  } catch (Throwable jjte000) {
    if (jjtc000) {
      jjtree.clearNodeScope(jjtn000);
