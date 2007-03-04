@@ -35,7 +35,7 @@ public class JavaTypeModelHelper {
      *See section 4.10  of  Java Language Specification
      *@return  true if s is supertype of t  ( t < s)
      */
-    public static boolean subtypeOrSame(JavaTypeModel t, JavaTypeModel s, boolean debug) throws TermWareException
+    public static boolean subtypeOrSame(JavaTypeModel t, JavaTypeModel s, MethodMatchingConversions conversions, boolean debug) throws TermWareException
     {   
       boolean subtypeOrSameDebugEnabled=true;  
       //debug=true;
@@ -49,6 +49,7 @@ public class JavaTypeModelHelper {
           }
           return true;
       }
+      MethodMatchingConversions cn=new MethodMatchingConversions(conversions);
       if (s.isTypeArgument()) {
          JavaTypeVariableAbstractModel sv = (JavaTypeVariableAbstractModel)s;          
              List<JavaTypeModel> svBounds = sv.getBounds();         
@@ -71,7 +72,7 @@ public class JavaTypeModelHelper {
                       continue;
                    }
                }  
-               if (!subtypeOrSame(t,bound,debug)) {
+               if (!subtypeOrSame(t,bound,cn,debug)) {
                  if (debug) {
                    LOG.info("subtimeOrSame failed [1]");
                  }
@@ -81,6 +82,7 @@ public class JavaTypeModelHelper {
             if (debug) {
                LOG.info("subtumeOrSame success [2]");
             }
+            conversions.assign(cn); 
             return true;         
          
       } else if (s.isWildcardBounds()) {
@@ -90,11 +92,14 @@ public class JavaTypeModelHelper {
                  retval=true;
                  break;
              case EXTENDS:  
-                 retval=subtypeOrSame(t,sw.getBoundTypeModel(),debug);
+                 retval=subtypeOrSame(t,sw.getBoundTypeModel(),cn,debug);
                  break;
              case SUPER:             
                  retval=true;
                  break;
+         }
+         if (retval) {
+             conversions.assign(cn);
          }
          return retval;
       }else if (t.isPrimitiveType()) {        
@@ -109,6 +114,7 @@ public class JavaTypeModelHelper {
           if (s.isClass()) {           
               if (s instanceof JavaClassTypeModel) {
                   // in runtime we have no type arguments, i. e. rowtype.
+                  cn.incrementNRows();
                   JavaClassTypeModel cs = (JavaClassTypeModel)s;
                   if (t instanceof JavaClassTypeModel) {
                       JavaClassTypeModel ct = (JavaClassTypeModel)t;
@@ -126,10 +132,11 @@ public class JavaTypeModelHelper {
                           }
                           if (t instanceof JavaTypeArgumentBoundTypeModel) {
                               JavaTypeArgumentBoundTypeModel ta = (JavaTypeArgumentBoundTypeModel)t;
-                              return subtypeOrSame(ta.getOrigin(),s,debug);
+                              return subtypeOrSame(ta.getOrigin(),s,cn,debug);
                           }
                           try {
-                            retval=subtypeOrSame(t.getSuperClass(),cs,debug);
+                            cn.incrementNNarrows();  
+                            retval=subtypeOrSame(t.getSuperClass(),s,cn,debug);
                           }catch(NotSupportedException ex){
                               retval=false;
                           }
@@ -140,16 +147,17 @@ public class JavaTypeModelHelper {
               }else{
                   // two class models.                                  
                   if (samePrimaryName(t,s)) {   
-                      retval= subtypeOrSameWithSameName(t,s,debug); 
+                      retval= subtypeOrSameWithSameName(t,s,cn,debug); 
                       if (debug)  {
                          LOG.info("subtimeOrSameWithSameName("+t.getFullName()+","+s.getFullName()+") return "+retval);
                       }                     
                       return retval;
                   }else{
                     try {                          
+                     cn.incrementNNarrows();   
                      JavaTypeModel td=t.getSuperClass();                   
                      if (td!=null && !td.isNull()) {
-                         return subtypeOrSame(td,s,debug);
+                         return subtypeOrSame(td,s,cn,debug);
                      }else{
                          return same(s,JavaResolver.resolveJavaLangObject());
                      }
@@ -163,10 +171,12 @@ public class JavaTypeModelHelper {
                 // s is interface.
                 List<JavaTypeModel> tds=t.getSuperInterfaces();              
                 for(JavaTypeModel td: tds) {
-                  if (subtypeOrSame(td,s,debug)) {
+                  if (subtypeOrSame(td,s,cn,debug)) {
                       if (debug) {
                           LOG.log(Level.INFO,"subtypeOrSame result "+true);
                       }
+                      cn.incrementNNarrows();
+                      conversions.assign(cn);
                       return true;
                   }
                 }
@@ -177,9 +187,10 @@ public class JavaTypeModelHelper {
                   return false;
               }
               try {
+                  cn.incrementNNarrows();
                   JavaTypeModel td = t.getSuperClass();
                   if (td!=null && !td.isNull()) {
-                      retval=subtypeOrSame(td,s,debug);
+                      retval=subtypeOrSame(td,s,cn,debug);
                       if (debug) {
                           LOG.log(Level.INFO,"subtypeOrSame result "+retval);
                       }
@@ -198,14 +209,16 @@ public class JavaTypeModelHelper {
               return same(s,JavaResolver.resolveJavaLangObject());
           }else if (s.isInterface()) {
               if (samePrimaryName(t,s)) {
-                  return subtypeOrSameWithSameName(t,s,debug); 
+                  return subtypeOrSameWithSameName(t,s,cn,debug); 
               }else{
                 try {  
                   for(JavaTypeModel td : t.getSuperInterfaces()) {
-                      if (subtypeOrSame(td,s,debug)) {
+                      if (subtypeOrSame(td,s,cn,debug)) {
                           if (debug) {
                              LOG.log(Level.INFO,"subtypeOrSame("+t.getName()+","+s.getName()+") result "+retval);
                           }                          
+                          cn.incrementNNarrows();
+                          conversions.assign(cn);
                           return true;
                       }
                   }
@@ -220,7 +233,7 @@ public class JavaTypeModelHelper {
       }else if(t.isArray()){
           if (s.isArray()) {
             try {  
-              retval=subtypeOrSame(t.getReferencedType(),s.getReferencedType(),debug);
+              retval=subtypeOrSame(t.getReferencedType(),s.getReferencedType(),cn,debug);
             }catch(NotSupportedException ex){
                 // impossible.
                 retval=false;
@@ -240,11 +253,13 @@ public class JavaTypeModelHelper {
           }else if(s.isInterface()){
             try {  
               for(JavaTypeModel td: t.getSuperInterfaces()) {
-                  if (subtypeOrSame(td,s,debug)) {
+                  if (subtypeOrSame(td,s,cn,debug)) {
                       retval=true;
                       if (debug) {
                           LOG.log(Level.INFO,"subtypeOrSame("+t.getName()+","+s.getName()+") result "+retval);
-                      }                          
+                      }                     
+                      cn.incrementNNarrows();
+                      
                       return retval;
                   }
               }
@@ -267,7 +282,7 @@ public class JavaTypeModelHelper {
           JavaTypeVariableAbstractModel tv = (JavaTypeVariableAbstractModel)t;
           retval=true;
           for(JavaTypeModel b: tv.getBounds()) {
-              if (subtypeOrSame(b,s,debug)) {
+              if (subtypeOrSame(b,s,cn,debug)) {
                   retval=true;
                   if (debug) {
                       LOG.log(Level.INFO,"subtypeOrSame("+t.getName()+","+s.getName()+") result "+retval);
@@ -287,11 +302,11 @@ public class JavaTypeModelHelper {
                   break;
               case EXTENDS:
                   // subtypeOrSame(t,s) = subtypeOrSame(<? extends A>,s) = subtypeOrSame(A,s)
-                  retval=subtypeOrSame(tw.getBoundTypeModel(),s,debug);
+                  retval=subtypeOrSame(tw.getBoundTypeModel(),s,cn,debug);
                   break;
               case SUPER:
                   // subtypeOrSame(t,s) = subtypeOrSame(<? super A>,s) = same(A,s) subtypeOrSame(Object,s)
-                  retval=same(tw.getBoundTypeModel(),s) || subtypeOrSame(JavaResolver.resolveJavaLangObject(),s,debug);
+                  retval=same(tw.getBoundTypeModel(),s) || subtypeOrSame(JavaResolver.resolveJavaLangObject(),s,cn,debug);
                   break;
               default:
                   throw new AssertException("unknown wildcardbounds kind");
@@ -434,23 +449,31 @@ public class JavaTypeModelHelper {
     /**
      * Object -> appropriate primitive
      */
-    public static JavaTypeModel unboxingConversion(JavaTypeModel x)
+    public static JavaTypeModel unboxingConversion(JavaTypeModel x,MethodMatchingConversions c)
     {
-            if (isBoolean(x)) {
+            if (isBoolean(x) && x!=JavaPrimitiveTypeModel.BOOLEAN) {
+                c.incrementNUnboxing();
                 return JavaPrimitiveTypeModel.BOOLEAN;
             }else if (isByte(x)) {
+                c.incrementNUnboxing();
                 return JavaPrimitiveTypeModel.BYTE;
             }else if (isChar(x)){
+                c.incrementNUnboxing();
                 return JavaPrimitiveTypeModel.CHAR;
             }else if (isShort(x)){
+                c.incrementNUnboxing();
                 return JavaPrimitiveTypeModel.SHORT;
             }else if (isInt(x)) {
+                c.incrementNUnboxing();
                 return JavaPrimitiveTypeModel.INT;
             }else if (isLong(x)) {
+                c.incrementNUnboxing();
                 return JavaPrimitiveTypeModel.LONG;
             }else if (isFloat(x)){
+                c.incrementNUnboxing();
                 return JavaPrimitiveTypeModel.FLOAT;
             }else if (isDouble(x)){
+                c.incrementNUnboxing();
                 return JavaPrimitiveTypeModel.DOUBLE;
             }else{
                 return x;
@@ -460,24 +483,32 @@ public class JavaTypeModelHelper {
     /**
      * primitive type -> appropriative Object
      */
-    public static JavaTypeModel  boxingConversion(JavaTypeModel x)
+    public static JavaTypeModel  boxingConversion(JavaTypeModel x, MethodMatchingConversions c)
     {
       try {  
         if (isBoolean(x)) {
+            c.incrementNBoxing();
             return JavaResolver.resolveTypeModelByFullClassName("java.lang.Boolean");            
         }else if (isByte(x)) {
+            c.incrementNUnboxing();
             return JavaResolver.resolveTypeModelByFullClassName("java.lang.Byte");            
         }else if (isChar(x)) {
+            c.incrementNUnboxing();
             return JavaResolver.resolveTypeModelByFullClassName("java.lang.Character");            
         }else if (isShort(x)) {
+            c.incrementNUnboxing();
             return JavaResolver.resolveTypeModelByFullClassName("java.lang.Short");
         }else if (isInt(x)) {
+            c.incrementNUnboxing();
             return JavaResolver.resolveTypeModelByFullClassName("java.lang.Integer");
         }else if (isLong(x)) {
+            c.incrementNUnboxing();
             return JavaResolver.resolveTypeModelByFullClassName("java.lang.Long");
         }else if (isFloat(x)) {
+            c.incrementNUnboxing();
             return JavaResolver.resolveTypeModelByFullClassName("java.lang.Float");
         }else if (isDouble(x)) {
+            c.incrementNUnboxing();
             return JavaResolver.resolveTypeModelByFullClassName("java.lang.Double");
         }else{
             return x;
@@ -490,7 +521,7 @@ public class JavaTypeModelHelper {
       }
     }
     
-    private static boolean subtypeOrSameWithSameName(JavaTypeModel x, JavaTypeModel y, boolean debug) throws TermWareException
+    private static boolean subtypeOrSameWithSameName(JavaTypeModel x, JavaTypeModel y, MethodMatchingConversions conversions, boolean debug) throws TermWareException
     {
       if (debug){
           LOG.log(Level.INFO,"subtypeOrSameWithSameName("+x.getFullName()+","+y.getFullName()+","+debug+")");
@@ -526,7 +557,7 @@ public class JavaTypeModelHelper {
               while(xit.hasNext()) {
                   JavaTypeModel t=xit.next();
                   JavaTypeModel s=yit.next();
-                  if (!subtypeOrSame(t,s,debug)) {
+                  if (!subtypeOrSame(t,s,conversions,debug)) {
                       if (debug) {
                          LOG.log(Level.INFO,"subtypeOrSameWithSameName("+x.getFullName()+","+y.getFullName()+","+debug+") FAILED [1]");
                       }
@@ -560,6 +591,7 @@ public class JavaTypeModelHelper {
                */
           }else{
               // y is row type
+              conversions.incrementNRows();
               return true;
           }                                  
       }else if (x.hasTypeParameters()) {
@@ -593,17 +625,19 @@ public class JavaTypeModelHelper {
               while(xit.hasNext()) {
                   JavaTypeModel t = xit.next();
                   JavaTypeModel s = yit.next();
-                  if (!subtypeOrSame(t,s,debug)) {
+                  if (!subtypeOrSame(t,s,conversions,debug)) {
                       return false;
                   }
               }
               return true;                                    
           }else{
               // y is row type.
+              conversions.incrementNRows();
               return true;
           }            
       }else{
           // x is row type, unsafe
+          conversions.incrementNRows();
           return true;
       }
     }

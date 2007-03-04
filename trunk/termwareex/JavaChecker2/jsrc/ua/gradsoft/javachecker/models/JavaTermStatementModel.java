@@ -239,7 +239,7 @@ public class JavaTermStatementModel implements JavaStatementModel {
             if (t.getArity()==2) {
                 primary=t.getSubtermAt(0);
                 extractAnonimousTypes(primary);
-                JavaTermExpressionModel e = JavaTermExpressionModel.create(t,this,enclosedType);
+                JavaTermExpressionModel e = JavaTermExpressionModel.create(primary,this,enclosedType);
                 expressions_.add(e);
                 args=t.getSubtermAt(1);
             }else{

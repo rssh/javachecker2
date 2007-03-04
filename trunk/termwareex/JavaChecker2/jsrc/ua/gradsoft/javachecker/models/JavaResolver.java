@@ -25,6 +25,7 @@ import ua.gradsoft.javachecker.util.Pair;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.TermWareRuntimeException;
 import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
@@ -203,7 +204,11 @@ public class JavaResolver {
                 if (printDetails) {
                     System.err.println("creating new ArgumentBoundTypeModel");
                 }
-                curModel=new JavaTypeArgumentBoundTypeModel(curModel,ct,where,typeVariables,null);
+                if (where!=null) {
+                   curModel=new JavaTypeArgumentBoundTypeModel(curModel,ct,where,typeVariables,null);
+                }else{
+                    curModel=new JavaTypeArgumentBoundTypeModel(curModel,ct,unitModel,packageModel,typeVariables);
+                }
             }else{
                 throw new AssertException("Only Identifiers or TypeArgumentrs are allowed in ClassOrInterfaceType sequence, we have "+TermHelper.termToString(ct));
             }
@@ -233,7 +238,20 @@ public class JavaResolver {
         //     return where;
         // }
 
-        //0. may be model, where we resolve, have typeVariables
+        // try to find among type variables.
+        if (typeVariables!=null) {
+            for(JavaTypeVariableAbstractModel tv: typeVariables) {
+                if (tv.getName().equals(name)) {
+                    if (printDetails) {
+                      LOG.info("found in type variables");
+                    }
+                    return tv;
+                }
+            }
+        }
+        
+        
+        // may be model, where we resolve, have typeVariables
         if (where.hasTypeParameters()) {
             for(JavaTypeVariableAbstractModel tv:where.getTypeParameters()) {
                 if (tv.getName().equals(name)) {
@@ -246,17 +264,6 @@ public class JavaResolver {
         }
         
         
-        //1. try to find among type variables.
-        if (typeVariables!=null) {
-            for(JavaTypeVariableAbstractModel tv: typeVariables) {
-                if (tv.getName().equals(name)) {
-                    if (printDetails) {
-                      LOG.info("found in type variables");
-                    }
-                    return tv;
-                }
-            }
-        }
         
         
         
@@ -443,7 +450,11 @@ public class JavaResolver {
     
     public static JavaTypeModel resolveTypeModelByName(String name, JavaUnitModel um, JavaPackageModel pm, List<JavaTypeVariableAbstractModel> typeVariables) throws TermWareException, EntityNotFoundException {
         boolean printDetails=false;
-               
+        
+        if (name.equals("JobStateReason")) {
+            printDetails=true;
+        }
+        
         if (printDetails) {
             LOG.log(Level.INFO,"resolveTypeModelByName("+name+","+um.toString()+","+pm.getName()+")");
         }
@@ -940,15 +951,16 @@ public class JavaResolver {
         throw new EntityNotFoundException("formal parameter",name,ownerModel.getTypeModel().getFullName()+"."+ownerModel.getName());
     }
     
+   
     
     /**
      * resolve method call to where (in where and all superclasses) and build substitutuion of method type arguments if needed.
      */
     public static JavaMethodModel resolveMethod(String methodName,List<JavaTypeModel> argumentTypes, JavaTypeArgumentsSubstitution substitution,JavaTypeModel where) throws EntityNotFoundException, TermWareException {
         boolean printDetails=false;
-    //    if (methodName.equals("findInLine")||methodName.equals("forName")) {
-    //        printDetails=true;
-    //    }
+        if (methodName.equals("toByteArray")||methodName.equals("handleBinaryBlob")) {
+             printDetails=true;
+        }
         if (printDetails) {
             StringBuilder sb=new StringBuilder();
             boolean frs=true;
@@ -965,11 +977,15 @@ public class JavaResolver {
             LOG.log(Level.INFO,sb.toString());
         }
         boolean found=false;
-        LinkedList<JavaTypeModel> toCheck = new LinkedList<JavaTypeModel>();
-        toCheck.add(where);
-        List<Pair<JavaMethodModel,JavaTypeArgumentsSubstitution>> goodCandidates = new ArrayList<Pair<JavaMethodModel,JavaTypeArgumentsSubstitution>>();
+        LinkedList<Pair<JavaTypeModel,Integer>> toCheck = new LinkedList<Pair<JavaTypeModel,Integer>>();
+        toCheck.add(new Pair<JavaTypeModel,Integer>(where,0));
+        List<Pair<JavaMethodModel,MethodMatchingConversions>> goodCandidates = new ArrayList<Pair<JavaMethodModel,MethodMatchingConversions>>();
+        
+       
         while(!toCheck.isEmpty()){
-            JavaTypeModel currWhere=toCheck.removeFirst();
+            Pair<JavaTypeModel,Integer> currPair = toCheck.removeFirst();            
+            JavaTypeModel currWhere=currPair.getFirst();
+            int nSupers=currPair.getSecond();
             List<JavaMethodModel> candidates=null;
             try{
                 if (printDetails) {
@@ -998,23 +1014,26 @@ public class JavaResolver {
                     
                     List<JavaFormalParameterModel> fpts = candidate.getFormalParametersList();
                     
-                    //TODO: copy substitution.
-                    JavaTypeArgumentsSubstitution newSubstitution=new JavaTypeArgumentsSubstitution();
-                    newSubstitution.putAll(substitution);
-                    if (match(fpts,argumentTypes,newSubstitution,printDetails)) {
+                                        
+                    MethodMatchingConversions conversions = new MethodMatchingConversions();                               
+                    conversions.setNSupers(nSupers);
+                    if (match(fpts,argumentTypes,conversions,printDetails)) {
                         // TODO: we must peek best instead returning first.
                         if (printDetails) {
                             StringWriter swr=new StringWriter();
                             PrintWriter wr=new PrintWriter(swr);
                             wr.print("matched, substitution=");
-                            newSubstitution.print(wr);
+                            conversions.getSubstitution().print(wr);
                             wr.flush();
                             String s = swr.toString();
                             wr.close();
                             LOG.log(Level.INFO,s);
+                        }      
+                        if (conversions.exactly()) {
+                            substitution.putAll(conversions.getSubstitution());
+                            return candidate;
                         }
-                        substitution.putAll(newSubstitution);
-                        return candidate;
+                        goodCandidates.add(new Pair<JavaMethodModel,MethodMatchingConversions>(candidate,conversions));
                     }else{
                         if (printDetails) {
                             LOG.log(Level.INFO,"not match");
@@ -1025,8 +1044,8 @@ public class JavaResolver {
             }
             // if we here, than nothing found here, try supers
             if (!currWhere.isNull() && !(currWhere.isEnum() && currWhere.getFullName().equals("java.lang.Enum"))) {
-                try {
-                    toCheck.add(currWhere.getSuperClass());
+                try {                    
+                    toCheck.add(new Pair<JavaTypeModel,Integer>(currWhere.getSuperClass(),nSupers+1));
                 }catch(NotSupportedException ex){
                     // impossible,
                     ;
@@ -1034,8 +1053,11 @@ public class JavaResolver {
             }
             if(true /*currWhere.isInterface()||currWhere.getModifiersModel().isAbstract()*/) {
                 try {
-                    List<JavaTypeModel> interfaces = currWhere.getSuperInterfaces();
-                    toCheck.addAll(currWhere.getSuperInterfaces());
+                    List<JavaTypeModel> interfaces = currWhere.getSuperInterfaces(); 
+                    int nextNSupers=nSupers+1;
+                    for(JavaTypeModel si:currWhere.getSuperInterfaces()) {
+                      toCheck.add(new Pair<JavaTypeModel,Integer>(si,nextNSupers));
+                    }
                 }catch(NotSupportedException ex){
                     //  ignore
                     ;
@@ -1058,16 +1080,19 @@ public class JavaResolver {
                 if (bounds.isEmpty()) {
                     // check in object.
                     JavaTypeModel objectTypeModel = JavaResolver.resolveJavaLangObject();
-                    toCheck.addLast(objectTypeModel);
+                    toCheck.addLast(new Pair<JavaTypeModel,Integer>(objectTypeModel,nSupers+1));
                 }else{
-                    toCheck.addAll(bounds);
+                    int nextNSupers=nSupers+1;
+                    for(JavaTypeModel bound: bounds) {
+                       toCheck.add(new Pair<JavaTypeModel,Integer>(bound,nextNSupers));
+                    }
                 }
             }
             
             //then may be this is a method of enclosing class ?
             if (currWhere.isNested()) {
                 try {
-                    toCheck.addLast(currWhere.getEnclosedType());
+                    toCheck.addLast(new Pair<JavaTypeModel,Integer>(currWhere.getEnclosedType(),nSupers));
                 }catch(NotSupportedException ex){
                     ;
                     //impossible, ignore.
@@ -1108,12 +1133,12 @@ public class JavaResolver {
                     }
                     if (ml!=null) {
                         for(JavaMethodModel m: ml){
-                            List<JavaFormalParameterModel> fps=m.getFormalParametersList();
-                            //TODO: preserve substitution
-                            if (match(fps,argumentTypes,substitution,printDetails)) {
-                                return m;
+                            List<JavaFormalParameterModel> fps=m.getFormalParametersList();                        
+                            MethodMatchingConversions conversions=new MethodMatchingConversions();
+                            if (match(fps,argumentTypes,conversions,printDetails)) {
+                                goodCandidates.add(new Pair<JavaMethodModel,MethodMatchingConversions>(m,conversions));
                             }else{
-                                //TODO: restore substitution
+                               // nothibng                              
                             }
                         }
                     }
@@ -1122,6 +1147,11 @@ public class JavaResolver {
             
         }
         
+        Pair<JavaMethodModel,MethodMatchingConversions> retval = MethodMatchingConversions.best(goodCandidates);
+        if (retval!=null) {
+            substitution.putAll(retval.getSecond().getSubstitution());
+            return retval.getFirst();
+        }
         
         // we still here ?
         //  ok, it means that notning is found.
@@ -1201,58 +1231,59 @@ public class JavaResolver {
     }
     
     
-    public static boolean match(JavaTypeModel pattern, JavaTypeModel x, JavaTypeArgumentsSubstitution substitution, boolean debug) throws TermWareException {
-        if (pattern.isPrimitiveType() && !x.isPrimitiveType()) {
-            return match1(pattern,JavaTypeModelHelper.unboxingConversion(x),substitution,debug);
+    public static boolean match(JavaTypeModel pattern, JavaTypeModel x, MethodMatchingConversions conversions, boolean debug) throws TermWareException {
+        if (pattern.isPrimitiveType() && !x.isPrimitiveType()) {           
+            return match1(pattern,JavaTypeModelHelper.unboxingConversion(x,conversions),conversions,debug);
         }else if (!pattern.isPrimitiveType() && x.isPrimitiveType()) {
-            return match1(pattern,JavaTypeModelHelper.boxingConversion(x),substitution,debug);
+            return match1(pattern,JavaTypeModelHelper.boxingConversion(x,conversions),conversions,debug);
         }else{
-            return match1(pattern,x,substitution,debug);
+            return match1(pattern,x,conversions,debug);
         }
     }
     
     /**
      * match patern type with x and fill substitution if needed after aplying boxing/unboxing conventions.
      */
-    public static boolean match1(JavaTypeModel pattern, JavaTypeModel x,JavaTypeArgumentsSubstitution substitution, boolean topDebug) throws TermWareException {
+    public static boolean match1(JavaTypeModel pattern, JavaTypeModel x,MethodMatchingConversions conversions, boolean topDebug) throws TermWareException {
         boolean match1DebugEnabled=true;
         boolean debug = topDebug && match1DebugEnabled;
         if (debug) {
             LOG.log(Level.INFO,"match1(+"+pattern.getFullName()+","+x.getFullName()+")");
         }
         boolean retval=true;
+        MethodMatchingConversions cn=new MethodMatchingConversions(conversions);
         if (pattern.isTypeArgument()) {
             JavaTypeVariableAbstractModel vpattern = (JavaTypeVariableAbstractModel)pattern;
-            JavaTypeModel matched=substitution.get(vpattern);
+            JavaTypeModel matched=conversions.getSubstitution().get(vpattern);
             if (matched!=null) {
-                if (matched.isTypeArgument()) {
-                   if (JavaTypeModelHelper.subtypeOrSame(x,pattern,debug)) {
+                if (matched.isTypeArgument()) {                    
+                   if (JavaTypeModelHelper.subtypeOrSame(x,pattern,cn,debug)) {                       
                        retval=true;
                    }else{
                        //to prevent recursion we must deconstruct or put pattern here.
                        JavaTypeVariableAbstractModel vmatched = (JavaTypeVariableAbstractModel)matched;
                        List<JavaTypeModel> bounds = vmatched.getBounds();
                        for(JavaTypeModel bound: bounds) {
-                           if (match(bound,x,substitution,debug)) {
+                           if (match(bound,x,cn,debug)) {
                                retval=true;
                                break;
                            }
                        }                        
                    }
                 }else{
-                   retval=match(matched,x,substitution,debug);       
+                   retval=match(matched,x,cn,debug);       
                 }                                
             }else{
                 List<JavaTypeModel> bounds = vpattern.getBounds();
                 for(JavaTypeModel bound: bounds) {
-                    if (!match(bound,x,substitution,debug)) {
+                    if (!match(bound,x,cn,debug)) {
                         retval=false;
                         break;
                     }
                 }
                 if (retval) {
                     if (x!=vpattern) {
-                      substitution.put(vpattern,x);
+                      cn.getSubstitution().put(vpattern,x);
                     }
                 }
             }
@@ -1263,10 +1294,10 @@ public class JavaResolver {
                     retval=true;
                     break;
                 case EXTENDS:
-                    retval=JavaTypeModelHelper.subtypeOrSame(x,wpattern.getBoundTypeModel(),debug);
+                    retval=JavaTypeModelHelper.subtypeOrSame(x,wpattern.getBoundTypeModel(),cn,debug);                    
                     break;
                 case SUPER:
-                    retval=JavaTypeModelHelper.subtypeOrSame(wpattern.getBoundTypeModel(),x,debug);
+                    retval=JavaTypeModelHelper.subtypeOrSame(wpattern.getBoundTypeModel(),x,cn,debug);
                     break;
                 default:
                     throw new AssertException("Impossible: invalid JavaWildcardBoundsKind");
@@ -1274,18 +1305,34 @@ public class JavaResolver {
         }else if (x.isNull()) {
             // null can be object of any type.
             retval=true;
+        }else if (pattern.isArray()) {
+            if (x.isArray()) {
+               try { 
+                retval=match1(pattern.getReferencedType(),x.getReferencedType(),cn,debug);
+               }catch(NotSupportedException ex){
+                   throw new TermWareRuntimeException(ex);
+               }
+            }else{
+                retval=false;
+            }
         }else{
-            retval=JavaTypeModelHelper.subtypeOrSame(x,pattern,debug);
+            retval=JavaTypeModelHelper.subtypeOrSame(x,pattern,cn,debug);
             if (!retval) {
                 // unchecked conversion.
                if (true/*JavaTypeModelHelper.isRowType(pattern)*/) {
                    //JavaTypeModel uncheckedX=JavaTypeModel.erasureConversion(x);
-                   retval=JavaTypeModelHelper.subtypeOrSame(pattern,x,debug);
+                   retval=JavaTypeModelHelper.subtypeOrSame(pattern,x,cn,debug);
+                   // ? add new type of conversion.
+                   //TODO: think
+                   cn.incrementNNarrows();
                }
-            }
+           }
         }
         if (debug) {
             LOG.log(Level.INFO,"match return "+retval);
+        }
+        if (retval==true) {
+            conversions.assign(cn);
         }
         return retval;
     }
@@ -1293,7 +1340,7 @@ public class JavaResolver {
     /**
      * match over list and feel substitution if needed.
      */
-    public static boolean match(List<JavaFormalParameterModel> patterns,List<JavaTypeModel> xs,JavaTypeArgumentsSubstitution substitution, boolean debug) throws TermWareException {
+    public static boolean match(List<JavaFormalParameterModel> patterns,List<JavaTypeModel> xs,MethodMatchingConversions conversions, boolean debug) throws TermWareException {
         Iterator<JavaFormalParameterModel> pit = patterns.iterator();
         Iterator<JavaTypeModel> xit = xs.iterator();
         boolean inVarArg=false;
@@ -1305,43 +1352,43 @@ public class JavaResolver {
         while(!quit) {
             if (!inVarArg) {
                 if (!pit.hasNext()) {
-                    if (xit.hasNext()) {
+                    if (xit.hasNext()) {                    
                         retval=false;
                     }
                     break;
                 }else if(!xit.hasNext()) {
                     // check, that it was varArgs,
                     //  if yes - one will associated with empty array
-                    retval=(pit.next().getModifiers().isVarArgs());
+                    retval=(pit.next().getModifiers().isVarArgs());                    
                     break;
-                }
+                }     
                 JavaFormalParameterModel p = pit.next();
-                if (p.getModifiers().isVarArgs()) {
-                    try {
-                        varArgPattern=p.getTypeModel().getReferencedType();
-                    }catch(NotSupportedException ex){
-                        throw new AssertException("VarArgs parameter must be array");
-                    }
-                    inVarArg=true;
-                }else{
-                    if (getNextX) {
-                        x = xit.next();
-                    }
-                    if (!match(p.getTypeModel(),x,substitution,debug)) {
+                x=xit.next();
+                if (!match(p.getTypeModel(),x,conversions,debug)) {
+                    if (p.getModifiers().isVarArgs()) {
+                        try {
+                            varArgPattern=p.getTypeModel().getReferencedType();
+                        }catch(NotSupportedException ex){
+                            throw new AssertException("VarArgs parameter must be array");
+                        }
+                        inVarArg=true;
+                        conversions.setVarArg(true);
+                        getNextX=false;
+                    }else{
                         retval=false;
                         break;
-                    }else{
-                        getNextX=true;
                     }
-                }
+                }else{
+                    getNextX=true;
+                }   
             }else{
-                if (!xit.hasNext()) {
+                if (getNextX && !xit.hasNext()) {
                     break;
                 }else{
                     if (getNextX) {
                         x = xit.next();
-                    }
-                    if (!match(varArgPattern,x,substitution,debug)) {
+                    }                    
+                    if (!match(varArgPattern,x,conversions,debug)) {
                         if (x.isArray()) {
                             JavaTypeModel x1;
                             try {
@@ -1349,7 +1396,7 @@ public class JavaResolver {
                             }catch(NotSupportedException ex){
                                 throw new AssertException("getReferencedType on Array is unsupported");
                             }
-                            if (match(varArgPattern,x1,substitution,debug)) {
+                            if (match(varArgPattern,x1,conversions,debug)) {
                                 // ... matched with array
                                 inVarArg=false;
                                 getNextX=true;

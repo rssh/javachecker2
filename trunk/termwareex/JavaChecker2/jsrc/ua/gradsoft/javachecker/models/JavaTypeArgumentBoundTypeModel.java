@@ -36,13 +36,11 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
      * Creates a new instance of JavaTypeArgumentBoundTypeModel
      */
     public JavaTypeArgumentBoundTypeModel(JavaTypeModel origin,Term typeArguments,JavaTypeModel where,List<JavaTypeVariableAbstractModel> typeVariables,JavaStatementModel statement) throws TermWareException {
-        super(origin.getPackageModel());
+        super(where.getPackageModel());
         origin_=origin;
         typeArguments_=typeArguments;
         where_=where;
-        if (where_==null) {
-            where_=origin;
-        }              
+        setUnitModel(where.getUnitModel());        
         typeVariables_=typeVariables;
         statement_=statement;
         resolvedTypeArguments_=null;              
@@ -54,12 +52,29 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         //createResolvedTypeArguments(typeArguments);
         //createSubstitution();
     }
+  
+
+    /**
+     * Creates a new instance of JavaTypeArgumentBoundTypeModel
+     */
+    public JavaTypeArgumentBoundTypeModel(JavaTypeModel origin,Term typeArguments,JavaUnitModel unitModel, JavaPackageModel packageModel,List<JavaTypeVariableAbstractModel> typeVariables) throws TermWareException {
+        super(packageModel);
+        origin_=origin;
+        typeArguments_=typeArguments;
+        where_=null;
+        typeVariables_=typeVariables;
+        statement_=null;
+        resolvedTypeArguments_=null;              
+        substitution_=null;
+        setUnitModel(unitModel);
+    }
+    
     
     /**
      * Creates a new instance of JavaTypeArgumentBoundTypeModel
      */
     public JavaTypeArgumentBoundTypeModel(JavaTypeModel origin, List<JavaTypeModel> resolvedTypeArguments,JavaTypeModel where) throws TermWareException {
-        super(origin.getPackageModel());         
+        super(where.getPackageModel());         
         origin_=origin;
         resolvedTypeArguments_=resolvedTypeArguments;
         createSubstitution();
@@ -68,12 +83,13 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
             where_=origin;
             throw new AssertException("what means that where is null ?");         
         }
+        setUnitModel(where.getUnitModel());
         createTermTypeArguments(resolvedTypeArguments);
     }
     
     public JavaTypeArgumentBoundTypeModel(JavaTypeModel origin,JavaTypeArgumentsSubstitution substitution, JavaTypeModel where) throws TermWareException
     {
-      super(origin.getPackageModel());
+      super(where.getPackageModel());
       origin_=origin;
       substitution_=substitution;
       resolvedTypeArguments_=substitution_.substitute(origin_.getTypeParameters());
@@ -82,6 +98,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
           where_=origin;
           throw new AssertException("what means that where is null ?");          
       }      
+      setUnitModel(where.getUnitModel());
       createTermTypeArguments(resolvedTypeArguments_);
     }
     
@@ -395,7 +412,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
                     }else{
                       try {  
                         if (statement_==null) {  
-                           resolvedTypeArgument = JavaResolver.resolveTypeToModel(t1,where_,allTypeVariables);
+                           resolvedTypeArgument = JavaResolver.resolveTypeToModel(t1,getUnitModel(),getPackageModel(),where_,allTypeVariables,null);
                         }else{
                            resolvedTypeArgument = JavaResolver.resolveTypeToModel(t1,statement_); 
                         }
@@ -407,7 +424,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
                 }else{
                    try { 
                       if (statement_==null) { 
-                         resolvedTypeArgument = JavaResolver.resolveTypeToModel(t,where_,allTypeVariables);
+                         resolvedTypeArgument = JavaResolver.resolveTypeToModel(t,getUnitModel(),getPackageModel(),where_,allTypeVariables,null);
                       }else{
                          resolvedTypeArgument = JavaResolver.resolveTypeToModel(t,statement_); 
                       }
@@ -484,7 +501,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         if (substitution_==null) {            
             if (resolvedTypeArguments_==null) {
               try {  
-               createResolvedTypeArguments(typeArguments_);
+                  createResolvedTypeArguments(typeArguments_);
               }catch(EntityNotFoundException ex){
                   InvalidJavaTermException ex1 = new InvalidJavaTermException(ex.getMessage()+",type="+getName(),typeArguments_,ex);
                   ex1.setFileAndLine(JUtils.getFileAndLine(typeArguments_));

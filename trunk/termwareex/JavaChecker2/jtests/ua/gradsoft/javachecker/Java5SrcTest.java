@@ -17,6 +17,7 @@ import ua.gradsoft.javachecker.models.AnalyzedUnitRef;
 import ua.gradsoft.javachecker.models.AnalyzedUnitType;
 import ua.gradsoft.javachecker.models.JavaCompilationUnitModel;
 import ua.gradsoft.javachecker.models.JavaPackageModel;
+import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
@@ -47,22 +48,13 @@ public class Java5SrcTest extends TestCase
             ex.printStackTrace();
             disabled_=true;
         } 
-        disabled_=true;
+        //disabled_=true;
+        Main.setQOption(true);
+        Main.setShowFiles(false);
     }
    
-    /*
-    public void testAllJava5Models() throws Exception
-    {
-      JavaCheckerFacade.init();      
-      if (!disabled_ && false) {
-          JavaCheckerFacade.addInputDirectory(javaSrcHome_);
-          readAndGetModelForSources();
-          assertTrue(nLoadedFiles_>0);
-      }  
-    }
-     */
 
-/*
+
     public void testComJava5Models() throws Exception
     {
       JavaCheckerFacade.init();      
@@ -75,14 +67,44 @@ public class Java5SrcTest extends TestCase
           assertTrue(nLoadedFiles_>prevLoadedFiles);
       }  
     }
-*/
 
-      
+
+     
     public void testJavaJava5Model() throws Exception
     {
         _testDirJava5Models("java");
     }
 
+    
+    
+    public void testJavaxJava5Model() throws Exception
+    {
+        _testDirJava5Models("javax");
+    }
+
+
+    public void testOrgJava5Models() throws Exception
+    {
+     _testDirJava5Models("org");        
+    }
+ 
+    
+    public void testSunwJava5Models() throws Exception
+    {
+     _testDirJava5Models("sunw");                
+    }
+
+    
+    
+    public void testJavaxSwingTextRtfRTFParser() throws Exception
+    {
+      JavaCheckerFacade.init();
+      JavaCheckerFacade.addInputDirectory(javaSrcHome_);
+      JavaTypeModel tm = JavaResolver.resolveTypeModelByFullClassName("javax.swing.text.rtf.RTFParser");
+      Term mt=tm.getModelTerm();
+    }
+    
+    
     
     public void _testDirJava5Models(String pkg) throws Exception
     {
@@ -112,50 +134,8 @@ public class Java5SrcTest extends TestCase
     }
     
     
-/*
-    public void testJavaxJava5Models() throws Exception
-    {
-      JavaCheckerFacade.init();      
-      int prevLoadedFiles = nLoadedFiles_;
-      if (!disabled_) {
-          JavaCheckerFacade.addInputDirectory(javaSrcHome_);
-          String dirName = javaSrcHome_ + File.separator +"javax";
-          File f = new File(dirName);         
-          readAndGetModelForSources(javaSrcHome_,"javax",f);
-          assertTrue(nLoadedFiles_>prevLoadedFiles);
-      }  
-    }
-*/
 
 
-/*
-    public void testOrgJava5Models() throws Exception
-    {
-      JavaCheckerFacade.init();      
-      int prevLoadedFiles = nLoadedFiles_;
-      if (!disabled_) {
-          JavaCheckerFacade.addInputDirectory(javaSrcHome_);
-          String dirName = javaSrcHome_ + File.separator +"org";
-          File f = new File(dirName);         
-          readAndGetModelForSources(javaSrcHome_,"org",f);
-          assertTrue(nLoadedFiles_>prevLoadedFiles);
-      }  
-    }
-
-
-    public void testSunwJava5Models() throws Exception
-    {
-      JavaCheckerFacade.init();      
-      int prevLoadedFiles = nLoadedFiles_;
-      if (!disabled_) {
-          JavaCheckerFacade.addInputDirectory(javaSrcHome_);
-          String dirName = javaSrcHome_ + File.separator +"sunw";
-          File f = new File(dirName);         
-          readAndGetModelForSources(javaSrcHome_,"sunw",f);
-          assertTrue(nLoadedFiles_>prevLoadedFiles);
-      }  
-    }
-*/
 
     
     private void readAndGetModelForSources() throws ConfigException, TermWareException, EntityNotFoundException
@@ -284,4 +264,8 @@ public class Java5SrcTest extends TestCase
     static boolean qOption_=true;
     static boolean dump_=false;
     static int     nLoadedFiles_=0;
+
+    public void setQOption_(boolean qOption_) {
+        this.qOption_ = qOption_;
+    }
 }

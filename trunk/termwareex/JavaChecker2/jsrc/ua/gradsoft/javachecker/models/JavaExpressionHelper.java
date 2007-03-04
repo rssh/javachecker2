@@ -328,8 +328,9 @@ public class JavaExpressionHelper {
     
     
     static public JavaTypeModel resolveBinaryNumericPromotion(JavaTypeModel t1, JavaTypeModel t2) {
-        JavaTypeModel x = JavaTypeModelHelper.unboxingConversion(t1);
-        JavaTypeModel y = JavaTypeModelHelper.unboxingConversion(t2);
+        MethodMatchingConversions cn = new MethodMatchingConversions();
+        JavaTypeModel x = JavaTypeModelHelper.unboxingConversion(t1,cn);
+        JavaTypeModel y = JavaTypeModelHelper.unboxingConversion(t2,cn);
         if (x.equals(JavaPrimitiveTypeModel.SHORT)) {
             return y;
         }else if (x.equals(JavaPrimitiveTypeModel.INT)) {
