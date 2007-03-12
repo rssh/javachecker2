@@ -14,7 +14,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
 import ua.gradsoft.javachecker.checkers.BTPatternChecker;
-import ua.gradsoft.javachecker.checkers.HidingChecker;
+import ua.gradsoft.javachecker.checkers.Checkers;
 import ua.gradsoft.javachecker.models.AnalyzedUnitRef;
 import ua.gradsoft.javachecker.models.AnalyzedUnitType;
 import ua.gradsoft.javachecker.models.JavaCompilationUnitModel;
@@ -66,14 +66,6 @@ public class Main
  public void process(String[] args) throws ProcessingException
  {
    
-   try {
-     loadCheckSystems(args);
-   }catch(TermWareException ex){
-       if (debug_) {
-         ex.printStackTrace();
-       }
-       throw new ProcessingException("Can't init check systems:"+ex.getMessage(),ex);
-   }
    
    
    try {
@@ -93,7 +85,7 @@ public class Main
    try {
       report();
    }catch(AssertException ex){
-       throw new ProcessingException(ex.getMessage());
+       throw new ProcessingException(ex.getMessage(),ex);
    }
  }
 
@@ -113,14 +105,31 @@ public class Main
    TermWare.getInstance().addParserFactory("Java",new JavaParserFactory()); 
    TermWare.getInstance().addPrinterFactory("Java",new JavaPrinterFactory());
    getPreferences();
-  
-  
+ 
+   home_=System.getProperty("javachecker.home");
+   if (home_==null) {
+       home_=System.getenv("JAVACHECKER_HOME");
+       if (home_==null) {           
+           throw new ConfigException("JAVACHECKER_HOME  is not set");
+       }
+   }
+       
   try {
     facts_ = new JavaFacts(env_,prefs_);
   }catch(TermWareException ex){
     throw new ConfigException("Error during facts initialization",ex);  
   }
   parseArgs(args);    
+
+   try {
+     loadCheckSystems(args);
+   }catch(TermWareException ex){
+       if (debug_) {
+         ex.printStackTrace();
+       }
+       throw new ConfigException("Can't init check systems:"+ex.getMessage(),ex);
+   }
+  
   
   nProcessedFiles_=0;
   nLoadedFiles_=0;
@@ -193,44 +202,12 @@ public class Main
   }
  }
  
- private void loadCheckSystems(String[] args) throws TermWareException
- {
-  
-  //ITermRewritingStrategy strategy=TermWareSingleton.createJavaStrategy(
-  //           "ua.kiev.gradsoft.TermWare.strategies.FirstTopStrategy"
-  //                                                                );
-  //mainSystem_ = new TermSystem(strategy,facts_,env_);
-  //if (debug_) {
-  //    mainSystem_.setDebugMode(true);
-  //}
-  
-  TermSystem sys=TermWare.getInstance().getRoot().resolveSystem("sys");
-  
-  loadBuildInChecks();
-  
-  loadAdditionalChecks();
-  
-//  sys.setDebugMode(true);
-//  sys.setDebugEntity("All");
-  //
-  //if (facts_.isCheckEnabled("OverloadedEquals")) {
-  //    overloadedEqualsChecker_=new OverloadedEqualsChecker(facts_);
-  //}
-  //if (facts_.isCheckEnabled("SynchronizeViolations")) {
-  //    synchronizeViolationChecker_=new SynchronizeViolationChecker(facts_);
-  //}
+ private void loadCheckSystems(String[] args) throws TermWareException, ConfigException
+ {  
+   checkers_ = new Checkers(this);
+   checkers_.configure();
  }
  
- private void loadBuildInChecks() throws TermWareException
- {
-  btPatternChecker_=new BTPatternChecker(facts_);   
-  if (facts_.isCheckEnabled("Hiding")) {
-      hidingChecker_=new HidingChecker();
-  }     
- }
- 
- private void loadAdditionalChecks()
- {}
  
  private static void help() 
  {
@@ -333,12 +310,7 @@ public class Main
  
  private void checkSource(JavaCompilationUnitModel cu) throws TermWareException
  {   
-   for(JavaTypeModel tm: cu.getTypeModels()) {  
-     if (!qOption_) {
-        System.out.println("check "+cu.getPackageModel().getName()+"."+tm.getName());
-     }     
-     tm.check();
-   }
+   checkers_.check(cu);  
    ++nProcessedFiles_;
  }
  
@@ -411,6 +383,13 @@ public class Main
   sourceDirs.add(directory);
  }
  
+ 
+ public static String  getHome()
+ { return home_; }
+ 
+ public static void  setHome(String home)
+ { home_=home; }
+ 
  public static int  getNProcessedFiles()
  { 
    return nProcessedFiles_;
@@ -435,33 +414,7 @@ public class Main
  public static void setPrefsFname(String prefsFname)
  {
    prefsFname_=prefsFname;
- }
- 
- 
- private void readLocalRules(File d)
- {
-     File[] files=d.listFiles();
-     for(int i=0; i<files.length; ++i) {
-         if (files[i].isDirectory()) {
-             readLocalRules(files[i]);
-         }else if(files[i].getName().endsWith(".check")) {
-             readLocalRule(files[i]);
-         }
-     }
- }
- 
- private void readLocalRule(File f)
- {
- }
- 
- 
-public static BTPatternChecker  getBTPatternChecker()
- { return btPatternChecker_; }
- 
- 
- public static HidingChecker  getHidingChecker()
- { return hidingChecker_; }
- 
+ }  
  
  private static IEnv         env_          = null;
 
@@ -470,12 +423,6 @@ public static BTPatternChecker  getBTPatternChecker()
 
  private static String       prefsFname_  = null;
  private static Preferences  prefs_       = null;
- 
- private static Map<String,AbstractChecker>  checkers_=null;
- 
- private static BTPatternChecker         btPatternChecker_ = null;
- 
- private static HidingChecker               hidingChecker_=null;
  
  /**
   * set of directories to check.
@@ -493,8 +440,10 @@ public static BTPatternChecker  getBTPatternChecker()
  private static int           nProcessedFiles_ = 0;
  
  private static String              outputFname_=null;
+ private static String              home_=null;
  
  private static JavaFacts    facts_ = null;
- private static TermSystem   mainSystem_ = null;
+ //private static TermSystem   mainSystem_ = null;
+ private static Checkers      checkers_ = null;
  
 }

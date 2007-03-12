@@ -21,7 +21,8 @@ import ua.gradsoft.termware.TermWareException;
  *</ul>
  * @author  Ruslan Shevchenko
  */
-public class BTPatternChecker {
+public class BTPatternChecker 
+{
     
     /** Creates a new instance of EmptyCatchClauseChecker */
     public BTPatternChecker(JavaFacts facts) throws TermWareException
@@ -35,7 +36,7 @@ public class BTPatternChecker {
         
         
         if (facts.isCheckEnabled("EmptyCatchClauses")) {
-           sys_.addRule("Catch($formal_parameter, Block(NIL)) -> PROBLEM [ violationDiscovered(EmptyCatchClauses,\" empty catch clause \",$formal_parameter) ] ");
+           sys_.addRule("Catch($formalParameter, Block(NIL)) -> PROBLEM [ violationDiscovered(EmptyCatchClauses,\" empty catch clause \",$formal_parameter) ] ");
            enabled_=true;
         }
         if (facts.isCheckEnabled("GenericExceptionSpecifications")) {
@@ -43,7 +44,7 @@ public class BTPatternChecker {
            enabled_=true;
         }
         if (facts.isCheckEnabled("GenericExceptionCatchClauses")) {
-           sys_.addRule("java_catch(java_formal_parameter($x,java_name([java_identifier(\"Exception\")]),$final),$block) -> PROBLEM [ violationDiscovered(GenericExceptionCatchClauses,\"generic exception catch clause\",$x) ] ");           
+           sys_.addRule("Catch(FormalParameter($x,Name([Identifier(\"Exception\")]),$final),$block) -> PROBLEM [ violationDiscovered(GenericExceptionCatchClauses,\"generic exception catch clause\",$x) ] ");           
            enabled_=true;
         }
         

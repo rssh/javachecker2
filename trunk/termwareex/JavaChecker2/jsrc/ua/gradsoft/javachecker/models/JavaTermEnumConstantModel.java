@@ -22,8 +22,7 @@ public class JavaTermEnumConstantModel extends JavaEnumConstantModel
 {
     
     JavaTermEnumConstantModel(Term enumConstantTerm, JavaTermEnumModel owner) throws TermWareException
-    {
-      
+    {      
       owner_=owner;
       identifierTerm_ = enumConstantTerm.getSubtermAt(IDENTIFIER_TERM_INDEX);
       name_ = identifierTerm_.getSubtermAt(0).getString();
@@ -60,12 +59,9 @@ public class JavaTermEnumConstantModel extends JavaEnumConstantModel
        Term subtypeModelTerm = (subtype_==null) ? TermUtils.createNil() : subtype_.getModelTerm();
        return TermUtils.createTerm("EnumConstantModel",identifierTerm_,argumentsTerm_,subtypeModelTerm);
     }
-    
-    public boolean canCheck()
-    { return false; }
-    
-    public boolean check()
-    { return true; }
+        
+    public Term getIdentifierTerm()
+    { return identifierTerm_; }
     
     private String               name_;
     private Term                 identifierTerm_;

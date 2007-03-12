@@ -7,7 +7,10 @@
 
 package ua.gradsoft.javachecker;
 
+import ua.gradsoft.javachecker.models.JavaTermTypeAbstractModel;
+import ua.gradsoft.javachecker.util.Holder;
 import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermWareException;
 
 /**
  *Abstract interface for checkers.
@@ -15,37 +18,39 @@ import ua.gradsoft.termware.Term;
  */
 public abstract class AbstractChecker {
 
-    AbstractChecker(String name, String description,
-                    CheckerScope checkerScope, 
-                    CheckerType checkerType,
-                    Term rules,
-                    boolean  enabledByDefault)
+    public AbstractChecker(String name, 
+                    String category,
+                    String description,                                    
+                    boolean  enabled)
     {
         name_=name;
-        description_=description;
-        checkerScope_=checkerScope;
-        checkerType_=checkerType;
-        enabledByDefault_=enabledByDefault;
+        category_=category;
+        description_=description;           
+        enabled_=enabled;
     }
     
     public String getName()
     { return name_; }
     
-    public CheckerScope  getCheckerScope()
-    { return checkerScope_; }
-
-    public CheckerType  getCheckerType()
-    { return checkerType_; }
-
+    public String getCategory()
+    { return category_; }
     
-    public abstract void configure(Main main);
+    public String getDescription()
+    { return description_; }
     
-    public abstract void check(Term t, JavaFacts javaFacts);
+    public boolean isEnabled()
+    { return enabled_; }
+   
+    
+    public abstract CheckerType  getCheckerType();  
+    
+    public abstract void configure(JavaFacts facts) throws ConfigException;
+    
+    public abstract void run(JavaTermTypeAbstractModel tm, Holder<Term> astTerm, Holder<Term> modelTerm) throws TermWareException;
     
     private String name_;
+    private String category_;
     private String description_;
-    private CheckerScope checkerScope_;
-    private CheckerType  checkerType_;
-    private boolean      enabledByDefault_;
+    private boolean      enabled_;
     
 }

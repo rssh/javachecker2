@@ -331,6 +331,13 @@ public class JavaClassTypeModel extends JavaTypeModel
       return retval;
   }
   
+  
+  public boolean hasASTTerm()
+  { return false; }
+  
+  public Term  getASTTerm()
+  { return null; }
+  
   /**
    * return "ClassTypeModel(context)"
    */

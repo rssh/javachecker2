@@ -1,7 +1,7 @@
 /*
  * JavaClassFieldModel.java
  *
- * Copyright (c) 2004-2005 GradSoft  Ukraine
+ * Copyright (c) 2004-2007 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -44,7 +44,7 @@ public class JavaClassFieldModel extends JavaMemberVariableModel
     }
     
     public JavaTypeModel getTypeModel() throws TermWareException
-    {
+    { 
         Type fieldType = field_.getGenericType();
         return JavaClassTypeModel.createTypeModel(fieldType);
     }

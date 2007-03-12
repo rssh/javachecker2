@@ -69,38 +69,11 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
     public JavaModifiersModel  getModifiersModel()
     { return modifiersModel_; }
     
-    public boolean canCheck()
-    { return true; }
+   
+    public Term getVariableDeclaratorTerm()
+    { return variableDeclarator_; }
     
-    
-    
-    public boolean check() throws TermWareException
-    {
-      boolean retval=true;
-      if (getJavaFacts().isCheckEnabled("VariablePatterns")) {
-          if (modifiersModel_.isFinal()) {
-              if (!name_.matches(getJavaFacts().getFinalFieldNamePattern())) {
-                  getJavaFacts().violationDiscovered("VariablePatterns", "final field name pattern violation", variableDeclarator_);
-                  retval=false;
-              }
-          }else{
-              if (!name_.matches(getJavaFacts().getNonFinalFieldNamePattern())) {
-                  getJavaFacts().violationDiscovered("VariablePatterns", "non-final field name pattern violation", variableDeclarator_);
-                  retval=false;
-              }
-          }
-      }
-      if (getJavaFacts().isCheckEnabled("NonFinalPublicFields")) {
-          if (modifiersModel_.isPublic()) {
-              if (!modifiersModel_.isFinal()) {
-                  getJavaFacts().violationDiscovered("NonFinalPublicFields","non-final public field discovered",variableDeclarator_);
-                  retval=false;
-              }
-          }
-      }      
-      return retval;
-    }
-    
+       
     /**
      * MemberVariableModel(modifiers, TypeRef, name, initializer,this)
      */

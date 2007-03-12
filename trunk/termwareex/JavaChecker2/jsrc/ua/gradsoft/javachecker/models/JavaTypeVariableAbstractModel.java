@@ -188,5 +188,16 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
       return sw.toString();
     }
     
+    /**
+     *@return false
+     */
+    public boolean hasASTTerm()
+    { return false; }
+    
+    /**
+     *@return null
+     */
+    public Term  getASTTerm()
+    { return null; }
     
 }

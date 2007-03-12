@@ -175,6 +175,22 @@ public class JavaNullTypeModel extends JavaTypeModel {
     public List<JavaTypeModel> getSuperInterfaces()
     { return Collections.emptyList(); }
     
+    
+    /**
+     *@return false
+     */
+    public boolean hasASTTerm()
+    { return false; }
+    
+    /**
+     *@return null
+     */
+    public Term  getASTTerm()
+    { return null; }
+    
+    /**
+     * NullType(ctx)
+     */
     public Term getModelTerm() throws TermWareException
     { return TermUtils.createTerm("NullType",TermUtils.createJTerm(JavaPlaceContextFactory.createNewTypeContext(this))); }
     

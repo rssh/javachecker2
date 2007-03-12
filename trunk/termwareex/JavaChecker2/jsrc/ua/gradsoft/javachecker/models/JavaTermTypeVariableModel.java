@@ -94,17 +94,7 @@ public class JavaTermTypeVariableModel extends JavaTypeVariableAbstractModel
       return bounds_;  
     }
     
-    
-     public boolean check() throws TermWareException {
-       if (Main.getFacts().isCheckEnabled("TypeArgumentNamePatterns")) {
-          if (!getName().matches(Main.getFacts().getTypeArgumentNamePattern())) {
-              Main.getFacts().violationDiscovered("TypeArgumentNamePatterns","violation of type argument name pattern ", fileAndLine_);
-          }
-       }
-       return true;
-    }
-
-    
+        
     /**
      * TypeVariableModel(name,bounds)
      *where bounds are lists of typeref

@@ -133,10 +133,10 @@ public abstract class JavaTypeModel {
    */
   public abstract JavaTypeModel  getReferencedType() throws NotSupportedException, TermWareException;
   
-  public abstract boolean canCheck();
-  
-  public abstract boolean check() throws TermWareException;
 
+  /**
+   *@return true if type has methods.
+   */
   public abstract boolean hasMethodModels();
     
   /**
@@ -226,6 +226,17 @@ public abstract class JavaTypeModel {
    */
   public  JavaPackageModel  getPackageModel()
   { return packageModel_; }
+  
+  
+  /**
+   *return true, if type model have AST Term
+   */
+  public abstract boolean hasASTTerm();
+  
+  /**
+   * return AST term, if exoists, otherwise - null
+   */
+  public abstract Term  getASTTerm() throws TermWareException, EntityNotFoundException;
   
   /**
    *return TypeModel term.

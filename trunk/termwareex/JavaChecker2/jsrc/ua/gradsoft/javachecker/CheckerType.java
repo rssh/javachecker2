@@ -14,9 +14,8 @@ package ua.gradsoft.javachecker;
  */
 public enum CheckerType {
     
-    BT_RULE,    
+    BT_RULESET,    
     JAVA_CLASS,
-    SYSTEM,
-    
-    
+    MODEL_RULESET,
+        
 }

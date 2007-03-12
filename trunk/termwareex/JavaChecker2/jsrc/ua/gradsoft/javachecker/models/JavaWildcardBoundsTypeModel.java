@@ -269,6 +269,14 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
         }
     }
     
+    public boolean hasASTTerm()
+    { return false; }
+    
+    public Term getASTTerm()
+    { return null; }
+
+    
+    
     /**
      *WildCardBoundsModel(super|extends,TypeRef(boundTypeModel_))
      */

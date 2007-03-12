@@ -69,6 +69,14 @@ public class JavaModelConstants {
     public final static int ANNOTATION_TYPE_MODEL_CONTEXT_INDEX = 4;
     
     
+    public static int FORMAL_PARAMETER_MODIFIER_INDEX=0;
+    public static int FORMAL_PARAMETER_TYPE_INDEX=1;
+    public static int FORMAL_PARAMETER_VARIABLEDECLARATORID_INDEX=2;    
+    
+    public static final int LOCALVARIABLEDECLARATION_TYPE_INDEX=1;
+    public static final int LOCALVARIABLEDECLARATION_VARIABLEDECLARATORS_INDEX=2;
+
+    
     public final static JavaModifiersModel PUBLIC_MODIFIERS = new JavaModifiersModel(JavaModifiersModel.PUBLIC);
     public final static JavaModifiersModel PUBLIC_STATIC_MODIFIERS = new JavaModifiersModel(JavaModifiersModel.PUBLIC|JavaModifiersModel.STATIC);
     

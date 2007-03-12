@@ -80,6 +80,12 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
         throw new NotSupportedException();
     }
 
+    public boolean hasASTTerm()
+    { return true; }
+    
+    public Term getASTTerm()
+    { return t_; }
+    
     /**
      * AnnotationTypeDeclarationModel(name,[...],context)
      *where AnnotationTypeBodyModel is list,

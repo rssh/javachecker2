@@ -195,19 +195,9 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         return getSubstitution().substitute(origin_.getReferencedType());
     }
     
-    public  boolean canCheck() {
-        return origin_.canCheck();
-    }
-    
-    public boolean check() throws TermWareException {
-        return origin_.check();
-    }
-    
     public boolean hasMethodModels() {
         return origin_.hasMethodModels();
-    }
-    
-    
+    }        
     
     public  Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException {
         if (boundMethodModels_!=null) {
@@ -482,6 +472,15 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         }
         typeArguments_=TermWare.getInstance().getTermFactory().createTerm("TypeArguments",l);
     }
+    
+    public boolean hasASTTerm() 
+    {
+       return false;
+    }
+    
+    public Term getASTTerm()
+    { return TermUtils.createNil(); }
+    
     
     /**
      * TypeArgumentBoundTypeModel(ClassOrInterfaceType(originModel,list(typeModels)),placeContext)

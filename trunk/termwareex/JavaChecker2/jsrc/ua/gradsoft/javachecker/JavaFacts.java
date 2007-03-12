@@ -8,6 +8,7 @@ package ua.gradsoft.javachecker;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -31,20 +32,21 @@ public class JavaFacts extends DefaultFacts {
     {
         super();
         setEnv(env);
+        preferences_=prefs;
         violations_=new Violations();
         //violations_.addType("Beans", "beans", "violations of beans contract", true);
-        violations_.addType("EmptyCatchClauses", "exceptions", "empty catch clauses", true);
-        violations_.addType("GenericExceptionSpecifications","exceptions","generic exception specifications",true);
-        violations_.addType("GenericExceptionCatchClauses","exceptions","generic exception catch clauses",true);
-        violations_.addType("OverloadedEquals","equals","equal without hashcode or vice-versa",true);
-        violations_.addType("VariablePatterns","style","violation of variable pattern",true);
-        violations_.addType("NonFinalPublicFields", "style", "non final public fields", true);
-        violations_.addType("ClassNamePatterns","style","violation of class name conventions", true);
-        violations_.addType("MethodNamePatterns","style","violation of method name conventions", true);
-        violations_.addType("EnumConstantNamePatterns","style","violation of enumeration constant name pattern",true);
-        violations_.addType("TypeArgumentNamePatterns","style","violation of type argument name pattern",true);
-        violations_.addType("EmptyPackageDeclarations","style","empty package declarations", true);
-        violations_.addType("EmptyFile","style","nothing in file",true);
+        //violations_.addType("EmptyCatchClauses", "exceptions", "empty catch clauses", true);
+        //violations_.addType("GenericExceptionSpecifications","exceptions","generic exception specifications",true);
+        //violations_.addType("GenericExceptionCatchClauses","exceptions","generic exception catch clauses",true);
+        //violations_.addType("OverloadedEquals","equals","equal without hashcode or vice-versa",true);
+        //violations_.addType("VariablePatterns","style","violation of variable pattern",true);
+        //violations_.addType("NonFinalPublicFields", "style", "non final public fields", true);
+        //violations_.addType("ClassNamePatterns","style","violation of class name conventions", true);
+        //violations_.addType("MethodNamePatterns","style","violation of method name conventions", true);
+        //violations_.addType("EnumConstantNamePatterns","style","violation of enumeration constant name pattern",true);
+        //violations_.addType("TypeArgumentNamePatterns","style","violation of type argument name pattern",true);
+        //violations_.addType("EmptyPackageDeclarations","style","empty package declarations", true);
+        //violations_.addType("EmptyFile","style","nothing in file",true);
         //violations_.addType("Hiding","style","hiding defects", true);
         //violations_.addType("SynchronizeViolations","threading","synchronize violations", true);
         violations_.addType("InvalidCheckerComments", "style","invalid checker comments",true);
@@ -65,47 +67,14 @@ public class JavaFacts extends DefaultFacts {
     }
     
     
-  //  public JavaCompilationUnitModel addCompilationUnit(String fname, Term t) throws TermWareException
-  //  {
-  //   Term commentTerm=TermHelper.getAttribute(t,"comment");
-  //   boolean doAdd=true;
-  //   if (!commentTerm.isNil()) {
-  //     try {
-  //       CheckerComment comment=CheckerComment.extract(commentTerm.getString());
-  //       if (comment!=null && comment.isDisable("All")) {
-  //           doAdd=false;
-  //       }
-  //     }catch(InvalidCheckerCommentException ex){
-  //       System.err.println("warning - invalid checker comment:"+ex.getMessage());
-  //       violationDiscovered("InvalidCheckerComments","invalid checker comment",commentTerm);
-  //     }
-  //   }
-     //if (doAdd) {
-       //compilationUnits_.add(t);
-   //  return  addCompilationUnitToPackage(JUtils.getCompilationUnitPackageName(t), t);
-     //}
-   // }
-    
-    
-   
-   // JavaCompilationUnitModel addCompilationUnitToPackage(String packageName,Term compilationUnit) throws TermWareException
-   // {
-   //  System.out.println("addCompilationUnitToPackage:"+packageName);   
-   //  if (isCheckEnabled("EmptyPackageDeclarations")) {
-   //      if (packageName.equals("default")) {
-   //          violationDiscovered("EmptyPackageDeclarations","empty package declaration",compilationUnit);
-   //      }
-   //  }     
-   //  JavaPackageModel packageModel=packagesStore_.findOrAddPackage(packageName);
-   //  JavaCompilationUnitModel cu = new JavaCompilationUnitModel(compilationUnit);
-   //  cu.setPackageModel(packageMode);
-   //  packageModel.addCompilationUnit(compilationUnit);     
-   // }
-    
-    
     public PackagesStore getPackagesStore()
     {
       return packagesStore_;  
+    }
+    
+    public Violations getViolations()
+    {
+      return violations_;  
     }
     
     // called from systems
@@ -117,24 +86,21 @@ public class JavaFacts extends DefaultFacts {
         return true;
     }
 
-    /**
-     * called from java checkers, when we explicit know file and line.
-     */
-    public boolean violationDiscovered(String name,String message,FileAndLine fileAndLine) throws TermWareException
-    {        
-        violations_.discovered(name);
-        DefectReportItem item=new DefectReportItem(violations_.getCategory(name),message,fileAndLine);
-        addDefectReportItem(item);
-        return true;
-    }
-
     
     public boolean isCheckEnabled(String name)
     {
         return violations_.enabled(name);
     }
     
+    public String  getStringConfigValue(String name,String sdefault)
+    {        
+        return preferences_.get(name,sdefault);
+    }
     
+    public int  getIntConfigValue(String name, int idefault)
+    {
+        return preferences_.getInt(name,idefault);
+    }
   
     public String getFinalFieldNamePattern()
     { return finalFieldNamePattern_; }
@@ -180,14 +146,7 @@ public class JavaFacts extends DefaultFacts {
       out.println("Files:"+Main.getNProcessedFiles());
     }
     
-    // utils
-    
-    //HashSet<Term> getCompilationUnits()
-    //{ return compilationUnits_; }
-    
-    //Map<String,JavaPackageModel>     getPackageModels()
-    //{ return packageModels_; }
-    
+    // utils      
 
     private void   addDefectReportItem(DefectReportItem item)
     {
@@ -215,7 +174,9 @@ public class JavaFacts extends DefaultFacts {
     private Violations violations_ = new Violations();
 
     
-            
+    private Preferences  preferences_=null;        
+    private HashMap<String,String>  localPreferences_=null;
+    
     private String  nonFinalFieldNamePattern_="[a-z]+.*";
     private String  finalFieldNamePattern_="([A-Z]+(_|[A-Z]|[0-9])*)|serialVersionUID";
     private String  localVariableNamePattern_="[a-z]+([A-Z]|[a-z]|_[0-9])*";
@@ -227,7 +188,5 @@ public class JavaFacts extends DefaultFacts {
     private String  typeArgumentNamePattern_="[A-Z]+([A-Z]|[0-9])*";
     private PackagesStore packagesStore_=new PackagesStore(this);
     
-    //private HashSet<Term> compilationUnits_=new HashSet<Term>();
     
-    //private TreeMap<String,JavaPackageModel> packageModels_=new TreeMap<String,JavaPackageModel>();
 }

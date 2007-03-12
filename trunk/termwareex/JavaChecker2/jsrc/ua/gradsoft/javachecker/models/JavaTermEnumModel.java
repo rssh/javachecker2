@@ -50,28 +50,7 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     
     public boolean hasTypeParameters() { return false; }
     
-    
-    public boolean check() throws TermWareException {
-        boolean retval=true;
-        retval=checkNamePatterns();
-        if (super.canCheck()) {
-            retval &= super.check();
-        }
-        return retval;
-    }
-    
-    private boolean checkNamePatterns() throws TermWareException {
-        boolean retval=true;
-        if (Main.getFacts().isCheckEnabled("EnumConstantNamePatterns")) {
-            for(String s: getConstantNames()) {
-                if (!s.matches(Main.getFacts().getEnumConstantNamePattern())) {
-                    Main.getFacts().violationDiscovered("EnumConstantNamePatterns","enum constant does not match pattern",this.getTerm());
-                    retval=false;
-                }
-            }
-        }
-        return retval;
-    }
+        
     
     public boolean  containsConstant(String name) {
         return getConstantNames().contains(name);

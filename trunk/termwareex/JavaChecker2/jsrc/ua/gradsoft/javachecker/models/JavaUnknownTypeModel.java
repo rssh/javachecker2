@@ -156,6 +156,12 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     public boolean hasNestedTypeModels()
     { return false; }
     
+    public boolean hasASTTerm()
+    { return false; }
+    
+    public Term getASTTerm()
+    { return TermUtils.createNil(); }
+    
     /**
      * UnknownTypeModel(context)
      */

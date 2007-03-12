@@ -75,7 +75,7 @@ public class x1Test extends TestCase
         String[] args=new String[0];   
         main.init(args);
         main.addInputDirectory("testpackages/style/s1");        
-        //main.setDump(true);
+        main.setDump(true);
         //main.setNoClean(true);
         main.process(args);   
         
@@ -148,7 +148,7 @@ public class x1Test extends TestCase
         String[] args=new String[0];   
         main.init(args);
         main.addInputDirectory("testpackages/style/s4"); 
-        main.setDump(true);
+        //main.setDump(true);
         main.process(args);   
         
         List<DefectReportItem> defects = main.getFacts().getDefectReportItems();
@@ -164,5 +164,29 @@ public class x1Test extends TestCase
         assertTrue("type arguments in defects must be > 0. have "+nTypeArgumentsFound,nTypeArgumentsFound>0);        
                 
     }
+    
+    public void testJE3() throws Exception
+    {
+        Main main = new Main();
+        String[] args=new String[0];   
+        main.init(args);
+        main.addInputDirectory("testpackages/je"); 
+        main.setDump(true);
+        main.process(args);   
+        
+        List<DefectReportItem> defects = main.getFacts().getDefectReportItems();
+      
+        int nCatchesFound=0;
+        for(DefectReportItem defect: defects) {
+            String description=defect.getDescription();         
+            //System.out.println("!!!"+description);
+            if (description.matches(".*catch.*")) {
+                ++nCatchesFound;
+            }
+        }
+        assertTrue("'catch' in defects must be > 0. have "+nCatchesFound,nCatchesFound>0);        
+                
+    }
+    
     
 }

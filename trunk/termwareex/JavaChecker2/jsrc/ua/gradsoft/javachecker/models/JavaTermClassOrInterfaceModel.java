@@ -192,61 +192,7 @@ public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
        return TermUtils.createTerm("ClassOrInterfaceModel",modifiers,classOrInterface,nameTerm,typeParametersTerm,extendsListModel,implementsListModel,classOrInterfaceBody);
     }
     
-    
-    public boolean check() throws TermWareException {
-        boolean retval=true;
-        if(!checkDisabled()) {
-            retval=checkNamePatterns();
-            retval &= checkBean();
-            retval &= checkOverloadedEqualsAndHashCode();
-            retval &= super.check();
-        }
-        return retval;
-    }
-    
-    public boolean checkNamePatterns() throws TermWareException {
-        boolean retval=true;
-        if (getJavaFacts().isCheckEnabled("ClassNamePatterns")) {
-            if (!name_.matches(getJavaFacts().getClassNamePattern())) {
-                getJavaFacts().violationDiscovered("ClassNamePatterns","bad classname pattern",t_);
-                retval=false;
-            }
-        }
-        
-        return retval;
-    }
-    
-    public boolean checkOverloadedEqualsAndHashCode() throws TermWareException
-    {
-       boolean retval=true;
-       boolean overloadedEquals=true;
-       boolean overloadedHashCode=true;
-       if (getJavaFacts().isCheckEnabled("OverloadedEqualsAndHashCode")) {
-           try {
-             List<JavaMethodModel> eml=this.findMethodModels("equals");      
-           }catch(EntityNotFoundException ex){
-               overloadedEquals=false;
-           }catch(NotSupportedException ex){
-              ; /*impossible*/
-           }
-           try {
-               List<JavaMethodModel> hml=findMethodModels("hashCode");
-           }catch(EntityNotFoundException ex){
-               overloadedHashCode=false;
-           }catch(NotSupportedException ex){
-               ; /* impossible */
-           }
-           if  (overloadedEquals && !overloadedHashCode) {
-               Main.getFacts().violationDiscovered("OverloadedEquals","equals is overloaded, but hashCode - not",this.getTerm());                              
-               retval=false;
-           }else if(!overloadedEquals && overloadedHashCode) {
-               Main.getFacts().violationDiscovered("OverloadedEquals","hashCode is overloaded, but equals - not",this.getTerm());                              
-               retval=false;
-           }       
-       }
-       return retval;
-    }
-    
+      
     /**
      * check bean-s constraint.
      *  (i. e. when checkerComment_.isBean()).

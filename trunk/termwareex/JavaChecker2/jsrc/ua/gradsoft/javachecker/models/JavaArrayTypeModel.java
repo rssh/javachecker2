@@ -89,14 +89,7 @@ public class JavaArrayTypeModel extends JavaTypeModel
   {
     return referencedType_;  
   }
-  
-  public  boolean canCheck()
-  { return referencedType_.canCheck(); }
-  
-  public boolean check() throws TermWareException
-  { return referencedType_.check(); }
-
-  
+    
   public boolean hasTypeParameters() throws TermWareException
   { return referencedType_.hasTypeParameters(); }
   
@@ -151,6 +144,17 @@ public class JavaArrayTypeModel extends JavaTypeModel
   
   public JavaStatementModel getEnclosedStatement()
   { return null; } 
+
+  
+  public boolean hasASTTerm()
+  {
+    return referencedType_.hasASTTerm();  
+  }
+  
+  public Term getASTTerm() throws TermWareException, EntityNotFoundException
+  {
+    return TermUtils.createTerm("ReferencedType",referencedType_.getASTTerm());  
+  }
   
   public Term getModelTerm() throws TermWareException, EntityNotFoundException
   {

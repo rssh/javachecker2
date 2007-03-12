@@ -145,6 +145,13 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
     public List<JavaTypeModel> getSuperInterfaces()
     { return Collections.emptyList(); }
     
+    public boolean hasASTTerm()
+    { return true; }
+    
+    public Term getASTTerm()
+    { return TermUtils.createAtom(name_); }
+      
+    
     public Term getModelTerm()
     {
         return TermUtils.createAtom(name_);

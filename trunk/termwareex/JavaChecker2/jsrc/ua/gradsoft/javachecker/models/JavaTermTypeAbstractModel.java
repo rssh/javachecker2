@@ -13,7 +13,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import javax.crypto.NullCipher;
 import ua.gradsoft.javachecker.CheckerComment;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.InvalidCheckerCommentException;
@@ -76,48 +75,12 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
    public boolean isUnknown()
    { return false; }
 
-    
-    public boolean canCheck()
-    { return true; }
-    
-    public boolean checkDisabled()
+     
+    public CheckerComment  getCheckerComment()
     {
-        boolean disableAll=false;
-        if (checkerComment_!=null) {
-            disableAll=checkerComment_.isDisable("All");
-        }
-        return disableAll; 
+      return checkerComment_;  
     }
-    
-    public boolean check() throws TermWareException
-    {
-      if (checkDisabled()) {
-          return true;
-      }
         
-      boolean retval=true;
-      
-      if (Main.getBTPatternChecker().isEnabled()) {
-          Main.getBTPatternChecker().check(t_.termClone());
-      }
-
-      
-      for(List<JavaMethodModel> l : methodModels_.values()) {
-          for(JavaMethodModel m: l) {
-              retval &= m.check();
-          }
-      }  
-      
-      for(JavaMemberVariableModel f: fieldModels_.values()) {
-          retval &= f.check();
-      }
-      
-      for(JavaTypeVariableAbstractModel tv: typeVariables_) {
-          retval &= tv.check();
-      }
-      
-      return retval;
-    }
     
     public boolean hasMethodModels()
     {
@@ -370,6 +333,12 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     public Term getTerm()
     { return t_; }
     
+    public boolean hasASTTerm()
+    { return true; }
+    
+    public Term getASTTerm()
+    { return t_; }
+            
     
     void setIsLocal(JavaTermStatementModel statement)
     {

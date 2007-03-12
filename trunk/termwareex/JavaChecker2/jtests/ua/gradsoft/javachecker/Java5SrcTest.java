@@ -48,7 +48,7 @@ public class Java5SrcTest extends TestCase
             ex.printStackTrace();
             disabled_=true;
         } 
-        //disabled_=true;
+        disabled_=true;
         Main.setQOption(true);
         Main.setShowFiles(false);
     }

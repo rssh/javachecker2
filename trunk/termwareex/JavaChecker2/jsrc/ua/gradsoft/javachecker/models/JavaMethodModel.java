@@ -48,11 +48,7 @@ public abstract class JavaMethodModel implements JavaTopLevelBlockOwnerModel
     public abstract List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException;
     
     public abstract Map<String,JavaFormalParameterModel>  getFormalParametersMap() throws TermWareException;
-            
-    public abstract boolean canCheck();
-    
-    public abstract boolean check() throws TermWareException;   
-    
+                
     public void print(PrintWriter writer) 
     {
         List<JavaTypeVariableAbstractModel> tps;
