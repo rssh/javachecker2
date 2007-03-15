@@ -24,6 +24,12 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+// Hmm, JDK5 have no ParserGetter.
+//   will emulate one.
+class ParserGetter extends HTMLEditorKit
+{
+}
+
 public class Outliner extends HTMLEditorKit.ParserCallback {
 
   private Writer out;

@@ -29,6 +29,11 @@ import ua.gradsoft.termware.exceptions.AssertException;
 public class JavaTypeModelHelper {
     
     
+    public static boolean subtypeOrSame(JavaTypeModel t, JavaTypeModel s) throws TermWareException
+    {
+      return subtypeOrSame(t,s,new MethodMatchingConversions(),false);
+    }
+    
     
     /**
      * define subtyping.

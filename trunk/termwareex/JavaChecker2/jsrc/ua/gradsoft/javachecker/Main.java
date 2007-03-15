@@ -9,20 +9,16 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
-import ua.gradsoft.javachecker.checkers.BTPatternChecker;
 import ua.gradsoft.javachecker.checkers.Checkers;
 import ua.gradsoft.javachecker.models.AnalyzedUnitRef;
 import ua.gradsoft.javachecker.models.AnalyzedUnitType;
 import ua.gradsoft.javachecker.models.JavaCompilationUnitModel;
 import ua.gradsoft.javachecker.models.JavaPackageModel;
-import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.termware.IEnv;
 import ua.gradsoft.termware.Term;
-import ua.gradsoft.termware.TermSystem;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.TermWareException;
@@ -30,6 +26,7 @@ import ua.gradsoft.termware.envs.SystemEnv;
 import ua.gradsoft.termware.exceptions.AssertException;
 import ua.gradsoft.parsers.java5.JavaParserFactory;
 import ua.gradsoft.printers.java5.JavaPrinterFactory;
+import ua.gradsoft.termware.exceptions.ExternalException;
 
 
 
@@ -100,7 +97,7 @@ public class Main
     TermWare.getInstance().init(args);  
   }catch(TermWareException ex){
      throw new ConfigException("Error during TermWare initialization",ex);
-  }
+  }   
 
    TermWare.getInstance().addParserFactory("Java",new JavaParserFactory()); 
    TermWare.getInstance().addPrinterFactory("Java",new JavaPrinterFactory());
@@ -112,6 +109,11 @@ public class Main
        if (home_==null) {           
            throw new ConfigException("JAVACHECKER_HOME  is not set");
        }
+   }
+   try {
+     TermWare.getInstance().getTermLoader().addSearchPath(home_+File.separator+"systems");
+   }catch(ExternalException ex){
+       throw new ConfigException("error during adding search path",ex.getException());
    }
        
   try {

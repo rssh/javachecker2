@@ -517,10 +517,13 @@ public class JavaTermStatementModel implements JavaStatementModel {
             break;
             case LOCAL_VARIABLE_DECLARATION:
             {
-                Term modifiersTerm = t_.getSubtermAt(0);
-                Term typeTerm = t_.getSubtermAt(1);
-                Term listTerm = t_.getSubtermAt(2);
-                retval = TermUtils.createTerm("LocalVariableDeclarationModel",modifiersTerm,typeTerm,listTerm);
+                Term localVariableModels = TermUtils.createNil();
+                for(JavaLocalVariableModel vm: localVariables_) {
+                    Term vmt=vm.getModelTerm();
+                    localVariableModels = TermUtils.createTerm("cons",vmt,localVariableModels);
+                }
+                localVariableModels = TermUtils.reverseListTerm(localVariableModels);
+                retval = TermUtils.createTerm("LocalVariableDeclarationModel",localVariableModels,tctx);
             }
             break;
             case RETURN_STATEMENT:
@@ -645,7 +648,7 @@ public class JavaTermStatementModel implements JavaStatementModel {
             Term typeTerm = loopHead.getSubtermAt(0);
             Term identifierTerm = loopHead.getSubtermAt(1);
             String name=identifierTerm.getSubtermAt(0).getString();
-            localVariables_.add(new JavaTermLocalVariableModel(name,JavaLocalVariableKind.FOR_EACH_LOOP_HEAD,typeTerm,loopHead.getSubtermAt(2),null, this));
+            localVariables_.add(new JavaTermLocalVariableModel(identifierTerm,JavaLocalVariableKind.FOR_EACH_LOOP_HEAD,typeTerm,loopHead.getSubtermAt(2),null, this));
             Term exprTerm = loopHead.getSubtermAt(2);
             JavaTermExpressionModel te = JavaTermExpressionModel.create(exprTerm,this,this.getTopLevelBlockModel().getOwnerModel().getTypeModel());
             expressions_.add(te);
@@ -686,8 +689,8 @@ public class JavaTermStatementModel implements JavaStatementModel {
                 expr = JavaTermExpressionModel.create(initTerm,this,this.getTopLevelBlockModel().getOwnerModel().getTypeModel());
                 expressions_.add(expr);
             }
-            String name=identifier.getSubtermAt(0).getString();
-            localVariables_.add(new JavaTermLocalVariableModel(name,JavaLocalVariableKind.LOCAL_VARIABLE_DCL,refTypeTerm,initTerm,expr,this));
+            //String name=identifier.getSubtermAt(0).getString();
+            localVariables_.add(new JavaTermLocalVariableModel(identifier,JavaLocalVariableKind.LOCAL_VARIABLE_DCL,refTypeTerm,initTerm,expr,this));
             //!!!
            // if (this.getTopLevelBlockModel().getOwnerModel().getTypeModel().getName().endsWith("Hashtable")) {
            //     System.out.println("add lv "+name+", type: "+refTypeTerm.toString());
@@ -715,8 +718,8 @@ public class JavaTermStatementModel implements JavaStatementModel {
         }else{
             throw new AssertException("Invalid VariableDeclaratorId:"+TermHelper.termToString(vid));
         }
-        String name=idTerm.getSubtermAt(0).getString();
-        localVariables_.add(new JavaTermLocalVariableModel(name,JavaLocalVariableKind.CATCH_EXCEPTION,refTypeTerm,init,null,this));        
+        //String name=idTerm.getSubtermAt(0).getString();
+        localVariables_.add(new JavaTermLocalVariableModel(idTerm,JavaLocalVariableKind.CATCH_EXCEPTION,refTypeTerm,init,null,this));        
     }
     
     private void extractAnonimousTypes(Term expr) throws TermWareException {

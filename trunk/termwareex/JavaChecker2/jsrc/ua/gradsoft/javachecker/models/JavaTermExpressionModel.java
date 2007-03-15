@@ -355,13 +355,9 @@ public abstract class JavaTermExpressionModel implements JavaExpressionModel
     
     protected JavaPlaceContext createPlaceContext()
     {
-       if (statement_!=null) {
-           return JavaPlaceContextFactory.createNewStatementContext(statement_);
-       }else if(enclosedType_!=null){
-           return JavaPlaceContextFactory.createNewTypeContext(enclosedType_);
-       }else{
-           return new JavaPlaceContext();
-       }
+       JavaPlaceContext retval = new JavaPlaceContext();
+       retval.setExpressionModel(this);
+       return retval;
     }
     
     public JavaStatementModel  getStatementModel()

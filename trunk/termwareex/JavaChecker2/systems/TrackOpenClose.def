@@ -1,0 +1,229 @@
+
+system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJavaFacts"),
+  ruleset(
+
+     import(general,logical_and),
+     import(general,logical_or),
+     import(general,apply),
+
+     ClassOrInterfaceModel($modifiers,interface,$name,$typeParameters,$extendsList,$implementsList,$body,$context) -> true,
+     ClassOrInterfaceModel($modifiers,class,$name,$typeParameters,$extendsList,$implementsList,$body,$context) -> CheckMemberVariables($body,$context) && CheckFunctions($body,$context),
+
+     CheckMemberVariables(ClassOrInterfaceBody($x),$ctx) -> CheckMemberVariables($x,$ctx),
+     CheckMemberVariables([$x:$y],$ctx) -> CheckMemberVariables($x,$ctx) && CheckMemberVariables($y,$ctx),
+     CheckMemberVariables([],$ctx) -> true,
+     CheckMemberVariables(ConstructorModel($modifiers,$typeParameters,$identifier,$formalParameters,$trowsNameList,$blockModel,$context),$ctx) -> true,
+     CheckMemberVariables(MethodModel($modifiers,$typeParameters,$returnType, $identifier,$formalParameters,$trowsNameList,$blockModel,$context),$classCtx) -> true,
+     CheckMemberVariables(MemberVariableModel($modifiers, $typeRef, $name, $initializer,$model),$classCtx) -> IsResource($typeRef) || ClosedInFinalize($model,$classCtx),
+
+     CheckFunctions(ClassOrInterfaceBody($x),$ctx) -> CheckFunctions($x,$ctx),   
+     CheckFunctions([$x:$y],$ctx) -> CheckFunctions($x,$ctx) && CheckFunctions($y,$ctx),
+     CheckFunctions([],$ctx) -> true,
+
+     CheckFunctions(ConstructorModel($modifiers,$typeParameters,$identifier,$formalParameters,$trowsNameList,$blockModel,$context),$ctx) -> CheckBlock($blockModel),
+     CheckFunctions(MethodModel($modifiers,$typeParameters,$returnType, $identifier,$formalParameters,$trowsNameList,$blockModel,$context),$classCtx) -> CheckBlock($blockModel),
+     CheckFunctions(MemberVariableModel($modifiers, $typeRef, $name, $initializer,$model),$classCtx) -> true,
+
+     CheckBlock($x) -> CheckBlock($x,[]),
+
+     CheckBlock([$x:$y],$state) -> CheckBlock($y,CheckStatement($x,$state)) && CheckThrowed($y,$state),
+     CheckBlock([],$state) -> $state,
+     CheckBlock($x, $state1 && $state2) -> CheckBlock($x, $state1) && CheckBlock($x, $state2),
+     CheckBlock($x, $state1 || $state2) -> CheckBlock($x, $state1) || CheckBlock($x, $state2),
+     
+
+     CheckStatement(NIL,$state) -> $state,
+
+     CheckStatement($x,$state1 && $state2) -> CheckStatement($x,$state1) && CheckStatement($x,$state2),
+     CheckStatement($x,$state1 || $state2) -> CheckStatement($x,$state1) || CheckStatement($x,$state2),
+
+       
+     CheckStatement(BlockStatementModel($list,$ctx),$state) -> CheckBlock($list,$state),
+     CheckStatement(TryStatementModel($block,$catchSeq,$finally,$ctx),$state) -> CheckStatement($finally,CheckStatement($block,$state)) && CheckStatement($finally,CheckStatement($catchSeq,$state)),
+
+     CheckStatement(ThrowStatementModel($expr,$ctx),$state) -> $state,
+
+     CheckStatement(LocalVariableDeclarationModel([$x:$y],$ctx),$state) -> CheckStatement(LocalVariableDeclarationModel($y,$ctx),addLocalVariable($x,$state)),
+     CheckStatement(LocalVariableDeclarationModel([],$ctx),$state) -> $state,
+
+     addLocalVariable(LocalVariableModel(TypeRef($tname,$type),$id,$expr,$ctx),$state) -> CheckExpression($id,$expr,$state),
+                                                                                    
+     CheckStatement(StatementExpressionStatement($expr,$ctx),$state) -> CheckExpression(NONE,$expr,$state),
+
+     CheckStatement(AssertStatementModel($expr,$ctx),$state) -> $state,
+
+     CheckStatement(BreakStatementModel($label,$ctx),$state) -> $state,
+     CheckStatement(ContinueStatementModel($label,$ctx),$state) -> $state,
+
+     CheckStatement(CatchSequenceModel([$x:$y],$ctx),$state) -> CheckStatement($x,$state) && CheckStatement(CatchSequenceModel($y,$ctx),$state),
+
+     CheckStatement(CatchSequenceModel([],$ctx),$state) -> $state,
+
+     CheckStatement(CatchModel($fp,$blockModel,$ctx),$state) -> CheckStatement($blockModel,$state),
+
+     CheckStatement(ClassOrInterfaceDeclarationModel($model,$ctx),state) -> $model && $state,
+
+     CheckStatement(EmptyStatementModel($ctx),$state) -> $state,
+
+     CheckStatement(DoStatementModel($internal,$condition,$ctx),$state) -> CheckStatement($internal,CheckExpression(NONE,$condition,$state)),
+
+     CheckStatement(WhileStatementModel($expr,$child,$ctx),$state) -> CheckStatement($child,CheckExpression(NONE,$expr,$state)) || CheckExpression(NONE,$expr,$state),
+
+     CheckStatement(IfStatementModel($expr,$s1,$s2,$ctx),$state) -> CheckStatement($s1,CheckExpression(NONE,$expr,$state)) || CheckStatement($s2,CheckExpression(NONE,$expr,$state)),
+
+     CheckStatement(ForStatementModel(ForEachLoopHeadModel($type,$id,$expr),$statement,$ctx)) -> CheckStatement($statement,CheckExpression(NONE,$expr,$state)),
+
+     CheckStatement(ForStatementModel(TraditionalForLoopHeadModel($init,$condition,$increment),$statement,$ctx)) -> CheckStatement($statement,CheckExpression(NONE,$condition,CheckExpression(NONE,$init,$state))),
+
+     CheckStatement(ExplicitSuperInvocationModel($primary,$arguments,$ctx),$state) -> CheckExpression($primary,CheckExpressions($arguments,$state)),
+
+     CheckStatement(ExplicitThisInvocationModel($arguments,$ctx),$state) -> CheckExpressions($arguments,$state),
+
+     CheckStatement(LabeledStatementModel($label,$stmt,$ctx),$state) -> CheckStatement($stmt,$state),
+
+     #
+     # TODO: mark function ?
+     CheckStatement(ReturnStatementModel($expr,$ctx),$state) -> CheckExpression(NONE,$expr,$state),
+
+     CheckStatement(SwitchStatementModel($expr,[$x:$y],$ctx),$state) -> CheckStatement($x,$state) && CheckStatement(SwitchStatementModel($expr,$y,$ctx),$state),
+     CheckStatement(SwitchStatementModel($expr,[],$ctx),$state) -> true,
+
+     CheckStatement(SwitchLabelBlockModel($expr,$statements,$ctx),$state) -> CheckBlock($statements,$state),
+
+     CheckStatement(SynchronizedStatement($expr,$stmt,$ctx),$state) -> CheckStatement($stmt,$state),
+
+     CheckExpression($var,FunctionCallModel($name,$arguments,$methodModel,$ctx),$state)
+          [           
+           $ctx.subtypeOrSame(
+              $methodModel.getResultType(),
+              $ctx.resolveFullClassName("java.io.Closeable")
+                       )         
+          ] -> merge(CHANGE($var,OPEN,$ctx.getFileAndLine()),$state)
+           !-> CheckExpressions($arguments,$state),
+
+     CheckExpressions([$x:$y],$state) -> CheckExpressions($y,CheckExpression(NONE,$x,$state)),
+     CheckExpressions([],$state) -> $state,
+
+     CheckExpression($var, MethodCallModel($obj,$id,$arguments,$methodModel,$ctx), $state)
+        [
+           $ctx.subtypeOrSame(
+              $methodModel.getResultType(),
+              $ctx.resolveFullClassName("java.io.Closeable")
+                       )                   
+        ] -> merge(CHANGE($var,OPEN,$ctx.getFileAndLine()),CheckExpression($obj,$state)) 
+        |
+        [
+          $ctx.subtypeOrSame(
+             ModelHelper.getType($obj),
+             $ctx.resolveFullClassName("java.io.Closeable")
+          )
+           &&
+          $methodModel.getName()=="close"           
+        ] 
+           -> merge(CHANGE($obj,CLOSE),$state)
+          !-> CheckExpressions($arguments,$state),
+
+
+     CheckExpression($var,AllocationExpressionModel(TypeRef($tname,$type),$arguments,$ctx),$state)
+       [
+         $ctx.subtypeOrSame($type,$ctx.resolveFullClassName("java.io.Closeable"))
+       ]
+         -> merge(CHANGE($var,OPEN,$ctx.getFileAndLine()),$state)
+        !-> CheckExpressions($arguments,$state),
+
+
+     CheckExpression($var,InnerAllocationExpressionModel($ownerType,TypeRef($tname,$type),$arguments,$ctx),$state)
+       [
+         $ctx.subtypeOrSame($type,$ctx.resolveFullClassName("java.io.Closeable"))
+       ]
+         -> merge(CHANGE($var,OPEN,$ctx.getFileAndLine()),$state)
+        !-> CheckExpressions($arguments,$state),
+        
+
+     CheckExpression($var,AssigmentExpressionModel($left,$right,$op,$ctx),$state)
+          ->  CheckExpression($left,$right,$state),
+
+
+     CheckExpression($var,AdditiveExpressionModel($x,$y,$op,$ctx),$state) -> CheckExpression($var,$y,CheckExpression($var,$x,$state)),
+     CheckExpression($var,AndExpressionModel($x,$y,$ctx),$state) -> CheckExpression($var,$y,CheckExpression($var,$x,$state)),    
+     CheckExpression($var,ArrayIndexExpressionModel($array,$index,$ctx),$state) -> CheckExpression(NONE,$index,CheckExpression(NONE,$array,$state)),
+     CheckExpression($var,ArrayInitializerModel($list),$state) -> $state,
+     CheckExpression($var,CastExpressionModel($type,$x,$ctx),$state) -> CheckExpression($var,$x,$state),
+     CheckExpression($var,ClassLiteralModel($typeRef,$ctx),$state) -> $state,
+     CheckExpression($var,ConditionalAndExpressionModel($x,$y,$ctx),$state) -> CheckExpression(NONE,$y,CheckExpression(NONE,$x,$state)),
+
+     # Up-bound is OR
+     CheckExpression($var,ConditionalExpressionModel($condition,$ifTrue,$ifFalse,$ctx),$state) 
+                          -> CheckExpression($var,$ifTrue,CheckExpression(NONE,$condition,$state)) 
+                                  ||
+                             CheckExpression($var,$ifFalse,CheckExpression(NONE,$condition,$state)),
+
+
+     CheckExpression($var,ConditionalOrExpressionModel($x,$y,$ctx),$state) -> CheckExpression(NONE,$y,CheckExpression(NONE,$x,$state)),
+     CheckExpression($var,EqualityExpressionModel($x,$y,$op,$ctx),$state) -> CheckExpression(NONE,$y,CheckExpression(NONE,$x,$state)),
+     CheckExpression($var,ExclusiveOrExpressionModel($x,$y,$ctx),$state) -> CheckExpression(NONE,$y,CheckExpression(NONE,$x,$state)),
+     CheckExpression($var,InclusiveOrExpressionModel($x,$y,$ctx),$state) -> CheckExpression(NONE,$y,CheckExpression(NONE,$x,$state)),
+     CheckExpression($var,MultiplicativeExpressionModel($x,$y,$op,$ctx),$state) -> CheckExpression(NONE,$y,CheckExpression(NONE,$x,$state)),
+     CheckExpression($var,RelationalExpressionModel($x,$y,$op,$ctx),$state) -> CheckExpression(NONE,$y,CheckExpression(NONE,$x,$state)),
+     CheckExpression($var,ShiftExpressionModel($x,$y,$op,$ctx),$state) -> CheckExpression(NONE,$y,CheckExpression(NONE,$x,$state)),
+
+     CheckExpression($var,FieldModel($objectOrType,$identifier,$fieldModel,$ctx),$state) -> CheckExpression($var,$objectOrType,$state),
+
+     CheckExpression($var,VariableModel($name,$model),$state) -> $state,
+     CheckExpression($var,TypeRef($name,$model),$state) -> $state,
+
+     CheckExpression($var,InstanceOfExpressionModel($typeRef,$expr,$ctx),$state) -> CheckExpression(NONE,$expr,$state),
+     CheckExpression($var,PostfixExpressionModel($x,$op,$ctx),$state) -> CheckExpression(NONE,$x,$state),     
+     CheckExpression($var,PredecrementExpressionModel($x,$ctx),$state) -> CheckExpression($var,$x,$state),     
+     CheckExpression($var,PreincrementExpressionModel($x,$ctx),$state) -> CheckExpression($var,$x,$state),     
+
+     CheckExpression($var,SpecializedMethodCallModel($bounds,$methodCall,$methodModel,$ctx),$state) -> CheckExpression($var,$methodCall,$state),
+
+     CheckExpression($var,StaticFieldModel($typeRef,$identifier,$memberVariable,$ctx),$state) -> $state,
+
+     CheckExpression($var,SuperModel($x,$ctx),$state) -> CheckExpression($var,$x,$state),
+     CheckExpression($var,SuperPrefixModel($ctx),$state) -> $state,
+     CheckExpression($var,CaseConstantModel($x,$y),$state) -> $state,
+
+     CheckExpression($var,ThisModel($x,$ctx),$state) -> CheckExpression($var,$x,$state),
+     CheckExpression($var,ThisPrefixExpressionModel($ctx),$state) -> $state,
+
+     CheckExpression($var,UnaryExpressionModel($x,$op,$ctx),$state) -> CheckExpression(NONE,$x,$state),
+
+
+
+
+     CheckExpression($var,IntegerLiteral($x),$state) -> $state,
+     CheckExpression($var,FloatingPointLiteral($x),$state) -> $state,
+     CheckExpression($var,CharacterLiteral($x),$state) -> $state,
+     CheckExpression($var,StringLiteral($x),$state) -> $state,
+     CheckExpression($var,BooleanLiteral($x),$state) -> $state,
+     CheckExpression($var,NullLiteral(),$state) -> $state,
+
+
+     merge(CHANGE($x,CLOSE),[]) -> [ ],
+     merge(CHANGE($x,CLOSE),[$y:$z]) -> cat(OpenClose(CHANGE($x,CLOSE),$y),merge(CHANGE($x,CLOSE),$z)),
+     merge(CHANGE($x,OPEN,$fileAndLine), $y) -> cons(CHANGE($x,OPEN,$fileAndLine),$y),
+
+     OpenClose(CHANGE($x,CLOSE),CHANGE($x,OPEN,$fl)) -> [],
+     OpenClose(CHANGE($x,CLOSE),CHANGE($y,OPEN,$fl)) [ $x!=$y ] -> CHANGE($y,OPEN,$fl,$x),
+     OpenClose(CHANGE($x,CLOSE),CHANGE($y,CLOSE)) -> CHANGE($y,CLOSE),
+
+     cat([],$x) -> $x,
+     cat(CHANGE($x,$s),$y) -> cons(CHANGE($x,$s),$y),
+     cat(CHANGE($x,$s,$fl),$y) -> cons(CHANGE($x,$s,$fl),$y),
+
+
+     [] && $x -> $x,
+     $x && [] -> $x,
+
+
+
+     CheckThrowed($x,$state) [ CanThrow.canThrow($x) ] -> $state 
+                                                      !-> true,
+
+     CheckEmpty([]) -> true
+
+  ),
+  FirstTop
+);

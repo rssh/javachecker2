@@ -65,7 +65,7 @@ public class JavaTermSuperPrefixExpressionModel extends JavaTermExpressionModel
     public Term getModelTerm() throws TermWareException
     {
       Term ctx = TermUtils.createJTerm(createPlaceContext());
-      Term retval = TermUtils.createTerm("SuperPrefixModel",ctx);
+      Term retval = TermUtils.createTerm("SuperPrefixExpressionModel",ctx);
       return retval;
     }
     

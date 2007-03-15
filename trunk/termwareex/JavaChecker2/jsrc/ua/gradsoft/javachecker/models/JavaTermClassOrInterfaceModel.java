@@ -189,7 +189,9 @@ public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
        }
        Term membersList=getMemberModelsList();
        Term classOrInterfaceBody=TermUtils.createTerm("ClassOrInterfaceBody",membersList);
-       return TermUtils.createTerm("ClassOrInterfaceModel",modifiers,classOrInterface,nameTerm,typeParametersTerm,extendsListModel,implementsListModel,classOrInterfaceBody);
+       JavaPlaceContext ctx = JavaPlaceContextFactory.createNewTypeContext(this);
+       Term tctx = TermUtils.createJTerm(ctx);
+       return TermUtils.createTerm("ClassOrInterfaceModel",modifiers,classOrInterface,nameTerm,typeParametersTerm,extendsListModel,implementsListModel,classOrInterfaceBody,tctx);
     }
     
       

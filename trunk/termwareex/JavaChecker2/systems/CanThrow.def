@@ -1,0 +1,104 @@
+
+system("CanThrow",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJavaFacts"),
+  ruleset(
+
+     import(general,logical_and),
+     import(general,logical_or),
+     import(general,apply),
+
+
+     canThrow(StatementExpressionStatement($expr,$ctx)) -> catThrow($expr),
+     canThrow(AssigmentExpressionModel($left,$right,$op,$ctx)) -> canThrow($left) || canThrow($right),
+     canThrow(AdditiveExpressionModel($x,$y,$op,$ctx)) -> canThrow($x) || canThrow($y),
+
+     #Possible OutOfMemory at any time.
+     canThrow(AllocationExpressionModel($type,$arguments,$ctx))->true,
+
+     canThrow(AndExpressionModel($x,$y,$ctx)) -> canThrow($x)||canThrow($y),
+
+     # TODO: really - think more (?)
+     canThrow(ArrayIndexExpressionModel($arr,$index,$ctx)) -> canThrow($arr) || canThrow($index),
+
+     canThrow(ArrayInitializerModel($list)) -> false,
+     canThrow(BooleanLiteral($x)) -> false,
+
+     canThrow(CastExpressionModel($type,$argument,$ctx)) -> canThrow($argument),
+     canThrow(CharacterLiteral($x)) -> false,
+     canThrow(ClassLiteralModel($type,$ctx)) -> false,
+     
+     canThrow(ConditionalAndExpressionModel($x,$y,$ctx)) -> canThrow($x) || canThrow($y),
+
+     canThrow(ConditionalExpressionModel($p,$s1,$s2)) -> canThrow($p) || canThrow($s1) || canThrow($s2),
+
+     canThrow(ConditionalOrExpressionModel($x,$y,$ctx)) -> canThrow($x) || canThrow($y),
+
+     canThrow(EqualityExpressionModel($x,$y,$op,$ctx)) -> canThrow($x) || canThrow($y),
+
+     canThrow(ExclusiveOrExpressionModel($x,$y,$ctx)) -> canThrow($x) || canThrow($y),
+     canThrow(InclusiveOrExpressionModel($x,$y,$ctx)) -> canThrow($x) || canThrow($y),
+
+     canThrow(FieldModel($obj,$identifier,$field,$ctx)) -> canThrow($obj),
+
+     canThrow(FloatingPointLiteral($x)) -> false,
+
+     canThrow(FunctionCallModel($name,$arguments,$javaMethodModel,$ctx)) -> hasThrows($javaMethodModel) || checkThrowInList($arguments),
+
+     canThrow(TypeRef($tname,$type)) -> false,
+     
+     canThrow(VariableModel($name,$model)) -> false,
+
+     canThrow(InnerAllocationExpressionModel($ownerType,$type,$arguments,$ctx)) -> true,
+
+     canThrow(InstanceOfExpressionModel($typeRef,$expression,$ctx)) -> canThrow($expression),
+
+     canThrow(IntegerLiteral($x)) -> false,
+
+     canThrow(MethodCallModel($obj,$identifier,$arguments,$methodModel,$ctx)) -> canThrow($obj) || hasThrows($methodModel) || checkThrowInList($arguments),
+
+     canThrow(MultiplicativeExpressionModel($x,$y,$op,$ctx)) -> canThrow($x) || canThrow($y),
+
+     canThrow(NullLiteral()) -> false,
+
+     canThrow(PostfixExpressionModel($x,$op,$ctx)) -> canThrow($x),
+
+     canThrow(PredecrementExpressionModel($x,$ctx)) -> canThrow($x),
+     canThrow(PreincrementExpressionModel($x,$ctx)) -> canThrow($x),
+
+     canThrow(RelationalExpressionModel($x,$y,$op,$ctx)) -> canThrow($x) || canThrow($y),
+
+     canThrow(ShiftExpressionModel($x,$y,$op,$ctx)) -> canThrow($x) || canThrow($y),
+
+     canThrow(StaticFieldModel($typeRef,$identifier,$memberVariable,$ctx)) -> false,
+
+     canThrow(StringLiteral($x)) -> false,
+
+     canThrow(SuperModel($x,$ctx)) -> canThrow($x),
+
+     canThrow(SuperPrefixModel($ctx)) -> false,
+
+     canThrow(CaseConstantModel($t, $type)) -> false,
+
+     canThrow(ThisModel($x,$ctx)) -> canThrow($x),
+
+     canThrow(ThisPrefixExpressionModel($ctx)) -> false,
+
+     canThrow(UnaryExpressionModel($x,$op,$ctx)) -> canThrow($x),
+
+
+     checkThrowInList([]) -> false,
+     checkThrowInList([$x:$y]) -> canThrow($x) || checkThrowInList($y),
+
+     hasThrows($methodModel) -> checkModelThrows($methodModel.getModelTerm()),
+
+     checkModelThrows(MethodModel($modifiers,$typeParameters,$resultType,$name,$formalParameters,[$x:$y],$block,$context)) -> true,    
+     checkModelThrows(MethodModel($modifiers,$typeParameters,$resultType,$name,$formalParameters,[],$block,$context)) -> false,
+
+     # TODO: get exception types by reflection during build of model.
+     checkModelThrows(ClassMethod($context)) -> false,
+
+     __THIS_IS_ALL -> true
+
+  ),
+  FirstTop
+
+);

@@ -20,13 +20,13 @@ import ua.gradsoft.termware.TermWareException;
 public class JavaTermLocalVariableModel implements JavaLocalVariableModel
 {
     
-    public JavaTermLocalVariableModel(String name,JavaLocalVariableKind kind, 
+    public JavaTermLocalVariableModel(Term identifierTerm,JavaLocalVariableKind kind, 
                                       Term typeTerm, 
                                       Term initOrIterateExpressionTerm,
                                       JavaTermExpressionModel initExpression,
                                       JavaTermStatementModel statement)
     {
-      name_=name;
+      identifierTerm_=identifierTerm;
       kind_=kind;
       typeTerm_=typeTerm;
       initOrIterateExpressionTerm_=initOrIterateExpressionTerm;
@@ -35,7 +35,7 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
     }
     
     public String getName()
-    { return name_; }
+    { return identifierTerm_.getSubtermAt(0).getString(); }
     
     public JavaVariableKind getKind()
     { return JavaVariableKind.LOCAL_VARIABLE; }
@@ -63,12 +63,14 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
     {
         JavaTypeModel type=resolveType();
         Term typeRef=TermUtils.createTerm("TypeRef",typeTerm_,TermUtils.createJTerm(type));
-        Term identifier=TermUtils.createIdentifier(name_);
+        Term identifier=identifierTerm_;
         Term initTerm = TermUtils.createNil();
         if (initExpression_!=null) {
             initTerm = initExpression_.getModelTerm();
         }
-        Term retval = TermUtils.createTerm("LocalVariableModel",typeRef,identifier,initTerm);
+        JavaPlaceContext ctx = JavaPlaceContextFactory.createNewStatementContext(statement_);
+        Term tctx = TermUtils.createJTerm(ctx);
+        Term retval = TermUtils.createTerm("LocalVariableModel",typeRef,identifier,initTerm,tctx);
         return retval;
     }
     
@@ -88,7 +90,7 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
       }
     }
     
-    private String name_;
+    private Term identifierTerm_;
     private Term typeTerm_;
     private Term initOrIterateExpressionTerm_;
     private JavaTermExpressionModel initExpression_;

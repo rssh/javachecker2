@@ -11,10 +11,10 @@ package ua.gradsoft.javachecker.checkers;
 
 import ua.gradsoft.javachecker.AbstractChecker;
 import ua.gradsoft.javachecker.CheckerType;
-import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JavaFacts;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.models.JavaTermTypeAbstractModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.javachecker.util.Holder;
 import ua.gradsoft.termware.ITermRewritingStrategy;
 import ua.gradsoft.termware.Term;
@@ -54,7 +54,8 @@ public class BTChecker extends AbstractChecker {
             }         
             astTermHolder.setValue(tm.getASTTerm());
         }
-        termSystem_.reduce(astTermHolder.getValue().termClone());
+        Term  toReduce = TermUtils.createTerm(getName(),astTermHolder.getValue().termClone());
+        termSystem_.reduce(toReduce);
     }
     
     private TermSystem  termSystem_;

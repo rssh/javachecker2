@@ -25,7 +25,24 @@ Checkers(
                          -> true [ violationDiscovered(GenericExceptionThrow,"throwing of generic exception",$args) ]
         ),
         true
+  ),
+
+
+ define(UnclosedCloseable,test,"test model",
+        MODEL_RULESET,
+        ruleset(
+          import(general,apply),
+
+          UnclosedCloseable($x) -> checkNoOpen(apply(TrackOpenClose,$x)),
+
+          checkNoOpen([]) -> true,
+          checkNoOpen([$x:$y]) -> checkNoOpen($x) && checkNoOpen($y),
+          checkNoOpen(CHANGE($x,OPEN,$where)) -> false [ violationDiscovered(UnclosedCloseable,"closeable variable does not closed",$where) ]
+          
+        ),
+        true
   )
+
 
 
 ]

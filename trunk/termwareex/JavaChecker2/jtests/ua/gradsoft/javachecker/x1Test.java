@@ -11,6 +11,8 @@ package ua.gradsoft.javachecker;
 import junit.framework.TestCase;
 import java.util.List;
 import ua.gradsoft.javachecker.models.*;
+import ua.gradsoft.termware.TermSystem;
+import ua.gradsoft.termware.TermWare;
 
 
 /**
@@ -171,8 +173,29 @@ public class x1Test extends TestCase
         String[] args=new String[0];   
         main.init(args);
         main.addInputDirectory("testpackages/je"); 
+
+      //  TermSystem system0 = TermWare.getInstance().getRoot().resolveSystem("ResourceLeaks");
+      //  system0.setDebugEntity("All");
+      //  system0.setDebugMode(true);
+        
+        
+      //  TermSystem system = TermWare.getInstance().getRoot().resolveSystem("ResourceLeak");
+      //  system.setDebugEntity("All");
+      //  system.setDebugMode(true);
+
+      //  TermSystem listSystem = TermWare.getInstance().getRoot().resolveSystem("List");
+      //  listSystem.setDebugEntity("All");
+      //  listSystem.setDebugMode(true);
+        
+      //  TermSystem generalSystem = TermWare.getInstance().getRoot().resolveSystem("general");
+      //  generalSystem.setDebugEntity("All");
+      //  generalSystem.setDebugMode(true);
+        
+        
+        
         main.setDump(true);
         main.process(args);   
+      
         
         List<DefectReportItem> defects = main.getFacts().getDefectReportItems();
       

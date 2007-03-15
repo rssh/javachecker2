@@ -9,6 +9,12 @@
 
 package ua.gradsoft.javachecker.models;
 
+import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.FileAndLine;
+import ua.gradsoft.javachecker.JUtils;
+import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermWareException;
+
 /**
  *This class keep context of program place.
  *(i. e. what is block model, and so on)
@@ -44,7 +50,8 @@ public class JavaPlaceContext {
      * get type model, inside which we situated.
      */
     public  JavaTypeModel  getTypeModel()
-    { return typeModel_; 
+    { 
+        return typeModel_; 
     }
     
     /**
@@ -96,10 +103,103 @@ public class JavaPlaceContext {
         packageModel_=typeModel_.getPackageModel();        
     }
     
+    public JavaExpressionModel  getExpressionModel()
+    {
+        return expressionModel_;
+    }
+    
+    void  setExpressionModel(JavaExpressionModel expressionModel)
+    {
+       expressionModel_=expressionModel;
+       statementModel_=expressionModel.getStatementModel();
+       if (statementModel_!=null) {
+         topLevelBlockOwnerModel_=statementModel_.getTopLevelBlockModel().getOwnerModel();
+       }
+       typeModel_=expressionModel.getEnclosedType();
+       if (typeModel_!=null) {
+         packageModel_=typeModel_.getPackageModel();
+       }
+    }
+    
+    //
+    //  API, which is used from Model rules.
+    //
+    
+    public JavaTypeModel  resolveTypeTerm(Term typeTerm) throws TermWareException, EntityNotFoundException
+    {      
+        return JavaResolver.resolveTypeTerm(typeTerm,this);
+    }
+    
+    public JavaTypeModel  resolveFullClassName(String typeName) throws TermWareException, EntityNotFoundException
+    {
+        return JavaResolver.resolveTypeModelByFullClassName(typeName);
+    }
+    
+    public boolean subtypeOrSame(JavaTypeModel x,JavaTypeModel y) throws TermWareException
+    {
+        //System.err.println("JavaPlaceContext.subtypeOrSame("+x.getFullName()+","+y.getFullName()+")");
+        return JavaTypeModelHelper.subtypeOrSame(x,y);
+    }
+    
+    public boolean sameTypes(JavaTypeModel x, JavaTypeModel y) throws TermWareException
+    {
+        return JavaTypeModelHelper.same(x,y);
+    }
+    
+    public  FileAndLine  getFileAndLine() 
+    {
+      FileAndLine retval=null;  
+      try {          
+        if (expressionModel_!=null) {
+            if (expressionModel_ instanceof JavaTermExpressionModel) {
+                JavaTermExpressionModel termExpressionModel = (JavaTermExpressionModel)expressionModel_;
+                Term t = termExpressionModel.getTerm();
+                retval = JUtils.getFileAndLine(t);
+            }
+        }
+        if (retval==null) {
+            if (statementModel_!=null) {
+                if (statementModel_ instanceof JavaTermStatementModel) {
+                    JavaTermStatementModel termStatementModel = (JavaTermStatementModel)statementModel_;
+                    Term t = termStatementModel.getTerm();
+                    retval = JUtils.getFileAndLine(t);
+                }
+            }
+        }
+        if (retval==null) {
+            if (topLevelBlockOwnerModel_!=null) {
+                if (topLevelBlockOwnerModel_ instanceof JavaTermTopLevelBlockOwnerModel) {
+                    JavaTermTopLevelBlockOwnerModel ttbom = (JavaTermTopLevelBlockOwnerModel)topLevelBlockOwnerModel_;
+                    Term t = ttbom.getTermTypeAbstractModel().getTerm();
+                    retval = JUtils.getFileAndLine(t);
+                }
+            }
+        }
+        if (retval==null) {
+            if (typeModel_!=null) {
+                if (typeModel_ instanceof JavaTermTypeAbstractModel) {
+                    JavaTermTypeAbstractModel termTypeModel = (JavaTermTypeAbstractModel)typeModel_;
+                    Term t = termTypeModel.getTerm();
+                    retval = JUtils.getFileAndLine(t);
+                }
+            }
+        }
+        if (retval==null) {
+            // :((
+            retval=FileAndLine.UNKNOWN;
+        }
+      }catch(TermWareException ex){
+        ex.printStackTrace();
+        retval=FileAndLine.UNKNOWN;  
+      }
+      return retval;
+    }
+    
     private JavaPackageModel  packageModel_=null;
     private JavaTypeModel     typeModel_=null;
     private JavaTopLevelBlockOwnerModel   topLevelBlockOwnerModel_=null;
     private JavaStatementModel       statementModel_=null;
+    private JavaExpressionModel      expressionModel_=null;
     
     
     

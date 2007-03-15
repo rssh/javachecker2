@@ -62,6 +62,7 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     
     public JavaTypeModel getResultType() throws TermWareException
     { 
+     //System.err.println("getResultType called");
      Term resultType = getResultTypeAsTerm();
      if (resultType.getName().equals("ResultType")) {
          resultType=resultType.getSubtermAt(0);

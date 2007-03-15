@@ -183,6 +183,12 @@ public final class JUtils {
      */
     public static FileAndLine getFileAndLine(Term partOfCode) throws TermWareException
     {
+     if (partOfCode.isJavaObject()) {
+         Object o = partOfCode.getJavaObject();
+         if (o instanceof FileAndLine) {
+             return (FileAndLine)o;
+         }
+     }   
      Term markedIdentifier=JUtils.findMarkedIdentifier(partOfCode);
      Term fileTerm=TermHelper.getAttribute(markedIdentifier,"file");
      Term lineTerm=TermHelper.getAttribute(markedIdentifier,"line");

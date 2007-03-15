@@ -18,7 +18,7 @@ import java.util.List;
 public class JavaModelConstants {
 
     /**
-     * ClassOrInterfaceModel(modifiers,"class"|"interface",Identifier,typeParameters,extendsList,ImplementsList,ClassOrInterfaceBody(membersList),context)
+     * ClassOrInterfaceModel(modifiers,"class"|"interface",Identifier,typeParameters,extendsList,ImplementsList,ClassOrInterfaceBody(membersList),ctx)
      */
     public final static int CLASSORINTERFACE_MODEL_MODIFIERS_INDEX = 0;
     public final static int CLASSORINTERFACE_MODEL_KIND_INDEX = 1;

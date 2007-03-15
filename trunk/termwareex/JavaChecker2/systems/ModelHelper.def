@@ -1,0 +1,38 @@
+
+system("ModelHelper",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJavaFacts"),
+  ruleset(
+
+     import(general,logical_and),
+     import(general,apply),
+
+      
+     getVariableName(VariableModel($name,$model)) -> $name,
+
+
+     getType(TypeRef($tname,$type)) -> $type,
+     getType(VariableModel($id,$model)) -> $model.getTypeModel(),
+     getType(AllocationExpressionModel(TypeRef($tname,$type),$arguments,$ctx)) -> $type,
+
+     getType(AdditiveExpressionModel($x,$y,$op,$ctx)) -> $ctx.getExpression().getType(),
+     getType(AndExpressionModel($x,$y,$ctx)) -> $ctx.getExpression().getType(),
+     getType(ArrayIndexExpressionModel($x,$y,$ctx)) -> $ctx.getExpression().getType(),
+
+
+     getType(UnaryExpressionModel($x,$op,$ctx)) -> $ctx.getExpression().getType(),
+
+     #TODO: add context to array initializer
+     getType(ArrayInitializerModel($list)) -> NOT_IMPLEMENTED_YET,
+
+     getType(AssigmentExpressionModel($x,$y,$op,$ctx)) -> $ctx.getExpression().getType(),
+
+
+     getType(ThisPrefixExpressionModel($ctx)) -> $ctx.getTypeModel(),
+     getType(SuperPrefixExpressionModel($ctx)) -> $ctx.getTypeModel().getSuperClass(),
+
+     
+     getType(BooleanLiteral($x)) -> $type [ assign($type,getPrimitiveType("boolean")) ]
+
+
+  ),
+  FirstTop
+);

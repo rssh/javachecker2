@@ -6,8 +6,10 @@
 
 package ua.gradsoft.javachecker;
 
+import ua.gradsoft.javachecker.models.JavaResolver;
+import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.JavaUnitModel;
 import ua.gradsoft.termware.DefaultFacts;
-import ua.gradsoft.termware.IEnv;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -20,9 +22,8 @@ public class ProxyJavaFacts extends DefaultFacts
 {
     
     /** Creates a new instance of ProxyJavaFacts */
-    public ProxyJavaFacts(IEnv env) throws TermWareException
-    {
-        setEnv(env);      
+    public ProxyJavaFacts() throws TermWareException
+    {   
     }
     
      public boolean violationDiscovered(String name,String message,Term partOfCode) throws TermWareException
@@ -35,6 +36,20 @@ public class ProxyJavaFacts extends DefaultFacts
         return Main.getFacts().isCheckEnabled(name);
     }
     
-           
+    public JavaTypeModel  getPrimitiveType(String name) throws TermWareException, EntityNotFoundException
+    {
+        return JavaResolver.resolveTypeModelByName(name,(JavaUnitModel)null,null,null);
+    }
+    
+    public JavaTypeModel  getClassType(String fullName) throws TermWareException, EntityNotFoundException
+    {
+        return JavaResolver.resolveTypeModelByFullClassName(fullName);   
+    }
+    
+    //public Object  javaStaticCall(Object o) throws TermWareException, EntityNotFoundException
+    //{
+    //    return JavaResolver.resolveTypeModelByFullClassName(fullName);   
+    //}
+    
     
 }
