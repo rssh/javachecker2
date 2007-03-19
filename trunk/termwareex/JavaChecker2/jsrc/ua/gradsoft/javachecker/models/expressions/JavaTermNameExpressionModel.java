@@ -91,6 +91,9 @@ public class JavaTermNameExpressionModel extends JavaTermExpressionModel {
         return Collections.<JavaExpressionModel>singletonList(proxy_);
     }
     
+    /**
+     *@return model term of proxy
+     */
     public Term getModelTerm() throws TermWareException, EntityNotFoundException {
         lazyInitProxy();
         return proxy_.getModelTerm();
