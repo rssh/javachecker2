@@ -65,7 +65,7 @@ public class JavaTermArrayInitializerExpressionModel extends JavaTermExpressionM
     { return subexpressions_; }
     
     /***
-     * ArrayInitializerModel([expr1,..exprN])
+     * ArrayInitializerModel([expr1,..exprN], ctx)
      */
     public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
@@ -75,7 +75,8 @@ public class JavaTermArrayInitializerExpressionModel extends JavaTermExpressionM
           l=TermUtils.createTerm("cons",ct,l);
       }
       l=TermUtils.reverseListTerm(l);
-      Term retval = TermUtils.createTerm("ArrayInitializerModel",l);
+      Term ctx = TermUtils.createJTerm(createPlaceContext());
+      Term retval = TermUtils.createTerm("ArrayInitializerModel",l,ctx);
       return retval;
     }
     
