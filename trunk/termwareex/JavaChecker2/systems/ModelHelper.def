@@ -4,6 +4,7 @@ system("ModelHelper",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJa
 
      import(general,logical_and),
      import(general,apply),
+     import(general,assign),
 
       
      getVariableName(VariableModel($name,$model)) -> $name,
@@ -13,24 +14,51 @@ system("ModelHelper",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJa
      getType(VariableModel($id,$model)) -> $model.getTypeModel(),
      getType(AllocationExpressionModel(TypeRef($tname,$type),$arguments,$ctx)) -> $type,
 
-     getType(AdditiveExpressionModel($x,$y,$op,$ctx)) -> $ctx.getExpression().getType(),
-     getType(AndExpressionModel($x,$y,$ctx)) -> $ctx.getExpression().getType(),
-     getType(ArrayIndexExpressionModel($x,$y,$ctx)) -> $ctx.getExpression().getType(),
+     getType(AdditiveExpressionModel($x,$y,$op,$ctx)) -> $ctx.getExpressionModel().getType(),
+     getType(AndExpressionModel($x,$y,$ctx)) -> $ctx.getExpressionModel().getType(),
+     getType(ArrayIndexExpressionModel($x,$y,$ctx)) -> $ctx.getExpressionModel().getType(),
 
 
-     getType(UnaryExpressionModel($x,$op,$ctx)) -> $ctx.getExpression().getType(),
+     getType(UnaryExpressionModel($x,$op,$ctx)) -> $ctx.getExpressionModel().getType(),
+     getType(ArrayInitializerModel($x,$ctx)) -> $ctx.getExpressionModel().getType(),
+     getType(AssigmentExpressionModel($x,$y,$op,$ctx)) -> $ctx.getExpressionModel().getType(),
+     getType(CastExpressionModel($typeRef,$subExpression,$ctx)) -> getType($typeRef),
+     getType(ClassLiteralModel($typeRef,$ctx)) -> $ctx.getExpressionModel().getType(),
+     getType(ConditionalAndExpressionModel($x,$y,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(ConditionalOrExpressionModel($x,$y,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(EqualityExpressionModel($x,$y,$op,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(ExclusiveOrExpressionModel($x,$y,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(FieldModel($objectOrType,$identifier,$fieldModel,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(FunctionCallModel($name,$argumentsList,$javaMethodModel,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(InclusiveOrExpressionModel($x,$y,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(InnerAllocationExpressionModel($ownerType,$type,$expressions,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(InstanceOfExpressionModel($typeRef,$expression,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(MethodCallModel($obj,$identifier,$arguments,$methodModel,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(MultiplicativeExpressionModel($x,$y,$op,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(PostfixExpressionModel($x,$op,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(PredecrementExpressionModel($x,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(PreincrementExpressionModel($x,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(RelationalExpressionModel($x,$y,$op,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(ShiftExpressionModel($x,$y,$op,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(SpecializedMethodCallModel($bounds,$methodCallModelTerm,$methodModel,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(StaticFieldModel($typeRef,$identifier,$memberVariable,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(SuperModel($x,$ctx))-> $ctx.getExpressionModel().getType(),
+     getType(CaseConstantModel($term, $type))-> $type,
+     getType(ThisModel($x,$ctx))-> $ctx.getExpressionModel().getType(),
 
-     #TODO: add context to array initializer
-     getType(ArrayInitializerModel($list)) -> NOT_IMPLEMENTED_YET,
-
-     getType(AssigmentExpressionModel($x,$y,$op,$ctx)) -> $ctx.getExpression().getType(),
+     
 
 
      getType(ThisPrefixExpressionModel($ctx)) -> $ctx.getTypeModel(),
      getType(SuperPrefixExpressionModel($ctx)) -> $ctx.getTypeModel().getSuperClass(),
 
      
-     getType(BooleanLiteral($x)) -> $type [ assign($type,getPrimitiveType("boolean")) ]
+     getType(BooleanLiteral($x)) -> $type [ assign($type,getPrimitiveType("boolean")) ],
+     getType(CharacterLiteral($x)) -> $type [ assign($type,getPrimitiveType("char")) ],
+     getType(FloatingPointLiteral($x)) -> $type [ assign($type,getFloatingPointLiteralType($x)) ],
+     getType(StringLiteral($x)) -> $type [ assign($type,getClassType("java.lang.String")) ],
+     getType(IntegerLiteral($x)) -> $type [ assign($type,getIntegerLiteralType($x)) ],
+     getType(NullLiteral())-> $type [ assign($type,getNullType($x)) ]
 
 
   ),
