@@ -6,6 +6,8 @@
 
 package ua.gradsoft.javachecker;
 
+import ua.gradsoft.javachecker.models.JavaExpressionHelper;
+import ua.gradsoft.javachecker.models.JavaNullTypeModel;
 import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.javachecker.models.JavaUnitModel;
@@ -44,6 +46,21 @@ public class ProxyJavaFacts extends DefaultFacts
     public JavaTypeModel  getClassType(String fullName) throws TermWareException, EntityNotFoundException
     {
         return JavaResolver.resolveTypeModelByFullClassName(fullName);   
+    }
+    
+    public JavaTypeModel  getFloatingPointLiteralType(String literal)
+    {
+        return JavaExpressionHelper.getFloatingPointLiteralType(literal);
+    }
+    
+    public JavaTypeModel  getIntegerLiteralType(String literal)
+    {
+        return JavaExpressionHelper.getIntegerLiteralType(literal);
+    }
+    
+    public JavaTypeModel  getNullType()
+    {
+        return JavaNullTypeModel.INSTANCE;
     }
     
     //public Object  javaStaticCall(Object o) throws TermWareException, EntityNotFoundException
