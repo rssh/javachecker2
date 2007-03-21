@@ -1,16 +1,12 @@
 /*
  * Holder.java
  *
- * Created on 1 Март 2007 г., 4:28
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package ua.gradsoft.javachecker.util;
 
 /**
- *
+ *Holder for values
  * @author RSSH
  */
 public class Holder<T>

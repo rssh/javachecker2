@@ -36,7 +36,7 @@ public class J2seexamplesTest extends TestCase
     protected void setUp() throws Exception
     {
         JavaCheckerFacade.init();
-        JavaCheckerFacade.addInputDirectory("testpackages/testdata3");
+        JavaCheckerFacade.addInputDirectory("testpackages/testdata3",true);
     }
 
     public void testMethodResolvingEx6() throws Exception

@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.javachecker.util.Pair;
@@ -108,9 +109,20 @@ public class JavaResolver {
             }else if (t.getName().equals("Identifier")) {
                 String name=t.getSubtermAt(0).getString();
                 if (where==null) {
-                    return resolveTypeModelByName(name,unitModel,packageModel,typeVariables);
+                    try {
+                      return resolveTypeModelByName(name,unitModel,packageModel,typeVariables);
+                    }catch(EntityNotFoundException ex){                        
+                        throw new EntityNotFoundException("type",TermHelper.termToString(t),"",JUtils.getFileAndLine(t),ex);                        
+                        //ex.setFileAndLine(JUtils.getFileAndLine(t));                        
+                        //throw ex;
+                    }
                 }else{
-                    return resolveTypeModelByName(name,where,typeVariables,localTypes);
+                    try {
+                      return resolveTypeModelByName(name,where,typeVariables,localTypes);
+                    }catch(EntityNotFoundException ex){
+                        ex.setFileAndLine(JUtils.getFileAndLine(t));
+                        throw ex;
+                    }
                 }
             }else if (t.getName().equals("ClassOrInterfaceType")) {
                 //at first, try to find class in our package or imported classes
@@ -450,11 +462,7 @@ public class JavaResolver {
     
     public static JavaTypeModel resolveTypeModelByName(String name, JavaUnitModel um, JavaPackageModel pm, List<JavaTypeVariableAbstractModel> typeVariables) throws TermWareException, EntityNotFoundException {
         boolean printDetails=false;
-        
-        if (name.equals("JobStateReason")) {
-            printDetails=true;
-        }
-        
+                
         if (printDetails) {
             LOG.log(Level.INFO,"resolveTypeModelByName("+name+","+um.toString()+","+pm.getName()+")");
         }
@@ -480,8 +488,8 @@ public class JavaResolver {
                 if (tm!=null) {
                     return tm;
                 }else{
-                    String fullClassName = suffix.getFullClassName();
-                    tm = JavaResolver.resolveTypeModelByFullClassName(fullClassName);
+                    String fullClassName = suffix.getFullClassName();                 
+                    tm = JavaResolver.resolveTypeModelByFullClassName(fullClassName);                       
                     suffix.setTypeModel(tm);
                     return tm;
                 }

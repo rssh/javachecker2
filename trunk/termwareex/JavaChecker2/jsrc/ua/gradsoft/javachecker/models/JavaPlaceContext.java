@@ -135,7 +135,7 @@ public class JavaPlaceContext {
         return JavaResolver.resolveTypeModelByFullClassName(typeName);
     }
     
-    public boolean subtypeOrSame(JavaTypeModel x,JavaTypeModel y) throws TermWareException
+    public boolean subtypeOrSame(JavaTypeModel x,JavaTypeModel y) throws TermWareException, EntityNotFoundException
     {
         //System.err.println("JavaPlaceContext.subtypeOrSame("+x.getFullName()+","+y.getFullName()+")");
         return JavaTypeModelHelper.subtypeOrSame(x,y);

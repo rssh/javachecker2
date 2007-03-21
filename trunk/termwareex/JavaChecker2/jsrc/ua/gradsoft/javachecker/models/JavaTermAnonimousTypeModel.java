@@ -122,7 +122,7 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
     }
     
    
-    public JavaTypeModel getSuperClass() throws TermWareException
+    public JavaTypeModel getSuperClass() throws TermWareException, EntityNotFoundException
     {
        if (!supersAreInitialized_) {
            lazyInitSupers();

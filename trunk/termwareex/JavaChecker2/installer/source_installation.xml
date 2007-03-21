@@ -8,7 +8,7 @@
 <installation version="1.0">
  <info>
   <appname>JavaChecker</appname>
-  <appversion>1.2.0</appversion>
+  <appversion>2.0.0</appversion>
   <url>http://www.gradsoft.ua</url>
   <authors>
    <author name="Ruslan Shevchenko" email="Ruslan@Shevchenko.Kiev.UA" />
@@ -38,8 +38,9 @@
   <file src="JavaChecker.sh" targetdir="$INSTALL_PATH/bin" />
   <parsable targetfile="$INSTALL_PATH/bin/JavaChecker.sh" os="unix"/>
   <parsable targetfile="$INSTALL_PATH/bin/JavaChecker.bat" os="windows"/>
-  <file src="../jlib/JavaChecker.jar" targetdir="$INSTALL_PATH/jlib" />
-  <file src="../jlib/TermWare.jar"  targetdir="$INSTALL_PATH/jlib" />
+    <file src="../jlib/JavaChecker2.jar" targetdir="$INSTALL_PATH/jlib" />
+  <file src="../jlib/TermWare2.jar"  targetdir="$INSTALL_PATH/jlib" />
+  <file src="../jlib/TermWareJPP.jar"  targetdir="$INSTALL_PATH/jlib" />
   <file src="../build.xml"  targetdir="$INSTALL_PATH" />
   <fileset dir="../systems/" targetdir="$INSTALL_PATH/systems" >
     <exclude name="CVS" />
@@ -60,6 +61,13 @@
     <exclude name="**/CVS/*" />
     <exclude name="**/*.class" />
   </fileset>
+  <fileset dir="../jtests/" targetdir="$INSTALL_PATH/jsrc" >
+    <exclude name="CVS" />
+    <exclude name="**/CVS" />
+    <exclude name="CVS/*" />
+    <exclude name="**/CVS/*" />
+    <exclude name="**/*.class" />
+  </fileset>
   <fileset dir="../testpackages/" targetdir="$INSTALL_PATH/testpackages" >
     <exclude name="CVS" />
     <exclude name="**/CVS" />
@@ -71,8 +79,8 @@
     <exclude name="**/CVS" />
     <exclude name="CVS/*" />
     <exclude name="**/CVS/*" />
-    <exclude name="JavaCheckerBinaryInstaller.jar" />
-    <exclude name="JavaCheckerSourceInstaller.jar" />
+    <exclude name="JavaCheckerBinaryInstaller*.*.jar" />
+    <exclude name="JavaCheckerSourceInstaller*.*.jar" />
   </fileset>
  </pack>
 </packs>

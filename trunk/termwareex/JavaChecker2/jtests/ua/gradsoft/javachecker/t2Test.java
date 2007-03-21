@@ -26,10 +26,10 @@ public class t2Test extends TestCase
         Main main = new Main();
         String[] args=new String[0];   
         main.init(args);
-        main.addInputDirectory("testpackages/testdata2");        
+        main.addInputDirectory("testpackages/testdata2",true);        
         //main.setDump(true);
         //main.setNoClean(true);
-        main.process(args);        
+        main.process();        
         
 //        for(String s: main.getFacts().getPackagesStore().getLoadedPackageModels().keySet()) {
 //           System.out.println("::"+s); 

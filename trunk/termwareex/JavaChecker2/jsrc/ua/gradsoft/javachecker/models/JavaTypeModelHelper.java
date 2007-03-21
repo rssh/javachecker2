@@ -29,7 +29,7 @@ import ua.gradsoft.termware.exceptions.AssertException;
 public class JavaTypeModelHelper {
     
     
-    public static boolean subtypeOrSame(JavaTypeModel t, JavaTypeModel s) throws TermWareException
+    public static boolean subtypeOrSame(JavaTypeModel t, JavaTypeModel s) throws TermWareException, EntityNotFoundException
     {
       return subtypeOrSame(t,s,new MethodMatchingConversions(),false);
     }
@@ -144,6 +144,8 @@ public class JavaTypeModelHelper {
                             retval=subtypeOrSame(t.getSuperClass(),s,cn,debug);
                           }catch(NotSupportedException ex){
                               retval=false;
+                          }catch(EntityNotFoundException ex){
+                              throw new InvalidJavaTermException(ex.getMessage(),ex.getFileAndLine(),ex);                              
                           }
                       }else{
                           retval=true;
@@ -166,9 +168,11 @@ public class JavaTypeModelHelper {
                      }else{
                          return same(s,JavaResolver.resolveJavaLangObject());
                      }
-                    }catch(NotSupportedException ex){
+                   }catch(EntityNotFoundException ex){
+                        throw new InvalidJavaTermException(ex.getMessage(),ex.getFileAndLine(),ex);                                                                       
+                   }catch(NotSupportedException ex){
                         return false;
-                    }
+                   }
                   }                          
               }
           }else if (s.isInterface()) {
@@ -203,6 +207,8 @@ public class JavaTypeModelHelper {
                   }
               }catch(NotSupportedException ex){
                   retval=false;
+              }catch(EntityNotFoundException ex){
+                  throw new InvalidJavaTermException(ex.getMessage(),ex.getFileAndLine(),ex);
               }            
           }else{
              // t - class

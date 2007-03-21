@@ -30,7 +30,7 @@ public class ExprTypeResolvingTest extends TestCase
      protected void setUp() throws Exception
     {
         JavaCheckerFacade.init();
-        JavaCheckerFacade.addInputDirectory("testpackages/testdata3");
+        JavaCheckerFacade.addInputDirectory("testpackages/testdata3",true);
     }
 
      public static void testIntConstantsExprType() throws Exception

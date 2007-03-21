@@ -29,7 +29,7 @@ public class MTData6Test extends TestCase
        protected void setUp() throws Exception
        {
         JavaCheckerFacade.init();
-        JavaCheckerFacade.addInputDirectory("testpackages/testdata6");
+        JavaCheckerFacade.addInputDirectory("testpackages/testdata6",true);
        }
 
        /**

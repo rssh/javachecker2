@@ -149,7 +149,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     public boolean isWildcardBounds()
     { return false; }
     
-    public JavaTypeModel getSuperClass() throws TermWareException
+    public JavaTypeModel getSuperClass() throws TermWareException, EntityNotFoundException
     {
       if (resolvedSuperClass_==null) {
           if (isClass()) {
@@ -161,23 +161,15 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
                           resolvedSuperClass_=JavaNullTypeModel.INSTANCE;
                       }
                   }
-              }else{                  
-                  try {
-                     if (isNested()) {
+              }else{                                  
+                  if (isNested()) {
                          resolvedSuperClass_=JavaResolver.resolveTypeToModel(superClassTerm_,getEnclosedType(),getTypeParameters());
-                     }else{  
+                  }else{  
                          resolvedSuperClass_=JavaResolver.resolveTypeToModel(superClassTerm_,getUnitModel(),getPackageModel(),null,getTypeParameters(),null);
-                     }
-                  }catch(EntityNotFoundException ex){
-                      throw new AssertException(ex.getMessage(),ex);
                   }
               }
-          }else if(isEnum()) {
-              try {
-                resolvedSuperClass_=JavaResolver.resolveTypeModelByFullClassName("java.lang.Enum"); 
-              }catch(EntityNotFoundException ex){
-                  throw new AssertException("Can't resolve java.lang.Enum");
-              }
+          }else if(isEnum()) {              
+              resolvedSuperClass_=JavaResolver.resolveTypeModelByFullClassName("java.lang.Enum"); 
           }else{
               resolvedSuperClass_=JavaResolver.resolveJavaLangObject();
           }

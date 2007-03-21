@@ -33,17 +33,17 @@ public class Violations {
     }
     
     
-    public  void readPreferences(Preferences prefs)
+    public  void readPreferences(JavaFacts facts)
     {        
         Iterator it=byTypes_.entrySet().iterator();
         while(it.hasNext()){
             Map.Entry me=(Map.Entry)it.next();
             TypeOfViolation v = (TypeOfViolation)me.getValue();
-            v.readPreferences(prefs);
+            v.readPreferences(facts);
         }
         
                         // add special meta-property
-        boolean checkNamePatterns = prefs.getBoolean("CheckNamePatterns",true);
+        boolean checkNamePatterns = facts.getBooleanConfigValue("CheckNamePatterns",true);
         if (!checkNamePatterns) {
             String [] namePatterns =  {"VariablePatterns",                                      
                                         "ClassNamePatterns",
@@ -92,6 +92,14 @@ public class Violations {
         return tov.isEnabled();
     }
     
+    public void  setEnabled(String typeOfViolation, boolean value) {
+        TypeOfViolation tov=byTypes_.get(typeOfViolation);
+        if (tov==null) {
+            // ? - may be throw or log
+            return;
+        }
+        tov.setEnabled(value);
+    }
     
     public int  getCounterByName(String name)
     {

@@ -72,7 +72,7 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
             <compilation-unit>
                 <package-root>jsrc</package-root>
-                <classpath mode="compile">jlib/TermWare2.jar;jlib/TermWareJPP.jar</classpath>
+                <classpath mode="compile">jlib/TermWare2.jar;jlib/TermWareJPP.jar;D:\packages\apache-ant-1.7.0\lib\ant.jar</classpath>
                 <built-to>jlib/JavaChecker2.jar</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>

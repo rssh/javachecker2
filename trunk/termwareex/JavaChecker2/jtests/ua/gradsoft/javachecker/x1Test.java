@@ -27,10 +27,10 @@ public class x1Test extends TestCase
         Main main = new Main();
         String[] args=new String[0];        
         main.init(args);
-        main.addInputDirectory("testpackages/testdata1");        
+        main.addInputDirectory("testpackages/testdata1",true);        
         main.setDump(false);
         main.setNoClean(false);        
-        main.process(args);        
+        main.process();        
         
         JavaPackageModel packageModel = JavaResolver.resolvePackage("ua.gradsoft.javachecker.x1");        
         assertTrue("must exists package model",packageModel!=null);
@@ -50,10 +50,10 @@ public class x1Test extends TestCase
         Main main = new Main();
         String[] args=new String[0];   
         main.init(args);
-        main.addInputDirectory("testpackages/testdata1");        
+        main.addInputDirectory("testpackages/testdata1",true);        
         //main.setDump(true);
         //main.setNoClean(true);
-        main.process(args);        
+        main.process();        
         
 //        for(String s: main.getFacts().getPackagesStore().getLoadedPackageModels().keySet()) {
 //           System.out.println("::"+s); 
@@ -76,10 +76,10 @@ public class x1Test extends TestCase
         Main main = new Main();
         String[] args=new String[0];   
         main.init(args);
-        main.addInputDirectory("testpackages/style/s1");        
+        main.addInputDirectory("testpackages/style/s1",true);        
         main.setDump(true);
         //main.setNoClean(true);
-        main.process(args);   
+        main.process();   
         
         List<DefectReportItem> defects = main.getFacts().getDefectReportItems();
         assertTrue("defects was not found",defects.size()!=0);
@@ -99,9 +99,9 @@ public class x1Test extends TestCase
         Main main = new Main();
         String[] args=new String[0];   
         main.init(args);
-        main.addInputDirectory("testpackages/style/s2"); 
+        main.addInputDirectory("testpackages/style/s2",true); 
         //main.setDump(true);
-        main.process(args);   
+        main.process();   
         
         List<DefectReportItem> defects = main.getFacts().getDefectReportItems();
 
@@ -126,9 +126,9 @@ public class x1Test extends TestCase
         Main main = new Main();
         String[] args=new String[0];   
         main.init(args);
-        main.addInputDirectory("testpackages/style/s3"); 
+        main.addInputDirectory("testpackages/style/s3",true); 
         //main.setDump(true);
-        main.process(args);   
+        main.process();   
         
         List<DefectReportItem> defects = main.getFacts().getDefectReportItems();
       
@@ -149,9 +149,9 @@ public class x1Test extends TestCase
         Main main = new Main();
         String[] args=new String[0];   
         main.init(args);
-        main.addInputDirectory("testpackages/style/s4"); 
+        main.addInputDirectory("testpackages/style/s4",true); 
         //main.setDump(true);
-        main.process(args);   
+        main.process();   
         
         List<DefectReportItem> defects = main.getFacts().getDefectReportItems();
       
@@ -172,7 +172,7 @@ public class x1Test extends TestCase
         Main main = new Main();
         String[] args=new String[0];   
         main.init(args);
-        main.addInputDirectory("testpackages/je"); 
+        main.addInputDirectory("testpackages/je",true); 
 
       //  TermSystem system0 = TermWare.getInstance().getRoot().resolveSystem("ResourceLeaks");
       //  system0.setDebugEntity("All");
@@ -194,7 +194,7 @@ public class x1Test extends TestCase
         
         
         main.setDump(true);
-        main.process(args);   
+        main.process();   
       
         
         List<DefectReportItem> defects = main.getFacts().getDefectReportItems();

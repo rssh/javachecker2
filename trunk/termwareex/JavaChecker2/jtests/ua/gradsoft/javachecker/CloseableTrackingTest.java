@@ -23,7 +23,7 @@ public class CloseableTrackingTest extends TestCase
         Main main = new Main();
         String[] args=new String[0];   
         main.init(args);
-        main.addInputDirectory("testpackages/testdata8/e1"); 
+        main.addInputDirectory("testpackages/testdata8/e1", true); 
 
        // TermSystem system0 = TermWare.getInstance().getRoot().resolveSystem("TrackOpenClose");
        // system0.setDebugEntity("SystemReductions");
@@ -45,7 +45,7 @@ public class CloseableTrackingTest extends TestCase
         
         
         //main.setDump(true);
-        main.process(args);   
+        main.process();   
       
         
         List<DefectReportItem> defects = main.getFacts().getDefectReportItems();
@@ -67,10 +67,10 @@ public class CloseableTrackingTest extends TestCase
         Main main = new Main();
         String[] args=new String[0];   
         main.init(args);
-        main.addInputDirectory("testpackages/testdata8/e2"); 
+        main.addInputDirectory("testpackages/testdata8/e2",true); 
         
         //main.setDump(true);
-        main.process(args);   
+        main.process();   
               
         List<DefectReportItem> defects = main.getFacts().getDefectReportItems();
       
@@ -91,7 +91,7 @@ public class CloseableTrackingTest extends TestCase
         Main main = new Main();
         String[] args=new String[0];   
         main.init(args);
-        main.addInputDirectory("testpackages/testdata8/e3"); 
+        main.addInputDirectory("testpackages/testdata8/e3",true); 
 
         TermSystem system0 = TermWare.getInstance().getRoot().resolveSystem("TrackOpenClose");
         //system0.setDebugEntity("All");
@@ -102,7 +102,7 @@ public class CloseableTrackingTest extends TestCase
         
         
         main.setDump(true);
-        main.process(args);   
+        main.process();   
               
         List<DefectReportItem> defects = main.getFacts().getDefectReportItems();
       
@@ -123,10 +123,10 @@ public class CloseableTrackingTest extends TestCase
         Main main = new Main();
         String[] args=new String[0];   
         main.init(args);
-        main.addInputDirectory("testpackages/testdata8/e4"); 
+        main.addInputDirectory("testpackages/testdata8/e4",true); 
         
         main.setDump(true);
-        main.process(args);   
+        main.process();   
               
         List<DefectReportItem> defects = main.getFacts().getDefectReportItems();
       

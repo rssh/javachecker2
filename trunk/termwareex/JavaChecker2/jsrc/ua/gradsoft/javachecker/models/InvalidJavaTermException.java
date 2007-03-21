@@ -26,6 +26,12 @@ import ua.gradsoft.termware.exceptions.AssertException;
 public class InvalidJavaTermException extends AssertException implements SourceCodeLocation
 {
 
+    public InvalidJavaTermException(String message, FileAndLine where, Exception ex)
+    {        
+      super(message, ex);  
+      fileAndLine_=where;
+    }
+    
     public InvalidJavaTermException(String message, Term t, Exception ex)
     {
      super(message+":"+TermHelper.termToString(t),ex);   

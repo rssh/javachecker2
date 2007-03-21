@@ -31,7 +31,7 @@ public class LoadingTest extends TestCase
     public void testLoadingXyz() throws Exception
     {
         JavaCheckerFacade.init();
-        JavaCheckerFacade.addInputDirectory("testpackages/testdata4");
+        JavaCheckerFacade.addInputDirectory("testpackages/testdata4",true);
         JavaTypeModel zModel=JavaResolver.resolveTypeModelFromPackage("Z","x.y");
         assertTrue("zModel!=null failed",zModel!=null);
         //System.out.println("resolved:"+zModel.getFullName());
@@ -77,7 +77,7 @@ public class LoadingTest extends TestCase
     public void testLoadingXyZZ() throws Exception
     {
         JavaCheckerFacade.init();
-        JavaCheckerFacade.addInputDirectory("testpackages/testdata5");
+        JavaCheckerFacade.addInputDirectory("testpackages/testdata5",true);
         JavaTypeModel zzModel = JavaResolver.resolveTypeModelFromPackage("ZZ","x.y");
         assertTrue("ZZ name is ZZ",zzModel.getName().equals("ZZ"));        
         List<JavaTypeVariableAbstractModel> tv=zzModel.getTypeParameters();
@@ -126,7 +126,7 @@ public class LoadingTest extends TestCase
     public void testLoadingLC() throws Exception
     {
      JavaCheckerFacade.init();
-     JavaCheckerFacade.addInputDirectory("jtests");
+     JavaCheckerFacade.addInputDirectory("jtests",true);
      JavaTypeModel lc1Model = JavaResolver.resolveTypeModelFromPackage("LC1","t1.testdata.localclass1");
      assertEquals("full name of LC1 model must match","t1.testdata.localclass1.LC1",lc1Model.getFullName());
      Map<String,JavaTypeModel> ntm = lc1Model.getNestedTypeModels();
@@ -136,7 +136,7 @@ public class LoadingTest extends TestCase
     public void testLoadingEb() throws Exception
     {
       JavaCheckerFacade.init();
-      JavaCheckerFacade.addInputDirectory("testpackages/testdata5");
+      JavaCheckerFacade.addInputDirectory("testpackages/testdata5",true);
       JavaTypeModel ebModel = JavaResolver.resolveTypeModelFromPackage("Eb","x");
       List<JavaTypeVariableAbstractModel> ebtp = ebModel.getTypeParameters();
       assertTrue("Eb has type parameters",ebtp.size()!=0);

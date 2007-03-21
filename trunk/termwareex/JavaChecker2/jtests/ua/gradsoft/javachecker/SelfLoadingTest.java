@@ -25,7 +25,7 @@ public class SelfLoadingTest extends TestCase
     protected void setUp() throws Exception
     {
         JavaCheckerFacade.init();
-        JavaCheckerFacade.addInputDirectory("jsrc");
+        JavaCheckerFacade.addInputDirectory("jsrc",true);
     }
 
     public void  testLoadJavaResolver() throws Exception

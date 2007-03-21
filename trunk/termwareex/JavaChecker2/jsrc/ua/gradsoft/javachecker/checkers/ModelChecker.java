@@ -79,8 +79,8 @@ public class ModelChecker extends AbstractChecker {
         if (modelTerm==null) {
             try {
                 modelTerm=tm.getModelTerm();
-            }catch(EntityNotFoundException ex){
-                throw new AssertException("Can't initalize model for "+tm.getName(),ex);
+            }catch(EntityNotFoundException ex){               
+                throw new AssertException("Can't initalize model for "+tm.getName()+" at "+ex.getFileAndLine().getFname()+","+ex.getFileAndLine().getLine()+":"+ex.getMessage(),ex);
             }
             modelTermHolder.setValue(modelTerm);
         }

@@ -1,5 +1,9 @@
 
 
+2.0  (19.03.2007)
+  - fully rewrite.  Abstract interpretation framework is implemented.
+
+
 1.2.0
   - fixed setting prefs from ant task.
   - fixed bug, when formal parameter is not identifier, but array declaration

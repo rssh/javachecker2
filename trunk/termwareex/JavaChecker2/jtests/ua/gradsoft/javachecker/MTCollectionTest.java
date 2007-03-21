@@ -26,7 +26,7 @@ public class MTCollectionTest extends TestCase
         protected void setUp() throws Exception
        {
         JavaCheckerFacade.init();
-        JavaCheckerFacade.addInputDirectory("testpackages/testdata7/Collections");
+        JavaCheckerFacade.addInputDirectory("testpackages/testdata7/Collections",true);
        }
 
        public void testQueueExceptionModelTerm() throws Exception

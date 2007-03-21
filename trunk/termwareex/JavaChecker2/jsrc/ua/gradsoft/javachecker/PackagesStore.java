@@ -25,7 +25,8 @@ public class PackagesStore
     {
         owner_=owner;
         packageModels_=new HashMap<String,JavaPackageModel>();    
-        sourceDirs_=new ArrayList<String>();
+        sourceDirsToProcess_=new ArrayList<String>();
+        allSourceDirs_=new ArrayList<String>();
         // will be enabled later, after writing classloader
         //classDirs_=new ArrayList<String>();
         //jars_=new ArrayList<String>();
@@ -56,13 +57,33 @@ public class PackagesStore
     public  Map<String,JavaPackageModel>  getLoadedPackageModels()
     { return packageModels_; }
     
+    
+    /**
+     * get source dirs, which we check or use for loading of depended sources;
+     */    
     public  List<String>  getSourceDirs()
-    { return sourceDirs_; }
+    { return allSourceDirs_; }
+
+    /**
+     * get dirs for sources, which we check.
+     */    
+    public  List<String>  getSourceDirsToProcess()
+    { 
+      return sourceDirsToProcess_;  
+    }
     
     private JavaFacts   owner_;
     private HashMap<String, JavaPackageModel> packageModels_;    
     
-    private ArrayList<String>  sourceDirs_;
+    /**
+     * dirs for sources, which we check.
+     */
+    private ArrayList<String>  sourceDirsToProcess_;
+    
+    /**
+     * source dirs, which we check or use for loading of depended sources;
+     */
+    private ArrayList<String>  allSourceDirs_;
     
     //
     // will be enabled later, after implementing specific classloader

@@ -60,7 +60,7 @@ public class Java5SrcTest extends TestCase
       JavaCheckerFacade.init();      
       int prevLoadedFiles = nLoadedFiles_;
       if (!disabled_) {
-          JavaCheckerFacade.addInputDirectory(javaSrcHome_);
+          JavaCheckerFacade.addInputDirectory(javaSrcHome_,true);
           String dirName = javaSrcHome_ + File.separator +"com";
           File f = new File(dirName);         
           readAndGetModelForSources(javaSrcHome_,"com",f);
@@ -99,7 +99,7 @@ public class Java5SrcTest extends TestCase
     public void testJavaxSwingTextRtfRTFParser() throws Exception
     {
       JavaCheckerFacade.init();
-      JavaCheckerFacade.addInputDirectory(javaSrcHome_);
+      JavaCheckerFacade.addInputDirectory(javaSrcHome_,true);
       JavaTypeModel tm = JavaResolver.resolveTypeModelByFullClassName("javax.swing.text.rtf.RTFParser");
       Term mt=tm.getModelTerm();
     }
@@ -111,7 +111,7 @@ public class Java5SrcTest extends TestCase
       JavaCheckerFacade.init();      
       int prevLoadedFiles = nLoadedFiles_;
       if (!disabled_) {
-          JavaCheckerFacade.addInputDirectory(javaSrcHome_);
+          JavaCheckerFacade.addInputDirectory(javaSrcHome_,true);
           String dirName = javaSrcHome_ + File.separator +pkg;
           File f = new File(dirName);         
           readAndGetModelForSources(javaSrcHome_,pkg,f);
@@ -125,7 +125,7 @@ public class Java5SrcTest extends TestCase
       JavaCheckerFacade.init();      
       int prevLoadedFiles = nLoadedFiles_;
       if (!disabled_) {
-          JavaCheckerFacade.addInputDirectory(javaSrcHome_);
+          JavaCheckerFacade.addInputDirectory(javaSrcHome_,true);
           String dirName = javaSrcHome_ + File.separator +pkg1 + File.separator + pkg2;
           File f = new File(dirName);         
           readAndGetModelForSources(javaSrcHome_,pkg1+"."+pkg2,f);          

@@ -35,9 +35,9 @@ public class JavaCheckerFacade {
     /**
      *add input directory
      */
-    public static void addInputDirectory(String inputDirectory)
+    public static void addInputDirectory(String inputDirectory, boolean process)
     {
-      main_.addInputDirectory(inputDirectory);   
+      main_.addInputDirectory(inputDirectory, process);   
     }
     
     /**

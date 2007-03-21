@@ -4,12 +4,12 @@
     Author     : Ruslan Shevchenko
     Description:
         IzPack install file for TermWare JavaChecker
-    Id:        $Id: binary_installation.xml,v 1.1 2007-01-05 19:21:26 rssh Exp $
+    Id:        $Id: binary_installation.xml,v 1.2 2007-03-21 18:34:07 rssh Exp $
 -->
 <installation version="1.0">
  <info>
   <appname>JavaChecker</appname>
-  <appversion>1.2.0</appversion>
+  <appversion>2.0.0</appversion>
   <url>http://www.gradsoft.ua</url>
   <authors>
    <author name="Ruslan Shevchenko" email="Ruslan@Shevchenko.Kiev.UA" />
@@ -39,9 +39,11 @@
   <file src="JavaChecker.sh" targetdir="$INSTALL_PATH/bin" />
   <parsable targetfile="$INSTALL_PATH/bin/JavaChecker.sh" os="unix"/>
   <parsable targetfile="$INSTALL_PATH/bin/JavaChecker.bat" os="windows"/>
-  <file src="../jlib/JavaChecker.jar" targetdir="$INSTALL_PATH/jlib" />
-  <file src="../jlib/TermWare.jar"  targetdir="$INSTALL_PATH/jlib" />
+  <file src="../jlib/JavaChecker2.jar" targetdir="$INSTALL_PATH/jlib" />
+  <file src="../jlib/TermWare2.jar"  targetdir="$INSTALL_PATH/jlib" />
+  <file src="../jlib/TermWareJPP.jar"  targetdir="$INSTALL_PATH/jlib" />
   <file src="../etc/prefs1.xml"  targetdir="$INSTALL_PATH/etc" />
+  <file src="../etc/checkers.def"  targetdir="$INSTALL_PATH/etc" />
   <fileset dir="../systems/" targetdir="$INSTALL_PATH/systems" >
     <exclude name="CVS" />
     <exclude name="**/CVS" />
@@ -51,7 +53,8 @@
  </pack>
  <pack name="documentation" required="yes">
   <description> JavaChecker users guide </description>
-  <file src="../docs/JavaCheckerGuide.html" targetdir="$INSTALL_PATH/docs" />
+  <file src="../docs/JavaChecker2Guide.pdf" targetdir="$INSTALL_PATH/docs" />
+  <file src="../docs/JavaChecker2Guide.odt" targetdir="$INSTALL_PATH/docs" />
   <file src="../docs/LICENSE.eng" targetdir="$INSTALL_PATH/docs" />
  </pack>
 </packs>         

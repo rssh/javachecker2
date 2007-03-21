@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import ua.gradsoft.termware.DefaultFacts;
 import ua.gradsoft.termware.IEnv;
@@ -52,17 +53,15 @@ public class JavaFacts extends DefaultFacts {
         violations_.addType("InvalidCheckerComments", "style","invalid checker comments",true);
         violations_.addType("*","uncategorized","*",true);
         
+        nonFinalFieldNamePattern_=getStringConfigValue("NonFinalNamePattern",nonFinalFieldNamePattern_);
+        finalFieldNamePattern_=getStringConfigValue("FinalFieldNamePattern", getFinalFieldNamePattern());
+        classNamePattern_=getStringConfigValue("ClassNamePattern", getClassNamePattern());
+        methodNamePattern_=getStringConfigValue("MethodNamePattern", getMethodNamePattern());
+        localVariableNamePattern_=getStringConfigValue("LocalVariableNamePattern", getLocalVariableNamePattern());
+        enumConstantNamePattern_=getStringConfigValue("EnumConstantNamePattern",getEnumConstantNamePattern());
+        typeArgumentNamePattern_=getStringConfigValue("TypeArgumentNamePattern",getTypeArgumentNamePattern());
         
-        nonFinalFieldNamePattern_=prefs.get("NonFinalFieldNamePattern", getNonFinalFieldNamePattern());
-        finalFieldNamePattern_=prefs.get("FinalFieldNamePattern", getFinalFieldNamePattern());
-        classNamePattern_=prefs.get("ClassNamePattern", getClassNamePattern());
-        methodNamePattern_=prefs.get("MethodNamePattern", getMethodNamePattern());
-        localVariableNamePattern_=prefs.get("LocalVariableNamePattern", getLocalVariableNamePattern());
-        enumConstantNamePattern_=prefs.get("EnumConstantNamePattern",getEnumConstantNamePattern());
-        typeArgumentNamePattern_=prefs.get("TypeArgumentNamePattern",getTypeArgumentNamePattern());
-        
-        violations_.readPreferences(prefs);
-
+        violations_.readPreferences(this);
         
     }
     
@@ -77,6 +76,7 @@ public class JavaFacts extends DefaultFacts {
       return violations_;  
     }
     
+    
     // called from systems
     public boolean violationDiscovered(String name,String message,Term partOfCode) throws TermWareException
     {        
@@ -87,21 +87,68 @@ public class JavaFacts extends DefaultFacts {
     }
 
     
+    public void    setConfigValue(String key, String value)
+    {
+        localPreferences_.put(key,value);
+    }
+    
+    
     public boolean isCheckEnabled(String name)
     {
         return violations_.enabled(name);
     }
     
+    public void setCheckEnabled(String name, boolean value)
+    {
+        setConfigValue("Check"+name,value ? "true" : "false");
+        violations_.setEnabled(name,value);
+    }
+    
+    
+    
     public String  getStringConfigValue(String name,String sdefault)
     {        
-        return preferences_.get(name,sdefault);
+        String retval = localPreferences_.get(name);
+        if (retval==null) {
+           retval=preferences_.get(name,sdefault);
+        }
+        return retval;
     }
     
     public int  getIntConfigValue(String name, int idefault)
     {
-        return preferences_.getInt(name,idefault);
+        String sretval = localPreferences_.get(name);
+        int retval=idefault;
+        if (sretval==null) {
+          retval=preferences_.getInt(name,idefault);
+        }else{
+           try { 
+             retval=Integer.parseInt(sretval);
+           }catch(NumberFormatException ex){
+               LOG.warning("invalid int config value "+name+", use default "+idefault);
+           }
+        }
+        return retval;
     }
   
+    public boolean getBooleanConfigValue(String name, boolean bdefault)
+    {
+        String sretval = localPreferences_.get(name);
+        boolean retval = bdefault;
+        if (sretval==null) {
+          retval=preferences_.getBoolean(name,bdefault);
+        }else{
+            if (sretval.equals("true")||sretval.equals("yes")||sretval.equals("1")||sretval.equals("on")) {
+                retval=true;
+            }else if(sretval.equals("false")||sretval.equals("no")||sretval.equals("0")||sretval.equals("off")){
+                retval=false;
+            }else{
+                LOG.warning("invalid boolean config value "+name+", use default "+bdefault);
+            }
+        }
+        return retval;
+    }
+    
     public String getFinalFieldNamePattern()
     { return finalFieldNamePattern_; }
     
@@ -175,7 +222,7 @@ public class JavaFacts extends DefaultFacts {
 
     
     private Preferences  preferences_=null;        
-    private HashMap<String,String>  localPreferences_=null;
+    private HashMap<String,String>  localPreferences_=new HashMap<String,String>();
     
     private String  nonFinalFieldNamePattern_="[a-z]+.*";
     private String  finalFieldNamePattern_="([A-Z]+(_|[A-Z]|[0-9])*)|serialVersionUID";
@@ -187,6 +234,8 @@ public class JavaFacts extends DefaultFacts {
     private String  enumConstantNamePattern_="[A-Z](_|[A-Z]|[0-9])*";
     private String  typeArgumentNamePattern_="[A-Z]+([A-Z]|[0-9])*";
     private PackagesStore packagesStore_=new PackagesStore(this);
+    
+    private static final Logger LOG = Logger.getLogger(JavaFacts.class.getName());
     
     
 }

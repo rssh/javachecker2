@@ -49,7 +49,7 @@ public class Main
        return;
    }
    try {
-     app.process(args);
+     app.process();
    }catch(ProcessingException ex){
       System.err.println(ex.getMessage());
       if (debug_) {
@@ -60,10 +60,8 @@ public class Main
  
  
  
- public void process(String[] args) throws ProcessingException
- {
-   
-   
+ public void process() throws ProcessingException
+ {      
    
    try {
      readAndCheckSources();
@@ -103,12 +101,14 @@ public class Main
    TermWare.getInstance().addPrinterFactory("Java",new JavaPrinterFactory());
    getPreferences();
  
-   home_=System.getProperty("javachecker.home");
    if (home_==null) {
+     home_=System.getProperty("javachecker.home");
+     if (home_==null) {
        home_=System.getenv("JAVACHECKER_HOME");
        if (home_==null) {           
            throw new ConfigException("JAVACHECKER_HOME  is not set");
        }
+     }
    }
    try {
      TermWare.getInstance().getTermLoader().addSearchPath(home_+File.separator+"systems");
@@ -169,8 +169,37 @@ public class Main
               throw new ConfigException("-I option require argument");
           }
           ++i;
+      }else if(args[i].equals("--include")){
+          if (args.length==i+1) {
+              throw new ConfigException("--include option require argument");
+          }
+          getFacts().getPackagesStore().getSourceDirs().add(args[i+1]);    
+          ++i;
+      }else if(args[i].equals("--enable")){
+          if (args.length==i+1) {
+              throw new ConfigException("--enable option require argument");
+          }
+          String checkName = args[i+1];
+          ++i;
+          getFacts().setCheckEnabled(checkName,true);
+      }else if (args[i].equals("--disable")){
+          if (args.length==i+1) {
+              throw new ConfigException("--disable option require argument");
+          }
+          String checkName = args[i+1];
+          ++i;
+          getFacts().setCheckEnabled(checkName,false);          
+      }else if (args[i].equals("--config")){
+          if (args.length==i+1 || args.length==i+2) {
+              throw new ConfigException("--config option require two arguments");              
+          }
+          String configName=args[i+1];
+          String configValue=args[i+2];
+          i+=2;
+          getFacts().setConfigValue(configName,configValue);
       }else{
-          getFacts().getPackagesStore().getSourceDirs().add(args[i]);          
+          getFacts().getPackagesStore().getSourceDirs().add(args[i]);    
+          getFacts().getPackagesStore().getSourceDirsToProcess().add(args[i]);
       }
    }
  }
@@ -199,9 +228,9 @@ public class Main
   }catch(BackingStoreException ex){
       throw new ConfigException("BackingStoreException during parsing prefernces:"+ex.getMessage());
   }
-  if (keys.length==0) {
-      System.err.println("Warning: user preferences is not set. To set preferences, use -prefs option");
-  }
+  //if (keys.length==0) {
+  //    System.err.println("Warning: user preferences is not set. To set preferences, use -prefs option");
+  //}
  }
  
  private void loadCheckSystems(String[] args) throws TermWareException, ConfigException
@@ -221,8 +250,12 @@ public class Main
    System.err.println("where options must be one from:");
    System.err.println("  --prefs fname              read configuration from preferences file fname.");   
    System.err.println("  --showFiles                during check, print names of analyzed files.");   
-   System.err.println("  --help                     output this help message.");   
+   System.err.println("  --help                     output this help message.");     
    System.err.println("  --output fname             write report to file fname");
+   System.err.println("  --enable check-name        enable checking for check-name");
+   System.err.println("  --disable check-name       disable checking for check-name");
+   System.err.println("  --config  name value       set configuration item of name to value");
+   System.err.println("  --include dir              set directory, where situated source files, from which processed sources are depend");
    System.err.println("  --debug                    put to stderr a lot of debug output");
    System.err.println("  --dump                     dump to stdout AST of parsed files");
    System.err.println("  --q                        minimize output to stdout");
@@ -236,7 +269,7 @@ public class Main
      if (getFacts().getPackagesStore().getSourceDirs().isEmpty()) {
          throw new ConfigException("no directories to read");
      }
-     for(String dirName: getFacts().getPackagesStore().getSourceDirs()){        
+     for(String dirName: getFacts().getPackagesStore().getSourceDirsToProcess()){        
          File f = new File(dirName);         
          if (!f.exists()) {
              throw new ConfigException(dirName + " does not exists");
@@ -303,8 +336,20 @@ public class Main
        cu.setPackageModel(pm);
        AnalyzedUnitRef ref = new AnalyzedUnitRef(AnalyzedUnitType.SOURCE,sourceDir+"/"+packageDirName.replace('.','/'),f.getName(),cu);
        pm.addCompilationUnit(source,cu,ref);   
-          
-       checkSource(cu);              
+       
+       try {
+          checkSource(cu);              
+       }catch(TermWareException ex){
+           System.err.println("error during checking "+f.getAbsolutePath()+":"+ex.getMessage());
+           if (ex instanceof SourceCodeLocation) {
+               FileAndLine fileAndLine=((SourceCodeLocation)ex).getFileAndLine();
+               System.err.println("at "+fileAndLine.getFname()+","+fileAndLine.getLine());
+           }
+           System.err.println("skipping");
+           if (true/*isVerbose()*/) {
+               ex.printStackTrace();
+           }
+       }
      }
           
      ++nLoadedFiles_;          
@@ -377,12 +422,21 @@ public class Main
    noClean_=noClean;  
  }
  
- public static void  addInputDirectory(String directory)
+ /**
+  *add directory.
+  *@param directory -- directory to add.
+  *@param process -- if true, files in this directory will be processed by checkers, otherwise only loaded on demand.
+  */
+ public static void  addInputDirectory(String directory, boolean process)
  {
   JavaFacts facts=getFacts();
   PackagesStore packagesStore=facts.getPackagesStore();
   List<String> sourceDirs=packagesStore.getSourceDirs();
   sourceDirs.add(directory);
+  if (process) {
+      List<String> sourceDirsToProcess = packagesStore.getSourceDirsToProcess();
+      sourceDirsToProcess.add(directory);
+  }
  }
  
  
@@ -426,11 +480,7 @@ public class Main
  private static String       prefsFname_  = null;
  private static Preferences  prefs_       = null;
  
- /**
-  * set of directories to check.
-  */
- //private static HashSet<String>      inputDirs_  = null;
-
+ 
  private static boolean      debug_ = false;
  private static boolean      showFiles_ = false;
  private static boolean      helpOnly_ = false;

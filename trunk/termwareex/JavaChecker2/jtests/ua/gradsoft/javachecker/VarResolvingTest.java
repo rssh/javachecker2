@@ -32,7 +32,7 @@ public class VarResolvingTest extends TestCase
     protected void setUp() throws Exception
     {
         JavaCheckerFacade.init();
-        JavaCheckerFacade.addInputDirectory("testpackages/hiding");
+        JavaCheckerFacade.addInputDirectory("testpackages/hiding",true);
     }
     
     public void testHd1() throws Exception

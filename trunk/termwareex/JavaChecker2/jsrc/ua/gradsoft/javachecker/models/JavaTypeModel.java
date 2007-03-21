@@ -101,7 +101,7 @@ public abstract class JavaTypeModel {
    *get superclass.  
    *does not supported for primitive types, type arguments, wildcard bounds
    */
-  public abstract JavaTypeModel getSuperClass() throws NotSupportedException, TermWareException;
+  public abstract JavaTypeModel getSuperClass() throws NotSupportedException, TermWareException, EntityNotFoundException;
 
   /**
    *get all superinterfaces.  

@@ -104,8 +104,9 @@ public class Checkers {
                             throw new ConfigException("Unknown checker type:"+type);
                     }
                     checkers_.put(name,checker);                    
+                    boolean enabled = facts_.getBooleanConfigValue("Check"+name,enabledByDefault);
                     Violations violations=Main.getFacts().getViolations();
-                    violations.addType(name,category,description,enabledByDefault);
+                    violations.addType(name,category,description,enabled);                    
                     checker.configure(Main.getFacts());
                 }else{
                     throw new ConfigException("define term required instead "+TermHelper.termToPrettyString(ct));
@@ -141,7 +142,7 @@ public class Checkers {
                         }
                     }
                 }
-                if (enabled && ttm!=null) {                            
+                if (enabled && ttm!=null) {      
                     checker.run(ttm,astTermHolder,modelTermHolder);
                 }
             }

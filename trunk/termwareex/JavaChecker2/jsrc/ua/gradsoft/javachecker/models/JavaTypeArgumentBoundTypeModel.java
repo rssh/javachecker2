@@ -294,7 +294,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         return resolvedTypeArguments_;
     }
     
-    public JavaTypeModel  getSuperClass() throws TermWareException, NotSupportedException
+    public JavaTypeModel  getSuperClass() throws TermWareException, NotSupportedException, EntityNotFoundException
     {
       if (boundSuperClassModel_==null)  {
           boundSuperClassModel_=getSubstitution().substitute(origin_.getSuperClass());

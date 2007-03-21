@@ -28,7 +28,7 @@ Checkers(
   ),
 
 
- define(UnclosedCloseable,test,"test model",
+ define(UnclosedCloseable,resources,"warn about possible unclosed closeable",
         MODEL_RULESET,
         ruleset(
           import(general,apply),
