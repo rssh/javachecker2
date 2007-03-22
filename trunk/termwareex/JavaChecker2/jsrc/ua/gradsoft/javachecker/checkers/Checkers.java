@@ -107,7 +107,7 @@ public class Checkers {
                     boolean enabled = facts_.getBooleanConfigValue("Check"+name,enabledByDefault);
                     Violations violations=Main.getFacts().getViolations();
                     violations.addType(name,category,description,enabled);                    
-                    checker.configure(Main.getFacts());
+                    checker.configure(Main.getFacts());                    
                 }else{
                     throw new ConfigException("define term required instead "+TermHelper.termToPrettyString(ct));
                 }
@@ -132,8 +132,9 @@ public class Checkers {
             Holder<Term> astTermHolder = new Holder<Term>();
             Holder<Term> modelTermHolder = new Holder<Term>();
             for (Map.Entry<String,AbstractChecker> e:  checkers_.entrySet()) {
-                AbstractChecker checker = e.getValue();
-                boolean enabled=checker.isEnabled();
+                AbstractChecker checker = e.getValue();                
+                //boolean enabled=checker.isEnabled();                                         
+                boolean enabled=facts_.isCheckEnabled(e.getKey());
                 if (ttm!=null) {
                     CheckerComment checkerComment = ttm.getCheckerComment();
                     if (checkerComment!=null) {
@@ -197,8 +198,12 @@ public class Checkers {
     
     private void loadBuildinCheckers() throws TermWareException, ConfigException
     {
-        checkers_.put("NamePatterns",new ClassChecker("NamePatterns","style","check name patterns",TermUtils.createString("ua.gradsoft.javachecker.checkers.NamePatternsChecker"),true));
-        checkers_.put("EqualsHashCode",new ClassChecker("EqualsHashCode","basic","check that overloaded hashCode and equals are correspond",TermUtils.createString("ua.gradsoft.javachecker.checkers.EqualsHashCodeChecker"),true));
+        ClassChecker nameChecker=new ClassChecker("NamePatterns","style","check name patterns",TermUtils.createString("ua.gradsoft.javachecker.checkers.NamePatternsChecker"),true);
+        checkers_.put(nameChecker.getName(),nameChecker);
+        facts_.getViolations().addType(nameChecker.getName(),nameChecker.getCategory(),nameChecker.getDescription(),nameChecker.isEnabled());
+        ClassChecker equalsHashCodeChecker=new ClassChecker("EqualsHashCode","basic","check that overloaded hashCode and equals are correspond",TermUtils.createString("ua.gradsoft.javachecker.checkers.EqualsHashCodeChecker"),true);
+        checkers_.put(equalsHashCodeChecker.getName(),equalsHashCodeChecker);
+        facts_.getViolations().addType(equalsHashCodeChecker.getName(),equalsHashCodeChecker.getCategory(),equalsHashCodeChecker.getDescription(),equalsHashCodeChecker.isEnabled());
     }
     
     private String getEtcDirectory() {

@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.prefs.Preferences;
+import java.util.TreeMap;
 
 /**
  *
@@ -20,7 +20,7 @@ public class Violations {
     
     /** Creates a new instance of Violations */
     public Violations() {
-        byTypes_=new HashMap<String,TypeOfViolation>();
+        byTypes_=new TreeMap<String,TypeOfViolation>();
     }
     
     public void addType(String typeOfViolation, String category, String description, boolean enabledByDefault)
@@ -120,6 +120,6 @@ public class Violations {
     }
     
     
-    private HashMap<String,TypeOfViolation> byTypes_;
+    private TreeMap<String,TypeOfViolation> byTypes_;
     
 }

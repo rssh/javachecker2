@@ -6,12 +6,12 @@
 package ua.gradsoft.javachecker.models;
 
 import java.io.File;
-import java.lang.ref.SoftReference;
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.JavaFacts;
-import ua.gradsoft.javachecker.Main;
+import ua.gradsoft.javachecker.util.JarClassLoader;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
@@ -163,7 +163,36 @@ public class JavaPackageModel {
           } 
       }     
       
-      // 3. try to load from class loader.
+      // 3. try to load from jar-s classLoaderds
+      for(String path: owner_.getPackagesStore().getJars()) {
+          ClassLoader classLoader = null;
+          try {
+             classLoader = new JarClassLoader(path);
+          }catch(MalformedURLException ex){
+             // TODO: trace,            
+             throw new AssertException("exception during creating classloader for jar "+path,ex);            
+          }
+          try {
+             Class<?>    theClass = classLoader.loadClass(name_+"."+name);
+             JavaClassUnitModel cu = new JavaClassUnitModel(theClass);
+             AnalyzedUnitRef newRef = new AnalyzedUnitRef(AnalyzedUnitType.CLASS,path,theClass.getName(),cu);
+             this.addClassUnit(cu,newRef);
+             for(JavaTypeModel tm: newRef.getJavaUnitModel().getTypeModels()) {
+                 typeModelRefs_.put(tm.getName(),new JavaTypeModelRef(tm.getName(),newRef,tm));
+                 if (tm.getName().equals(name)) {
+                    retval=tm;                
+                    break;
+                 }
+             }                                  
+          }catch(ClassNotFoundException ex){
+              continue;
+          }
+          if (retval!=null) {
+              return retval;
+          }
+      }
+      
+      // 4. try to load from system class loader.            
       try {              
         Class<?> theClass = ClassLoader.getSystemClassLoader().loadClass(name_+"."+name);      
         JavaClassUnitModel cu =new JavaClassUnitModel(theClass);        

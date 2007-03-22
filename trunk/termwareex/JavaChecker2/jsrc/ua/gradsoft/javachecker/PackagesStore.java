@@ -26,10 +26,8 @@ public class PackagesStore
         owner_=owner;
         packageModels_=new HashMap<String,JavaPackageModel>();    
         sourceDirsToProcess_=new ArrayList<String>();
-        allSourceDirs_=new ArrayList<String>();
-        // will be enabled later, after writing classloader
-        //classDirs_=new ArrayList<String>();
-        //jars_=new ArrayList<String>();
+        allSourceDirs_=new ArrayList<String>();     
+        jars_=new ArrayList<String>();
     }
     
     public JavaPackageModel  findOrAddPackage(String packageName)
@@ -72,6 +70,11 @@ public class PackagesStore
       return sourceDirsToProcess_;  
     }
     
+    public  List<String>  getJars()
+    {
+      return jars_;  
+    }
+    
     private JavaFacts   owner_;
     private HashMap<String, JavaPackageModel> packageModels_;    
     
@@ -85,9 +88,9 @@ public class PackagesStore
      */
     private ArrayList<String>  allSourceDirs_;
     
-    //
-    // will be enabled later, after implementing specific classloader
-    //private ArrayList<String>  classDirs_;
-    //private ArrayList<String>  jars_;
+    /**
+     * jar files, from which we want to load file.
+     */
+    private ArrayList<String>  jars_;
     
 }

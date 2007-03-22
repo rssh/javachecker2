@@ -86,13 +86,13 @@ public class NamePatternsChecker implements JavaTypeModelProcessor {
     
     public void checkClassNamePatterns(JavaTermTypeAbstractModel tm, JavaFacts facts) throws TermWareException {
         if (!tm.getName().matches(facts.getClassNamePattern())) {
-            facts.violationDiscovered("ClassNamePatterns","bad classname pattern",tm.getTerm());
+            facts.violationDiscovered("NamePatterns","bad classname pattern",tm.getTerm());
         }
     }
     
     public void checkTypeVariableNamePattern(String name,JavaFacts facts, Term t) throws TermWareException {
         if (!name.matches(facts.getTypeArgumentNamePattern())) {
-            facts.violationDiscovered("TypeArgumentNamePatterns","violation of type argument name pattern ",t );
+            facts.violationDiscovered("NamePatterns","violation of type argument name pattern ",t );
         }
     }
     
@@ -106,7 +106,7 @@ public class NamePatternsChecker implements JavaTypeModelProcessor {
                 }else{
                     t = tm.getTerm();
                 }
-                facts.violationDiscovered("EnumConstantNamePatterns","enum constant does not match pattern",t);
+                facts.violationDiscovered("NamePatterns","enum constant does not match pattern",t);
             }
         }
     }
@@ -115,11 +115,11 @@ public class NamePatternsChecker implements JavaTypeModelProcessor {
     public void checkMemberVariableNamePatterns(JavaTermMemberVariableModel v, JavaFacts facts) throws TermWareException {
         if (v.getModifiersModel().isFinal()) {
             if (!v.getName().matches(facts.getFinalFieldNamePattern())) {
-                facts.violationDiscovered("VariablePatterns", "final field name pattern violation", v.getVariableDeclaratorTerm());
+                facts.violationDiscovered("NamePatterns", "final field name pattern violation", v.getVariableDeclaratorTerm());
             }
         }else{
             if (!v.getName().matches(facts.getNonFinalFieldNamePattern())) {
-                facts.violationDiscovered("VariablePatterns", "non-final field name pattern violation", v.getVariableDeclaratorTerm());
+                facts.violationDiscovered("NamePatterns", "non-final field name pattern violation", v.getVariableDeclaratorTerm());
             }
         }
         if (facts.isCheckEnabled("NonFinalPublicFields")) {
@@ -136,7 +136,7 @@ public class NamePatternsChecker implements JavaTypeModelProcessor {
      */
     public void checkMethodNamePatterns(JavaTermMethodModel m, final JavaFacts facts) throws TermWareException {
         if (!m.getName().matches(facts.getMethodNamePattern())) {
-            facts.violationDiscovered("MethodNamePatterns","bad name of method", m.getTerm());
+            facts.violationDiscovered("NamePatterns","bad name of method", m.getTerm());
         }
         boolean retval=true;
         TermHolder termHolder=new TermHolder(TermWare.getInstance().getTermFactory().createBoolean(retval));
@@ -157,7 +157,7 @@ public class NamePatternsChecker implements JavaTypeModelProcessor {
             
             private void checkFormalParameterName(Term t,String formalParameterName,TermHolder result) throws TermWareException {
                 if (!formalParameterName.matches(facts.getLocalVariableNamePattern())) {
-                    facts.violationDiscovered("MethodNamePatterns","bad formal parameter name",t);
+                    facts.violationDiscovered("NamePatterns","bad formal parameter name",t);
                     result.setValue(TermWare.getInstance().getTermFactory().createBoolean(false));
                 }
             }
@@ -169,7 +169,7 @@ public class NamePatternsChecker implements JavaTypeModelProcessor {
                 Term nameTerm=t.getSubtermAt(0);
                 String variableName=nameTerm.getString();
                 if (!variableName.matches(facts.getLocalVariableNamePattern())) {
-                    facts.violationDiscovered("VariablePatterns","violation of variable name conventions",t);
+                    facts.violationDiscovered("NamePatterns","violation of variable name conventions",t);
                     result.setValue(TermWare.getInstance().getTermFactory().createBoolean(false));
                 }
                 return true;

@@ -2,17 +2,18 @@
  * JavaCheckerTask.java
  *
  * Created 07/04/2004, 4:11
- * $Id: JavaCheckerTask.java,v 1.2 2007-03-21 18:34:07 rssh Exp $
+ * $Id: JavaCheckerTask.java,v 1.3 2007-03-22 19:27:10 rssh Exp $
  */
 
 package ua.gradsoft.javachecker.ant;
 
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Task;
+import org.apache.tools.ant.types.DirSet;
 import ua.gradsoft.javachecker.ConfigException;
 
 import ua.gradsoft.javachecker.Main;
@@ -28,10 +29,10 @@ public class JavaCheckerTask extends Task {
     public JavaCheckerTask() {
     }
     
-    public void  setInput(String inputDirectory)
-    {
-     inputDirectory_=inputDirectory;   
-    }
+  //  public void  setInput(String inputDirectory)
+  //  {
+  //   inputDirectory_=inputDirectory;   
+  //  }
         
     
     public void  setOutput(String output)
@@ -70,22 +71,15 @@ public class JavaCheckerTask extends Task {
         public void setCheck(String check) { check_=check; }
     }
     
-    public CheckName createEnable()
-    {
-        return new CheckName();
-    }
     
-    public void addEnable(CheckName enabled)
+    public void addConfiguredEnable(CheckName enabled)
     {
         enabled_.add(enabled);
     }
     
-    public CheckName createDisable()
-    {
-        return new CheckName();
-    }
+  
     
-    public void addDisable(CheckName disabled)
+    public void addConfiguredDisable(CheckName disabled)
     {
         disabled_.add(disabled);
     }
@@ -99,44 +93,32 @@ public class JavaCheckerTask extends Task {
         public void setName(String name)   { name_=name; }
         
         public String getValue()           { return value_; }
-        public void   setValue(String value) { value_=value; }        
+        public void   setValue(String value) { value_=value; }       
+        
+        public String toString()
+        { return "("+name_+","+value_+")"; }
     }
     
-    public ConfigNVPair  createConfig()
-    { return new ConfigNVPair(); }
     
-    public void addConfig(ConfigNVPair nvPair)
+    public void addConfiguredConfig(ConfigNVPair nvPair)
     {
+      System.err.println("addConfiguredConfig:"+nvPair.toString());  
       configNVPairs_.add(nvPair);  
     }
+       
+
     
-    public static class DirectoryName
-    {
-        private String dirname_;
-        
-        public String getDirname() { return dirname_; }
-        public void setDirname(String dirname) { dirname_=dirname; }
-    }
-        
-    public DirectoryName  createInclude()
-    {
-        return new DirectoryName();
-    }        
-    
-    public void addInclude(DirectoryName dir)
-    {
-        includeDirectories_.add(dir.getDirname());
-    }
-        
-    
-    public DirectoryName createInput()
-    {
-        return new DirectoryName();
+    public void addConfiguredInclude(DirSet dirSet)
+    {                       
+      dirSet.setProject(this.getProject());  
+      includeDirectories_.add(dirSet.getDir(getProject()).getAbsolutePath());
     }
     
-    public void addInput(DirectoryName dir)
-    {
-        inputDirectories_.add(dir.getDirname());
+    
+    public void addConfiguredInput(DirSet dirSet) 
+    {        
+        dirSet.setProject(this.getProject());       
+        inputDirectories_.add(dirSet.getDir(getProject()).getAbsolutePath());
     }
     
     

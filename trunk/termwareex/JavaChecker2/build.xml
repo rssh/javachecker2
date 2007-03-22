@@ -120,7 +120,12 @@
 
 
  <target name="check" depends="declareJavaChecker" >
-   <JavaChecker jchhome="." input="jsrc" output="jchreport.txt" prefs="etc/prefs1.xml" debug="false" />
+   <JavaChecker jchhome="." output="jchreport.txt" prefs="etc/prefs1.xml" debug="false">
+    <input dir="jsrc" />
+    <config name="aa" value="bb" >  </config>
+    <!--<disable check="NamePatterns" />-->
+    <disable check="UnclosedCloseable" />
+   </JavaChecker>
  </target>
 
 

@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
@@ -17,6 +18,7 @@ import ua.gradsoft.javachecker.models.AnalyzedUnitRef;
 import ua.gradsoft.javachecker.models.AnalyzedUnitType;
 import ua.gradsoft.javachecker.models.JavaCompilationUnitModel;
 import ua.gradsoft.javachecker.models.JavaPackageModel;
+import ua.gradsoft.javachecker.util.JarClassLoader;
 import ua.gradsoft.termware.IEnv;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
@@ -175,6 +177,19 @@ public class Main
           }
           getFacts().getPackagesStore().getSourceDirs().add(args[i+1]);    
           ++i;
+      }else if(args[i].equals("--includejar")) {
+          if (args.length==i+1) {
+              throw new ConfigException("--includejar option require argument");
+          }
+          String jarName=args[i+1];
+          // check that jar can be loaded.
+          try {
+              ClassLoader cl = new JarClassLoader(jarName);
+          }catch(MalformedURLException ex){
+              throw new ConfigException("can't add jar "+jarName,ex);
+          }
+          getFacts().getPackagesStore().getJars().add(jarName);    
+          ++i;         
       }else if(args[i].equals("--enable")){
           if (args.length==i+1) {
               throw new ConfigException("--enable option require argument");
@@ -438,6 +453,7 @@ public class Main
       sourceDirsToProcess.add(directory);
   }
  }
+ 
  
  
  public static String  getHome()

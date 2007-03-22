@@ -99,9 +99,10 @@ public class JavaFacts extends DefaultFacts {
     }
     
     public void setCheckEnabled(String name, boolean value)
-    {
+    {               
+        System.err.println("JavaFacts.setCheckEnabled("+name+","+value+")");
         setConfigValue("Check"+name,value ? "true" : "false");
-        violations_.setEnabled(name,value);
+        violations_.setEnabled(name,value);                
     }
     
     
