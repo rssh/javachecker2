@@ -109,11 +109,6 @@ public class JavaNullTypeModel extends JavaTypeModel {
     public JavaTypeModel  getReferencedType() throws NotSupportedException
     { throw new NotSupportedException(); }
     
-    public boolean canCheck()
-    { return false; }
-    
-    public boolean check() 
-    { return true; }
     
     /**
      *@return false

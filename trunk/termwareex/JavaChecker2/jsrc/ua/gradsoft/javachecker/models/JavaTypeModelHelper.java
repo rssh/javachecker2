@@ -43,6 +43,7 @@ public class JavaTypeModelHelper {
     public static boolean subtypeOrSame(JavaTypeModel t, JavaTypeModel s, MethodMatchingConversions conversions, boolean debug) throws TermWareException
     {   
       boolean subtypeOrSameDebugEnabled=true;  
+      
       //debug=true;
       if (debug)  {
           LOG.info("subtimeOrSame("+t.getFullName()+","+s.getFullName()+")");
@@ -123,6 +124,13 @@ public class JavaTypeModelHelper {
                   JavaClassTypeModel cs = (JavaClassTypeModel)s;
                   if (t instanceof JavaClassTypeModel) {
                       JavaClassTypeModel ct = (JavaClassTypeModel)t;
+                      if (debug) {
+                          LOG.info("class models:"+cs.getJavaClass().getName()+","+ct.getJavaClass().getName());
+                          LOG.info("return assignable");                          
+                          LOG.info("ClassLoaders:"+cs.getJavaClass().getClassLoader()+","+ct.getJavaClass().getClassLoader());
+                      }                      
+                      Class<?> sClass = cs.getJavaClass();
+                      Class<?> tClass = ct.getJavaClass();
                       retval=cs.getJavaClass().isAssignableFrom(ct.getJavaClass());
                   }else{                                            
                       if (!same(t,cs)) {

@@ -966,9 +966,9 @@ public class JavaResolver {
      */
     public static JavaMethodModel resolveMethod(String methodName,List<JavaTypeModel> argumentTypes, JavaTypeArgumentsSubstitution substitution,JavaTypeModel where) throws EntityNotFoundException, TermWareException {
         boolean printDetails=false;
-        if (methodName.equals("toByteArray")||methodName.equals("handleBinaryBlob")) {
-             printDetails=true;
-        }
+       // if (methodName.equals("termToString")||methodName.equals("addRule")) {
+       //      printDetails=true;
+       // }
         if (printDetails) {
             StringBuilder sb=new StringBuilder();
             boolean frs=true;

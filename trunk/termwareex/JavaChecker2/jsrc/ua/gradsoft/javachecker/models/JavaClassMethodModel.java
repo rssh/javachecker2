@@ -56,7 +56,7 @@ public class JavaClassMethodModel extends JavaMethodModel
     
     public JavaTypeModel  getResultType() throws TermWareException
     {
-        Type resultType = method_.getReturnType();
+        Type resultType = method_.getGenericReturnType();
         return JavaClassTypeModel.createTypeModel(resultType);
     }
     
@@ -102,16 +102,6 @@ public class JavaClassMethodModel extends JavaMethodModel
        return retval;
     }
  
-    
-    public boolean canCheck()
-    {
-        return false;
-    }
-    
-    public  boolean check() throws TermWareException
-    {
-      return true;  
-    }
     
      public boolean         isSupportBlockModel()
      { return false; }

@@ -186,12 +186,6 @@ public class JavaArrayTypeModel extends JavaTypeModel
         return JavaArrayTypeModel.this;
     }
     
-    public boolean canCheck()
-    {
-        return false;
-    }
-    
-    public boolean check() { return true; }
     
     /**
      * ArrayLength

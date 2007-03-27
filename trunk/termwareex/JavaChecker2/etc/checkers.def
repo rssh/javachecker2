@@ -28,7 +28,7 @@ Checkers(
   ),
 
 
- define(UnclosedCloseable,resources,"warn about possible unclosed closeable",
+ define(UnclosedCloseable,resources,"unclosed instance of closeable",
         MODEL_RULESET,
         ruleset(
           import(general,apply),
@@ -42,7 +42,8 @@ Checkers(
           checkNoOpen(CHANGE($x,OPEN,$where)) -> false [ violationDiscovered(UnclosedCloseable,"closeable variable does not closed",$where) ],
 
           checkNoOpen($x && $y) -> checkNoOpen($x) && checkNoOpen($y),
-          checkNoOpen($x || $y) -> checkNoOpen($x) || checkNoOpen($y)
+          checkNoOpen($x || $y) -> checkNoOpen($x) || checkNoOpen($y),
+          checkNoOpen(Q($x)) -> checkNoOpen($x)
                     
 
         ),

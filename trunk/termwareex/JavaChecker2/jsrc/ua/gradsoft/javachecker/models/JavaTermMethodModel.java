@@ -169,11 +169,11 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     private Map<String,JavaFormalParameterModel> formalParametersMap_=null;
     private List<JavaFormalParameterModel>       formalParametersList_=null;
     
-    public static int TYPE_PARAMETERS_TERM_INDEX=0;
-    public static int RESULT_TYPE_TERM_INDEX=1;
-    public static int METHOD_DECLARATOR_INDEX=2;    
-    public static int THROWS_SPECIFICATION_INDEX=3;
-    public static int BLOCK_INDEX=4;
+    public static final int TYPE_PARAMETERS_TERM_INDEX=0;
+    public static final int RESULT_TYPE_TERM_INDEX=1;
+    public static final int METHOD_DECLARATOR_INDEX=2;    
+    public static final int THROWS_SPECIFICATION_INDEX=3;
+    public static final int BLOCK_INDEX=4;
         
     public static final int METHOD_DECLARATOR__IDENTIFIER_INDEX=0;
     public static final int METHOD_DECLARATOR__FORMAL_PARAMETERS_INDEX=1;

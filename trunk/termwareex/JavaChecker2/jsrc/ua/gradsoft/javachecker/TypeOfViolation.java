@@ -50,11 +50,22 @@ public class TypeOfViolation {
     public  void  increment()
     { ++counter_; }
     
-    public void report(PrintStream out)
+    public void report(PrintStream out, ReportFormat format)
     {
       if (enabled_) {
-        out.print(description_);
-        out.println("\t:\t"+counter_);
+       switch(format)   {
+           case TEXT:   
+               out.print(description_);
+               out.println("\t:\t"+counter_);
+               break;
+           case HTML:
+               out.print("<tr><td>");
+               out.print(description_);
+               out.print("</td><td>");
+               out.print(counter_);
+               out.print("</td></tr>");
+               break;
+       }
       }
     }
     

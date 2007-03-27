@@ -65,10 +65,11 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     }
     
     /**
-     * EnumModel(identifier,superInterfaces, EnumConstantsList,membersList,context)
+     * EnumModel(modifiers,identifier,superInterfaces, enumConstantsList,membersList,context)
      */
     public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
+        Term modifiersTerm=getModifiersModel().getModelTerm();
         Term identifierTerm=t_.getSubtermAt(QENUM_IDENTIFIER_INDEX_);
         List<JavaTypeModel> si = getSuperInterfaces();
         Term implementsList = t_.getSubtermAt(IMPLEMENTS_INDEX_);
@@ -92,7 +93,7 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
         Term membersList = getMemberModelsList();
         JavaPlaceContext ctx = JavaPlaceContextFactory.createNewTypeContext(this);
         Term tctx=TermUtils.createJTerm(ctx);
-        return TermUtils.createTerm("EnumDeclarationModel",
+        return TermUtils.createTerm("EnumModel",modifiersTerm,
                 identifierTerm, implementsListModel,
                 enumConstantsList, membersList,tctx
                 );

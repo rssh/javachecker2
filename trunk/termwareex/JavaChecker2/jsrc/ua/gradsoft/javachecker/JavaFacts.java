@@ -17,6 +17,7 @@ import ua.gradsoft.termware.DefaultFacts;
 import ua.gradsoft.termware.IEnv;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.TermWareRuntimeException;
 
 
 
@@ -181,17 +182,55 @@ public class JavaFacts extends DefaultFacts {
     
     //
     
-    void report(PrintStream out)
+    void report(PrintStream out, ReportFormat format)
     {
+      switch(format)  {
+          case TEXT:
+              break;
+          case HTML:
+              out.println("<html><head> JavaChecker report </head><body>");
+              out.println("<p align=\"left\">Violations found:</p>");            
+              out.println("<table>");            
+              break;
+          default:
+              // internal error
+              throw new AssertionError("internal error: unknown report format "+format);
+      }
       Iterator it=defectReportItems_.iterator();
       while(it.hasNext()) {
           DefectReportItem item=(DefectReportItem)it.next();
-          item.println(out);
+          item.println(out,format);
       }
       
-      violations_.report(out);
+      switch(format)  {
+          case TEXT:
+              break;
+          case HTML:           
+              out.println("</table>");
+              out.println("");
+              out.println("<p>Summary:</p>");
+              break;
+          default:
+              // internal error
+              throw new AssertionError("internal error: unknown report format "+format);
+      }
       
-      out.println("Files:"+Main.getNProcessedFiles());
+           
+      violations_.report(out,format);
+     
+      switch(format)  {
+          case TEXT:
+              out.println("Files:"+Main.getNProcessedFiles());
+              break;
+          case HTML:
+              out.println("Files:"+Main.getNProcessedFiles());
+              break;
+          default:
+              // internal error
+              throw new AssertionError("internal error: unknown report format "+format);
+      }
+      
+      
     }
     
     // utils      
@@ -200,7 +239,7 @@ public class JavaFacts extends DefaultFacts {
     {
         defectReportItems_.add(item);
         if (!Main.isQOption()&&Main.getOutputFname()!=null) {
-            item.println(System.out);
+            item.println(System.out,ReportFormat.TEXT);
         }
     }
     
@@ -227,7 +266,7 @@ public class JavaFacts extends DefaultFacts {
     
     private String  nonFinalFieldNamePattern_="[a-z]+.*";
     private String  finalFieldNamePattern_="([A-Z]+(_|[A-Z]|[0-9])*)|serialVersionUID";
-    private String  localVariableNamePattern_="[a-z]+([A-Z]|[a-z]|_[0-9])*";
+    private String  localVariableNamePattern_="[a-z]+([A-Z]|[a-z]|_|[0-9])*";
     private boolean checkClassNamePatterns_=true;
     private String  classNamePattern_="[A-Z_]+.*";
     private boolean  checkMethodNamePatterns_=true;

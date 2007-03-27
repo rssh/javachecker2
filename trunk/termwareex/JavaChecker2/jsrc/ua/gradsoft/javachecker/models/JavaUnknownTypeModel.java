@@ -117,11 +117,6 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     public List<JavaTypeModel> getSuperInterfaces()
     { return Collections.emptyList(); }
     
-    public boolean canCheck()
-    { return false; }
-    
-    public boolean check() 
-    { return true; }
     
     /**
      *@return false

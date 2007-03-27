@@ -18,8 +18,9 @@ package ua.gradsoft.javachecker.models;
 import java.io.File;
 import java.lang.ref.SoftReference;
 import java.net.MalformedURLException;
-import ua.gradsoft.javachecker.*;
-import ua.gradsoft.javachecker.util.JarClassLoader;
+import ua.gradsoft.javachecker.JUtils;
+import ua.gradsoft.javachecker.Main;
+import ua.gradsoft.javachecker.PackagesStore;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 import ua.gradsoft.termware.exceptions.AssertException;
@@ -67,14 +68,10 @@ public class AnalyzedUnitRef {
           break;
           case CLASS:
           {      
-              ClassLoader cl=null;    
+              ClassLoader cl=null;
               if (directory_!=null) {
-                  // actually directory holds a name of JarFile
-                  try {
-                     cl = new JarClassLoader(directory_);
-                  }catch(MalformedURLException ex){
-                      throw new AssertException("exception during creating jarloader for "+directory_, ex);
-                  }
+                  // actually directory holds a name of JarFile                  
+                  cl = Main.getFacts().getPackagesStore().getJarsClassLoader();
               }else{
                   cl=ClassLoader.getSystemClassLoader();           
               }

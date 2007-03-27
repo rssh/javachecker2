@@ -61,7 +61,7 @@ public class JavaTermPreincrementExpressionModel extends JavaTermExpressionModel
     {
       Term x = subexpression_.getModelTerm();
       Term ctx = TermUtils.createJTerm(this.createPlaceContext());
-      Term retval = TermUtils.createTerm("PreincrementExpression",x,ctx);
+      Term retval = TermUtils.createTerm("PreincrementExpressionModel",x,ctx);
       return retval;
     }
     

@@ -17,18 +17,21 @@ public class JarClassLoader extends URLClassLoader
 {
     
     /** Creates a new instance of JarClassLoader */
-    public JarClassLoader(String jarName) throws MalformedURLException
+    public JarClassLoader(String[] jarNames) throws MalformedURLException
     {
-        super(oneJarURL(jarName));
+        super(jarURLs(jarNames));
     }
     
     
-    private static URL[] oneJarURL(String jarName) throws MalformedURLException
+    
+    private static URL[] jarURLs(String[] jarNames) throws MalformedURLException
     {        
-        URL url = new URL("file","",jarName);
-        URL[] retval = new URL[1];
-        retval[0]=url;
+        URL[] retval = new URL[jarNames.length];
+        for(int i=0; i<jarNames.length; ++i) {
+          retval[i] = new URL("file","",jarNames[i]);
+        }             
         return retval;
     }
+    
     
 }

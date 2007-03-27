@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
@@ -18,7 +18,6 @@ import ua.gradsoft.javachecker.models.AnalyzedUnitRef;
 import ua.gradsoft.javachecker.models.AnalyzedUnitType;
 import ua.gradsoft.javachecker.models.JavaCompilationUnitModel;
 import ua.gradsoft.javachecker.models.JavaPackageModel;
-import ua.gradsoft.javachecker.util.JarClassLoader;
 import ua.gradsoft.termware.IEnv;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
@@ -134,7 +133,6 @@ public class Main
        throw new ConfigException("Can't init check systems:"+ex.getMessage(),ex);
    }
   
-  
   nProcessedFiles_=0;
   nLoadedFiles_=0;
  }
@@ -142,6 +140,7 @@ public class Main
  // TODO
  private void parseArgs(String[] args) throws ConfigException
  {
+   ArrayList<String> jars = new ArrayList<String>();
    for(int i=0; i<args.length; ++i) {
       if (args[i].equals("--prefs")) {
            if (args.length==i+1) {
@@ -181,14 +180,8 @@ public class Main
           if (args.length==i+1) {
               throw new ConfigException("--includejar option require argument");
           }
-          String jarName=args[i+1];
-          // check that jar can be loaded.
-          try {
-              ClassLoader cl = new JarClassLoader(jarName);
-          }catch(MalformedURLException ex){
-              throw new ConfigException("can't add jar "+jarName,ex);
-          }
-          getFacts().getPackagesStore().getJars().add(jarName);    
+          String jarName=args[i+1];        
+          jars.add(jarName);
           ++i;         
       }else if(args[i].equals("--enable")){
           if (args.length==i+1) {
@@ -212,11 +205,29 @@ public class Main
           String configValue=args[i+2];
           i+=2;
           getFacts().setConfigValue(configName,configValue);
+      }else if (args[i].equals("--output-format")) {
+          if (args.length==i+1) {
+              throw new ConfigException("--disable option require argument");
+          }
+          String formatName = args[i+1];
+          ++i;
+          boolean found=false;
+          for(ReportFormat rf: ReportFormat.values()) {
+              if (rf.getName().equals(formatName)) {
+                  reportFormat_=rf;
+                  found=true;
+                  break;
+              }
+          }          
+          if (!found) {
+              throw new ConfigException("Unknown output format:"+formatName);
+          }
       }else{
           getFacts().getPackagesStore().getSourceDirs().add(args[i]);    
           getFacts().getPackagesStore().getSourceDirsToProcess().add(args[i]);
       }
    }
+   getFacts().getPackagesStore().setJars(jars);
  }
  
  private void getPreferences() throws ConfigException
@@ -263,17 +274,19 @@ public class Main
    System.err.println();
    System.err.println("Usage: JavaChecker [options] directory");  
    System.err.println("where options must be one from:");
-   System.err.println("  --prefs fname              read configuration from preferences file fname.");   
-   System.err.println("  --showFiles                during check, print names of analyzed files.");   
-   System.err.println("  --help                     output this help message.");     
-   System.err.println("  --output fname             write report to file fname");
-   System.err.println("  --enable check-name        enable checking for check-name");
-   System.err.println("  --disable check-name       disable checking for check-name");
-   System.err.println("  --config  name value       set configuration item of name to value");
-   System.err.println("  --include dir              set directory, where situated source files, from which processed sources are depend");
-   System.err.println("  --debug                    put to stderr a lot of debug output");
-   System.err.println("  --dump                     dump to stdout AST of parsed files");
-   System.err.println("  --q                        minimize output to stdout");
+   System.err.println("  --prefs fname                  read configuration from preferences file fname.");   
+   System.err.println("  --showFiles                    during check, print names of analyzed files.");   
+   System.err.println("  --help                         output this help message.");     
+   System.err.println("  --output fname                 write report to file fname");
+   System.err.println("  --output-format (text|html)    format report in text or html");
+   System.err.println("  --enable check-name            enable checking for check-name");
+   System.err.println("  --disable check-name           disable checking for check-name");
+   System.err.println("  --config  name value           set configuration item of name to value");
+   System.err.println("  --include dir                  set directory, where situated source files, from which processed sources are depend");
+   System.err.println("  --includejar fname             set jar, where situated classes, from which processed sources are depend  ");
+   System.err.println("  --debug                        put to stderr a lot of debug output");
+   System.err.println("  --dump                         dump to stdout AST of parsed files");
+   System.err.println("  --q                            minimize output to stdout");
    System.err.println();
    System.err.println("note, that JavaChecker rules are configured throught preferences.");
    System.err.println("example of preferences file can be found in 'etc' subdirectory of distribution.");
@@ -379,7 +392,7 @@ public class Main
  
  
  private void report() throws AssertException
- {
+ {   
    if (outputFname_!=null) {
        File f=new File(outputFname_);
        PrintStream fout;
@@ -388,13 +401,13 @@ public class Main
        }catch(FileNotFoundException ex){
           throw new AssertException("Can't open file "+outputFname_+" for writing:"+ex.getMessage());
        }
-       try {
-         facts_.report(fout);
+       try {           
+         facts_.report(fout, reportFormat_);
        }finally{
            fout.close();
        }
    }else{
-      facts_.report(System.out);  
+      facts_.report(System.out, reportFormat_);  
    }
  }
 
@@ -426,6 +439,14 @@ public class Main
  {
      dump_=dump;
  }
+ 
+ 
+ public static ReportFormat  getReportFormat()
+ {  return reportFormat_; }
+ 
+ public static void  setReportFormat(ReportFormat reportFormat)
+ { reportFormat_=reportFormat; }
+ 
  
  public static boolean isNoClean()
  {
@@ -503,6 +524,7 @@ public class Main
  private static boolean      qOption_ = false;
  private static boolean      dump_=false;
  private static boolean      noClean_=false;
+ private static ReportFormat reportFormat_=ReportFormat.TEXT;
  
  private static int           nLoadedFiles_ = 0;
  private static int           nProcessedFiles_ = 0;

@@ -18,12 +18,11 @@ import ua.gradsoft.javachecker.util.Holder;
 import ua.gradsoft.termware.ITermRewritingStrategy;
 import ua.gradsoft.termware.ITermTransformer;
 import ua.gradsoft.termware.Term;
-import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermSystem;
 import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.TermWareException;
 import ua.gradsoft.termware.exceptions.AssertException;
-import ua.gradsoft.termware.util.TransformersStar;
+import ua.gradsoft.termware.strategies.FirstTopStrategy;
 
 /**
  *Checker which works over ModelTerm
@@ -88,6 +87,16 @@ public class ModelChecker extends AbstractChecker {
         if (Main.isDump()) {            
             modelTerm.println(System.out);
         }
+       // termSystem_.setDebugMode(true);
+       // termSystem_.setDebugEntity(FirstTopStrategy.class.getName());
+        
+        //TermSystem openCloseSystem = TermWare.getInstance().getRoot().resolveSystem("TrackOpenClose");
+        //openCloseSystem.setDebugMode(true);
+        //openCloseSystem.setDebugEntity("StrategyReductions");
+        //openCloseSystem.setDebugEntity("All");
+        //openCloseSystem.setDebugEntity("Reductions");
+        
+        
         Term ret = termSystem_.reduce(toReduce);
         if (Main.isDump()) {
             System.out.println("!!!---!!!");

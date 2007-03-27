@@ -112,11 +112,18 @@ public class Violations {
     }
     
     
-    public  void report(PrintStream out)
+    public  void report(PrintStream out, ReportFormat format)
     {
-        for(Map.Entry<String,TypeOfViolation> me : byTypes_.entrySet()) {
-            me.getValue().report(out);
+        if (format==ReportFormat.HTML) {
+            out.println("<table>");
         }
+        for(Map.Entry<String,TypeOfViolation> me : byTypes_.entrySet()) {
+            me.getValue().report(out,format);
+        }
+        if (format==ReportFormat.HTML) {
+            out.print("</table>");
+        }
+        
     }
     
     

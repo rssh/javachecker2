@@ -48,11 +48,6 @@ public class JavaTypeArgumentBoundMemberVariableModel extends JavaMemberVariable
         return origin_.getModifiersModel();
     }
     
-    public boolean canCheck()
-    { return false; }
-    
-    public boolean check()
-    { return true; }
     
     /**
      * TypeArgumentBoundMemberVariableModel(originModelTerm,ownerModelTerm)

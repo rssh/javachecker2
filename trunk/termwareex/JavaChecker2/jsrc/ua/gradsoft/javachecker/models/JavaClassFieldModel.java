@@ -57,14 +57,7 @@ public class JavaClassFieldModel extends JavaMemberVariableModel
        Term tctx = TermUtils.createJTerm(this);
        return TermUtils.createTerm("ClassField",tctx);
     }
-    
-    
-    public boolean canCheck()
-    { return false; }
-    
-    public boolean check()
-    { return true; }
-    
+           
        
     private JavaClassTypeModel classTypeModel_;
     private Field field_;

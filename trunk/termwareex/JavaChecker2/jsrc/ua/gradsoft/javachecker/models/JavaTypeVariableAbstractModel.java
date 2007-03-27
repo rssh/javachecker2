@@ -97,10 +97,7 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     public List<JavaTypeModel> getSuperInterfaces()
     { return Collections.emptyList(); }
 
-    
-    public boolean canCheck() {
-        return true; }
-    
+        
     
     public boolean hasMethodModels() {
         return false; }

@@ -7,47 +7,66 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      import(general,apply),
      import(general,unify),
      import(general,if),
+     import(general,reduce),
 
      ClassOrInterfaceModel($modifiers,interface,$name,$typeParameters,$extendsList,$implementsList,$body,$context) -> true,
      ClassOrInterfaceModel($modifiers,class,$name,$typeParameters,$extendsList,$implementsList,$body,$context) -> CheckMemberVariables($body,$context) && CheckFunctions($body,$context),
+     EnumModel($modifiers,$identifier,$superInterfaces, $enumConstantsList,$membersList,$context) -> CheckFunctions($membersList,$context),
+     EnumConstantModel($identifier,$arguments,$subtype) -> $subtype,
+     EnumAnonimousTypeModel($identifier,$membersList,$context) -> CheckFunctions($membersList,$context),
 
      CheckMemberVariables(ClassOrInterfaceBody($x),$ctx) -> CheckMemberVariables($x,$ctx),
      CheckMemberVariables([$x:$y],$ctx) -> CheckMemberVariables($x,$ctx) && CheckMemberVariables($y,$ctx),
      CheckMemberVariables([],$ctx) -> true,
      CheckMemberVariables(ConstructorModel($modifiers,$typeParameters,$identifier,$formalParameters,$trowsNameList,$blockModel,$context),$ctx) -> true,
      CheckMemberVariables(MethodModel($modifiers,$typeParameters,$returnType, $identifier,$formalParameters,$trowsNameList,$blockModel,$context),$classCtx) -> true,
-     CheckMemberVariables(MemberVariableModel($modifiers, $typeRef, $name, $initializer,$model),$classCtx) -> IsResource($typeRef) || ClosedInFinalize($model,$classCtx),
+     CheckMemberVariables(MemberVariableModel($modifiers, $typeRef, $name, $initializer,$model),$classCtx) ->  IsResource($typeRef) ? ClosedInFinalize($model,$classCtx) : true,
 
      CheckFunctions(ClassOrInterfaceBody($x),$ctx) -> CheckFunctions($x,$ctx),   
      CheckFunctions([$x:$y],$ctx) -> CheckFunctions($x,$ctx) && CheckFunctions($y,$ctx),
      CheckFunctions([],$ctx) -> true,
 
-     CheckFunctions(ConstructorModel($modifiers,$typeParameters,$identifier,$formalParameters,$trowsNameList,$blockModel,$context),$ctx) -> CheckBlock($blockModel),
-     CheckFunctions(MethodModel($modifiers,$typeParameters,$returnType, $identifier,$formalParameters,$trowsNameList,$blockModel,$context),$classCtx) -> CheckBlock($blockModel),
+#
+# skip checks in constructors.
+#
+     CheckFunctions(ConstructorModel($modifiers,$typeParameters,$identifier,$formalParameters,$trowsNameList,$blockModel,$context),$ctx) -> true,
+#CheckBlock($blockModel),
+
+     CheckFunctions(MethodModel($modifiers,$typeParameters,$returnType, $identifier,$formalParameters,$trowsNameList,$blockModel,$context),$classCtx) -> Q(CheckBlock($blockModel)),
      CheckFunctions(MemberVariableModel($modifiers, $typeRef, $name, $initializer,$model),$classCtx) -> true,
 
      CheckBlock($x) -> CheckBlock($x,[]),
 
-     CheckBlock([$x:$y],$state) -> CheckReturn($state,CheckBlock($y,CheckStatement($x,$state)) && CheckThrowed($y,$state)),
+
+     CheckBlock([$x:$y],$state) -> CheckReturn($state,CheckBlock($y,CheckStatement($x,$state))), 
      CheckBlock([],$state) -> $state,
+
      CheckBlock($x, $state1 && $state2) -> CheckBlock($x, $state1) && CheckBlock($x, $state2),
      CheckBlock($x, $state1 || $state2) -> CheckBlock($x, $state1) || CheckBlock($x, $state2),
 
      CheckBlock($x,RETURN($state)) -> RETURN($state),
      
-
      CheckStatement(NIL,$state) -> $state,
 
      CheckStatement($x,$state1 && $state2) -> CheckStatement($x,$state1) && CheckStatement($x,$state2),
      CheckStatement($x,$state1 || $state2) -> CheckStatement($x,$state1) || CheckStatement($x,$state2),
 
        
-     CheckStatement(BlockStatementModel($list,$ctx),$state) -> CheckBlock($list,$state),
-     CheckStatement(TryStatementModel($block,$catchSeq,$finally,$ctx),$state) -> CheckStatement($finally,CheckFinalStatement($block,$state)) && CheckFinalStatement($finally,CheckStatement($catchSeq,$state)),
+     CheckStatement(BlockStatementModel([$x:$y],$ctx),$state) -> CheckBlock([$x:$y],$state),
+     CheckStatement(BlockStatementModel([],$ctx),$state) -> $state,
 
-     CheckFinalStatement($x,$y) -> unify($y,RETURN($z)) ? RETURN(CheckStatement($x,$z)) : CheckStatement($x,$y),
+
+     CheckStatement(TryStatementModel($block,$catchSeq,$finally,$ctx),$state) -> ApplyFirst.CheckStatementR(TryStatementModel($block,$catchSeq,$finally,$ctx),apply(TrackOpenClose,$state)),
+
+
+     CheckStatementR(TryStatementModel($block,$catchSeq,$finally,$ctx),$state) -> CheckFinalStatement($finally,CheckStatement($block,$state))
+                                                                               && 
+                                                                                 CheckFinalStatement($finally,CheckStatement($catchSeq,$state)) 
+                                                                              ,
+   
+
+     CheckFinalStatement($x,$y) -> unify($y,RETURN($z)) ? RETURN(CheckStatement($x,$z)) : CheckStatement($x,$y) ,
                                  
-
      CheckStatement(ThrowStatementModel($expr,$ctx),$state) -> $state,
 
      CheckStatement(LocalVariableDeclarationModel([$x:$y],$ctx),$state) -> CheckStatement(LocalVariableDeclarationModel($y,$ctx),addLocalVariable($x,$state)),
@@ -62,21 +81,29 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      CheckStatement(BreakStatementModel($label,$ctx),$state) -> $state,
      CheckStatement(ContinueStatementModel($label,$ctx),$state) -> $state,
 
-     CheckStatement(CatchSequenceModel([$x:$y],$ctx),$state) -> CheckStatement($x,$state) && CheckStatement(CatchSequenceModel($y,$ctx),$state),
+     CheckStatement(CatchSequenceModel([$x:$y],$ctx),$state) -> CheckStatement(CatchSequenceModelR([$x:$y]),ApplyFirst.apply(TrackOpenClose,$state)),
+     CheckStatement(CatchSequenceModelR([$x:$y]),$state) -> CheckStatement($x,$state) && CheckStatement(CatchSequenceModelR($y),$state),
+     CheckStatement(CatchSequenceModelR([]),$state) -> $state,
+
 
      CheckStatement(CatchSequenceModel([],$ctx),$state) -> $state,
 
      CheckStatement(CatchModel($fp,$blockModel,$ctx),$state) -> CheckStatement($blockModel,$state),
 
-     CheckStatement(ClassOrInterfaceDeclarationModel($model,$ctx),state) -> $model && $state,
+     CheckStatement(ClassOrInterfaceDeclarationModel($model,$ctx),state) -> Q($model) && $state,
 
      CheckStatement(EmptyStatementModel($ctx),$state) -> $state,
 
      CheckStatement(DoStatementModel($internal,$condition,$ctx),$state) -> CheckStatement($internal,CheckExpression(NONE,$condition,$state)),
 
-     CheckStatement(WhileStatementModel($expr,$child,$ctx),$state) -> CheckStatement($child,CheckExpression(NONE,$expr,$state)) || CheckExpression(NONE,$expr,$state),
+     CheckStatement(WhileStatementModel($expr,$child,$ctx),$state) -> ApplyFirst.CheckStatementR(WhileStatementModel($expr,$child,$ctx),apply(TrackOpenClose,$state)),
 
-     CheckStatement(IfStatementModel($expr,$s1,$s2,$ctx),$state) -> CheckReturn($state,CheckStatement($s1,CheckExpression(NONE,$expr,$state)) || CheckStatement($s2,CheckExpression(NONE,$expr,$state))),
+     CheckStatementR(WhileStatementModel($expr,$child,$ctx),$state) -> CheckStatement($child,CheckExpression(NONE,$expr,$state)) || CheckExpression(NONE,$expr,$state),
+
+     CheckStatement(IfStatementModel($expr,$s1,$s2,$ctx),$state) -> ApplyFirst.CheckStatementR(IfStatementModel($expr,$s1,$s2,$ctx),apply(TrackOpenClose,$state)),
+
+     CheckStatementR(IfStatementModel($expr,$s1,$s2,$ctx),$state) -> CheckReturn($state,CheckStatement($s1,CheckExpression(NONE,$expr,$state)) || CheckReturn($state,CheckStatement($s2,CheckExpression(NONE,$expr,$state)))),
+
 
      CheckStatement(ForStatementModel(ForEachLoopHeadModel($type,$id,$expr),$statement,$ctx),$state) -> CheckStatement($statement,CheckExpression(NONE,$expr,$state)),
 
@@ -89,7 +116,7 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      CheckForInit($x,$state) [ getName($x)==LocalVariableModel ] -> addLocalVariable($x,$state)
                                                                  !-> $state,
 
-     CheckStatement(ExplicitSuperInvocationModel($primary,$arguments,$ctx),$state) -> CheckExpression($primary,CheckExpressions($arguments,$state)),
+     CheckStatement(ExplicitSuperInvocationModel($primary,$arguments,$ctx),$state) -> CheckExpression(NONE,$primary,CheckExpressions($arguments,$state)),
 
      CheckStatement(ExplicitThisInvocationModel($arguments,$ctx),$state) -> CheckExpressions($arguments,$state),
 
@@ -98,8 +125,6 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      CheckStatement($x,RETURN($y)) -> RETURN($y),
      CheckExpression($var,$expr,RETURN($state)) -> RETURN($state),
 
-     #
-     # TODO: mark function ?
      CheckStatement(ReturnStatementModel($expr,$ctx),$state) -> RETURN(CheckExpression(NONE,$expr,$state)),
 
      CheckStatement(SwitchStatementModel($expr,[$x:$y],$ctx),$state) -> CheckStatement($x,$state) && CheckStatement(SwitchStatementModel($expr,$y,$ctx),$state),
@@ -233,7 +258,7 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      merge($x, RETURN($y)) -> RETURN($y),
 
      OpenClose(CHANGE($x,CLOSE),CHANGE($x,OPEN,$fl)) -> [],
-     OpenClose(CHANGE($x,CLOSE),CHANGE($y,OPEN,$fl)) [ !($x==$y) ] -> CHANGE($y,OPEN,$fl) [ [ println("MM:"), println($x), println($y), println($x==$y) ] ],
+     OpenClose(CHANGE($x,CLOSE),CHANGE($y,OPEN,$fl)) [ !($x==$y) ] -> CHANGE($y,OPEN,$fl),
      OpenClose(CHANGE($x,CLOSE),CHANGE($y,CLOSE)) -> CHANGE($y,CLOSE),
 
      cat([],$x) -> $x,
@@ -244,22 +269,60 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
 
      cons($x, $y && $z) -> cat($x,$y) && cat($x,$z),
      cons($x, $y || $z) -> cat($x,$y) || cat($x,$z),
+    
 
      [] && $x -> $x,
      $x && [] -> $x,
 
+     false && $x -> false,
+     $x &&  false -> false,
+
+     true && $x -> $x,
+     $x   && true -> $x,
+
+     [] || $x -> [],
+     $x || [] -> [],
+
+     $x || $x -> $x,
+
+     $x || true -> true,
+     true || $x -> true,     
     
      CheckReturn($x,$y) -> unify($x,RETURN($z)) ? $x : $y,
 
      RETURN(RETURN($x)) -> RETURN($x),
 
+     RETURN($x) && RETURN($y) -> RETURN( $x && $y),
 
-     CheckThrowed($x,$state) [ CanThrow.canThrow($x) ] -> $state 
-                                                      !-> true,
+     RETURN($x) || RETURN($y) -> RETURN( $x || $y),
+
+
+#     CheckThrowed($x,$state) [ CanThrow.canThrow($x) ] -> $state 
+#                                                      !-> true,
+
+     CheckThrowed($x,$state) -> true,
+
+
+
+     Q($x || $y) -> Q($x) || Q($y),
+     Q($x && $y) -> Q($x) && Q($y),
+     Q(RETURN($x)) -> Q($x),
+     Q(NIL) -> true,
+     Q([$x:$y]) -> CheckOpenClose(cons($x,$y)),
+
+     CheckOpenClose(NIL) -> true,
+     CheckOpenClose(CHANGE($x,CLOSE)) -> true,
+     CheckOpenClose(CHANGE($y,OPEN,$fl)) -> false [ violationDiscovered(UnclosedCloseable,"closeable variable does not closed",$fl) ],
+     CheckOpenClose([$x:$y]) -> CheckOpenClose($x) && CheckOpenClose($y),
+
+
+     CheckEmpty([]) -> true,
 
      p($x) -> $x [ [println("p:"), println($x)] ],
 
-     CheckEmpty([]) -> true,
+     # TODO: implement
+     IsResource($x) -> true,
+     ClosedInFinalize($x,$y) -> true,
 
      protect($x) -> $x [ setCurrentStopFlag(true) ]
 

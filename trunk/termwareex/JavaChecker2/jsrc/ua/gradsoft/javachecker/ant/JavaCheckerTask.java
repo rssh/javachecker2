@@ -2,7 +2,7 @@
  * JavaCheckerTask.java
  *
  * Created 07/04/2004, 4:11
- * $Id: JavaCheckerTask.java,v 1.3 2007-03-22 19:27:10 rssh Exp $
+ * $Id: JavaCheckerTask.java,v 1.4 2007-03-27 09:33:26 rssh Exp $
  */
 
 package ua.gradsoft.javachecker.ant;
@@ -14,10 +14,12 @@ import java.util.List;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.DirSet;
+import org.apache.tools.ant.types.Path;
 import ua.gradsoft.javachecker.ConfigException;
 
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.ProcessingException;
+import ua.gradsoft.javachecker.ReportFormat;
 
 /**
  *Ant task for JavaChecker
@@ -29,15 +31,20 @@ public class JavaCheckerTask extends Task {
     public JavaCheckerTask() {
     }
     
-  //  public void  setInput(String inputDirectory)
-  //  {
-  //   inputDirectory_=inputDirectory;   
-  //  }
+    public void  setInput(String inputDirectory)
+    {
+     inputDirectory_=inputDirectory;   
+    }
         
     
     public void  setOutput(String output)
     {
      outputFname_=output;
+    }
+    
+    public void  setOutputFormat(String name)
+    {
+        reportFormatName_ = name;
     }
     
     public void  setPrefs(String prefs)
@@ -120,6 +127,13 @@ public class JavaCheckerTask extends Task {
         dirSet.setProject(this.getProject());       
         inputDirectories_.add(dirSet.getDir(getProject()).getAbsolutePath());
     }
+
+    
+    public void addConfiguredClasspath(Path path)
+    {
+        includeJars_.addAll(Arrays.asList(path.list()));
+    }
+    
     
     
     public void execute() throws BuildException
@@ -154,6 +168,13 @@ public class JavaCheckerTask extends Task {
           main.setPrefsFname(prefsFname_);
       }
       
+      if (reportFormatName_!=null) {
+          try {
+            main.setReportFormat(ReportFormat.getByName(reportFormatName_));
+          }catch(ConfigException ex){
+              throw new BuildException(ex.getMessage(),ex);
+          }
+      }
 
      
       for(CheckName cname: enabled_) {
@@ -175,6 +196,11 @@ public class JavaCheckerTask extends Task {
           throw new BuildException("inputDirectory tag or input nested tag must be present in task");
       }
       
+      try {
+         main.getFacts().getPackagesStore().setJars(includeJars_);
+      }catch(ConfigException ex){
+          throw new BuildException(ex.getMessage(),ex);
+      }
       
       try {
           main.process();
@@ -191,11 +217,13 @@ public class JavaCheckerTask extends Task {
     private String outputFname_=null;
     private String prefsFname_=null;
     private String jchhome_=null;
+    private String reportFormatName_=null;
     private List<CheckName>  enabled_=new LinkedList<CheckName>();
     private List<CheckName>  disabled_=new LinkedList<CheckName>();
     private List<ConfigNVPair> configNVPairs_=new LinkedList<ConfigNVPair>();
     
     private List<String> inputDirectories_=new LinkedList<String>();
     private List<String> includeDirectories_=new LinkedList<String>();
+    private List<String> includeJars_=new LinkedList<String>();
     
 }

@@ -40,12 +40,6 @@ public class JavaTypeArgumentBoundTypeVariableModel extends JavaTypeVariableAbst
     { return bounds_; }
     
     
-    public boolean canCheck()
-    { return false; }
-    
-    public boolean check()
-    { return true; }
-    
     /**
      * TypeParameter(originModelTerm,boundsModelTerms)
      */

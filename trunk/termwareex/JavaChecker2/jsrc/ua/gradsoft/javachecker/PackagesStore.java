@@ -8,11 +8,13 @@
 
 package ua.gradsoft.javachecker;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.models.JavaPackageModel;
+import ua.gradsoft.javachecker.util.JarClassLoader;
 
 /**
  *Store for packages 
@@ -70,9 +72,19 @@ public class PackagesStore
       return sourceDirsToProcess_;  
     }
     
-    public  List<String>  getJars()
+    public  void  setJars(List<String> jars) throws ConfigException
     {
-      return jars_;  
+      jars_=jars;  
+      try {
+          classLoader_=new JarClassLoader(jars.toArray(new String[0]));
+      }catch(MalformedURLException ex){
+          throw new ConfigException(ex.getMessage(),ex);
+      }
+    }
+    
+    public  ClassLoader getJarsClassLoader()
+    {
+        return classLoader_;
     }
     
     private JavaFacts   owner_;
@@ -91,6 +103,7 @@ public class PackagesStore
     /**
      * jar files, from which we want to load file.
      */
-    private ArrayList<String>  jars_;
+    private List<String>  jars_;
+    private JarClassLoader     classLoader_;
     
 }

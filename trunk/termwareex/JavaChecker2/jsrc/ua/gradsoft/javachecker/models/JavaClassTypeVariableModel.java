@@ -48,11 +48,6 @@ public class JavaClassTypeVariableModel extends JavaTypeVariableAbstractModel
         return retval;
     }
 
-    public boolean check()
-    {
-       /* for now: do nothing */
-        return true;
-    }
     
     /**
      * TypeParameter(Identifier(name),boundsModelTerms)

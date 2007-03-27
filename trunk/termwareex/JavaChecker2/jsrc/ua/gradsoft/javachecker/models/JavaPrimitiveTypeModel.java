@@ -95,11 +95,6 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
     public JavaTypeModel  getReferencedType() throws NotSupportedException {
         throw new NotSupportedException(); }
     
-    public boolean canCheck() {
-        return false; }
-    
-    public boolean check() {
-        return true; }
     
     public boolean hasMethodModels() {
         return false; }

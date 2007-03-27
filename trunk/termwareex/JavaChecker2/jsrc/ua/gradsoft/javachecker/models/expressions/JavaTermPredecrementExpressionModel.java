@@ -63,7 +63,7 @@ public class JavaTermPredecrementExpressionModel extends JavaTermExpressionModel
     {
       Term x = subexpression_.getModelTerm();
       Term ctx = TermUtils.createJTerm(this.createPlaceContext());
-      Term retval = TermUtils.createTerm("PredecrementExpression",x,ctx);
+      Term retval = TermUtils.createTerm("PredecrementExpressionModel",x,ctx);
       return retval;
     }
             

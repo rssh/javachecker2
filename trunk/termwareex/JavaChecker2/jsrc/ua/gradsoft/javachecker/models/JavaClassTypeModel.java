@@ -127,10 +127,11 @@ public class JavaClassTypeModel extends JavaTypeModel
       return new JavaModifiersModel(translateModifiers(theClass_.getModifiers()));
   }
   
-  public JavaTypeModel  getSuperClass()
+  public JavaTypeModel  getSuperClass() throws TermWareException
   {
-    if (theClass_.getSuperclass()!=null)  {
-        return new JavaClassTypeModel(theClass_.getSuperclass());
+    if (theClass_.getGenericSuperclass()!=null)  {
+        Type tp = theClass_.getGenericSuperclass();
+        return JavaClassTypeModel.createTypeModel(tp);      
     }else{
         if (theClass_.isInterface()) {    
           try{  
@@ -163,7 +164,7 @@ public class JavaClassTypeModel extends JavaTypeModel
    */
   public JavaTypeModel  getEnclosedType() throws NotSupportedException, TermWareException
   {
-      Class enclosingClass = theClass_.getEnclosingClass();
+      Class<?> enclosingClass = theClass_.getEnclosingClass();
       if (enclosingClass==null) {
           return null;
       }else{
@@ -179,18 +180,13 @@ public class JavaClassTypeModel extends JavaTypeModel
    */
   public JavaTypeModel  getReferencedType() throws NotSupportedException, TermWareException
   {
-   if (theClass_.isArray()) {
+   if (theClass_.isArray()) {      
        return new JavaClassTypeModel(theClass_.getComponentType());
    }else{
        throw new NotSupportedException();
    }
   }
   
-  public boolean canCheck()
-  { return false; }
-  
-  public boolean check() throws TermWareException
-  { return true; }
 
   public boolean hasMethodModels()
   {
@@ -315,7 +311,7 @@ public class JavaClassTypeModel extends JavaTypeModel
   public JavaStatementModel  getEnclosedStatement()
   { return null; }
   
-  public Class  getJavaClass()
+  public Class<?>  getJavaClass()
   { return theClass_; }
   
   /**

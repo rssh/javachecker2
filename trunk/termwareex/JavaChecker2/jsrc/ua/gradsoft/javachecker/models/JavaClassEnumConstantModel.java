@@ -41,11 +41,6 @@ public class JavaClassEnumConstantModel extends JavaEnumConstantModel
     public JavaTypeModel  getOwner()
     { return owner_; }
     
-    public boolean canCheck()
-    { return false; }
-    
-    public boolean check()
-    { return true; }
     
     /**
      * ClassEnumConstantModel(this)

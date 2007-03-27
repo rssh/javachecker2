@@ -11,7 +11,6 @@ import java.util.HashMap;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.JavaFacts;
-import ua.gradsoft.javachecker.util.JarClassLoader;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
@@ -120,10 +119,12 @@ public class JavaPackageModel {
     JavaFacts getFacts()
     { return owner_; }
     
+
     public JavaTypeModel findTypeModel(String name) throws TermWareException, EntityNotFoundException
     {
      // System.err.println("call of packageModel ("+this.getName()+") findTypeModel for "+name);  
       JavaTypeModel retval=null;  
+
       // 1. try to get from hash.
       JavaTypeModelRef ref = typeModelRefs_.get(name);      
       if (ref!=null) {
@@ -162,20 +163,14 @@ public class JavaPackageModel {
               
           } 
       }     
-      
+
+
       // 3. try to load from jar-s classLoaderds
-      for(String path: owner_.getPackagesStore().getJars()) {
-          ClassLoader classLoader = null;
+          ClassLoader classLoader = owner_.getPackagesStore().getJarsClassLoader();
           try {
-             classLoader = new JarClassLoader(path);
-          }catch(MalformedURLException ex){
-             // TODO: trace,            
-             throw new AssertException("exception during creating classloader for jar "+path,ex);            
-          }
-          try {
-             Class<?>    theClass = classLoader.loadClass(name_+"."+name);
+             Class<?>    theClass = classLoader.loadClass(name_+"."+name);             
              JavaClassUnitModel cu = new JavaClassUnitModel(theClass);
-             AnalyzedUnitRef newRef = new AnalyzedUnitRef(AnalyzedUnitType.CLASS,path,theClass.getName(),cu);
+             AnalyzedUnitRef newRef = new AnalyzedUnitRef(AnalyzedUnitType.CLASS,"jars",theClass.getName(),cu);
              this.addClassUnit(cu,newRef);
              for(JavaTypeModel tm: newRef.getJavaUnitModel().getTypeModels()) {
                  typeModelRefs_.put(tm.getName(),new JavaTypeModelRef(tm.getName(),newRef,tm));
@@ -185,12 +180,13 @@ public class JavaPackageModel {
                  }
              }                                  
           }catch(ClassNotFoundException ex){
-              continue;
+              ;
           }
           if (retval!=null) {
               return retval;
           }
-      }
+      
+      
       
       // 4. try to load from system class loader.            
       try {              
@@ -211,9 +207,11 @@ public class JavaPackageModel {
       }catch(ClassNotFoundException ex){
           // do nothing. if not found, than let it be not found.
       }
+
       
       throw new EntityNotFoundException("typeModel",name,"");
     }
+
     
     private String name_;
     private HashMap<String,JavaTypeModelRef> typeModelRefs_;       

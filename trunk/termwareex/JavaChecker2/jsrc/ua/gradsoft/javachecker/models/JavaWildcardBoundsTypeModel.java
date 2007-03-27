@@ -197,17 +197,6 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
   
 
     
-    public boolean canCheck()
-    { return true; }
-    
-    /**
-     *TODO: implement
-     */
-    public boolean check()
-    {
-      return true;  
-    }
-    
   
     public boolean hasMethodModels()
     {

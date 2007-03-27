@@ -86,11 +86,6 @@ public class JavaClassArgumentBoundMethodModel extends JavaMethodModel implement
       return getArgumentBoundTypeModel().getSubstitution().substitute(ofps);
     }
     
-    public boolean canCheck()
-    { return false; }
-    
-    public boolean check()
-    { return true; }
         
     public  boolean isSupportBlockModel()
     {

@@ -94,17 +94,6 @@ public class JavaTypeArgumentBoundMethodModel extends JavaMethodModel implements
       return substitution_.substitute(origin_.getFormalParametersTypes()); 
     }
     
-    /*
-    public  JavaMethodModel substituteTypeParameters(JavaTypeArgumentsSubstitution s) {
-        //TODO: refine.
-        return new JavaTypeArgumentBoundMethodModel(this,s);
-    }*/
-    
-    public boolean canCheck() {
-        return false; }
-    
-    public boolean check() {
-        return true; }
     
     public boolean isSupportBlockModel()
     { return origin_.isSupportBlockModel(); }

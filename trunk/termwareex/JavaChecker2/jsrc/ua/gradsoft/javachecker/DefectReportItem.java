@@ -24,16 +24,35 @@ public class DefectReportItem {
      marker_=marker;
     }
     
-    public void println(PrintStream out)
+    public void println(PrintStream out, ReportFormat format)
     {
-     out.print(category_);
-     out.print(":");
-     out.print(description_);
-     out.print("(file:");
-     out.print(marker_.getFname());
-     out.print(",line:"+marker_.getLine());
-     out.print(")");
-     out.println();
+     switch(format) {
+         case TEXT:
+          out.print(category_);
+          out.print(":");
+          out.print(description_);
+          out.print("(file:");
+          out.print(marker_.getFname());
+          out.print(",line:"+marker_.getLine());
+          out.print(")");
+          out.println();
+          break;
+         case HTML:
+             out.print("<tr>");
+             out.print("<td>");
+             out.print(category_);
+             out.print(":");
+             out.print("</td><td>");
+             out.print(description_);
+             out.print("</td><td>");
+             out.print("(file:");
+             out.print(marker_.getFname());
+             out.print(",line:"+marker_.getLine());
+             out.print(")");
+             out.println("</td>");
+             out.println("</tr>");
+           break;
+     }  
     }
     
     public String getCategory()

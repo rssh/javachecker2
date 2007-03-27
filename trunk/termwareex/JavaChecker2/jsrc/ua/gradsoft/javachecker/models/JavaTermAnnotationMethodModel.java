@@ -111,11 +111,6 @@ public class JavaTermAnnotationMethodModel extends JavaMethodModel
        return retval;
     }
     
-    public boolean canCheck()
-    { return false; }
-    
-    public boolean check()
-    { return false; }
     
     private JavaModifiersModel modifiersModel_;
     private Term typeTerm_;

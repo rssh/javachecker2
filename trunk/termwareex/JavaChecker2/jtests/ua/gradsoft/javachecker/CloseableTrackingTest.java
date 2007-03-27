@@ -25,9 +25,9 @@ public class CloseableTrackingTest extends TestCase
         main.init(args);
         main.addInputDirectory("testpackages/testdata8/e1", true); 
 
-       // TermSystem system0 = TermWare.getInstance().getRoot().resolveSystem("TrackOpenClose");
-       // system0.setDebugEntity("SystemReductions");
-       // system0.setDebugMode(true);
+      //  TermSystem system0 = TermWare.getInstance().getRoot().resolveSystem("TrackOpenClose");
+      //  system0.setDebugEntity("SystemReductions");
+      //  system0.setDebugMode(true);
         
         
       //  TermSystem system = TermWare.getInstance().getRoot().resolveSystem("ResourceLeak");
@@ -93,8 +93,8 @@ public class CloseableTrackingTest extends TestCase
         main.init(args);
         main.addInputDirectory("testpackages/testdata8/e3",true); 
 
-        TermSystem system0 = TermWare.getInstance().getRoot().resolveSystem("TrackOpenClose");
-        //system0.setDebugEntity("All");
+        //TermSystem system0 = TermWare.getInstance().getRoot().resolveSystem("TrackOpenClose");
+        //system0.setDebugEntity("SystemReductions");
         //system0.setDebugMode(true);
 
         //system0.getFacts().setDebugEntity("All");

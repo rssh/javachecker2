@@ -39,11 +39,6 @@ public class JavaTermConstructorModel implements JavaConstructorModel, JavaTermT
     public JavaTermTypeAbstractModel  getTermTypeAbstractModel()
     { return owner_; }
     
-    public boolean canCheck()
-    { return true; }
-    
-    public boolean check()
-    { return true; }
     
    public List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException
    {

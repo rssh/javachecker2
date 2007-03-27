@@ -195,35 +195,6 @@ public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
     }
     
       
-    /**
-     * check bean-s constraint.
-     *  (i. e. when checkerComment_.isBean()).
-     *<ul>
-     * <li> have default constructor </li>
-     *<ul>
-     */
-    public boolean checkBean() throws TermWareException {
-        if (checkerComment_==null) {
-            return true;
-        }
-        if (!checkerComment_.isBean()) {
-            return true;
-        }
-        if (!isClass_) {
-            getJavaFacts().violationDiscovered("Beans","interface with bean checker comment",t_);
-            return false;
-        }
-        
-        
-        // TODO: check for default constructor
-        
-        boolean foundDefaultConstructor=false;
-        
-        if (!foundDefaultConstructor){
-            getJavaFacts().violationDiscovered("Beans","bean class have no default constructor",t_);
-        }
-        return foundDefaultConstructor;
-    }
     
     private boolean isInterface_=false;
     private boolean isClass_=false;
