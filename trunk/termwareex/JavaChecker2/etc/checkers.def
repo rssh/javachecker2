@@ -1,7 +1,7 @@
 Checkers(
 [
  define(GenericExceptionCatchClause,exceptions,"catching generic exception",
-        BT_RULESET,
+        BT_TYPE_RULESET,
         ruleset(
           Catch(FormalParameter($m,Identifier("Exception"),$x),$block) 
                          -> true [ violationDiscovered(GenericExceptionCatchClause,"generic exception catch clause",$x) ]
@@ -10,7 +10,7 @@ Checkers(
   ),
 
  define(EmptyCatchBlock,exceptions,"empty catch block",
-        BT_RULESET,
+        BT_TYPE_RULESET,
         ruleset(
           Catch($x,Block(NIL)) 
                          -> true [ violationDiscovered(EmptyCatchBlock,"empty catch block",$x) ]
@@ -19,7 +19,7 @@ Checkers(
   ),
 
  define(GenericExceptionThrow,exceptions,"throwing of generic exception",
-        BT_RULESET,
+        BT_TYPE_RULESET,
         ruleset(
           ThrowStatement(AllocationExpression(Identifier("Exception"),$dims,$args,$body))
                          -> true [ violationDiscovered(GenericExceptionThrow,"throwing of generic exception",$args) ]
