@@ -6,7 +6,7 @@
 package ua.gradsoft.javachecker.checkers;
 
 import java.util.Iterator;
-import ua.gradsoft.javachecker.AbstractChecker;
+import ua.gradsoft.javachecker.AbstractTypeChecker;
 import ua.gradsoft.javachecker.CheckerType;
 import ua.gradsoft.javachecker.ConfigException;
 import ua.gradsoft.javachecker.EntityNotFoundException;
@@ -22,13 +22,12 @@ import ua.gradsoft.termware.TermSystem;
 import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.TermWareException;
 import ua.gradsoft.termware.exceptions.AssertException;
-import ua.gradsoft.termware.strategies.FirstTopStrategy;
 
 /**
  *Checker which works over ModelTerm
  * @author RSSH
  */
-public class ModelChecker extends AbstractChecker {
+public class ModelChecker extends AbstractTypeChecker {
     
     /** Creates a new instance of ModelChecker */
     public ModelChecker(String name, String category, String description, Term rules, boolean enabled) throws TermWareException, ConfigException {

@@ -5,7 +5,7 @@
 
 package ua.gradsoft.javachecker.checkers;
 
-import ua.gradsoft.javachecker.AbstractChecker;
+import ua.gradsoft.javachecker.AbstractTypeChecker;
 import ua.gradsoft.javachecker.CheckerType;
 import ua.gradsoft.javachecker.ConfigException;
 import ua.gradsoft.javachecker.JavaFacts;
@@ -20,7 +20,7 @@ import ua.gradsoft.termware.TermWareException;
  *
  * @author RSSH
  */
-public class ClassChecker extends AbstractChecker
+public class ClassChecker extends AbstractTypeChecker
 {
     
     /** Creates a new instance of ClassChecker */

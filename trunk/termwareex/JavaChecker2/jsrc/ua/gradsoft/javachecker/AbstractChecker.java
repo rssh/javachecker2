@@ -13,7 +13,7 @@ import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
- *Abstract interface for checkers.
+ *Abstract class for checkers.
  * @author Ruslan Shevchenko
  */
 public abstract class AbstractChecker {
@@ -46,7 +46,6 @@ public abstract class AbstractChecker {
     
     public abstract void configure(JavaFacts facts) throws ConfigException;
     
-    public abstract void run(JavaTermTypeAbstractModel tm, Holder<Term> astTerm, Holder<Term> modelTerm) throws TermWareException;
     
     private String name_;
     private String category_;

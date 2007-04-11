@@ -10,6 +10,8 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.TreeMap;
 import ua.gradsoft.javachecker.AbstractChecker;
+import ua.gradsoft.javachecker.AbstractCompilationUnitChecker;
+import ua.gradsoft.javachecker.AbstractTypeChecker;
 import ua.gradsoft.javachecker.CheckerComment;
 import ua.gradsoft.javachecker.CheckerType;
 import ua.gradsoft.javachecker.ConfigException;
@@ -87,9 +89,11 @@ public class Checkers {
                     }
                     AbstractChecker checker=null;
                     switch(type) {
-                        case BT_RULESET:
-                            checker=new BTChecker(name,category,description,rules,enabledByDefault);
+                        case BT_TYPE_RULESET:
+                            checker=new BTTypeChecker(name,category,description,rules,enabledByDefault);
                             break;
+                        case BT_COMPILATION_UNIT_RULESET:
+                            checker=new BTCompilationUnitChecker(name,category,description,rules,enabledByDefault);
                         case JAVA_CLASS:
                             checker=new ClassChecker(name,category,description,rules,enabledByDefault);
                             break;
@@ -116,10 +120,26 @@ public class Checkers {
         }
     }
     
-    
-    public void check(JavaCompilationUnitModel cu) throws TermWareException
+    public void checkCompilationUnitAST(Term compilationUnitAST) throws TermWareException
     {
-        
+       for(Map.Entry<String,AbstractChecker> e: checkers_.entrySet()) {
+           AbstractChecker checker0 = e.getValue();
+           if (checker0 instanceof AbstractCompilationUnitChecker) {
+               AbstractCompilationUnitChecker checker = (AbstractCompilationUnitChecker)checker0;
+               if (facts_.isCheckEnabled(e.getKey())) {
+                   checker.run(compilationUnitAST);
+               }
+               
+           }else{
+               continue;
+           }
+       } 
+    }
+    
+    public void checkTypes(JavaCompilationUnitModel cu) throws TermWareException
+    {
+                
+        // for all types all type checkers.
         for(JavaTypeModel tm: cu.getTypeModels()) {
             JavaTermTypeAbstractModel ttm=null;
             if (tm instanceof JavaTermTypeAbstractModel) {
@@ -128,7 +148,11 @@ public class Checkers {
             Holder<Term> astTermHolder = new Holder<Term>();
             Holder<Term> modelTermHolder = new Holder<Term>();
             for (Map.Entry<String,AbstractChecker> e:  checkers_.entrySet()) {
-                AbstractChecker checker = e.getValue();                
+                AbstractChecker checker0 = e.getValue();                
+                if (! (checker0 instanceof AbstractTypeChecker)) {
+                    continue;
+                }
+                AbstractTypeChecker checker = (AbstractTypeChecker)checker0;
                 //boolean enabled=checker.isEnabled();                                         
                 boolean enabled=facts_.isCheckEnabled(e.getKey());
                 if (ttm!=null) {

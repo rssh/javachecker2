@@ -366,7 +366,7 @@ public class Main
        pm.addCompilationUnit(source,cu,ref);   
        
        try {
-          checkSource(cu);              
+          checkSource(source,cu);              
        }catch(TermWareException ex){
            System.err.println("error during checking "+f.getAbsolutePath()+":"+ex.getMessage());
            if (ex instanceof SourceCodeLocation) {
@@ -383,9 +383,10 @@ public class Main
      ++nLoadedFiles_;          
  }
  
- private void checkSource(JavaCompilationUnitModel cu) throws TermWareException
+ private void checkSource(Term source, JavaCompilationUnitModel cu) throws TermWareException
  {   
-   checkers_.check(cu);  
+   checkers_.checkCompilationUnitAST(source);  
+   checkers_.checkTypes(cu);  
    ++nProcessedFiles_;
  }
  

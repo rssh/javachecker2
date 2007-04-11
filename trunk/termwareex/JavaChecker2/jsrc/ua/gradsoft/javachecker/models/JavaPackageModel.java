@@ -134,9 +134,12 @@ public class JavaPackageModel {
       }
       
       // 2. try to load from source directories
-      boolean found=false;
+      boolean found=false;            
       
       for(String inputDir: owner_.getPackagesStore().getSourceDirs()) {          
+          if (inputDir==null) {
+              continue;
+          }
           String directory = JUtils.createDirectoryNameFromPackageName(inputDir,this.getName());
           String resource = JUtils.createSourceFileNameFromClassName(name);
           String fname=directory+File.separator+resource;
