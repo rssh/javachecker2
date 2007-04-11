@@ -2,6 +2,7 @@
   - fixed packaging. 
     - switch to last version of IzPack to prevent coredump in Installer on Linux FC6
     - debug wrapper shell script
+    - added BT_COMPILATION_UNIT_RULESET checker type, change BT_RULESET to BT_TYPE_RULESET
 
 2.0  (19.03.2007)
   - fully rewrite.  Abstract interpretation framework is implemented.
