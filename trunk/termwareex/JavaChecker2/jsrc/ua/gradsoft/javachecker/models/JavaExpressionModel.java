@@ -1,9 +1,9 @@
 /*
  * JavaExpressionModel.java
  *
- * Created on понеділок, 5, лютого 2007, 6:05
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006-2007 GradSoft  Ukraine
+ *http://www.gradsoft.ua
  * All Rights Reserved
  */
 

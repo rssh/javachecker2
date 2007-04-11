@@ -1,7 +1,6 @@
 /*
  * JavaTermMemberVariableModel.java
  *
- * Created on понеділок, 23, лютого 2004, 10:59
  */
 
 package ua.gradsoft.javachecker.models;

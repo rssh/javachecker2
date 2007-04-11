@@ -1,7 +1,6 @@
 /*
  * JavaTermMethodCallExpressionModel.java
  *
- * Created on середа, 7, лютого 2007, 21:26
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved
@@ -29,7 +28,7 @@ import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
 
 /**
- *
+ *Model for method call
  * @author Ruslan Shevchenko
  */
 public class JavaTermMethodCallExpressionModel extends JavaTermExpressionModel

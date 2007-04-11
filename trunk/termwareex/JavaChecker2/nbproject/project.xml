@@ -38,7 +38,7 @@
             </ide-actions>
             <export>
                 <type>jar</type>
-                <location>jlib/JavaChecker2.jar</location>
+                <location>lib/JavaChecker2.jar</location>
                 <build-target>build</build-target>
             </export>
             <view>
@@ -72,14 +72,14 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
             <compilation-unit>
                 <package-root>jsrc</package-root>
-                <classpath mode="compile">jlib/TermWare2.jar;jlib/TermWareJPP.jar;D:\packages\apache-ant-1.7.0\lib\ant.jar</classpath>
-                <built-to>jlib/JavaChecker2.jar</built-to>
+                <classpath mode="compile">lib/TermWare2.jar:lib/TermWareJPP.jar</classpath>
+                <built-to>lib/JavaChecker2.jar</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
             <compilation-unit>
                 <package-root>jtests</package-root>
                 <unit-tests/>
-                <classpath mode="compile">jlib/TermWare2.jar;jlib/TermWareJPP.jar;jlib/junit.jar;jlib/JavaChecker2.jar;jsrc</classpath>
+                <classpath mode="compile">lib/JavaChecker2.jar:lib/junit.jar:lib/TermWare2.jar:lib/TermWareJPP.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>

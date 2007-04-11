@@ -1,9 +1,8 @@
 /*
  * JavaTermSuperExpressionModel.java
  *
- * Created on середа, 7, лютого 2007, 21:08
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006-2007 GradSoft  Ukraine
  * All Rights Reserved
  */
 

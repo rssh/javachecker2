@@ -1,9 +1,9 @@
 /*
  * JavaTermThisExpressionModel.java
  *
- * Created on середа, 7, лютого 2007, 20:03
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006-2007 GradSoft  Ukraine
+ * http://www.gradsoft.ua
  * All Rights Reserved
  */
 

@@ -1,7 +1,6 @@
 /*
  * JavaStatementModel.java
  *
- * Created on вівторок, 9, січня 2007, 20:08
  *
  * Copyright (c) 2006-2007 GradSoft  Ukraine
  * All Rights Reserved

@@ -1,7 +1,6 @@
 /*
  * JavaTermExclusiveOrExpressionModel.java
  *
- * Created on понеділок, 5, лютого 2007, 21:57
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

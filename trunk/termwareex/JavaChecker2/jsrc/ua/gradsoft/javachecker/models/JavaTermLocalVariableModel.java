@@ -1,7 +1,6 @@
 /*
  * JavaTermLocalVariableModel.java
  *
- * Created on субота, 13, січня 2007, 18:43
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

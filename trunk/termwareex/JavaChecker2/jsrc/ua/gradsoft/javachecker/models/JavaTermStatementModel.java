@@ -1,7 +1,6 @@
 /*
  * JavaTermStatementModel.java
  *
- * Created on п'€тниц€, 12, с≥чн€ 2007, 1:43
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

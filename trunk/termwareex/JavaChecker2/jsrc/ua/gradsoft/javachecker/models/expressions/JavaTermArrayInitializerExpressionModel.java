@@ -1,7 +1,6 @@
 /*
  * JavaTermArrayInitializerExpressionModel.java
  *
- * Created on 22 Февраль 2007 г., 15:40
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.

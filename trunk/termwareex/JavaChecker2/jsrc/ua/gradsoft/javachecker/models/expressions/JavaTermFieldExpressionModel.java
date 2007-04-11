@@ -1,7 +1,6 @@
 /*
  * JavaTermFieldExpressionModel.java
  *
- * Created on 18 Февраль 2007 г., 19:19
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.

@@ -1,11 +1,7 @@
 /*
  * JavaTermNestedTypeExpressionModel.java
  *
- * Created on 20 Февраль 2007 г., 4:00
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
+  */
 
 package ua.gradsoft.javachecker.models.expressions;
 

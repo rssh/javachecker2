@@ -1,10 +1,8 @@
 /*
  * JavaBlockOwnerModel.java
  *
- * Created on п'€тниц€, 12, с≥чн€ 2007, 1:31
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * (C) Grad-Soft Ltd, Kiev, Ukarine.
+ *http://www.gradsoft.ua
  */
 
 package ua.gradsoft.javachecker.models;

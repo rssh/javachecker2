@@ -1,17 +1,13 @@
 /*
  * Pair.java
  *
- * Created on 1 Март 2007 г., 7:46
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package ua.gradsoft.javachecker.util;
 
 /**
  *Just Pair.
- * @author RSSH
  */
 public class Pair<T1,T2> 
 {

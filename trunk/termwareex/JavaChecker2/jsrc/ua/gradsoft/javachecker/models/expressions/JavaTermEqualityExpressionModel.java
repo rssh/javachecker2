@@ -1,7 +1,6 @@
 /*
  * JavaTermEqualityExpressionModel.java
  *
- * Created on понеділок, 5, лютого 2007, 22:25
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

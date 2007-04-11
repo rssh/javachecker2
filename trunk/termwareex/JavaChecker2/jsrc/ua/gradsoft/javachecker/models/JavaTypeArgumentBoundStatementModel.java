@@ -1,9 +1,8 @@
 /*
  * JavaTypeArgumentBoundStatementModel.java
  *
- * Created on п'€тниц€, 12, с≥чн€ 2007, 2:11
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006-2007 GradSoft  Ukraine
  * All Rights Reserved
  */
 

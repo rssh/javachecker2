@@ -1,7 +1,6 @@
 /*
  * InvalidCheckerCommentException.java
  *
- * Created on четвер, 26, лютого 2004, 6:21
  */
 
 package ua.gradsoft.javachecker;

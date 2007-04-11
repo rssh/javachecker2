@@ -1,9 +1,8 @@
 /*
  * InvalidJavaTermException.java
  *
- * Created on субота, 20, січня 2007, 2:39
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006-2007 GradSoft  Ukraine
  * All Rights Reserved
  */
 

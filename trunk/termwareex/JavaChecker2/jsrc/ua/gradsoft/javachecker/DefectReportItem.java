@@ -1,7 +1,6 @@
 /*
  * DefectReport.java
  *
- * Created on неділя, 29, лютого 2004, 14:40
  */
 
 package ua.gradsoft.javachecker;

@@ -1,16 +1,12 @@
 /*
  * ReportFormat.java
  *
- * Created on 24 Март 2007 г., 8:00
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package ua.gradsoft.javachecker;
 
 /**
- *
+ *Set of possible formats for report
  * @author RSSH
  */
 public enum ReportFormat {

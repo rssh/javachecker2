@@ -1,7 +1,6 @@
 /*
  * JavaExpressionKind.java
  *
- * Created on понеділок, 5, лютого 2007, 6:07
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

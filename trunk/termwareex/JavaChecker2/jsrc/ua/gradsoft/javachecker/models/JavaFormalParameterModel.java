@@ -1,7 +1,6 @@
 /*
  * JavaFormalParameterModel.java
  *
- * Created on νεδ³λÿ, 14, ρ³χνÿ 2007, 17:46
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved
@@ -11,7 +10,7 @@
 package ua.gradsoft.javachecker.models;
 
 /**
- *
+ *Model for Java Formal Parameter
  * @author Ruslan Shevchenko
  */
 public class JavaFormalParameterModel implements JavaVariableModel

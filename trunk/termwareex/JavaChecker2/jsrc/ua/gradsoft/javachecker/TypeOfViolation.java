@@ -1,7 +1,7 @@
 /*
  * ViolationSummary.java
  *
- * Created on понеділок, 17, травня 2004, 4:46
+ *
  */
 
 package ua.gradsoft.javachecker;

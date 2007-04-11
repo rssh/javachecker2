@@ -1,10 +1,6 @@
 /*
  * JavaTermSwitchConstantExpressionModel.java
  *
- * Created on 25 Февраль 2007 г., 2:36
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package ua.gradsoft.javachecker.models.expressions;

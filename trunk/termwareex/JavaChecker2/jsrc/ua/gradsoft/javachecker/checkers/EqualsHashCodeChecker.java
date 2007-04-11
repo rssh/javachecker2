@@ -1,10 +1,6 @@
 /*
  * EqualsHashCodeChecker.java
  *
- * Created on 12 Март 2007 г., 2:48
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package ua.gradsoft.javachecker.checkers;

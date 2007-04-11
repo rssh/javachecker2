@@ -1,8 +1,6 @@
 /*
  * JavaTermAnonimousType.java
  *
- * Created on νεδ³λÿ, 14, ρ³χνÿ 2007, 14:14
- *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved
  */

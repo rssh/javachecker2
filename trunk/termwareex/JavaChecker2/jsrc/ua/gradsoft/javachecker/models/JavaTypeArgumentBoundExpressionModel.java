@@ -1,10 +1,6 @@
 /*
  * JavaTypeArgumentBoundExpression.java
  *
- * Created on 21 Февраль 2007 г., 20:29
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package ua.gradsoft.javachecker.models;

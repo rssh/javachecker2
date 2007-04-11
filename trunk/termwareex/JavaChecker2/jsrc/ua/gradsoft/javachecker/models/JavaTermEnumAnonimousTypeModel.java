@@ -1,7 +1,6 @@
 /*
  * JavaTermEnumAnonimousTypeModel.java
  *
- * Created on п'€тниц€, 19, с≥чн€ 2007, 5:02
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

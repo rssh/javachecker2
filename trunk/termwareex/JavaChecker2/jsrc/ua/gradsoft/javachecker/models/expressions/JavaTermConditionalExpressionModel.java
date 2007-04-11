@@ -1,7 +1,6 @@
 /*
  * JavaTermConditionalExpressionModel.java
  *
- * Created on понеділок, 5, лютого 2007, 15:24
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

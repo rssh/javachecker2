@@ -1,7 +1,6 @@
 /*
  * JavaTermRelationalExpressionModel.java
  *
- * Created on вівторок, 6, лютого 2007, 1:06
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

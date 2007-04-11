@@ -1,7 +1,6 @@
 /*
  * JavaTypeArgumentBoundLocalVariableModel.java
  *
- * Created on п'€тниц€, 12, с≥чн€ 2007, 19:51
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

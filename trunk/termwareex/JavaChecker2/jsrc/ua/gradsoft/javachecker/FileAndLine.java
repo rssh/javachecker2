@@ -1,7 +1,6 @@
 /*
  * FileAndLine.java
  *
- * Created on неділя, 29, лютого 2004, 15:02
  */
 
 package ua.gradsoft.javachecker;

@@ -1,22 +1,7 @@
 /*
  * ITermVisitor.java
  *
- * Created on вівторок, 12, вересня 2006, 1:21
- *
- * UBS application
- *
- * Class: __MAME__
- *
- * Created on: вівторок, 12, вересня 2006, 1:21
- *
- * Owner: Ruslan Shevchenko
- *
- * Description:
- *
- * History:
- *
- * Copyright (c) 2004-2005 Infopulse Ukraine
- * Copyright (c) 2004-2005 GradSoft  Ukraine
+ * Copyright (c) 2004-2007 GradSoft  Ukraine
  * All Rights Reserved
  */
 

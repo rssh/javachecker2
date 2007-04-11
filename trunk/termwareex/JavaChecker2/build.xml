@@ -22,13 +22,13 @@
     <!--<compilerarg value="-Xlint:unchecked" />  -->
     <classpath>
       <pathelement location="jsrc"/>
-      <pathelement location="jlib/TermWare2.jar"/>
-      <pathelement location="jlib/TermWareJPP.jar"/>
+      <pathelement location="lib/TermWare2.jar"/>
+      <pathelement location="lib/TermWareJPP.jar"/>
       <pathelement location="${java.class.path}/"/>      
     </classpath>
   </javac>
   <jar basedir="jsrc" includes="**/*.class" 
-       destfile="jlib/JavaChecker2.jar" 
+       destfile="lib/JavaChecker2.jar" 
        index="true">
   <include name="build"/>
   <manifest>
@@ -41,10 +41,10 @@
  <target name="build-test-classes"  depends="build-classes">
      <javac srcdir="jtests" includes="ua/**/*.java" debug="true" >
          <classpath>
-             <pathelement location="jlib/JavaChecker2.jar" />
-             <pathelement location="jlib/TermWare2.jar" />
-             <pathelement location="jlib/TermWareJPP.jar" />
-             <pathelement location="jlib/junit.jar" />
+             <pathelement location="lib/JavaChecker2.jar" />
+             <pathelement location="lib/TermWare2.jar" />
+             <pathelement location="lib/TermWareJPP.jar" />
+             <pathelement location="lib/junit.jar" />
              <pathelement location="${java.class.path}/"/>      
          </classpath>
      </javac>
@@ -64,10 +64,10 @@
 -->
          <classpath>
              <pathelement location="jtests" />
-             <pathelement location="jlib/JavaChecker2.jar" />
-             <pathelement location="jlib/TermWare2.jar" />
-             <pathelement location="jlib/TermWareJPP.jar" />
-             <pathelement location="jlib/junit.jar" />
+             <pathelement location="lib/JavaChecker2.jar" />
+             <pathelement location="lib/TermWare2.jar" />
+             <pathelement location="lib/TermWareJPP.jar" />
+             <pathelement location="lib/junit.jar" />
              <pathelement location="${java.class.path}/"/>                
          </classpath>
          <formatter type="xml" usefile="false" />
@@ -90,10 +90,10 @@
             <jvmarg value="-Djavachecker.home=."/>
          <classpath>
              <pathelement location="jtests" />
-             <pathelement location="jlib/JavaChecker2.jar" />
-             <pathelement location="jlib/TermWare2.jar" />
-             <pathelement location="jlib/TermWareJPP.jar" />
-             <pathelement location="jlib/junit.jar" />
+             <pathelement location="lib/JavaChecker2.jar" />
+             <pathelement location="lib/TermWare2.jar" />
+             <pathelement location="lib/TermWareJPP.jar" />
+             <pathelement location="lib/junit.jar" />
              <pathelement location="${java.class.path}/"/>                   
          </classpath>
          <formatter type="xml" usefile="false" />
@@ -110,9 +110,9 @@
     <taskdef name="JavaChecker"  classname="ua.gradsoft.javachecker.ant.JavaCheckerTask">
      <classpath>
       <pathelement location="jsrc"/>
-      <pathelement location="jlib/TermWare2.jar"/>
-      <pathelement location="jlib/JavaChecker2.jar"/>
-      <pathelement location="jlib/TermWareJPP.jar"/>
+      <pathelement location="lib/TermWare2.jar"/>
+      <pathelement location="lib/JavaChecker2.jar"/>
+      <pathelement location="lib/TermWareJPP.jar"/>
       <pathelement location="${java.class.path}/"/>      
      </classpath>
     </taskdef>    

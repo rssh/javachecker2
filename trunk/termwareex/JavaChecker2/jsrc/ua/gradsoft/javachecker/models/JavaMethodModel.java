@@ -1,7 +1,6 @@
 /*
  * JavaMethodModel.java
  *
- * Created on п'€тниц€, 27, лютого 2004, 12:27
  */
 
 package ua.gradsoft.javachecker.models;

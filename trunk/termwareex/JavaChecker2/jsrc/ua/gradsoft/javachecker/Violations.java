@@ -1,7 +1,6 @@
 /*
  * Violations.java
  *
- * Created on понеділок, 17, травня 2004, 4:54
  */
 
 package ua.gradsoft.javachecker;
@@ -14,7 +13,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- *
+ *Set of violations, found in source
  */
 public class Violations {
     

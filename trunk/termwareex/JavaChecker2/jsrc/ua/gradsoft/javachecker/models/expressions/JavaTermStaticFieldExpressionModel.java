@@ -1,10 +1,6 @@
 /*
  * JavaTermStaticFieldExpressionModel.java
  *
- * Created on 20 Февраль 2007 г., 3:54
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package ua.gradsoft.javachecker.models.expressions;
@@ -26,8 +22,6 @@ import ua.gradsoft.termware.TermWareException;
 
 /**
  *Model, which represent static field of some class.
- *StaticField(class,identifier)
- * @author RSSH
  */
 public class JavaTermStaticFieldExpressionModel extends JavaTermExpressionModel
 {

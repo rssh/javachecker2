@@ -1,7 +1,6 @@
 /*
  * JavaTermNullLiteralExpressionModel.java
  *
- * Created on вівторок, 6, лютого 2007, 6:43
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

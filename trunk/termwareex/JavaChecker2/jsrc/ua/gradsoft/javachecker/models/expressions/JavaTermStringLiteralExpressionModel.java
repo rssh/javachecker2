@@ -1,9 +1,9 @@
 /*
  * JavaTermStringLiteralExpressionModel.java
  *
- * Created on вівторок, 6, лютого 2007, 5:15
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006-2007 GradSoft  Ukraine.
+ * http://www.gradsoft.ua
  * All Rights Reserved
  */
 

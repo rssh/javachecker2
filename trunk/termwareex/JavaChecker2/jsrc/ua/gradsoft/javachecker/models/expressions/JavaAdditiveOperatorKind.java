@@ -1,7 +1,6 @@
 /*
  * JavaAdditiveOperatorKind.java
  *
- * Created on вівторок, 6, лютого 2007, 1:58
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

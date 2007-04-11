@@ -1,10 +1,6 @@
 /*
  * JavaTypeNameExpressionModel.java
  *
- * Created on 20 Февраль 2007 г., 2:20
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package ua.gradsoft.javachecker.models.expressions;
@@ -20,8 +16,9 @@ import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
- *
- * @author RSSH
+ * Expression for name.
+ *(note, that this is 'proxy' expression, which transparenty extends to undelying expressions
+ *during building of model term)
  */
 public class JavaTermTypeNameExpressionModel extends JavaTermTypeExpressionModel
 {

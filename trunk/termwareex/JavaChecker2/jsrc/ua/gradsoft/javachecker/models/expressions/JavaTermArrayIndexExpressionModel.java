@@ -1,10 +1,6 @@
 /*
  * JavaTermArrayIndexExpressionModel.java
  *
- * Created on 18 Февраль 2007 г., 21:24
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package ua.gradsoft.javachecker.models.expressions;

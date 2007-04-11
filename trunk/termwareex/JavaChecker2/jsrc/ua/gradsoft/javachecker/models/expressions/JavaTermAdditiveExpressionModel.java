@@ -1,7 +1,6 @@
 /*
  * JavaTermAdditiveExpressionModel.java
  *
- * Created on вівторок, 6, лютого 2007, 2:17
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

@@ -1,8 +1,6 @@
 /*
  * JavaTermIdentifierExpressionModel.java
  *
- * Created on середа, 7, лютого 2007, 18:37
- *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved
  */

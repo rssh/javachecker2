@@ -1,7 +1,6 @@
 /*
  * JavaTypeArgumentBoundTypeVariableModel.java
  *
- * Created on середа, 17, січня 2007, 20:32
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

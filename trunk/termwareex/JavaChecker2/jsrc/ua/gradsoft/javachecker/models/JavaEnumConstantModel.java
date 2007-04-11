@@ -1,7 +1,6 @@
 /*
  * JavaEnumConstantModel.java
  *
- * Created on п'€тниц€, 19, с≥чн€ 2007, 13:34
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

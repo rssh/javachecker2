@@ -1,7 +1,6 @@
 /*
  * JavaTermFunctionCallExpressionModel.java
  *
- * Created on середа, 7, лютого 2007, 19:07
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

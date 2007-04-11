@@ -1,7 +1,6 @@
 /*
  * LocalTypesIterable.java
  *
- * Created on νεδ³λÿ, 14, ρ³χνÿ 2007, 16:00
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

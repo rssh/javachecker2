@@ -1,7 +1,6 @@
 /*
  * ConfigParseException.java
  *
- * Created on середа, 18, лютого 2004, 3:02
  */
 
 package ua.gradsoft.javachecker;

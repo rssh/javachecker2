@@ -1,8 +1,6 @@
 /*
  * JavaTypeArgumentsSubstitution.java
  *
- * Created on субота, 13, січня 2007, 15:10
- *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved
  */

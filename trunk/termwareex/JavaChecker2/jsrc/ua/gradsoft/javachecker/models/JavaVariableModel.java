@@ -1,10 +1,6 @@
 /*
  * JavaVariableModel.java
  *
- * Created on вівторок, 9, січня 2007, 0:10
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package ua.gradsoft.javachecker.models;
@@ -17,6 +13,9 @@ import ua.gradsoft.termware.TermWareException;
  */
 public interface JavaVariableModel {
     
+    /**
+     *get name of variable.
+     */
     public String getName();
     
     public JavaVariableKind getKind();

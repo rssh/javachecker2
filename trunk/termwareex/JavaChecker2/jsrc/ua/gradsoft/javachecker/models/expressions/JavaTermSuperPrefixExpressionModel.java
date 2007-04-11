@@ -1,9 +1,8 @@
 /*
  * JavaTermSuperPrefixExpressionModel.java
  *
- * Created on вівторок, 6, лютого 2007, 12:21
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006-2007 GradSoft  Ukraine
  * All Rights Reserved
  */
 

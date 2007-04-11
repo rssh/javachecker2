@@ -1,7 +1,5 @@
 /*
  * ProxyJavaFacts.java
- *
- * Created on четвер, 19, лютого 2004, 22:26
  */
 
 package ua.gradsoft.javachecker;

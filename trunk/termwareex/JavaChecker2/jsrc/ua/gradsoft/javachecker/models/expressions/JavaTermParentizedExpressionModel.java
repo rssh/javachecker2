@@ -1,9 +1,8 @@
 /*
  * JavaTermParentizedExpressionModel.java
  *
- * Created on понеділок, 5, лютого 2007, 6:16
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006-2007 GradSoft  Ukraine
  * All Rights Reserved
  */
 

@@ -1,7 +1,6 @@
 /*
  * JavaTermInstanceOfExpressionModel.java
  *
- * Created on понеділок, 5, лютого 2007, 22:41
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

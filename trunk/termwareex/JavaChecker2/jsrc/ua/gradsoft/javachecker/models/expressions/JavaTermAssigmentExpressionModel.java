@@ -1,7 +1,6 @@
 /*
  * JavaTermAssigmentExpressionModel.java
  *
- * Created on понеділок, 5, лютого 2007, 15:03
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

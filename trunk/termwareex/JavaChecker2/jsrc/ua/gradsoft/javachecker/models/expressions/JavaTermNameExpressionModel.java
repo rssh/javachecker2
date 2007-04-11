@@ -1,7 +1,6 @@
 /*
  * JavaTermNameExpressionModel.java
  *
- * Created on 19 Февраль 2007 г., 2:37
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.

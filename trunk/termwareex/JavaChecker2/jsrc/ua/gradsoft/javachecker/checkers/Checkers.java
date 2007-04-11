@@ -1,10 +1,6 @@
 /*
  * Checkers.java
  *
- * Created on 5 Март 2007 г., 4:06
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package ua.gradsoft.javachecker.checkers;

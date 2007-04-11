@@ -1,7 +1,6 @@
 /*
  * ProcessingException.java
  *
- * Created on неділя, 7, березня 2004, 5:39
  */
 
 package ua.gradsoft.javachecker;
