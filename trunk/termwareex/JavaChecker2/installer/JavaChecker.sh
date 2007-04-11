@@ -1,3 +1,3 @@
 TermWareHome="$INSTALL_PATH"
 JAVACHECKER_HOME="$INSTALL_PATH"
-java -Djavachecker.home="$$JAVACHECKER_HOME/systems" -cp "$$TermWareHome/jlib/TermWare2.jar";"$$JavaCheckerHome/jlib/JavaChecker2.jar";"$$JavaCheckerHome/jlib/TermWareJPP.jar"  ua.gradsoft.javachecker.Main $$*
+java -Djavachecker.home="$JAVACHECKER_HOME" -cp "$TermWareHome/lib/TermWare2.jar:$JAVACHECKER_HOME/lib/JavaChecker2.jar:$JAVACHECKER_HOME/lib/TermWareJPP.jar"  ua.gradsoft.javachecker.Main $*

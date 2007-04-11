@@ -1,4 +1,7 @@
-
+2.0.1 (11.04.2007)
+  - fixed packaging. 
+    - switch to last version of IzPack to prevent coredump in Installer on Linux FC6
+    - debug wrapper shell script
 
 2.0  (19.03.2007)
   - fully rewrite.  Abstract interpretation framework is implemented.

@@ -1,0 +1,14 @@
+#
+# You need TermWare2 and docbook for building.
+# IzPack, if you want build installation.
+#
+
+# set here location of TermWare installed (see http://www.gradsoft.com.ua )
+termware.home=/home/rssh/work/TermWare.2
+
+#set here location of IzPack (see http://www.izforge.com)
+izpackhome=c:/local/IzPack
+                
+#set here location of anf home
+anthome=/usr
+

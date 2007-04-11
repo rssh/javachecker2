@@ -8,7 +8,7 @@
 <installation version="1.0">
  <info>
   <appname>JavaChecker</appname>
-  <appversion>2.0.0</appversion>
+  <appversion>2.0.1</appversion>
   <url>http://www.gradsoft.ua</url>
   <authors>
    <author name="Ruslan Shevchenko" email="Ruslan@Shevchenko.Kiev.UA" />
@@ -38,11 +38,20 @@
   <file src="JavaChecker.sh" targetdir="$INSTALL_PATH/bin" />
   <parsable targetfile="$INSTALL_PATH/bin/JavaChecker.sh" os="unix"/>
   <parsable targetfile="$INSTALL_PATH/bin/JavaChecker.bat" os="windows"/>
-    <file src="../jlib/JavaChecker2.jar" targetdir="$INSTALL_PATH/jlib" />
-  <file src="../jlib/TermWare2.jar"  targetdir="$INSTALL_PATH/jlib" />
-  <file src="../jlib/TermWareJPP.jar"  targetdir="$INSTALL_PATH/jlib" />
+    <file src="../lib/JavaChecker2.jar" targetdir="$INSTALL_PATH/lib" />
+  <file src="../lib/TermWare2.jar"  targetdir="$INSTALL_PATH/lib" />
+  <file src="../lib/TermWareJPP.jar"  targetdir="$INSTALL_PATH/lib" />
   <file src="../build.xml"  targetdir="$INSTALL_PATH" />
+  <file src="../build-ext.xml"  targetdir="$INSTALL_PATH" />
+  <file src="../build.properties"  targetdir="$INSTALL_PATH" />
+  <file src="../build.properties.default"  targetdir="$INSTALL_PATH" />
   <fileset dir="../systems/" targetdir="$INSTALL_PATH/systems" >
+    <exclude name="CVS" />
+    <exclude name="**/CVS" />
+    <exclude name="CVS/*" />
+    <exclude name="**/CVS/*" />
+  </fileset>
+  <fileset dir="../etc/" targetdir="$INSTALL_PATH/etc" >
     <exclude name="CVS" />
     <exclude name="**/CVS" />
     <exclude name="CVS/*" />
