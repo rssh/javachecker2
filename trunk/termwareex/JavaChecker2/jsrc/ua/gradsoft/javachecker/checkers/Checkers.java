@@ -94,6 +94,7 @@ public class Checkers {
                             break;
                         case BT_COMPILATION_UNIT_RULESET:
                             checker=new BTCompilationUnitChecker(name,category,description,rules,enabledByDefault);
+                            break;
                         case JAVA_CLASS:
                             checker=new ClassChecker(name,category,description,rules,enabledByDefault);
                             break;

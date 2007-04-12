@@ -214,7 +214,6 @@ public class JavaPackageModel {
       
       throw new EntityNotFoundException("typeModel",name,"");
     }
-
     
     private String name_;
     private HashMap<String,JavaTypeModelRef> typeModelRefs_;       

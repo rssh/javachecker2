@@ -27,6 +27,16 @@ Checkers(
         true
   ),
 
+ define(NotOurPackaging,style,"package names must start with ua.gradsoft ",
+        BT_COMPILATION_UNIT_RULESET,
+        ruleset(
+          PackageDeclaration(Name($x)) -> COM_MYCOMPANY($x) ,
+          COM_MYCOMPANY([$x:[$y:$z]]) 
+              [ $x==Identifier("ua") && $y==Identifier("gradsoft") ] -> true 
+              !-> false [ violationDiscovered(NotOurPackaging,"Bad package name", $x) ]
+        ),
+        false
+  ),
 
  define(UnclosedCloseable,resources,"unclosed instance of closeable",
         MODEL_RULESET,
