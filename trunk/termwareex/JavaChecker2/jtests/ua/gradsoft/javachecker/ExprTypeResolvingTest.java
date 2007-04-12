@@ -1,7 +1,6 @@
 /*
  * ExprTypeResolvingTest.java
  *
- * Created on середа, 24, січня 2007, 21:39
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

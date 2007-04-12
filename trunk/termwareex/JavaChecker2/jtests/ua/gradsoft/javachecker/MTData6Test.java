@@ -1,7 +1,6 @@
 /*
  * MTData6Test.java
  *
- * Created on середа, 31, січня 2007, 14:17
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

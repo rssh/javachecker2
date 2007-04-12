@@ -73,7 +73,7 @@ public class MTCollectionTest extends TestCase
                    assertEquals("Queue have one member variable:list","list",name);  
                    lengthFound=true;
                }else if (t.getName().equals("MethodModel")) {
-                   System.out.println("MethodModel:"+TermHelper.termToString(t));
+                   //System.out.println("MethodModel:"+TermHelper.termToString(t));
                    Term idTerm=t.getSubtermAt(JavaModelConstants.METHOD_MODEL_NAME_INDEX);
                    String name=idTerm.getSubtermAt(0).getString();
                    if (name.equals("push")) {

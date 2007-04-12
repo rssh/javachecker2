@@ -1,7 +1,6 @@
 /*
  * MethodResolvingTest.java
  *
- * Created on четвер, 18, січня 2007, 1:28
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

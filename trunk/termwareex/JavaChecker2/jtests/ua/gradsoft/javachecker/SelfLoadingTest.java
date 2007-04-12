@@ -1,7 +1,6 @@
 /*
  * SelfLoadingTest.java
  *
- * Created on четвер, 25, січня 2007, 3:53
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

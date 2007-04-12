@@ -1,7 +1,6 @@
 /*
  * LC1.java
  *
- * Created on субота, 13, січня 2007, 23:43
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

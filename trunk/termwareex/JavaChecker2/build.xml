@@ -120,7 +120,7 @@
 
 
  <target name="check" depends="declareJavaChecker" >
-   <JavaChecker jchhome="." output="jchreport.html" outputFormat="html" prefs="etc/prefs1.xml" debug="false" q="false"  >
+   <JavaChecker jchhome="${basedir}" output="jchreport.html" outputFormat="html" prefs="etc/prefs1.xml" debug="false" q="false"  >
     <input dir="jsrc" />
     <classpath>
 			<fileset dir="jlib">

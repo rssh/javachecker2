@@ -27,13 +27,13 @@ public class DefectReportItem {
     {
      switch(format) {
          case TEXT:
+          out.print(marker_.getFname());   
+          out.print(":");   
+          out.print(marker_.getLine());   
+          out.print(":(");   
           out.print(category_);
-          out.print(":");
+          out.print(") ");
           out.print(description_);
-          out.print("(file:");
-          out.print(marker_.getFname());
-          out.print(",line:"+marker_.getLine());
-          out.print(")");
           out.println();
           break;
          case HTML:

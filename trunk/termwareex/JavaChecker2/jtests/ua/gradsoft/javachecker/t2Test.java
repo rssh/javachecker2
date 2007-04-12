@@ -1,8 +1,6 @@
 /*
  * t2Test.java
  *
- * Created on середа, 20, грудня 2006, 4:55
- *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved
  */

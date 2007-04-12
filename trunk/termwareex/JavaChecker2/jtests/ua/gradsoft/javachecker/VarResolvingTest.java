@@ -1,7 +1,6 @@
 /*
  * VarResolvingTest.java
  *
- * Created on середа, 17, січня 2007, 3:06
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

@@ -1,7 +1,7 @@
 /*
  * LoadingTest.java
  *
- * Created on понеділок, 15, січня 2007, 0:45
+ * Created on пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, 15, пїЅпїЅпїЅпїЅ 2007, 0:45
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved
@@ -86,7 +86,7 @@ public class LoadingTest extends TestCase
         assertTrue("ZZ have method with name create list",zzCml.size()>0);
         JavaMethodModel zzCm = zzCml.get(0);
         JavaTypeModel zzCmrt = zzCm.getResultType();
-        System.out.println("result type of zzCmrt:"+zzCmrt.getName());
+        //System.out.println("result type of zzCmrt:"+zzCmrt.getName());
         assertEquals("List<T>",zzCmrt.getName());
         
         JavaTypeModel zzzModel = zzModel.findNestedTypeModel("ZZZ");
@@ -144,7 +144,7 @@ public class LoadingTest extends TestCase
       assertEquals("name of K","K",k.getName());
       List<JavaTypeModel> kBounds = k.getBounds();
       assertTrue("Eb.K must have bounds",kBounds.size()!=0);
-      System.out.println("Eb full name:"+ebModel.getFullName()+",bounds:"+kBounds.toString());
+      //System.out.println("Eb full name:"+ebModel.getFullName()+",bounds:"+kBounds.toString());
       JavaTypeModel kBound=kBounds.get(0);
       assertEquals("bound is Enum","Enum<K>",kBound.getName());
       
