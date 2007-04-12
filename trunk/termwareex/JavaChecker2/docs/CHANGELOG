@@ -1,4 +1,4 @@
-2.0.1 (16.04.2007)
+2.0.1 (13.04.2007)
     - fixed packaging. 
     - switch to last version of IzPack to prevent coredump of installer on Linux FC6
     - fix wrapper shell script
