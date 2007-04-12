@@ -32,7 +32,7 @@
   <panel classname="FinishPanel"/>
  </panels>
 <packs>
- <pack name="JavaChecker sources" required="no">
+ <pack name="JavaChecker sources" required="yes">
   <description> full javachecker sources </description>
   <file src="JavaChecker.bat" targetdir="$INSTALL_PATH/bin" />
   <file src="JavaChecker.sh" targetdir="$INSTALL_PATH/bin" />
@@ -70,7 +70,7 @@
     <exclude name="**/CVS/*" />
     <exclude name="**/*.class" />
   </fileset>
-  <fileset dir="../jtests/" targetdir="$INSTALL_PATH/jsrc" >
+  <fileset dir="../jtests/" targetdir="$INSTALL_PATH/jtests" >
     <exclude name="CVS" />
     <exclude name="**/CVS" />
     <exclude name="CVS/*" />
@@ -91,6 +91,12 @@
     <exclude name="JavaCheckerBinaryInstaller*.*.jar" />
     <exclude name="JavaCheckerSourceInstaller*.*.jar" />
   </fileset>
+ </pack>
+ <pack name="NetBeans project" required="no" >
+   <description> NetBeans project for easy navigation </description>
+   <fileset dir="../nbproject/" targetdir="$INSTALL_PATH/nbproject" >
+    <exclude name="private/*" />
+   </fileset>
  </pack>
 </packs>
 </installation>
