@@ -21,8 +21,10 @@ Checkers(
  define(GenericExceptionThrow,exceptions,"throwing of generic exception",
         BT_TYPE_RULESET,
         ruleset(
-          ThrowStatement(AllocationExpression(Identifier("Exception"),$dims,$args,$body))
-                         -> true [ violationDiscovered(GenericExceptionThrow,"throwing of generic exception",$args) ]
+          import(general,apply),
+          ThrowStatement(AllocationExpression($ex,$dims,$args,$body)) -> CheckGeneric($ex,$ex),
+          CheckGeneric(Identifier("Exception"),$ex)
+                         -> true [ violationDiscovered(GenericExceptionThrow,"throwing of generic exception",$ex) ]
         ),
         true
   ),
@@ -37,6 +39,16 @@ Checkers(
         ),
         false
   ),
+
+ define(SwitchLabelWithoutBreak,flow,"switch label block without break ",
+        BT_TYPE_RULESET,
+        ruleset(
+          import(general,apply),
+          SwitchStatementLabelBlock($label,[$x:$y]) -> flows::CheckBreak.CHECK_BREAK($label,cons($x,$y),cons($x,$y))
+        ),
+        true
+ ),
+
 
  define(UnclosedCloseable,resources,"unclosed instance of closeable",
         MODEL_RULESET,

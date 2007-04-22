@@ -5,7 +5,7 @@
 
 package ua.gradsoft.javachecker.checkers;
 
-import ua.gradsoft.javachecker.AbstractTypeChecker;
+import ua.gradsoft.javachecker.checkers.AbstractTypeChecker;
 import ua.gradsoft.javachecker.CheckerType;
 import ua.gradsoft.javachecker.ConfigException;
 import ua.gradsoft.javachecker.JavaFacts;

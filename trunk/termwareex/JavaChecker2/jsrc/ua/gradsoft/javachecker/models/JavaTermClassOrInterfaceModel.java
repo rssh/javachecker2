@@ -199,12 +199,12 @@ public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
     private boolean isInterface_=false;
     private boolean isClass_=false;
     
-    public static int CLASS_OR_INTERFACE_TERM_INDEX=0;
-    public static int NAME_IDENTIFIER_TERM_INDEX=1;
-    public static int TYPE_PARAMETERS_TERM_INDEX=2;
-    public static int EXTENDS_TERM_INDEX=3;
-    public static int IMPLEMENTS_TERM_INDEX=4;
-    public static int CLASS_OR_INTERFACE_BODY_INDEX=5;
+    public static final int CLASS_OR_INTERFACE_TERM_INDEX=0;
+    public static final int NAME_IDENTIFIER_TERM_INDEX=1;
+    public static final int TYPE_PARAMETERS_TERM_INDEX=2;
+    public static final int EXTENDS_TERM_INDEX=3;
+    public static final int IMPLEMENTS_TERM_INDEX=4;
+    public static final int CLASS_OR_INTERFACE_BODY_INDEX=5;
         
 
 }

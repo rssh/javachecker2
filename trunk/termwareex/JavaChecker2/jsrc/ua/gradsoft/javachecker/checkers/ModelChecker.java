@@ -6,7 +6,7 @@
 package ua.gradsoft.javachecker.checkers;
 
 import java.util.Iterator;
-import ua.gradsoft.javachecker.AbstractTypeChecker;
+import ua.gradsoft.javachecker.checkers.AbstractTypeChecker;
 import ua.gradsoft.javachecker.CheckerType;
 import ua.gradsoft.javachecker.ConfigException;
 import ua.gradsoft.javachecker.EntityNotFoundException;
@@ -34,33 +34,7 @@ public class ModelChecker extends AbstractTypeChecker {
         super(name,category,description,enabled);
         ITermRewritingStrategy strategy = TermWare.getInstance().createStrategyByName("BottomTop");
         termSystem_ = new TermSystem(strategy,Main.getFacts(),TermWare.getInstance());
-        if (rules.getName().equals("ruleset")) {
-            for(int i=0; i<rules.getArity(); ++i) {
-                Term current=rules.getSubtermAt(i);
-                if (current.getName().equals("import")) {
-                    if(current.getArity()==2) {
-                        Term termPatternName=current.getSubtermAt(1);
-                        if (!termPatternName.isString()&&!termPatternName.isAtom()) {
-                            throw new AssertException("secong argument of import must be atom or string");
-                        }
-                        String patternName=termPatternName.getName();
-                        TermSystem fromSys = TermWare.getInstance().getRoot().resolveSystem(current.getSubtermAt(0));
-                        Iterator<ITermTransformer> it=fromSys.getStrategy().getStar().iterator(patternName);
-                        while(it.hasNext()) {
-                            ITermTransformer tr=it.next();
-                            //System.out.println("adding normalizer"+tr.toString());
-                            termSystem_.addNormalizer(patternName, tr);
-                        }
-                    }else{
-                        throw new AssertException("import in checkers.def must have arity 2");
-                    }
-                }else{
-                    termSystem_.addRule(current);
-                }
-            }
-        }else{
-            throw new ConfigException("ruleset term required");
-        }
+        addRuleset(termSystem_,rules);
         TermWare.getInstance().addSystem(getName(),termSystem_);
     }
     

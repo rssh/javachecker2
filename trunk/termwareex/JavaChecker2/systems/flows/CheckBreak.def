@@ -1,0 +1,26 @@
+
+domain(flows,
+  system("CheckBreak",
+         javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJavaFacts"),
+     ruleset(
+       import(general,unify),
+       import(general,if),
+
+       CHECK_BREAK($label,$x,$y) -> unify($label,SwitchLabel(default)) ? false : CHECK_BREAK($x,$y),
+
+       CHECK_BREAK(NIL,$where) -> true [ violationDiscovered(SwitchLabelWithoutBreak,"switch label without break",$where) ],
+       CHECK_BREAK([$x:$y],$where) -> IS_BREAK($x) ? false : CHECK_BREAK($y,$where),
+       IS_BREAK($x) -> unify($x, BreakStatement()) ? true :
+                       unify($x, BreakStatement($y)) ? true : 
+                       unify($x, ReturnStatement()) ? true : 
+                       unify($x, ReturnStatement($y)) ? true : 
+                       unify($x, ThrowStatement($y)) ? true : 
+                       false,
+
+       p($x) -> $x [ println($x) ],
+
+       __THIS_IS_ALL -> true
+     ),
+     FirstTop
+  )
+);
