@@ -270,6 +270,7 @@ public class ASTTransformers {
             ||t.getName().equals("ArrayInitializer")
             ||t.getName().equals("CatchSequence")
             ||t.getName().equals("AnnotationTypeBody")           
+            ||t.getName().equals("MemberValuePairs")           
             ) {
                 retval=javaTermArgsAsList(t,0,true);
             }else if (t.getName().equals("FieldDeclaration")
@@ -285,6 +286,7 @@ public class ASTTransformers {
             ||t.getName().equals("ShiftExpression")
             ||t.getName().equals("AdditiveExpression")
             ||t.getName().equals("MultiplicativeExpression")
+            ||t.getName().equals("Modifiers")
             // ||t.getName().equals("PrimaryExpression")
             ) {
                 retval=javaTermArgsAsList(t,1,true);

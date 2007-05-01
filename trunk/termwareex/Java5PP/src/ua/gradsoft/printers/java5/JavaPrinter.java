@@ -539,7 +539,8 @@ public class JavaPrinter extends AbstractPrinter {
         if ((m & ModifierSet.STRICTFP)!=0) {
             out_.print("strictfp ");
         }
-        if (t.getArity()==2 && t.getSubtermAt(1).getName().equals("cons")) {
+        if (t.getArity()==2) {
+         if (t.getSubtermAt(1).getName().equals("cons")) {
             Term l=t.getSubtermAt(1);
             while(!l.isNil()) {
                 writeTerm(l.getSubtermAt(0),level);
@@ -548,6 +549,11 @@ public class JavaPrinter extends AbstractPrinter {
                     out_.print(' ');
                 }
             }
+         } else if (t.getSubtermAt(1).isNil()) {
+            // do nothing.
+         } else {
+            throw new AssertException("second argument of Modifiers must be a list");
+         }
         }else if(t.getArity()>1) {
             for(int i=1; i<t.getArity(); ++i) {
                 writeTerm(t.getSubtermAt(i),level);

@@ -1,10 +1,6 @@
 /*
  * JavaSrcTest.java
  *
- * Created on 23 Февраль 2007 г., 15:25
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package ua.gradsoft.parsers.java5.test;

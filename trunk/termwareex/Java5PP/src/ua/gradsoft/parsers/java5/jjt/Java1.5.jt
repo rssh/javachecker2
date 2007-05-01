@@ -20,6 +20,7 @@
  * export exclusion lists, including, but not limited to, the denied persons
  * and specially designated nationals lists is strictly prohibited.
  *
+ * adoption to TermWare:
  * Copyright (C) 2004-2007  GradSoft, Ukraine
  */
 
@@ -164,6 +165,10 @@ public class JJTJavaParser
    return TermWare.getInstance().getTermFactory().createTerm(name,x);
   }
 
+  Term createTerm(String name,Term x1, Term x2) throws TermWareException
+  {
+   return TermWare.getInstance().getTermFactory().createTerm(name,x1,x2);
+  }
 
 }
 
@@ -291,13 +296,15 @@ TOKEN :
   < #OCTAL_LITERAL: "0" (["0"-"7"])* >
 |
   < FLOATING_POINT_LITERAL:
-        (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])?
+      <HEX_LITERAL> "." (["0"-"9","a"-"f","A"-"F"])* (<EXPONENT>)? (["f","F","d","D"])?
+      | (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])?
       | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])?
       | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
       | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]
   >
 |
-  < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+  < #EXPONENT: ["e","E"] (["p","P"])? (["+","-"])? (["0"-"9"])+ 
+              | ["p","P"] (["+","-"])? (["0"-"9"])+ >
 |
   < CHARACTER_LITERAL:
       "'"
@@ -1828,7 +1835,7 @@ SimpleNode Block():
 void BlockStatement():
 {}
 {
-  LOOKAHEAD([ "final" ] Type() Identifier())
+  LOOKAHEAD([Annotation()] [ "final" ] Type() Identifier())
   LocalVariableDeclaration() ";"
 |
   Statement()
@@ -1840,12 +1847,20 @@ void LocalVariableDeclaration():
 {
  int modifiers=0;
  Token tkf=null;
+ Term annotation=null;
 }
 {
-  [ tkf="final" { modifiers|=ModifierSet.FINAL; }] Type() VariableDeclarator() ( "," VariableDeclarator() )*
+  [annotation=Annotation()] [ tkf="final" { modifiers|=ModifierSet.FINAL; }] Type() VariableDeclarator() ( "," VariableDeclarator() )*
   { 
+   Term modifiersTerm=null;
+   if (annotation==null) {
+     modifiersTerm=createTerm("Modifiers",createInt(modifiers));
+     jjtThis.addTerm(modifiersTerm,0); 
+   }else{
+     modifiersTerm=createTerm("Modifiers",annotation,createInt(modifiers));
+     jjtThis.setSubtermAt(0,modifiersTerm);
+   }
    setComment(jjtThis,tkf);
-   jjtThis.addTerm(createTerm("Modifiers",createInt(modifiers)),0); 
   }
 }
 
@@ -2131,6 +2146,13 @@ void RSIGNEDSHIFT():
   )
 }
 
+void Annotations():
+{
+}
+{
+  Annotation() ( Annotation() )*
+}
+
 /* Annotation syntax follows. */
 
 SimpleNode Annotation():
@@ -2225,7 +2247,7 @@ void MemberValue():
 void  MemberValueArrayInitializer():
 {}
 {
-  "{" MemberValue() ( LOOKAHEAD(2) "," MemberValue() )* [ "," ] "}"
+  "{" ( MemberValue() ( LOOKAHEAD(2) "," MemberValue() )* [ "," ] )? "}"
 }
 
 

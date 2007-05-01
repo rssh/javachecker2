@@ -1,7 +1,6 @@
 /*
  * ExprTest.java
  *
- * Created on середа, 24, січня 2007, 20:43
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

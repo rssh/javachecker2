@@ -1,7 +1,6 @@
 /*
  * JavaSyntaxElement.java
  *
- * Created on середа, 24, січня 2007, 17:20
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

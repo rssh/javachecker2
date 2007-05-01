@@ -4,7 +4,7 @@
 
 
  <!-- set here location of JavaCC [version 4.0] -->
- <property name="javacchome" location="d:/packages/javacc/javacc-4.0" />
+ <property name="javacchome" location="/usr/share/java/" />
 
 
   <!-- set here debug property -->
@@ -24,7 +24,7 @@
 
 
  <target name="build-java5-jj">
-     <java classpath="${javacchome}/bin/lib/javacc.jar"
+     <java classpath="${javacchome}/javacc.jar"
            classname="org.javacc.jjtree.Main"
            fork="true"
            dir="src/ua/gradsoft/parsers/java5/jjt"
@@ -34,7 +34,7 @@
  </target>
 
  <target name="build-java5-jv" depends="build-java5-jj">
-     <java classpath="${javacchome}/bin/lib/javacc.jar"
+     <java classpath="${javacchome}/javacc.jar"
            classname="org.javacc.parser.Main"
            fork="true"
            dir="src/ua/gradsoft/parsers/java5/jjt"
