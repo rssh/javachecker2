@@ -34,7 +34,7 @@ public abstract class JavaMemberVariableModel implements JavaVariableModel
         return JavaVariableKind.MEMBER_VARIABLE;
     }        
     
-    public abstract JavaTypeModel getTypeModel() throws TermWareException;
+    public abstract JavaTypeModel getTypeModel() throws TermWareException, EntityNotFoundException;
     
     public abstract JavaTypeModel getOwner();
         

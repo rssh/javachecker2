@@ -39,7 +39,7 @@ public class JavaTermStaticFieldExpressionModel extends JavaTermExpressionModel
     public boolean isType()
     { return false; }
     
-    public JavaTypeModel getType() throws TermWareException
+    public JavaTypeModel getType() throws TermWareException, EntityNotFoundException
     { return memberVariable_.getTypeModel(); }
     
     public List<JavaExpressionModel> getSubExpressions()

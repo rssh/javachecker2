@@ -73,8 +73,11 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
         Term identifierTerm=t_.getSubtermAt(QENUM_IDENTIFIER_INDEX_);
         List<JavaTypeModel> si = getSuperInterfaces();
         Term implementsList = t_.getSubtermAt(IMPLEMENTS_INDEX_);
+        if (implementsList.isComplexTerm()) {
+            implementsList=implementsList.getSubtermAt(0);
+        }
         Iterator<JavaTypeModel> siit = si.iterator();
-        Term implementsListModel = TermUtils.createNil();
+        Term implementsListModel = TermUtils.createNil();       
         while(!implementsList.isNil()) {
             Term siname = implementsList.getSubtermAt(0);
             implementsList=implementsList.getSubtermAt(1);
@@ -104,9 +107,12 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
         
         Term identifierTerm=t.getSubtermAt(QENUM_IDENTIFIER_INDEX_);
         Term implementsList=t.getSubtermAt(IMPLEMENTS_INDEX_);
+        if (implementsList.isComplexTerm()) {
+            implementsList=implementsList.getSubtermAt(0);
+        }
         while(!implementsList.isNil()) {
             Term classOrInterfaceTerm = implementsList.getSubtermAt(0);
-            addSuperInterface(classOrInterfaceTerm);
+            addSuperInterface(classOrInterfaceTerm);            
             implementsList=implementsList.getSubtermAt(1);
         }
         
@@ -123,7 +129,7 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
             }else if(et.getName().equals("ClassOrInterfaceBodyDeclaration")){                
                 if (et.getArity()>0) {
                     if (et.getSubtermAt(0).getName().equals("Initializer")) {
-                        addInitializer(et);
+                        addInitializer(et.getSubtermAt(0));
                     }else{
                         int modifiers=et.getSubtermAt(0).getSubtermAt(0).getInt();
                         Term declaration=et.getSubtermAt(1);

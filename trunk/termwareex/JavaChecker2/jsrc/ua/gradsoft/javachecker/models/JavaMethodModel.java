@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JavaFacts;
 import ua.gradsoft.termware.TermWareException;
 
@@ -39,14 +40,14 @@ public abstract class JavaMethodModel implements JavaTopLevelBlockOwnerModel
     /**
      *return list of forma-parameters types.  Note, that type for varargs parameters are arrays.
      */
-    public abstract List<JavaTypeModel> getFormalParametersTypes() throws TermWareException;
+    public abstract List<JavaTypeModel> getFormalParametersTypes() throws TermWareException, EntityNotFoundException;
     
     /**
      *get list of formal parameters. 
      */
-    public abstract List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException;
+    public abstract List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException, EntityNotFoundException;
     
-    public abstract Map<String,JavaFormalParameterModel>  getFormalParametersMap() throws TermWareException;
+    public abstract Map<String,JavaFormalParameterModel>  getFormalParametersMap() throws TermWareException, EntityNotFoundException;
                 
     public void print(PrintWriter writer) 
     {
@@ -80,6 +81,9 @@ public abstract class JavaMethodModel implements JavaTopLevelBlockOwnerModel
             fpts=getFormalParametersTypes();
         }catch(TermWareException ex){
             fpts=Collections.emptyList();
+            writer.print("error:"+ex.getMessage());
+        }catch(EntityNotFoundException ex){
+            fpts=Collections.emptyList();                   
             writer.print("error:"+ex.getMessage());
         }
         for(JavaTypeModel tm: fpts) {

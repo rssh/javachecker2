@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.NotSupportedException;
@@ -23,7 +24,6 @@ import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.TermWareException;
-import ua.gradsoft.termware.TermWareRuntimeException;
 import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
@@ -45,6 +45,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         statement_=statement;
         resolvedTypeArguments_=null;              
         substitution_=null;
+                
         //
         // Enum<E extends Enum<E> > cause endless loop during loading of Enum.
         // (so, resolvedTypeArguments and substituion will be lazy-initialized) 
@@ -67,6 +68,8 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         resolvedTypeArguments_=null;              
         substitution_=null;
         setUnitModel(unitModel);
+
+        
     }
     
     
@@ -84,14 +87,15 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
             throw new AssertException("what means that where is null ?");         
         }
         setUnitModel(where.getUnitModel());
-        createTermTypeArguments(resolvedTypeArguments);
+        createTermTypeArguments(resolvedTypeArguments);               
+        
     }
     
     public JavaTypeArgumentBoundTypeModel(JavaTypeModel origin,JavaTypeArgumentsSubstitution substitution, JavaTypeModel where) throws TermWareException
     {
       super(where.getPackageModel());
       origin_=origin;
-      substitution_=substitution;
+      substitution_=substitution;     
       resolvedTypeArguments_=substitution_.substitute(origin_.getTypeParameters());
       where_=where;
       if (where_==null) {
@@ -100,6 +104,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
       }      
       setUnitModel(where.getUnitModel());
       createTermTypeArguments(resolvedTypeArguments_);
+            
     }
     
     
@@ -319,6 +324,22 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
    public JavaStatementModel  getEnclosedStatement()
    { return origin_.getEnclosedStatement(); }
     
+   
+   public boolean hasAnnotation(String annotationName) throws TermWareException
+   {
+       return origin_.hasAnnotation(annotationName);
+   }
+   
+    public JavaAnnotationInstanceModel getAnnotation(String annotationName) throws NotSupportedException, TermWareException {
+        return origin_.getAnnotation(annotationName);
+    }
+
+   
+    public Map<String,JavaAnnotationInstanceModel> getAnnotations() throws TermWareException
+    {
+        return origin_.getAnnotations();
+    }
+   
     
     public JavaTypeModel resolveTypeParameter(String name) throws EntityNotFoundException, TermWareException 
     {
@@ -389,6 +410,8 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         if (typeVariables_!=null) {
            allTypeVariables.addAll(typeVariables_);
         }
+                
+        
         while(!l.isNil()) {
             Term t=l.getSubtermAt(0);
             l=l.getSubtermAt(1);
@@ -519,6 +542,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
     //TODO:private void createTermTypeArguments()
     
     private JavaTypeModel origin_;   
+
     private List<JavaTypeModel> resolvedTypeArguments_;
     
     // additional type-variables, which exists in creation contest.
@@ -536,5 +560,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
     private Term          typeArguments_;
     private JavaTypeModel where_;
     private JavaTypeArgumentsSubstitution substitution_;
+    
+    private final Logger LOG = Logger.getLogger(JavaTypeArgumentBoundTypeModel.class.getName());
     
 }

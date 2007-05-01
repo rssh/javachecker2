@@ -15,6 +15,7 @@ import ua.gradsoft.javachecker.models.JavaMethodModel;
 import ua.gradsoft.javachecker.models.JavaTermTypeAbstractModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *Check, that if method overload eqals, than hash-code must be implemented and vice-verse.
@@ -28,6 +29,7 @@ public class EqualsHashCodeChecker implements JavaTypeModelProcessor
 
     
     public void process(JavaTermTypeAbstractModel typeModel, JavaFacts facts) throws TermWareException {
+     try{   
        if (typeModel.hasMethodModels()) {
          if (existsEquals(typeModel)) {
              if (!existsHashCode(typeModel)) {
@@ -39,9 +41,12 @@ public class EqualsHashCodeChecker implements JavaTypeModelProcessor
              }
          }
        }
+     }catch(EntityNotFoundException ex){
+         throw new AssertException(ex.getMessage(),ex);
+     }
     }
 
-    public boolean existsEquals(JavaTermTypeAbstractModel typeModel) throws TermWareException 
+    public boolean existsEquals(JavaTermTypeAbstractModel typeModel) throws TermWareException, EntityNotFoundException 
     {
         List<JavaMethodModel> eqModels=null;
         try {
@@ -64,7 +69,7 @@ public class EqualsHashCodeChecker implements JavaTypeModelProcessor
         return false;
     }
     
-    public boolean existsHashCode(JavaTermTypeAbstractModel typeModel) throws TermWareException
+    public boolean existsHashCode(JavaTermTypeAbstractModel typeModel) throws TermWareException, EntityNotFoundException
     {
        List<JavaMethodModel> hcModels = null;
        try {

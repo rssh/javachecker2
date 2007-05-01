@@ -22,7 +22,7 @@ public interface JavaLocalVariableModel extends JavaVariableModel
 
     public String getName();
     
-    public JavaTypeModel  getTypeModel() throws TermWareException;
+    public JavaTypeModel  getTypeModel() throws TermWareException, EntityNotFoundException;
         
     public JavaStatementModel getStatement();
     

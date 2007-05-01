@@ -8,6 +8,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.lang.annotation.ElementType;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.TreeMap;
 import ua.gradsoft.javachecker.CheckerComment;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.InvalidCheckerCommentException;
-import ua.gradsoft.javachecker.Main;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.JTerm;
 import ua.gradsoft.termware.Term;
@@ -53,6 +54,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
         constructors_=new LinkedList<JavaTermConstructorModel>();
         typeVariables_=new LinkedList<JavaTypeVariableAbstractModel>();
         initializers_=new LinkedList<JavaTermInitializerModel>();
+        annotations_=new TreeMap<String,JavaAnnotationInstanceModel>();
         setUnitModel(cuModel);
     }
     
@@ -300,6 +302,18 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
       JavaTermTypeVariableModel model=new JavaTermTypeVariableModel(typeParameter,this);
       typeVariables_.add(model);
     }
+    
+    /**
+     *add type annotation.
+     */
+    public void addAnnotation(Term annotation) throws TermWareException
+    {
+        JavaTermAnnotationInstanceModel model = new JavaTermAnnotationInstanceModel(ElementType.TYPE,this,annotation);       
+        Term nameTerm = annotation.getSubtermAt(0).getSubtermAt(0);
+        String name = JUtils.getJavaNameLastComponentAsString(nameTerm);
+        annotations_.put(name,model);
+    }
+            
 
     public int getLastLocalTypeIndex()
     { return localTypeIndex_; }
@@ -424,6 +438,15 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
       */
     }
     
+    
+    public Map<String,JavaAnnotationInstanceModel> getAnnotations()
+    {
+        return annotations_;
+    }
+    
+    
+    
+    
     protected Term  superClassTerm_ = null;
     protected JavaTypeModel resolvedSuperClass_ = null;
     
@@ -439,6 +462,8 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     protected List<JavaTypeVariableAbstractModel>             typeVariables_;
     
     protected TreeMap<String,JavaTypeModel>                   nestedTypes_;
+    
+    protected TreeMap<String,JavaAnnotationInstanceModel>   annotations_;
    
     
     private JavaModifiersModel modifiers_;

@@ -239,8 +239,21 @@ public enum JavaExpressionKind
     /**
      * SwitchConstant
      */
-    SWITCH_CONSTANT
-            
+    SWITCH_CONSTANT,
+       
+    /**
+     * ObjectConstant
+     */
+    OBJECT_CONSTANT,     
     
+    /**
+     * Annotation
+     */          
+    ANNOTATION,
+    
+    /**
+     * MemberValueArrayInitializer
+     */
+    ANNOTATION_MEMBER_VALUE_ARRAY_INITIALIZER
             
 }

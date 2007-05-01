@@ -7,16 +7,11 @@
 package ua.gradsoft.javachecker.models;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
-import ua.gradsoft.javachecker.ITermVisitor;
-import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
-import ua.gradsoft.termware.TermHolder;
-import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.TermWareException;
 import ua.gradsoft.termware.exceptions.AssertException;
 
@@ -83,7 +78,7 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     }
 
     
-    public List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException
+    public List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException, EntityNotFoundException
     {      
       if (formalParametersList_==null) {
         Term formalParametersTerm = getFormalParametersTerm();
@@ -92,7 +87,7 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
       return formalParametersList_;
     }                
         
-    public Map<String,JavaFormalParameterModel> getFormalParametersMap() throws TermWareException
+    public Map<String,JavaFormalParameterModel> getFormalParametersMap() throws TermWareException, EntityNotFoundException
     {      
       if (formalParametersMap_==null) {
         Term formalParametersTerm = getFormalParametersTerm();
@@ -101,7 +96,7 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
       return formalParametersMap_;
     }        
     
-    public List<JavaTypeModel> getFormalParametersTypes() throws TermWareException
+    public List<JavaTypeModel> getFormalParametersTypes() throws TermWareException, EntityNotFoundException
     {
       Map<String,JavaFormalParameterModel> fps=getFormalParametersMap();
       JavaTypeModel[] retval = new JavaTypeModel[fps.size()];

@@ -8,6 +8,8 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.TreeMap;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -123,6 +125,16 @@ public class JavaModifiersModel {
          return TermUtils.createTerm("Modifiers",TermUtils.createInt(modifiers_));
      }
      
+     public void  addAnnotation(JavaAnnotationInstanceModel annotation) throws TermWareException, EntityNotFoundException
+     {
+         if (annotations_==null) {
+             annotations_ = new TreeMap<String,JavaAnnotationInstanceModel>();
+         }
+         String name = annotation.getAnnotationModel().getName();
+         annotations_.put(name,annotation);
+     }
+     
     private int modifiers_;
+    private TreeMap<String,JavaAnnotationInstanceModel> annotations_;
     
 }

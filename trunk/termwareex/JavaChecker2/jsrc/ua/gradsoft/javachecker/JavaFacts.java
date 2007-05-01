@@ -8,19 +8,17 @@ package ua.gradsoft.javachecker;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import ua.gradsoft.termware.DefaultFacts;
 import ua.gradsoft.termware.IEnv;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
-import ua.gradsoft.termware.TermWareRuntimeException;
-
-
-
 
 /**
  *Facts for java sources analysis.
@@ -80,10 +78,11 @@ public class JavaFacts extends DefaultFacts {
     
     // called from systems
     public boolean violationDiscovered(String name,String message,Term partOfCode) throws TermWareException
-    {        
-        violations_.discovered(name);
+    {                
         DefectReportItem item=new DefectReportItem(violations_.getCategory(name),message,JUtils.getFileAndLine(partOfCode));
-        addDefectReportItem(item);
+        if (addDefectReportItem(item)) {
+           violations_.discovered(name);    
+        }
         return true;
     }
 
@@ -196,12 +195,13 @@ public class JavaFacts extends DefaultFacts {
               // internal error
               throw new AssertionError("internal error: unknown report format "+format);
       }
-      Iterator it=defectReportItems_.iterator();
-      while(it.hasNext()) {
-          DefectReportItem item=(DefectReportItem)it.next();
-          item.println(out,format);
-      }
       
+      for(ArrayList<DefectReportItem> items: defectReportItems_.values()) {
+          for(DefectReportItem item: items) {
+              item.println(out,format);
+          }
+      }
+            
       switch(format)  {
           case TEXT:
               break;
@@ -235,19 +235,43 @@ public class JavaFacts extends DefaultFacts {
     
     // utils      
 
-    private void   addDefectReportItem(DefectReportItem item)
-    {
-        defectReportItems_.add(item);
+    private boolean   addDefectReportItem(DefectReportItem item)
+    {      
+        boolean retval=false;
+        FileAndLine marker = item.getFileAndLine();
+        ArrayList<DefectReportItem> items = defectReportItems_.get(marker);
+        if (items==null) {
+            items = new ArrayList<DefectReportItem>();
+            items.add(item);
+            defectReportItems_.put(marker,items);
+            retval=true;
+        }else{
+            for(DefectReportItem ei: items) {
+                if (ei.getDescription().equals(item.getDescription())) {
+                    // duplicate
+                    return retval;
+                }
+            }
+            items.add(item);
+            retval=true;
+        }      
         if (!Main.isQOption()&&Main.getOutputFname()!=null) {
             item.println(System.out,ReportFormat.TEXT);
         }
+        return retval;
     }
     
     /**
-     *@return list of collected report items.
+     *@return unmodifiable list of collected report items.
      */
     public List<DefectReportItem> getDefectReportItems()
-    { return defectReportItems_; }
+    {  
+        ArrayList<DefectReportItem> retval = new ArrayList<DefectReportItem>();
+        for(Map.Entry<FileAndLine,ArrayList<DefectReportItem>> e: defectReportItems_.entrySet()) {
+            retval.addAll(e.getValue());
+        }
+        return Collections.unmodifiableList(retval);
+    }
     
     /**
      * clear list of defect report items.
@@ -257,7 +281,8 @@ public class JavaFacts extends DefaultFacts {
       defectReportItems_.clear();  
     }
     
-    private ArrayList<DefectReportItem> defectReportItems_=new ArrayList<DefectReportItem>();
+    //private ArrayList<DefectReportItem> defectReportItems_=new ArrayList<DefectReportItem>();
+    private HashMap<FileAndLine,ArrayList<DefectReportItem>> defectReportItems_=new HashMap<FileAndLine,ArrayList<DefectReportItem>>();
     private Violations violations_ = new Violations();
 
     

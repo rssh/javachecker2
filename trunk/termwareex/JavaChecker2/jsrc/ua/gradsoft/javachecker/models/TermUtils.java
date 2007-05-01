@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermFactory;
 import ua.gradsoft.termware.TermHelper;
@@ -144,7 +145,7 @@ public class TermUtils {
      }
 
 
-     public static List<JavaFormalParameterModel> buildFormalParametersList(Term formalParametersList,JavaTopLevelBlockOwnerModel executable) throws TermWareException
+     public static List<JavaFormalParameterModel> buildFormalParametersList(Term formalParametersList,JavaTopLevelBlockOwnerModel executable) throws TermWareException, EntityNotFoundException
     {
       ArrayList<JavaFormalParameterModel> retval = new ArrayList<JavaFormalParameterModel>();      
       int index=0;
@@ -160,7 +161,7 @@ public class TermUtils {
      
      
      
-     public static Map<String,JavaFormalParameterModel> buildFormalParametersMap(Term formalParametersList,JavaTopLevelBlockOwnerModel executable) throws TermWareException
+     public static Map<String,JavaFormalParameterModel> buildFormalParametersMap(Term formalParametersList,JavaTopLevelBlockOwnerModel executable) throws TermWareException, EntityNotFoundException
     {
       TreeMap<String,JavaFormalParameterModel> retval = new TreeMap<String,JavaFormalParameterModel>();      
       int index=0;
@@ -174,7 +175,7 @@ public class TermUtils {
       return retval;
     }            
 
-    private static JavaFormalParameterModel buildFormalParameter(Term fp,JavaTopLevelBlockOwnerModel executable,int index) throws TermWareException
+    private static JavaFormalParameterModel buildFormalParameter(Term fp,JavaTopLevelBlockOwnerModel executable,int index) throws TermWareException, EntityNotFoundException
     {
           int modifiers = fp.getSubtermAt(0).getInt();
           Term typeTerm = fp.getSubtermAt(1);
@@ -182,7 +183,8 @@ public class TermUtils {
           try {
              tm = JavaResolver.resolveTypeToModel(typeTerm,executable.getTypeModel(),executable.getTypeParameters());
           }catch(EntityNotFoundException ex){
-             tm = JavaUnknownTypeModel.INSTANCE;             
+             ex.setFileAndLine(JUtils.getFileAndLine(fp)); 
+             throw ex;    
           }
           Term vdi=fp.getSubtermAt(2);  
           String name=null;

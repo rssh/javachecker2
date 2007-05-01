@@ -8,11 +8,9 @@
 
 package ua.gradsoft.javachecker.models;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ua.gradsoft.javachecker.EntityNotFoundException;
@@ -31,16 +29,22 @@ public class JavaTypeModelHelper {
     
     public static boolean subtypeOrSame(JavaTypeModel t, JavaTypeModel s) throws TermWareException, EntityNotFoundException
     {
-      return subtypeOrSame(t,s,new MethodMatchingConversions(),false);
+      return subtypeOrSame(t,s,new MethodMatchingConversions(),false,false);
     }
     
     
     /**
      * define subtyping.
      *See section 4.10  of  Java Language Specification
+     *fill necessor matching conversion if needed.
+     *@param t first typeModel to check
+     *@param s second typemodel to check
+     *@param conversions - matching conversions, necessory for matching
+     *@param freeTypeArguments - when true, match type argument with any type and add matching to substitution
+     *@param debug -- provide additional logging when true
      *@return  true if s is supertype of t  ( t < s)
      */
-    public static boolean subtypeOrSame(JavaTypeModel t, JavaTypeModel s, MethodMatchingConversions conversions, boolean debug) throws TermWareException
+    public static boolean subtypeOrSame(JavaTypeModel t, JavaTypeModel s, MethodMatchingConversions conversions, boolean freeTypeArguments,boolean debug) throws TermWareException
     {   
       boolean subtypeOrSameDebugEnabled=true;  
       
@@ -57,7 +61,7 @@ public class JavaTypeModelHelper {
       }
       MethodMatchingConversions cn=new MethodMatchingConversions(conversions);
       if (s.isTypeArgument()) {
-         JavaTypeVariableAbstractModel sv = (JavaTypeVariableAbstractModel)s;          
+             JavaTypeVariableAbstractModel sv = (JavaTypeVariableAbstractModel)s;          
              List<JavaTypeModel> svBounds = sv.getBounds();         
              for(JavaTypeModel bound : svBounds) {
                if (bound instanceof JavaTypeArgumentBoundTypeModel) {
@@ -78,18 +82,20 @@ public class JavaTypeModelHelper {
                       continue;
                    }
                }  
-               if (!subtypeOrSame(t,bound,cn,debug)) {
+               if (!subtypeOrSame(t,bound,cn,freeTypeArguments,debug)) {
                  if (debug) {
                    LOG.info("subtimeOrSame failed [1]");
                  }
                  return false;
                }
              }         
-            if (debug) {
-               LOG.info("subtumeOrSame success [2]");
-            }
-            conversions.assign(cn); 
-            return true;         
+             cn.getSubstitution().put(sv,t);
+             if (debug) {
+               LOG.info("subtypeOrSame success [2]");
+               LOG.info("substitution is:"+cn.getSubstitution().toString());
+             }             
+             conversions.assign(cn); 
+             return true;         
          
       } else if (s.isWildcardBounds()) {
          JavaWildcardBoundsTypeModel sw = (JavaWildcardBoundsTypeModel)s;        
@@ -98,7 +104,7 @@ public class JavaTypeModelHelper {
                  retval=true;
                  break;
              case EXTENDS:  
-                 retval=subtypeOrSame(t,sw.getBoundTypeModel(),cn,debug);
+                 retval=subtypeOrSame(t,sw.getBoundTypeModel(),cn,freeTypeArguments,debug);
                  break;
              case SUPER:             
                  retval=true;
@@ -140,16 +146,23 @@ public class JavaTypeModelHelper {
                                   if (debug) {
                                       LOG.log(Level.INFO,"return "+retval);
                                   }
+                                  if (retval) {
+                                      conversions.assign(cn);
+                                  }
                                   return retval;
                               }
                           }
                           if (t instanceof JavaTypeArgumentBoundTypeModel) {
                               JavaTypeArgumentBoundTypeModel ta = (JavaTypeArgumentBoundTypeModel)t;
-                              return subtypeOrSame(ta.getOrigin(),s,cn,debug);
+                              retval=subtypeOrSame(ta.getOrigin(),s,cn,freeTypeArguments,debug);
+                              if (retval) {
+                                  conversions.assign(cn);
+                              }
+                              return retval;
                           }
                           try {
                             cn.incrementNNarrows();  
-                            retval=subtypeOrSame(t.getSuperClass(),s,cn,debug);
+                            retval=subtypeOrSame(t.getSuperClass(),s,cn,freeTypeArguments,debug);
                           }catch(NotSupportedException ex){
                               retval=false;
                           }catch(EntityNotFoundException ex){
@@ -162,25 +175,28 @@ public class JavaTypeModelHelper {
               }else{
                   // two class models.                                  
                   if (samePrimaryName(t,s)) {   
-                      retval= subtypeOrSameWithSameName(t,s,cn,debug); 
+                      retval= subtypeOrSameWithSameName(t,s,cn,freeTypeArguments,debug); 
                       if (debug)  {
                          LOG.info("subtimeOrSameWithSameName("+t.getFullName()+","+s.getFullName()+") return "+retval);
                       }                     
+                      if (retval) {
+                          conversions.assign(cn);
+                      }
                       return retval;
                   }else{
                     try {                          
                      cn.incrementNNarrows();   
                      JavaTypeModel td=t.getSuperClass();                   
                      if (td!=null && !td.isNull()) {
-                         return subtypeOrSame(td,s,cn,debug);
+                         retval=subtypeOrSame(td,s,cn,freeTypeArguments,debug);
                      }else{
-                         return same(s,JavaResolver.resolveJavaLangObject());
+                         retval=same(s,JavaResolver.resolveJavaLangObject());
                      }
                    }catch(EntityNotFoundException ex){
                         throw new InvalidJavaTermException(ex.getMessage(),ex.getFileAndLine(),ex);                                                                       
                    }catch(NotSupportedException ex){
                         return false;
-                   }
+                   }                    
                   }                          
               }
           }else if (s.isInterface()) {
@@ -188,7 +204,7 @@ public class JavaTypeModelHelper {
                 // s is interface.
                 List<JavaTypeModel> tds=t.getSuperInterfaces();              
                 for(JavaTypeModel td: tds) {
-                  if (subtypeOrSame(td,s,cn,debug)) {
+                  if (subtypeOrSame(td,s,cn,freeTypeArguments,debug)) {
                       if (debug) {
                           LOG.log(Level.INFO,"subtypeOrSame result "+true);
                       }
@@ -207,9 +223,12 @@ public class JavaTypeModelHelper {
                   cn.incrementNNarrows();
                   JavaTypeModel td = t.getSuperClass();
                   if (td!=null && !td.isNull()) {
-                      retval=subtypeOrSame(td,s,cn,debug);
+                      retval=subtypeOrSame(td,s,cn,freeTypeArguments,debug);
                       if (debug) {
                           LOG.log(Level.INFO,"subtypeOrSame result "+retval);
+                      }
+                      if (retval) {
+                          conversions.assign(cn);
                       }
                       return retval;
                   }
@@ -225,14 +244,14 @@ public class JavaTypeModelHelper {
           }
       }else if (t.isInterface()){
           if (s.isClass()) {
-              return same(s,JavaResolver.resolveJavaLangObject());
+              retval=same(s,JavaResolver.resolveJavaLangObject());
           }else if (s.isInterface()) {
               if (samePrimaryName(t,s)) {
-                  return subtypeOrSameWithSameName(t,s,cn,debug); 
+                  retval=subtypeOrSameWithSameName(t,s,cn,freeTypeArguments,debug); 
               }else{
                 try {  
                   for(JavaTypeModel td : t.getSuperInterfaces()) {
-                      if (subtypeOrSame(td,s,cn,debug)) {
+                      if (subtypeOrSame(td,s,cn,freeTypeArguments,debug)) {
                           if (debug) {
                              LOG.log(Level.INFO,"subtypeOrSame("+t.getName()+","+s.getName()+") result "+retval);
                           }                          
@@ -252,7 +271,7 @@ public class JavaTypeModelHelper {
       }else if(t.isArray()){
           if (s.isArray()) {
             try {  
-              retval=subtypeOrSame(t.getReferencedType(),s.getReferencedType(),cn,debug);
+              retval=subtypeOrSame(t.getReferencedType(),s.getReferencedType(),cn,freeTypeArguments,debug);
             }catch(NotSupportedException ex){
                 // impossible.
                 retval=false;
@@ -265,20 +284,74 @@ public class JavaTypeModelHelper {
               retval=false;
           }
       }else if(t.isEnum()) {
-          if (s.isEnum()) {
-              retval=same(t,s);
-          }else if(s.isClass()) {
-              retval=same(s,JavaResolver.resolveJavaLangObject());
+          if (debug) {
+            LOG.info("t is enum");
+          }
+          if (s.isEnum()) {            
+              if (debug) {
+                  LOG.info("s is enum");
+              }
+              boolean tIsEnumConstant=false;
+              boolean sIsEnumConstant=false;
+              JavaTypeModel tEnclosed=null;
+              JavaTypeModel sEnclosed=null;
+              if (t.isNested()) {
+                  try {
+                    tEnclosed=t.getEnclosedType();
+                  }catch(NotSupportedException ex){
+                      throw new AssertException("isNested but getEnclosedType not supported ",ex);
+                  }
+                  if (tEnclosed.isEnum()) {
+                      tIsEnumConstant=true;
+                  }
+              }
+              if (s.isNested()) {
+                  try {
+                     sEnclosed=s.getEnclosedType();
+                  }catch(NotSupportedException ex){
+                      throw new AssertException("isNested but getEnclosedType not supported ",ex);
+                  }
+                  if (sEnclosed.isEnum()) {
+                      sIsEnumConstant=true;
+                  }
+              }
+              if (tIsEnumConstant) {
+                 if (sIsEnumConstant) {
+                     retval=same(t,s,debug);
+                 }else{
+                     retval=same(tEnclosed,s,debug);
+                 }
+              }else{
+                  if (sIsEnumConstant) {
+                      return false;
+                  }else{
+                      retval=same(t,s,debug);
+                  }
+              }
+          }else if(s.isClass()) { 
+              if (debug) {
+                  LOG.info("s is class");
+              }
+              try {
+                retval=subtypeOrSame(JavaResolver.resolveTypeModelByFullClassName("java.lang.Enum"),s,cn,freeTypeArguments,debug);
+              }catch(EntityNotFoundException ex){
+                  throw new AssertException("Can't resolve java.lang.Enum",ex);
+              }
           }else if(s.isInterface()){
+              if (debug) {
+                  LOG.info("s is interface");
+              }
             try {  
               for(JavaTypeModel td: t.getSuperInterfaces()) {
-                  if (subtypeOrSame(td,s,cn,debug)) {
+                  if (subtypeOrSame(td,s,cn,freeTypeArguments,debug)) {
                       retval=true;
                       if (debug) {
                           LOG.log(Level.INFO,"subtypeOrSame("+t.getName()+","+s.getName()+") result "+retval);
                       }                     
                       cn.incrementNNarrows();
-                      
+                      if (retval) {
+                          conversions.assign(cn);
+                      }
                       return retval;
                   }
               }
@@ -287,21 +360,36 @@ public class JavaTypeModelHelper {
                 retval=false;
             }
           }else{
+              if (debug) {
+                  LOG.info("s is not Enum, Class or Interface");
+              }
               retval=false;
           }
       }else if(t.isAnnotationType()) {
+          if (debug) {
+              LOG.log(Level.INFO,"t is annotation");
+          }
           if (s.isAnnotationType()) {
               retval=same(t,s);
-          }else if(s.isClass()) {
-              retval=same(s,JavaResolver.resolveJavaLangAnnotation());
+          }else if(s.isClass()||s.isInterface()) {
+              retval=same(s,JavaResolver.resolveJavaLangAnnotationAnnotation());
           }else{
               retval=false;
           }
       }else if(t.isTypeArgument()){      
+          if (debug) {
+              LOG.log(Level.INFO,"t is TypeArgument");
+          }
           JavaTypeVariableAbstractModel tv = (JavaTypeVariableAbstractModel)t;
           retval=true;
-          for(JavaTypeModel b: tv.getBounds()) {
-              if (subtypeOrSame(b,s,cn,debug)) {
+          List<JavaTypeModel> tvb = tv.getBounds();
+          if (tvb.isEmpty()) {
+             if (!freeTypeArguments) {
+                 tvb = Collections.singletonList(JavaResolver.resolveJavaLangObject());
+             }
+          }
+          for(JavaTypeModel b: tvb) {
+              if (subtypeOrSame(b,s,cn,freeTypeArguments,debug)) {
                   retval=true;
                   if (debug) {
                       LOG.log(Level.INFO,"subtypeOrSame("+t.getName()+","+s.getName()+") result "+retval);
@@ -310,10 +398,18 @@ public class JavaTypeModelHelper {
               }else{                  
                   retval=false;       
               }
-          }                   
+          }
+          if (retval) {              
+              cn.getSubstitution().put(tv,s);
+              if (debug) {
+                  LOG.log(Level.INFO,"substitution now is:"+cn.getSubstitution().toString());
+              }
+          }
       }else if(t.isWildcardBounds()) {                   
           JavaWildcardBoundsTypeModel tw = (JavaWildcardBoundsTypeModel)t;
-          LOG.log(Level.INFO,"subtypeOrSame, t is WildCarsBoubbds");
+          if (debug) {
+             LOG.log(Level.INFO,"subtypeOrSame, t is WildCarsBoubbds");
+          }
           switch(tw.getKind()) {
               case OBJECT: 
                   // subtypeOrSame(t,s) = subtymePoSame(<?>, s) = s==Object.
@@ -321,11 +417,11 @@ public class JavaTypeModelHelper {
                   break;
               case EXTENDS:
                   // subtypeOrSame(t,s) = subtypeOrSame(<? extends A>,s) = subtypeOrSame(A,s)
-                  retval=subtypeOrSame(tw.getBoundTypeModel(),s,cn,debug);
+                  retval=subtypeOrSame(tw.getBoundTypeModel(),s,cn,freeTypeArguments,debug);
                   break;
               case SUPER:
                   // subtypeOrSame(t,s) = subtypeOrSame(<? super A>,s) = same(A,s) subtypeOrSame(Object,s)
-                  retval=same(tw.getBoundTypeModel(),s) || subtypeOrSame(JavaResolver.resolveJavaLangObject(),s,cn,debug);
+                  retval=same(tw.getBoundTypeModel(),s) || subtypeOrSame(JavaResolver.resolveJavaLangObject(),s,cn,freeTypeArguments,debug);
                   break;
               default:
                   throw new AssertException("unknown wildcardbounds kind");
@@ -340,27 +436,37 @@ public class JavaTypeModelHelper {
           LOG.warning("unknown kind of t, class="+t.getClass().getName());
       }
       if (debug) {
-             LOG.info("subtumeOrSame("+t.getName()+","+s.getName()+") result is "+retval);
+             LOG.info("subtimeOrSame("+t.getName()+","+s.getName()+") result is "+retval);
+      }
+      if (retval) {
+          conversions.assign(cn);
       }
       return retval;         
     }
     
     public static boolean same(JavaTypeModel x, JavaTypeModel y) throws TermWareException
+    { return same(x,y,false); }
+    
+    public static boolean same(JavaTypeModel x, JavaTypeModel y, boolean debug) throws TermWareException
     {
+      boolean retval=false;  
+      if (debug) {
+          LOG.log(Level.INFO,"same("+x.getFullName()+","+y.getFullName()+")");
+      }
       if (x.isClass()) {
-          return y.isClass() && sameNames(x,y);                 
+          retval = y.isClass() && sameNames(x,y);                 
       }else if (x.isInterface()){
-          return y.isInterface() && sameNames(x,y);
+          retval = y.isInterface() && sameNames(x,y);
       }else if (x.isArray()) {
         try {  
-          return y.isArray() && same(x.getReferencedType(),y.getReferencedType());
+          retval = y.isArray() && same(x.getReferencedType(),y.getReferencedType());
         }catch(NotSupportedException ex){
-            return false;
+            retval = false;
         }
       }else if (x.isAnnotationType()) {
-          return y.isAnnotationType() && sameNames(x,y);
+          retval = y.isAnnotationType() && sameNames(x,y);
       }else if (x.isEnum()) {
-          return y.isEnum() && sameNames(x,y);
+          retval = y.isEnum() && sameNames(x,y);
       }else if (x.isPrimitiveType()) {
           return y.isPrimitiveType() && x.getName().equals(y.getName());
       }else if (x.isTypeArgument()) {
@@ -377,25 +483,29 @@ public class JavaTypeModelHelper {
                   JavaTypeModel ybe = ity.next();
                   if (!same(xbe,ybe)) return false;
               }
-              return true;
+              retval = true;
           }else{
-              return false;
+              retval = false;
           }
       }else if (x.isWildcardBounds()) {
           if (y.isWildcardBounds()) {
               JavaWildcardBoundsTypeModel xw = (JavaWildcardBoundsTypeModel)x;
               JavaWildcardBoundsTypeModel yw = (JavaWildcardBoundsTypeModel)x;
               if (xw.getKind()==JavaWildcardBoundsKind.OBJECT) {
-                  return yw.getKind()==JavaWildcardBoundsKind.OBJECT;
+                  retval = yw.getKind()==JavaWildcardBoundsKind.OBJECT;
               }else{
-                  return xw.getKind()==yw.getKind() && same(xw.getBoundTypeModel(),yw.getBoundTypeModel());
+                  retval = xw.getKind()==yw.getKind() && same(xw.getBoundTypeModel(),yw.getBoundTypeModel());
               }
           }else{
-              return false;
+              retval = false;
           }
       }else{
-          return false;
+          retval = false;
       }
+      if (debug) {
+          LOG.log(Level.INFO,"retval is "+retval);
+      }
+      return retval;
     }
 
     
@@ -462,7 +572,7 @@ public class JavaTypeModelHelper {
     
     public static boolean isChar(JavaTypeModel x)
     {
-        return x.equals(JavaPrimitiveTypeModel.CHAR) || x.getFullName().equals("java.lang.Char");
+        return x.equals(JavaPrimitiveTypeModel.CHAR) || x.getFullName().equals("java.lang.Character");
     }
 
     /**
@@ -540,7 +650,7 @@ public class JavaTypeModelHelper {
       }
     }
     
-    private static boolean subtypeOrSameWithSameName(JavaTypeModel x, JavaTypeModel y, MethodMatchingConversions conversions, boolean debug) throws TermWareException
+    private static boolean subtypeOrSameWithSameName(JavaTypeModel x, JavaTypeModel y, MethodMatchingConversions conversions, boolean freeTypeArguments,boolean debug) throws TermWareException
     {
       if (debug){
           LOG.log(Level.INFO,"subtypeOrSameWithSameName("+x.getFullName()+","+y.getFullName()+","+debug+")");
@@ -561,12 +671,12 @@ public class JavaTypeModelHelper {
               try {
                  xal=xa.getResolvedTypeArguments();                
               }catch(EntityNotFoundException ex){
-                  throw new InvalidJavaTermException(ex.getMessage(),xa.getTypeArguments());
+                  throw new InvalidJavaTermException(ex.getMessage(),xa.getTypeArguments(),ex);
               }              
               try {
                 yal=ya.getResolvedTypeArguments();
               }catch(EntityNotFoundException ex){
-                  throw new InvalidJavaTermException(ex.getMessage(),ya.getTypeArguments());
+                  throw new InvalidJavaTermException(ex.getMessage(),ya.getTypeArguments(),ex);
               }              
               if (xal.size()!=yal.size()) {
                     return false;
@@ -576,7 +686,7 @@ public class JavaTypeModelHelper {
               while(xit.hasNext()) {
                   JavaTypeModel t=xit.next();
                   JavaTypeModel s=yit.next();
-                  if (!subtypeOrSame(t,s,conversions,debug)) {
+                  if (!subtypeOrSame(t,s,conversions,freeTypeArguments,debug)) {
                       if (debug) {
                          LOG.log(Level.INFO,"subtypeOrSameWithSameName("+x.getFullName()+","+y.getFullName()+","+debug+") FAILED [1]");
                       }
@@ -644,7 +754,7 @@ public class JavaTypeModelHelper {
               while(xit.hasNext()) {
                   JavaTypeModel t = xit.next();
                   JavaTypeModel s = yit.next();
-                  if (!subtypeOrSame(t,s,conversions,debug)) {
+                  if (!subtypeOrSame(t,s,conversions,freeTypeArguments,debug)) {
                       return false;
                   }
               }
@@ -661,10 +771,23 @@ public class JavaTypeModelHelper {
       }
     }
     
-    public static boolean sameNames(JavaTypeModel x,JavaTypeModel y)
-    {
-      return x.getName().equals(y.getName()) && 
+    public static boolean sameNames(JavaTypeModel x,JavaTypeModel y) throws TermWareException
+    {        
+      if (x.isNested()) {
+          if (y.isNested()) {
+            try {  
+              return sameNames(x.getEnclosedType(),y.getEnclosedType()) && x.getName().equals(y.getName());
+            }catch(NotSupportedException ex){
+                // impossible ?
+               throw new AssertException("isNested true, but getEnclosedTypeIsNotSupported",ex);
+            }
+          }else{
+              return false;
+          }
+      }else{
+        return x.getName().equals(y.getName()) && 
               x.getPackageModel().getName().equals(y.getPackageModel().getName());  
+      }
     }
 
     
@@ -679,7 +802,7 @@ public class JavaTypeModelHelper {
       return retval;
     }
     
-    private static boolean samePrimaryName(JavaTypeModel x,JavaTypeModel y)
+    private static boolean samePrimaryName(JavaTypeModel x,JavaTypeModel y) throws TermWareException
     {
         while (x instanceof JavaTypeArgumentBoundTypeModel) {
             JavaTypeArgumentBoundTypeModel xa=(JavaTypeArgumentBoundTypeModel)x;              

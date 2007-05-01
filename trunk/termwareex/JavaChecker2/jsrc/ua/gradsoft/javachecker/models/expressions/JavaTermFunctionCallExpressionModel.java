@@ -57,7 +57,7 @@ public class JavaTermFunctionCallExpressionModel extends JavaTermExpressionModel
     public JavaTypeModel  getType() throws TermWareException, EntityNotFoundException
     {
       lazyInitMethodModel();
-      return methodModel_.getResultType();
+      return substitution_.substitute(methodModel_.getResultType());
     }
     
     public boolean isType()
@@ -104,8 +104,11 @@ public class JavaTermFunctionCallExpressionModel extends JavaTermExpressionModel
           JavaTypeArgumentsSubstitution s = new JavaTypeArgumentsSubstitution();
           try {
             methodModel_ = JavaResolver.resolveMethod(methodName,argumentTypes,s,enclosedType_);
+            substitution_ = s;
           }catch(EntityNotFoundException ex){
-              ex.setFileAndLine(JUtils.getFileAndLine(t_));
+           //   if (ex.getEntityName().equals(methodName)) {
+                ex.setFileAndLine(JUtils.getFileAndLine(t_));
+           //   }
               throw ex;
           }
       }
@@ -114,5 +117,6 @@ public class JavaTermFunctionCallExpressionModel extends JavaTermExpressionModel
     
     private List<JavaExpressionModel> arguments_;
     private JavaMethodModel           methodModel_=null;
+    private JavaTypeArgumentsSubstitution substitution_=null;
     
 }

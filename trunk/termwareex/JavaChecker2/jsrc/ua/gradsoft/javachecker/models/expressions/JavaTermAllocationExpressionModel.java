@@ -12,6 +12,7 @@ package ua.gradsoft.javachecker.models.expressions;
 import java.util.LinkedList;
 import java.util.List;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.models.JavaTypeArgumentBoundTypeModel;
 import ua.gradsoft.javachecker.models.JavaArrayTypeModel;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
@@ -66,7 +67,12 @@ public class JavaTermAllocationExpressionModel extends JavaTermExpressionModel
     {
       if (resolvedType_==null) {       
           JavaPlaceContext ctx = createPlaceContext();
-          resolvedType_=JavaResolver.resolveTypeTerm(typeTerm_,ctx);
+          try {
+            resolvedType_=JavaResolver.resolveTypeTerm(typeTerm_,ctx);
+          }catch(EntityNotFoundException ex){
+              ex.setFileAndLine(JUtils.getFileAndLine(t_));
+              throw ex;
+          }
           if (!typeArgumentsTerm_.isNil()) {
               resolvedType_=new JavaTypeArgumentBoundTypeModel(resolvedType_,typeArgumentsTerm_,enclosedType_,null,statement_);
           }

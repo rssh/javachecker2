@@ -10,8 +10,10 @@ package ua.gradsoft.javachecker.models;
 
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
@@ -60,6 +62,8 @@ public class JavaClassTypeVariableModel extends JavaTypeVariableAbstractModel
         return typeParameter;
     }
 
+    public  Map<String,JavaAnnotationInstanceModel>  getAnnotations()
+    { return Collections.emptyMap(); }
     
     private TypeVariable<?> typeVariable_;
     

@@ -5,6 +5,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -20,7 +21,7 @@ public interface JavaVariableModel {
     
     public JavaVariableKind getKind();
     
-    public JavaTypeModel getTypeModel() throws TermWareException;
+    public JavaTypeModel getTypeModel() throws TermWareException, EntityNotFoundException;
     
     
 }

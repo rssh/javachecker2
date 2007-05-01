@@ -61,7 +61,7 @@ Checkers(
 
           checkNoOpen([]) -> true,
           checkNoOpen([$x:$y]) -> checkNoOpen($x) && checkNoOpen($y),
-          checkNoOpen(CHANGE($x,OPEN,$where)) -> false [ violationDiscovered(UnclosedCloseable,"closeable variable does not closed",$where) ],
+          checkNoOpen(CHANGE($x,OPEN,$where)) -> false [ [ print(OPEN($x)), violationDiscovered(UnclosedCloseable,"closeable variable does not closed-1",$where) ] ],
 
           checkNoOpen($x && $y) -> checkNoOpen($x) && checkNoOpen($y),
           checkNoOpen($x || $y) -> checkNoOpen($x) || checkNoOpen($y),

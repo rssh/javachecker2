@@ -1,7 +1,7 @@
 /*
  * PackagesStore.java
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006-2007 GradSoft  Ukraine
  * All Rights Reserved
  */
 

@@ -125,14 +125,16 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      CheckStatement($x,RETURN($y)) -> RETURN($y),
      CheckExpression($var,$expr,RETURN($state)) -> RETURN($state),
 
-     CheckStatement(ReturnStatementModel($expr,$ctx),$state) -> RETURN(CheckExpression(NONE,$expr,$state)),
+     #CheckStatement(ReturnStatementModel($expr,$ctx),$state) -> RETURN(CheckExpression(NONE,$expr,$state)),
+     # TODO: mark current method as creating new
+     CheckStatement(ReturnStatementModel($expr,$ctx),$state) -> RETURN(merge(CHANGE($expr,RETURN),CheckExpression(none,$expr,$state))),
 
      CheckStatement(SwitchStatementModel($expr,[$x:$y],$ctx),$state) -> CheckStatement($x,$state) && CheckStatement(SwitchStatementModel($expr,$y,$ctx),$state),
      CheckStatement(SwitchStatementModel($expr,[],$ctx),$state) -> true,
 
      CheckStatement(SwitchLabelBlockModel($expr,$statements,$ctx),$state) -> CheckBlock($statements,$state),
 
-     CheckStatement(SynchronizedStatement($expr,$stmt,$ctx),$state) -> CheckStatement($stmt,$state),
+     CheckStatement(SynchronizedStatementModel($expr,$stmt,$ctx),$state) -> CheckStatement($stmt,$state),
 
      CheckExpression($var,FunctionCallModel($name,$arguments,$methodModel,$ctx),$state)
           [           
@@ -140,7 +142,7 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
               $methodModel.getResultType(),
               $ctx.resolveFullClassName("java.io.Closeable")
                        )         
-          ] -> CheckReturn($state,merge(CHANGE($var,OPEN,$ctx.getFileAndLine()),$state))
+          ] -> CheckReturn($state,merge(CHANGE($var,OPEN,$ctx.getFileAndLine()),$state)) [ [ print("1:"), println($name) ] ]
            !-> CheckReturn($state,CheckExpressions($arguments,$state)),
 
      CheckExpressions([$x:$y],$state) -> CheckExpressions($y,CheckExpression(NONE,$x,$state)),
@@ -152,7 +154,7 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
               $methodModel.getResultType(),
               $ctx.resolveFullClassName("java.io.Closeable")
                        )                   
-        ] -> CheckReturn($state,merge(CHANGE($var,OPEN,$ctx.getFileAndLine()),CheckExpression($obj,$state))) 
+        ] -> CheckReturn($state,merge(CHANGE($var,OPEN,$ctx.getFileAndLine()),CheckExpression(NONE,$obj,$state))) 
         |
         [
           $ctx.subtypeOrSame(
@@ -249,6 +251,8 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      merge(CHANGE($x,CLOSE),[$y:$z]) -> cat(OpenClose(CHANGE($x,CLOSE),$y),merge(CHANGE($x,CLOSE),$z)),
      merge(CHANGE($x,OPEN,$fileAndLine), [$y:$z]) -> cons(CHANGE($x,OPEN,$fileAndLine),[$y:$z]),
      merge(CHANGE($x,OPEN,$fileAndLine), []) -> cons(CHANGE($x,OPEN,$fileAndLine),[]),     
+     merge(CHANGE($x,RETURN),[]) -> [ ],
+     merge(CHANGE($x,RETURN),[$y:$z]) -> cat(OpenClose(CHANGE($x,RETURN),$y),merge(CHANGE($x,RETURN),$z)),
      
      merge($x, $y && $z) -> merge($x, $y) && merge($x, $z),
      merge($x, $y || $z) -> merge($x, $y) || merge($x, $z),
@@ -258,8 +262,13 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      merge($x, RETURN($y)) -> RETURN($y),
 
      OpenClose(CHANGE($x,CLOSE),CHANGE($x,OPEN,$fl)) -> [],
+     OpenClose(CHANGE($x,RETURN),CHANGE($x,OPEN,$fl)) -> [],
      OpenClose(CHANGE($x,CLOSE),CHANGE($y,OPEN,$fl)) [ !($x==$y) ] -> CHANGE($y,OPEN,$fl),
+     OpenClose(CHANGE($x,RETURN),CHANGE($y,OPEN,$fl)) [ !($x==$y) ] -> CHANGE($y,OPEN,$fl),
      OpenClose(CHANGE($x,CLOSE),CHANGE($y,CLOSE)) -> CHANGE($y,CLOSE),
+     OpenClose(CHANGE($x,CLOSE),CHANGE($y,RETURN)) -> CHANGE($y,RETURN),
+     OpenClose(CHANGE($x,RETURN),CHANGE($y,RETURN)) -> CHANGE($y,RETURN),
+     OpenClose(CHANGE($x,RETURN),CHANGE($y,CLOSE)) -> CHANGE($y,CLOSE),
 
      cat([],$x) -> $x,
      cat(CHANGE($x,$s),$y) -> checkReturn($y,cons(CHANGE($x,$s),$y)),
@@ -312,7 +321,7 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
 
      CheckOpenClose(NIL) -> true,
      CheckOpenClose(CHANGE($x,CLOSE)) -> true,
-     CheckOpenClose(CHANGE($y,OPEN,$fl)) -> false [ violationDiscovered(UnclosedCloseable,"closeable variable does not closed",$fl) ],
+     CheckOpenClose(CHANGE($y,OPEN,$fl)) -> false [ [println($y),violationDiscovered(UnclosedCloseable,"closeable variable does not closed",$fl)] ],
      CheckOpenClose([$x:$y]) -> CheckOpenClose($x) && CheckOpenClose($y),
 
 

@@ -151,6 +151,16 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     public boolean hasNestedTypeModels()
     { return false; }
     
+    
+    
+    /**
+     *@return empty map
+     */
+    public Map<String,JavaAnnotationInstanceModel> getAnnotations()
+    { return Collections.emptyMap(); }
+    
+    
+    
     public boolean hasASTTerm()
     { return false; }
     

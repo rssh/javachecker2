@@ -60,6 +60,8 @@ public class DefectReportItem {
     public String getDescription()
     { return description_; }
     
+    public FileAndLine  getFileAndLine()
+    { return marker_; }
     
     private String category_;
     private String description_;

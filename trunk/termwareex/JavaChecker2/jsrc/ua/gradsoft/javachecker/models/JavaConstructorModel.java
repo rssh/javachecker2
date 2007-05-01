@@ -7,6 +7,7 @@ package ua.gradsoft.javachecker.models;
 
 import java.util.List;
 import java.util.Map;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -18,6 +19,6 @@ public interface JavaConstructorModel extends JavaTopLevelBlockOwnerModel
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException;
     
-    public Map<String,JavaFormalParameterModel> getFormalParametersMap() throws TermWareException;    
+    public Map<String,JavaFormalParameterModel> getFormalParametersMap() throws TermWareException, EntityNotFoundException;    
     
 }

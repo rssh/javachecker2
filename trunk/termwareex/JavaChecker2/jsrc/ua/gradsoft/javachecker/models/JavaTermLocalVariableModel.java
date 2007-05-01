@@ -10,6 +10,7 @@
 package ua.gradsoft.javachecker.models;
 
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -40,10 +41,9 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
     { return JavaVariableKind.LOCAL_VARIABLE; }
     
     /**
-     * get type model.
-     *(if type can't be resolved - return JavaUnknonwTypeModel.INSTANCE)
+     * get type model.  
      */
-    public JavaTypeModel getTypeModel() throws TermWareException
+    public JavaTypeModel getTypeModel() throws TermWareException, EntityNotFoundException
     { return resolveType(); }
     
     public JavaStatementModel getStatement()
@@ -80,12 +80,13 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
     public Term getInitOrIterateTerm()
     { return initOrIterateExpressionTerm_; }
     
-    private JavaTypeModel resolveType() throws TermWareException
+    private JavaTypeModel resolveType() throws TermWareException, EntityNotFoundException
     {
       try {  
         return JavaResolver.resolveTypeToModel(typeTerm_,statement_);
       }catch(EntityNotFoundException ex){
-          return JavaUnknownTypeModel.INSTANCE;
+          ex.setFileAndLine(JUtils.getFileAndLine(identifierTerm_));
+          throw ex;
       }
     }
     

@@ -7,6 +7,7 @@ package ua.gradsoft.javachecker.models;
 
 
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.JavaFacts;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
@@ -54,14 +55,14 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
     public JavaTypeModel  getOwner()
     { return owner_; }
     
-    public JavaTypeModel  getTypeModel() throws TermWareException
+    public JavaTypeModel  getTypeModel() throws TermWareException, EntityNotFoundException
     { 
       try {  
         return JavaResolver.resolveTypeToModel(type_,owner_); 
       }catch(EntityNotFoundException ex){
           //TODO: log
-          System.err.println(ex.getMessage());
-          return JavaUnknownTypeModel.INSTANCE;
+          ex.setFileAndLine(JUtils.getFileAndLine(variableDeclarator_));
+          throw ex;
       }
     }
         
@@ -76,7 +77,7 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
     /**
      * MemberVariableModel(modifiers, TypeRef, name, initializer,this)
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
         Term modifiersModelTerm = modifiersModel_.getModelTerm();
         JavaTypeModel tm = getTypeModel();

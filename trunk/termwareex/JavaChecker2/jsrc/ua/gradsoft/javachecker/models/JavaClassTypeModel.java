@@ -8,6 +8,8 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
@@ -21,6 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
@@ -45,12 +49,7 @@ public class JavaClassTypeModel extends JavaTypeModel
     
     public String getName()
     {       
-       int lastDotIndex = theClass_.getName().lastIndexOf('.');
-       if (lastDotIndex==-1) {
-           return theClass_.getName();
-       }else{
-           return theClass_.getName().substring(lastDotIndex+1);
-       }
+       return theClass_.getSimpleName(); 
     }
   
     public Term getShortNameAsTerm() throws TermWareException
@@ -221,10 +220,17 @@ public class JavaClassTypeModel extends JavaTypeModel
   
   public List<JavaMethodModel>  findMethodModels(String name) throws EntityNotFoundException, NotSupportedException
   {
+    boolean debug=false;  
+    if (name.equals("getPreferredGap"))  {
+        debug=true;
+    }
     List<JavaMethodModel> methodModels = new LinkedList<JavaMethodModel>();  
     Method[] methods = theClass_.getDeclaredMethods();
     boolean found=false;
     for(int i=0; i<methods.length; ++i) {
+        if (debug) {
+           LOG.log(Level.INFO,"compare with "+methods[i].getName()); 
+        }
         if (methods[i].getName().equals(name)) {
             methodModels.add(new JavaClassMethodModel(methods[i],this));
             found=true;
@@ -238,7 +244,7 @@ public class JavaClassTypeModel extends JavaTypeModel
 
   public boolean hasMemberVariableModels()
   {
-      if (theClass_.isArray() || theClass_.isEnum()) {
+      if (theClass_.isArray() || theClass_.isEnum()||theClass_.isAnnotation()) {
           return false;
       }else{
           return true;
@@ -290,7 +296,7 @@ public class JavaClassTypeModel extends JavaTypeModel
   
   public Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException, TermWareException
   {
-      Class[] classes=theClass_.getClasses();
+      Class[] classes=theClass_.getDeclaredClasses();
       Map<String,JavaTypeModel> retval = new TreeMap<String,JavaTypeModel>();
       for(int i=0; i<classes.length; ++i) {
           retval.put(classes[i].getSimpleName(),new JavaClassTypeModel(classes[i]));
@@ -327,6 +333,42 @@ public class JavaClassTypeModel extends JavaTypeModel
       return retval;
   }
   
+  
+  public boolean hasAnnotation(String annotationName)
+  {
+      Annotation[] annotations_ = theClass_.getAnnotations();
+      for(int i=0; i<annotations_.length; ++i) {
+          String shortName = annotations_[i].annotationType().getSimpleName();
+          if (shortName.equals(annotationName)) {
+              return true;
+          }
+      }
+      return false;
+  }
+  
+  public JavaAnnotationInstanceModel getAnnotation(String annotationName) throws NotSupportedException
+  {
+      Annotation[] annotations_ = theClass_.getAnnotations();
+      for(int i=0; i<annotations_.length; ++i) {
+          String shortName = annotations_[i].annotationType().getSimpleName();
+          if (shortName.equals(annotationName)) {
+              ElementType et =  ElementType.TYPE;         
+              return new JavaClassAnnotationInstanceModel(et,annotations_[i],this);
+          }
+      }
+      throw new NotSupportedException();      
+  }
+  
+  public Map<String,JavaAnnotationInstanceModel> getAnnotations() throws TermWareException
+  {
+    TreeMap<String,JavaAnnotationInstanceModel> retval = new TreeMap<String,JavaAnnotationInstanceModel>();
+    Annotation[] annotations_ = theClass_.getAnnotations();
+    for(int i=0; i<annotations_.length; ++i) {
+        String shortName=annotations_[i].annotationType().getSimpleName();
+        retval.put(shortName,new JavaClassAnnotationInstanceModel(ElementType.TYPE,annotations_[i],this));
+    }
+    return retval;
+  }
   
   public boolean hasASTTerm()
   { return false; }
@@ -377,8 +419,15 @@ public class JavaClassTypeModel extends JavaTypeModel
             wtmt=JavaWildcardBoundsKind.SUPER;
             b=lb;
         }else{
-            // lower and upper type both exists. impossible.
-            throw new AssertException("extends and uper in one type bound are impossible");
+            JavaTypeModel lbm = createTypeModel(lb[0]);
+            JavaTypeModel ubm = createTypeModel(ub[0]);  
+            if (ubm.getName().equals("Object") && ubm.getPackageModel().getName().equals("java.lang")) {
+                wtmt=JavaWildcardBoundsKind.SUPER;
+                b=lb;
+            }else{
+                // lower and upper type both exists. impossible.
+                throw new AssertException("extends and uper in one type bound are impossible, lbm="+lbm.getFullName()+",ubm="+ubm.getFullName());
+            }
         }
         JavaTypeModel retval;
         if (b!=null && b.length > 1) {
@@ -462,5 +511,6 @@ public class JavaClassTypeModel extends JavaTypeModel
     }
     
     private Class<?> theClass_;
+    private static final Logger LOG = Logger.getLogger(JavaClassTypeModel.class.getName());
     
 }

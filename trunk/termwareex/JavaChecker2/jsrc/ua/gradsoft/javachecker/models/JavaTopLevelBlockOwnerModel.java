@@ -34,9 +34,9 @@ public interface JavaTopLevelBlockOwnerModel
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException;
     
     
-    public  List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException;
+    public  List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException, EntityNotFoundException;
     
-    public Map<String,JavaFormalParameterModel>  getFormalParametersMap() throws TermWareException;
+    public Map<String,JavaFormalParameterModel>  getFormalParametersMap() throws TermWareException, EntityNotFoundException;
 
     
     /**

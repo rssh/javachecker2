@@ -77,10 +77,15 @@ public class JavaPackageModel {
        // get types       
        while (i<compilationUnit.getArity() && !inImport) {
            t=compilationUnit.getSubtermAt(i);
-           JavaTypeModel javaTypeModel=null;          
+           JavaTermTypeAbstractModel javaTypeModel=null;          
            if (t.getName().equals("TypeDeclaration")) {
-             if (t.getArity()>0) {  
-               int modifiers=t.getSubtermAt(MODIFIERS_TERM_INDEX).getSubtermAt(0).getInt();
+             if (t.getArity()>0) {                 
+               Term modifiersTerm = t.getSubtermAt(MODIFIERS_TERM_INDEX);  
+               int modifiers=modifiersTerm.getSubtermAt(0).getInt();
+               Term annotationsList=TermUtils.createNil();
+               if (modifiersTerm.getArity()>1) {
+                   annotationsList=modifiersTerm.getSubtermAt(1);
+               }
                Term typeType=t.getSubtermAt(1);
                if (typeType.getName().equals("ClassOrInterfaceDeclaration")) {
                    javaTypeModel=new JavaTermClassOrInterfaceModel(modifiers,typeType,this,compilationUnitModel);                                      
@@ -91,6 +96,11 @@ public class JavaPackageModel {
                }else{
                    throw new AssertException("Type must be one of ClassOrInterfaceDeclaration,EnumDeclaration,AnnotationTypeDeclaration");
                }               
+               while(!annotationsList.isNil()) {
+                   Term currentAnnotation = annotationsList.getSubtermAt(0);
+                   annotationsList = annotationsList.getSubtermAt(1);
+                   javaTypeModel.addAnnotation(currentAnnotation);
+               }
                JavaTypeModelRef ref = typeModelRefs_.get(javaTypeModel.getName());
                if (ref==null) {
                  typeModelRefs_.put(javaTypeModel.getName(),new JavaTypeModelRef(javaTypeModel.getName(),unitRef,javaTypeModel));

@@ -17,16 +17,27 @@ public class EntityNotFoundException extends Exception implements SourceCodeLoca
     
     public EntityNotFoundException(String entityType, String entityName, String msg) {
         super("entity "+entityName +" ("+entityType+") is not found "+msg);
+        entityName_=entityName;
     }
  
     public EntityNotFoundException(String entityType, String entityName, String msg, FileAndLine fileAndLine) {
         super("entity "+entityName +" ("+entityType+") is not found "+msg);
         fileAndLine_=fileAndLine;
+        entityName_=entityName;
     }
 
     public EntityNotFoundException(String entityType, String entityName, String msg, FileAndLine fileAndLine, Exception ex) {
         super("entity "+entityName +" ("+entityType+") is not found "+msg,ex);
         fileAndLine_=fileAndLine;
+        entityName_=entityName;
+    }
+    
+    /**
+     *return name of entity which was not found.
+     */
+    public String getEntityName()
+    {
+        return entityName_;
     }
     
     
@@ -41,4 +52,5 @@ public class EntityNotFoundException extends Exception implements SourceCodeLoca
     }
     
     private FileAndLine fileAndLine_=FileAndLine.UNKNOWN;
+    private String entityName_;
 }

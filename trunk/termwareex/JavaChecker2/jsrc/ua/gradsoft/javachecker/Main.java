@@ -124,6 +124,8 @@ public class Main
   }
   parseArgs(args);    
 
+  initTmpDirBase();
+  
    try {
      loadCheckSystems(args);
    }catch(TermWareException ex){
@@ -510,6 +512,57 @@ public class Main
    prefsFname_=prefsFname;
  }  
  
+ public  static String getTmpDir()
+ {
+     if (tmpDirName_==null) {         
+         tmpDirName_=tmpDirBase_+File.separator+"jc"+System.currentTimeMillis();
+     }
+     return tmpDirName_;
+ }
+ 
+ public  static boolean isInShutdown()
+ { 
+     return inShutdown_;
+ }
+ 
+ private  static  void initTmpDirBase() throws ConfigException
+ {
+   if (tmpDirBase_==null) {  
+     String candidate = null;
+     if (candidate==null) {
+       candidate = System.getenv("TEMP");
+       if (candidate!=null) {
+         File f = new File(candidate);
+         if (!(f.exists() && f.isDirectory() && f.canWrite())) {
+             candidate=null;
+         }       
+       }
+     }
+     if (candidate==null) {
+       candidate = System.getenv("TMP");
+       if (candidate!=null) {
+         File f = new File(candidate);
+         if (!(f.exists() && f.isDirectory() && f.canWrite())) {
+             candidate=null;
+         }
+       }
+     }
+     if (candidate==null) {
+         candidate = File.separator+"tmp";
+         File f = new File(candidate);
+         if (!(f.exists() && f.isDirectory() && f.canWrite())) {
+             candidate=null;
+         }
+     }
+     if (candidate==null) {
+         throw new ConfigException("can't find temp directory");
+     }
+     tmpDirBase_=candidate;
+   }
+ }
+ 
+ 
+ 
  private static IEnv         env_          = null;
 
  private static HashSet      sourcesSet_    = null;
@@ -518,6 +571,8 @@ public class Main
  private static String       prefsFname_  = null;
  private static Preferences  prefs_       = null;
  
+ private static String       tmpDirName_  = null;
+ private static String       tmpDirBase_  = null;
  
  private static boolean      debug_ = false;
  private static boolean      showFiles_ = false;
@@ -536,5 +591,7 @@ public class Main
  private static JavaFacts    facts_ = null;
  //private static TermSystem   mainSystem_ = null;
  private static Checkers      checkers_ = null;
+ 
+ private static boolean      inShutdown_ = false;
  
 }

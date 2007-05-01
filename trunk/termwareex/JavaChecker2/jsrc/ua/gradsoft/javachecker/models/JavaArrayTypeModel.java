@@ -161,6 +161,13 @@ public class JavaArrayTypeModel extends JavaTypeModel
     return TermUtils.createTerm("ReferencedType",referencedType_.getModelTerm());  
   }
   
+  /**
+   *arrays types are not annotated.
+   */
+  public Map<String,JavaAnnotationInstanceModel> getAnnotations()
+  { return Collections.emptyMap(); }
+  
+  
   class LengthMemberVariableModel extends JavaMemberVariableModel
   {
     public JavaModifiersModel getModifiersModel()

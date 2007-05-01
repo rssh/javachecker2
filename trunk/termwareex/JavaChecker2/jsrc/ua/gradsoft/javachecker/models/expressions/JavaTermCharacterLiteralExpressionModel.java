@@ -26,7 +26,7 @@ import ua.gradsoft.termware.TermWareException;
  *CharacterLiteral
  * @author Ruslan Shevchenko
  */
-public class JavaTermCharacterLiteralExpressionModel extends JavaTermExpressionModel implements JavaLiteralModel
+public class JavaTermCharacterLiteralExpressionModel extends JavaTermExpressionModel implements JavaLiteralModel, JavaObjectConstantExpressionModel
 {
     
    public JavaTermCharacterLiteralExpressionModel(Term t,JavaTermStatementModel st,JavaTypeModel enclosedType) throws TermWareException
@@ -62,7 +62,18 @@ public class JavaTermCharacterLiteralExpressionModel extends JavaTermExpressionM
     public String getString()
     { return t_.getSubtermAt(0).getString(); }
                 
+    public Object getConstant() throws TermWareException
+    {
+        return evalCharacterLiteral(getString());
+    }
     
+    
+    static char evalCharacterLiteral(String s) throws TermWareException
+    {      
+      return JavaTermStringLiteralExpressionModel.evalStringLiteral(s,'\'',"Character").charAt(0);
+    }
+              
+      
     
     
 }

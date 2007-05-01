@@ -36,7 +36,7 @@ public class JavaTypeArgumentBoundMemberVariableModel extends JavaMemberVariable
        return owner_;  
     }
     
-    public JavaTypeModel  getTypeModel() throws TermWareException
+    public JavaTypeModel  getTypeModel() throws TermWareException, EntityNotFoundException
     {
       JavaTypeModel originTypeModel = origin_.getTypeModel();
       //return owner_.substituteTypeParameters(originTypeModel);

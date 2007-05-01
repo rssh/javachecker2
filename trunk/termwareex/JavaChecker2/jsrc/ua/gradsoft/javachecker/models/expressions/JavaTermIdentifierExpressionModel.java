@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
+import ua.gradsoft.javachecker.models.InvalidJavaTermException;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaPlaceContext;
@@ -29,7 +30,7 @@ import ua.gradsoft.termware.TermWareException;
  *(Variable or type)
  * @author Ruslan Shevchenko
  */
-public class JavaTermIdentifierExpressionModel extends JavaTermExpressionModel
+public class JavaTermIdentifierExpressionModel extends JavaTermExpressionModel implements JavaIdentifierExpressionModel
 {
     
     public JavaTermIdentifierExpressionModel(Term t, JavaTermStatementModel st, JavaTypeModel enclosedType) throws TermWareException
@@ -82,12 +83,16 @@ public class JavaTermIdentifierExpressionModel extends JavaTermExpressionModel
     
     private void lazyInitJavaVariableModel() throws TermWareException, EntityNotFoundException
     {
+       String name = getIdentifier();        
        if (variable_==null && type_==null) {
           JavaPlaceContext ctx = createPlaceContext();
           try {
-            variable_=JavaResolver.resolveVariableByName(getIdentifier(),ctx);            
+            variable_=JavaResolver.resolveVariableByName(name,ctx);            
             isType_=false;
           }catch(EntityNotFoundException ex){
+              if (!ex.getEntityName().equals(name)) {
+                  throw new InvalidJavaTermException("error during resolving "+name,ctx.getFileAndLine(),ex);
+              }
               try {
                 type_=JavaResolver.resolveTypeTerm(t_,ctx);
                 isType_=true;
@@ -97,7 +102,7 @@ public class JavaTermIdentifierExpressionModel extends JavaTermExpressionModel
                   throw newEx;
               }
           }
-          if (variable_!=null && type_==null) {
+          if (variable_!=null && type_==null) {              
               type_ = variable_.getTypeModel();
           }
         }        

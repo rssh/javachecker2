@@ -46,14 +46,14 @@ public class JavaTermConstructorModel implements JavaConstructorModel, JavaTermT
     return TermUtils.buildTypeParameters(tpt,getTypeModel());
    }
 
-    public List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException
-    {
+    public List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException, EntityNotFoundException
+    {    
         Term formalParametersList = t_.getSubtermAt(FORMAL_PARAMETERS_TERM_INDEX).getSubtermAt(0);  
-        return TermUtils.buildFormalParametersList(formalParametersList,this);
+        return TermUtils.buildFormalParametersList(formalParametersList,this);     
     }
    
    
-    public Map<String,JavaFormalParameterModel> getFormalParametersMap() throws TermWareException
+    public Map<String,JavaFormalParameterModel> getFormalParametersMap() throws TermWareException, EntityNotFoundException
     {
         Term formalParametersList = t_.getSubtermAt(FORMAL_PARAMETERS_TERM_INDEX).getSubtermAt(0);  
         return TermUtils.buildFormalParametersMap(formalParametersList,this);

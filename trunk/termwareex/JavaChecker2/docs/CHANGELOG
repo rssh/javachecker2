@@ -1,4 +1,8 @@
-2.0.1 (13.04.2007)
+2.1.1
+    - fixed bug with long work of TrackOpenClose in synchronized statements
+    - added SwithLabelWithoutBreak check
+
+2.1.0 (13.04.2007)
     - fixed packaging. 
     - switch to last version of IzPack to prevent coredump of installer on Linux FC6
     - fix wrapper shell script

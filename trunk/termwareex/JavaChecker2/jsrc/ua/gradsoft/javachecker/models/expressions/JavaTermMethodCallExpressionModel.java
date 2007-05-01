@@ -2,7 +2,7 @@
  * JavaTermMethodCallExpressionModel.java
  *
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006, 2007 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -61,8 +61,10 @@ public class JavaTermMethodCallExpressionModel extends JavaTermExpressionModel
     public JavaTypeModel  getType() throws TermWareException, EntityNotFoundException
     {
       lazyInitMethodModel();
+      
       JavaTypeModel retval= substitution_.substitute(methodModel_.getResultType());      
-      if (false) {
+      String methodName = t_.getSubtermAt(1).getSubtermAt(0).getString();
+      if (methodName.equals("unwrap")) {
           System.out.println("method model for "+TermHelper.termToString(t_)+" created.");
           System.out.println("method result type: "+methodModel_.getResultType().getName());
           System.out.println("substitution_:"+substitution_.toString());
@@ -118,6 +120,7 @@ public class JavaTermMethodCallExpressionModel extends JavaTermExpressionModel
              methodModel_ = JavaResolver.resolveMethod(methodName,argumentTypes,s,subexpressions_.get(0).getType());
              substitution_=s;
           }catch(EntityNotFoundException ex){
+              System.err.println("!!!!_____:"+TermHelper.termToString(t_));
               ex.setFileAndLine(JUtils.getFileAndLine(t_));
               throw ex;
           }

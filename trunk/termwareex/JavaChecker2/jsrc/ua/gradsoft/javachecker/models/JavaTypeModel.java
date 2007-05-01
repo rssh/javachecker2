@@ -1,7 +1,7 @@
 /*
  * JavaTypeModel.java
  *
- * Copyright (c) 2004-2006 GradSoft  Ukraine
+ * Copyright (c) 2004-2007 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -227,6 +227,30 @@ public abstract class JavaTypeModel {
   public  JavaPackageModel  getPackageModel()
   { return packageModel_; }
   
+  /**
+   *return true, if this type is annotated by annotation with type
+   *<code>annotationTypeName</code>, otherwise false
+   */
+  public boolean hasAnnotation(String annotationTypeName) throws TermWareException
+  { return getAnnotations().containsKey(annotationTypeName); }
+  
+  /**
+   *return annottation instance, if one exists. Otherwise - throws NotSupportedException
+   */
+  public JavaAnnotationInstanceModel  getAnnotation(String annotationName) throws NotSupportedException, TermWareException
+  { 
+     JavaAnnotationInstanceModel retval = getAnnotations().get(annotationName);
+     if (retval==null) {
+         throw new NotSupportedException();
+     }
+     return retval;
+  }
+ 
+  /**
+   * get all annotations.
+   */
+  public abstract Map<String,JavaAnnotationInstanceModel>  getAnnotations() throws TermWareException;
+  
   
   /**
    *return true, if type model have AST Term
@@ -245,6 +269,22 @@ public abstract class JavaTypeModel {
    */
   public  abstract Term  getModelTerm() throws TermWareException, EntityNotFoundException;
   
+  
+  
+  /**
+   *return attributes of this model
+   */
+  public JavaTypeModelAttributes getAttributes()
+  {
+      if (attributes_==null) {
+          attributes_=new JavaTypeModelAttributes(this);
+      }
+      return attributes_;
+  }
+  
+  
+  
+  
   public  JavaUnitModel  getUnitModel()
   { return unitModel_; }
   
@@ -257,5 +297,6 @@ public abstract class JavaTypeModel {
   
   private JavaPackageModel packageModel_;
   private JavaUnitModel    unitModel_;
+  private JavaTypeModelAttributes attributes_=null;
  
 }

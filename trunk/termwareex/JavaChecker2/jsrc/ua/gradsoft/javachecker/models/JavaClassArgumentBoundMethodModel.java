@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
@@ -52,7 +53,7 @@ public class JavaClassArgumentBoundMethodModel extends JavaMethodModel implement
       return resultType_;
     }
     
-    public List<JavaFormalParameterModel>  getFormalParametersList() throws TermWareException
+    public List<JavaFormalParameterModel>  getFormalParametersList() throws TermWareException, EntityNotFoundException
     {
       List<JavaFormalParameterModel> originList = origin_.getFormalParametersList();  
       List<JavaFormalParameterModel> retval = new ArrayList<JavaFormalParameterModel>(originList.size());
@@ -65,7 +66,7 @@ public class JavaClassArgumentBoundMethodModel extends JavaMethodModel implement
       return retval;
     }
     
-    public Map<String,JavaFormalParameterModel> getFormalParametersMap() throws TermWareException
+    public Map<String,JavaFormalParameterModel> getFormalParametersMap() throws TermWareException, EntityNotFoundException
     {
        Map<String,JavaFormalParameterModel> retval=new TreeMap<String,JavaFormalParameterModel>();
        for(Map.Entry<String,JavaFormalParameterModel> e:origin_.getFormalParametersMap().entrySet()) {
@@ -80,7 +81,7 @@ public class JavaClassArgumentBoundMethodModel extends JavaMethodModel implement
     
     
     
-    public List<JavaTypeModel> getFormalParametersTypes() throws TermWareException
+    public List<JavaTypeModel> getFormalParametersTypes() throws TermWareException, EntityNotFoundException
     {
       List<JavaTypeModel> ofps = origin_.getFormalParametersTypes();         
       return getArgumentBoundTypeModel().getSubstitution().substitute(ofps);

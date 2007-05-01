@@ -25,7 +25,7 @@ public class JavaTypeArgumentBoundTypeVariableModel extends JavaTypeVariableAbst
     public JavaTypeArgumentBoundTypeVariableModel(JavaTypeVariableAbstractModel origin,List<JavaTypeModel> bounds)
     {
       origin_=origin;
-      bounds_=bounds;
+      bounds_=bounds;   
     }
 
     

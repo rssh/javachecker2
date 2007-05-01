@@ -144,6 +144,9 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     }
     
     
+    /**
+     *@return false
+     */
     public boolean hasTypeParameters()
     { return false; }
     
@@ -154,6 +157,12 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
         return Collections.<JavaTypeVariableAbstractModel>emptyList();
     }
 
+    /**
+     *@return empty map
+     */
+    public Map<String,JavaAnnotationInstanceModel> getAnnotations()
+    { return Collections.emptyMap(); }
+    
     public void print(PrintWriter writer)
     {
       try {  

@@ -20,11 +20,13 @@ import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *Model of annotation type which holds term.
- *TODO: build body. now body is not build at all.
  * @author Ruslan Shevchenko
  */
 public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
 {
+    
+
+    
             
     public JavaTermAnnotationTypeModel(int modifiers, Term t, JavaPackageModel packageModel, JavaUnitModel unitModel) throws TermWareException
     {
@@ -54,28 +56,24 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
       return true;  
     }
         
-    public boolean hasMethodModels()
-    { return false; }
-    
+
     public JavaTypeModel getSuperClass() throws TermWareException
-    {
+    {   
+        return JavaResolver.resolveJavaLangObject();
+    }
+    
+    
+    public List<JavaTypeModel>  getSuperInterfaces() throws TermWareException
+    { 
       try {  
-        return JavaResolver.resolveTypeModelFromPackage("Annotation","java.lang"); 
+        JavaTypeModel retval = JavaResolver.resolveTypeModelFromPackage("Annotation","java.lang.annotation");
+        return Collections.singletonList(retval);
       }catch(EntityNotFoundException ex){
           throw new AssertException(ex.getMessage());
       }
     }
     
-    
-    public List<JavaTypeModel>  getSuperInterfaces() 
-    { return Collections.emptyList(); }
-    
-    
-    public Map<String, List<JavaMethodModel>> getMethodModels() throws NotSupportedException
-    {
-      throw new NotSupportedException();
-    }
-
+  
     public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
         throw new NotSupportedException();
     }
@@ -134,7 +132,7 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
                  if (mb.getArity()==4) {
                         defaultValueTerm = mb.getSubtermAt(3);
                  }
-                 addAnnotationMethodDeclaration(modifiers, typeTerm, identifierTerm, defaultValueTerm);
+                 addAnnotationFieldDeclaration(modifiers, typeTerm, identifierTerm, defaultValueTerm);
               }else if (mb.getArity()==0) {
                    // skip empty declaration   
               }else{
@@ -152,12 +150,15 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
        addNestedType(tm.getName(),tm);
     }
 
-    protected void addAnnotationMethodDeclaration(int modifiers, Term typeTerm, Term identifierTerm, Term defaultValueTerm)
+    protected void addAnnotationFieldDeclaration(int modifiers, Term typeTerm, Term identifierTerm, Term defaultValueTerm)
     {
-        JavaTermAnnotationMethodModel jtamm = new JavaTermAnnotationMethodModel(this,modifiers,typeTerm,identifierTerm,defaultValueTerm);
-        JavaMethodModel mm=jtamm;
-        List<JavaMethodModel> ml=Collections.singletonList(mm);
-        methodModels_.put(identifierTerm.getSubtermAt(0).getString(),ml);
+        JavaTermAnnotationFieldModel jtamm = new JavaTermAnnotationFieldModel(this,modifiers,typeTerm,identifierTerm,defaultValueTerm);
+        JavaMemberVariableModel vm=jtamm;
+        String name = identifierTerm.getSubtermAt(0).getString();
+        fieldModels_.put(name,vm);
+        JavaTermAnnotationMethodModel mm = new JavaTermAnnotationMethodModel(jtamm);
+        List<JavaMethodModel> mml = Collections.<JavaMethodModel>singletonList(mm);
+        methodModels_.put(name,mml);
     }
     
 }

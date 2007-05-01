@@ -13,8 +13,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *Model for Java Initializer, based on Term
@@ -102,7 +105,24 @@ public class JavaTermInitializerModel implements JavaInitializerModel, JavaTermT
     private void build(Term t) throws TermWareException
     {
         Term modifiersTerm = t.getSubtermAt(0);
-        modifiersModel_ = new JavaModifiersModel(modifiersTerm.getSubtermAt(0).getInt());
+        Term insideModifiers = modifiersTerm.getSubtermAt(0);
+        if (insideModifiers.isInt()) {
+          modifiersModel_ = new JavaModifiersModel(modifiersTerm.getSubtermAt(0).getInt());
+        }else if (insideModifiers.getName().equals("cons")) {
+            Term l = insideModifiers;
+            while(!l.isNil()) {
+                Term ct = l.getSubtermAt(0);
+                l=l.getSubtermAt(1);
+                if (ct.isInt()) {
+                    modifiersModel_ = new JavaModifiersModel(ct.getInt());                    
+                }else{
+                    // Annotation is not defined in initailizers
+                    throw new AssertException("Annotations is not defined in initializers:"+TermHelper.termToString(ct));
+                }
+            }
+        }else{
+            throw new InvalidJavaTermException("List inside modifiers is required",modifiersTerm);
+        }
         Term blockTerm = t.getSubtermAt(1);
         Term listStatements = blockTerm.getSubtermAt(0);
         blockModel_ = new JavaTermTopLevelBlockModel(this,listStatements);

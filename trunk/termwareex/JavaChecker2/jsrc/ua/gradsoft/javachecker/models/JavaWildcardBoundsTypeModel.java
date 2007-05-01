@@ -20,7 +20,7 @@ import ua.gradsoft.termware.TermWareException;
 import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
- *
+ *Model for wildcard bounds.
  * @author Ruslan Shevchenko
  */
 public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
@@ -257,6 +257,16 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
             return boundTypeModel_.getTypeParameters();
         }
     }
+    
+    
+    
+    /**
+     *@return empty map
+     */
+    public Map<String,JavaAnnotationInstanceModel> getAnnotations()
+    { return Collections.emptyMap(); }
+    
+    
     
     public boolean hasASTTerm()
     { return false; }

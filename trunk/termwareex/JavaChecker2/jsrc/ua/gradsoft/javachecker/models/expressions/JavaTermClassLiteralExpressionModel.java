@@ -18,6 +18,7 @@ import ua.gradsoft.javachecker.models.JavaPlaceContext;
 import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
+import ua.gradsoft.javachecker.models.JavaTypeArgumentBoundTypeModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
@@ -45,7 +46,9 @@ public class JavaTermClassLiteralExpressionModel extends JavaTermExpressionModel
     
     public JavaTypeModel getType() throws EntityNotFoundException, TermWareException
     {
-      return JavaResolver.resolveTypeModelByFullClassName("java.lang.Class");
+      JavaTypeModel classType = JavaResolver.resolveTypeModelByFullClassName("java.lang.Class");
+      JavaTypeModel resolvedType = getClassLiteralType();
+      return new JavaTypeArgumentBoundTypeModel(classType,Collections.singletonList(resolvedType),classType);
     }
     
     public boolean isType()

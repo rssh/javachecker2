@@ -170,6 +170,12 @@ public class JavaNullTypeModel extends JavaTypeModel {
     public List<JavaTypeModel> getSuperInterfaces()
     { return Collections.emptyList(); }
     
+ 
+    /**
+     *@return empty map
+     */
+    public Map<String,JavaAnnotationInstanceModel> getAnnotations()
+    { return Collections.emptyMap(); }
     
     /**
      *@return false

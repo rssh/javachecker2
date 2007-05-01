@@ -9,9 +9,12 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.lang.annotation.ElementType;
 import ua.gradsoft.javachecker.models.expressions.JavaTermAdditiveExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermAllocationExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermAndExpressionModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermAnnotationExpressionModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermAnnotationMemberValueArrayInitializerExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermArrayIndexExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermArrayInitializerExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermAssigmentExpressionModel;
@@ -43,7 +46,6 @@ import ua.gradsoft.javachecker.models.expressions.JavaTermPreincrementExpression
 import ua.gradsoft.javachecker.models.expressions.JavaTermRelationalExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermShiftExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermSpecializedMethodCallExpressionModel;
-import ua.gradsoft.javachecker.models.expressions.JavaTermStaticFieldExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermStringLiteralExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermSuperExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermSuperPrefixExpressionModel;
@@ -61,8 +63,13 @@ import ua.gradsoft.termware.exceptions.AssertException;
  */
 public abstract class JavaTermExpressionModel implements JavaExpressionModel
 {
-    
     public static JavaTermExpressionModel create(Term t, JavaTermStatementModel statement, JavaTypeModel enclosedType) throws TermWareException
+    {
+     return create(t,statement,enclosedType,null,null);   
+    }
+            
+    
+    public static JavaTermExpressionModel create(Term t, JavaTermStatementModel statement, JavaTypeModel enclosedType, JavaAnnotationInstanceModel enclosedAnnotation, String enclosedAnnotationElement) throws TermWareException
     {
       //System.out.println("create expession for "+TermHelper.termToString(t));
       if (t.getName().equals("Expression")||t.getName().equals("StatementExpression")) {
@@ -338,7 +345,20 @@ public abstract class JavaTermExpressionModel implements JavaExpressionModel
               return new JavaTermSuperPrefixExpressionModel(t,statement,enclosedType);
           }else{
               throw new InvalidJavaTermException("Invalid expression term",t);
-          }      
+          }  
+      }else if(t.getName().equals("Annotation")){
+          if (enclosedAnnotation!=null) {
+              JavaAnnotationInstanceModel instanceModel = new JavaTermAnnotationInstanceModel(ElementType.ANNOTATION_TYPE,enclosedType,t);
+              return new JavaTermAnnotationExpressionModel(t,instanceModel,enclosedType,enclosedAnnotation);
+          }else{
+              throw new InvalidJavaTermException("Annotation expression allowed only inside annotation",t);
+          }
+      }else if(t.getName().equals("MemberValueArrayInitializer")) {
+          if (enclosedAnnotation!=null) {
+              return new JavaTermAnnotationMemberValueArrayInitializerExpressionModel(t,enclosedType,enclosedAnnotation,enclosedAnnotationElement);
+          }else{
+              throw new InvalidJavaTermException("AnnotationMemberValueArrayInitializer allowed only inside annotation",t);
+          }
       }else{
           throw new InvalidJavaTermException("Invalid expression term",t);
       }

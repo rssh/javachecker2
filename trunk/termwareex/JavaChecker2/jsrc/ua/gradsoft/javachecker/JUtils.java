@@ -97,12 +97,17 @@ public final class JUtils {
 
     public static String createSourceFileNameFromClassName(String className)
     {
+      return createSourceFileNameFromClassName(className,".java");  
+    }
+    
+    public static String createSourceFileNameFromClassName(String className, String ext)
+    {
       String sourceName=className;  
       int dIndex=className.indexOf('$');
       if (dIndex!=-1) {
           sourceName=sourceName.substring(0,dIndex);
       }  
-      sourceName=sourceName+".java";
+      sourceName=sourceName+ext;
       return sourceName;
     }
     
@@ -150,6 +155,21 @@ public final class JUtils {
             ++curIndex;
         }
         return sb.toString();
+    }
+    
+    public static String getJavaNameLastComponentAsString(Term t) throws TermWareException
+    {
+        if (!t.getName().equals("Name")) {
+            throw new AssertException("term is not java_name:"+TermHelper.termToString(t));
+        }
+        String retval=null;
+        Term l=t.getSubtermAt(0);
+        while(!l.isNil()) {
+            Term identifier = l.getSubtermAt(0);
+            retval=identifier.getSubtermAt(0).getString();
+            l=l.getSubtermAt(1);
+        }
+        return retval;
     }
 
     /**

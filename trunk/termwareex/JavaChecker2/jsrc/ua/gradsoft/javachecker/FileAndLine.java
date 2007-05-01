@@ -25,7 +25,18 @@ public class FileAndLine {
     
     public static final FileAndLine UNKNOWN = new FileAndLine("unknown",-1);
     
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof FileAndLine)) {
+            return false;
+        }else{
+            FileAndLine flo = (FileAndLine)o;
+            return flo.getFname().equals(fname_)&&flo.getLine()==line_;
+        }
+    }
     
+    public int hashCode()
+    { return fname_.hashCode()+line_; }
     
     private String fname_;
     private int    line_;

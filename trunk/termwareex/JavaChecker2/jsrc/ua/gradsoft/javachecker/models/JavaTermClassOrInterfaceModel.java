@@ -21,7 +21,7 @@ import ua.gradsoft.termware.exceptions.AssertException;
  *Model for Java Type ( Class or Interface )
  * @author  Ruslan Shevchenko
  */
-public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
+public  class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
     
     
     /** Creates a new instance of JavaClassModel */
@@ -151,7 +151,10 @@ public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
     public boolean isAnnotationType() {
         return false; }
     
-    
+    /**
+     *true, if this type su[pports TypeParameters.
+     *(note, that list of typeParameters can be empty)
+     */
     public boolean hasTypeParameters() {
         return true; }
     
@@ -193,6 +196,7 @@ public class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
        Term tctx = TermUtils.createJTerm(ctx);
        return TermUtils.createTerm("ClassOrInterfaceModel",modifiers,classOrInterface,nameTerm,typeParametersTerm,extendsListModel,implementsListModel,classOrInterfaceBody,tctx);
     }
+    
     
       
     

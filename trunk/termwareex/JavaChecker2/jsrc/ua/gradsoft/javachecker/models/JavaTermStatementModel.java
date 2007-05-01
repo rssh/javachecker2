@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.FileAndLine;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.models.expressions.JavaTermSwitchConstantExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
@@ -660,6 +662,7 @@ public class JavaTermStatementModel implements JavaStatementModel {
     private void extractLocalVariablesExpressionsAndAnonimousTypesFromLocalVariableDeclaration(Term dcl) throws TermWareException {
         Term typeTerm = dcl.getSubtermAt(1);
         Term dclList=dcl.getSubtermAt(2);
+        
         while(!dclList.isNil()) {
             Term vdcl=dclList.getSubtermAt(0);
             dclList=dclList.getSubtermAt(1);
@@ -678,7 +681,9 @@ public class JavaTermStatementModel implements JavaStatementModel {
             }else if (vid.getName().equals("Identifier")) {
                 identifier=vid;
             }else{
-                throw new AssertException("Invalid variabl declarator:"+TermHelper.termToString(vid));
+                System.err.println("dcl="+TermHelper.termToString(dcl));
+                FileAndLine fl = JUtils.getFileAndLine(dcl);                
+                throw new AssertException("Invalid variabl declarator :"+fl.getFname()+","+fl.getLine()+":"+TermHelper.termToString(vid));
             }
             Term initTerm=TermWare.getInstance().getTermFactory().createNIL();
             JavaTermExpressionModel expr=null;
