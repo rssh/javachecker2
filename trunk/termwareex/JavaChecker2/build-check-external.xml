@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!-- build file for JavaChecker project -->
+<project name="JavaCheckerExternalChecks" default="check-all" basedir=".">
+
+
+ <!-- set here location of ant (see ant.apache.org ) -->
+ <property name="anthome" location="c:/local/java/ant" />
+ <property name="jetty.home" location="/home/rssh/packages/jetty-6.1.2rc4" />
+ <property name="guice.home" location="/home/rssh/packages/guice" />
+
+
+ <!-- targets -->
+
+ <target name="declareJavaChecker"  >
+    <taskdef name="JavaChecker"  classname="ua.gradsoft.javachecker.ant.JavaCheckerTask">
+     <classpath>
+      <pathelement location="jsrc"/>
+      <pathelement location="lib/TermWare2.jar"/>
+      <pathelement location="lib/JavaChecker2.jar"/>
+      <pathelement location="lib/TermWareJPP.jar"/>
+      <pathelement location="${java.class.path}/"/>      
+     </classpath>
+    </taskdef>    
+ </target>
+
+
+ <target name="check-jetty" depends="declareJavaChecker" >
+   <JavaChecker jchhome="${basedir}" output="jchreport-jetty.txt" outputFormat="text" prefs="etc/prefs1.xml" debug="false" q="false" showFiles="false" >
+    <input dir="${jetty.home}/modules/jetty/src/main/java" />
+    <classpath>
+			<fileset dir="${jetty.home}/lib">
+				<include name="*.jar" />
+			</fileset>
+    </classpath>
+    <disable check="NamePatterns" />
+    <!--<disable check="UnclosedCloseable" />-->
+   </JavaChecker>
+ </target>
+
+ <target name="check-guice" depends="declareJavaChecker" >
+   <JavaChecker jchhome="${basedir}" output="jchreport-guice.txt" outputFormat="text" prefs="etc/prefs1.xml" debug="false" q="false" showFiles="false" >
+    <input  dir="${guice.home}/src" />
+    <classpath>
+			<fileset dir="${guice.home}/lib">
+				<include name="*.jar" />
+				<include name="**/*.jar" />
+			</fileset>
+    </classpath>
+    <disable check="NamePatterns" />
+    <!--<disable check="UnclosedCloseable" />-->
+   </JavaChecker>
+ </target>
+
+ <target name="check-all" depends="check-jetty,check-guice" />
+
+</project>
