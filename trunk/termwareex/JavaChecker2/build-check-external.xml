@@ -7,6 +7,7 @@
  <property name="anthome" location="c:/local/java/ant" />
  <property name="jetty.home" location="/home/rssh/packages/jetty-6.1.2rc4" />
  <property name="guice.home" location="/home/rssh/packages/guice" />
+ <property name="jdk.home" location="/usr/java/jdk1.6.0_01" />
 
 
  <!-- targets -->
@@ -48,6 +49,15 @@
     </classpath>
     <disable check="NamePatterns" />
     <!--<disable check="UnclosedCloseable" />-->
+   </JavaChecker>
+ </target>
+
+ <target name="check-jdk" depends="declareJavaChecker" >
+   <JavaChecker jchhome="${basedir}" output="jchreport-jdk.txt" outputFormat="text" prefs="etc/prefs1.xml" debug="false" q="false" showFiles="false" >
+    <input  dir="${jdk.home}/src" />
+    <disable check="NamePatterns" />
+    <!--<disable check="UnclosedCloseable" />-->
+    <!--<disable check="SwitchLabelWithoutBreak" />-->
    </JavaChecker>
  </target>
 

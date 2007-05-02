@@ -164,8 +164,15 @@ public class Checkers {
                         }
                     }
                 }
-                if (enabled && ttm!=null) {      
+                if (enabled && ttm!=null) {  
+                  try {  
                     checker.run(ttm,astTermHolder,modelTermHolder);
+                  }catch(TermWareException ex){
+                      System.out.println("Exception "+checker.getName()+", class "+ttm.getFullName());
+                      ex.printStackTrace();
+                  }catch(OutOfMemoryError ex){
+                      System.out.println("Out of memory error for check "+checker.getName()+", class "+ttm.getFullName());                            
+                  }
                 }
             }
         }

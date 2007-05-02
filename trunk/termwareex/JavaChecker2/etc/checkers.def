@@ -44,7 +44,12 @@ Checkers(
         BT_TYPE_RULESET,
         ruleset(
           import(general,apply),
-          SwitchStatementLabelBlock($label,[$x:$y]) -> flows::CheckBreak.CHECK_BREAK($label,cons($x,$y),cons($x,$y))
+
+
+          SwitchStatementLabelBlock($label,[$x:$y]) -> RESULT(flows::CheckBreak.CHECK_BREAK($label,cons($x,$y),cons($x,$y)),cons($x,$y)), 
+          RESULT(true,$where) -> true [ violationDiscovered(SwitchLabelWithoutBreak,"switch label without break",$where) ],
+          RESULT(false,$where) -> false
+
         ),
         true
  ),

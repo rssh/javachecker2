@@ -8,14 +8,49 @@ domain(flows,
 
        CHECK_BREAK($label,$x,$y) -> unify($label,SwitchLabel(default)) ? false : CHECK_BREAK($x,$y),
 
-       CHECK_BREAK(NIL,$where) -> true [ violationDiscovered(SwitchLabelWithoutBreak,"switch label without break",$where) ],
+       CHECK_BREAK(NIL,$where) -> true,
        CHECK_BREAK([$x:$y],$where) -> IS_BREAK($x) ? false : CHECK_BREAK($y,$where),
-       IS_BREAK($x) -> unify($x, BreakStatement()) ? true :
-                       unify($x, BreakStatement($y)) ? true : 
-                       unify($x, ReturnStatement()) ? true : 
-                       unify($x, ReturnStatement($y)) ? true : 
-                       unify($x, ThrowStatement($y)) ? true : 
-                       false,
+       CHECK_BREAK(Block($x),$where) -> CHECK_BREAK($x,$where),
+
+       IS_BREAK(BreakStatement()) -> true,
+       IS_BREAK(BreakStatement($y)) -> true,
+       IS_BREAK(ReturnStatement()) -> true,
+       IS_BREAK(ReturnStatement($y)) -> true, 
+       IS_BREAK(ThrowStatement($y)) -> true, 
+       IS_BREAK(LabeledStatement($x)) -> IS_BREAK($x),
+       IS_BREAK(Block($x)) -> IS_BREAK($x),
+       IS_BREAK([$x:$y])   -> IS_BREAK($x) || IS_BREAK($y), 
+       IS_BREAK(NIL)       -> false, 
+       IS_BREAK(EmptyStatement())       -> false, 
+       IS_BREAK(StatementExpressionStatement($x))       -> false, 
+       IS_BREAK(SwitchStatement($expr,$blockList)) -> false,
+       IS_BREAK(SwitchLabelBlock($label,$block)) -> IS_BREAK($block),
+       IS_BREAK(IfStatement($cond,$x)) -> false,
+       IS_BREAK(IfStatement($cond,$x,$y)) -> IS_BREAK($x) && IS_BREAK($y),
+       IS_BREAK(WhileStatement($x,$y)) -> false,
+       IS_BREAK(DoStatement($x,$y)) -> false,
+       IS_BREAK(ForStatement($x,$y)) -> false,
+       IS_BREAK(ContinueStatement()) -> false,
+       IS_BREAK(SynchronizedStatement($x,$y)) -> IS_BREAK($y),
+       IS_BREAK(TryStatement($block,$catchSeq,$finally)) -> IS_BREAK($block) && IS_BREAK($catchSeq),
+       IS_BREAK(CatchSequence(NIL)) -> false,
+       IS_BREAK(CatchSequence([$x:$y])) -> IS_BREAK($x) && IS_BREAK($y),
+       IS_BREAK(Catch($e,$block)) -> IS_BREAK($block),
+       IS_BREAK(LocalVariableDeclaration($x)) -> false,
+       IS_BREAK(ClassOrInterfaceDeclaration($x1,$x2,$x3,$x4,$x5)) -> false,
+       IS_BREAK(ExplicitSuperConstructorInvocation($args)) -> false,
+       IS_BREAK(ExplicitSuperConstructorInvocation($o,$args)) -> false,
+       IS_BREAK(ExplicitThisConstructorInvocation($o,$args)) -> false,
+
+       true && $x -> $x,
+       false && $x -> false,
+       $x   && true -> $x,
+       $x   && false -> false,
+       ($x && $y) && $z -> $x && ($y && $z),
+       
+       true || $x -> true,
+       false || $x -> false,
+       ($x || $y) || $z -> $x || ($y || $z),
 
        p($x) -> $x [ println($x) ],
 

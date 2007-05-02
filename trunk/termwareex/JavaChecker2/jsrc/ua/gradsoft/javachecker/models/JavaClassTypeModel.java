@@ -221,9 +221,9 @@ public class JavaClassTypeModel extends JavaTypeModel
   public List<JavaMethodModel>  findMethodModels(String name) throws EntityNotFoundException, NotSupportedException
   {
     boolean debug=false;  
-    if (name.equals("getPreferredGap"))  {
-        debug=true;
-    }
+  //  if (name.equals("getPreferredGap"))  {
+  //      debug=true;
+  //  }
     List<JavaMethodModel> methodModels = new LinkedList<JavaMethodModel>();  
     Method[] methods = theClass_.getDeclaredMethods();
     boolean found=false;
