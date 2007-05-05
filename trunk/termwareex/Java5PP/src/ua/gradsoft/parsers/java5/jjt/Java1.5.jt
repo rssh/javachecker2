@@ -615,7 +615,7 @@ void TypeDeclaration():
 |
   modifiers = Modifiers()
   (
-     ClassOrInterfaceDeclaration(modifiers.getSubtermAt(0).getInt())
+     ClassOrInterfaceDeclaration()
    |
      EnumDeclaration(modifiers.getSubtermAt(0).getInt())
    |
@@ -635,7 +635,7 @@ void TypeDeclaration():
 }
 
 
-void ClassOrInterfaceDeclaration(int modifiers):
+void ClassOrInterfaceDeclaration():
 {
    boolean isInterface = false;
    SimpleNode typeParameters = null;
@@ -790,10 +790,9 @@ void ClassOrInterfaceBodyDeclaration(boolean isInterface):
         throw new ParseException("An interface cannot have initializers");
   }
  |
-  modifiers = Modifiers() // Just get all the modifiers out of the way. If you want to do
-              // more checks, pass the modifiers down to the member
+  modifiers = Modifiers() 
   (
-      ClassOrInterfaceDeclaration(modifiers.getSubtermAt(0).getInt())
+      ClassOrInterfaceDeclaration()
     |
       EnumDeclaration(modifiers.getSubtermAt(0).getInt())
     |
@@ -914,13 +913,18 @@ void FormalParameters():
 void FormalParameter():
 {
  int modifiers=0;
-// Token tkf=null;
-//TODO: add comment
 }
 {
-  [ "final" {modifiers|=ModifierSet.FINAL;} ] Type() [ "..." {modifiers|=ModifierSet.VARARGS;} ] VariableDeclaratorId()
-  { jjtThis.addTerm(createInt(modifiers),0); }
+  Modifiers() Type() [ "..." {modifiers|=ModifierSet.VARARGS;} ] VariableDeclaratorId()
+  {
+    if (modifiers!=0) {
+      int tmodifiers = jjtThis.getSubtermAt(0).getSubtermAt(0).getInt();
+      tmodifiers|=modifiers; 
+      jjtThis.getSubtermAt(0).setSubtermAt(0,createInt(tmodifiers));
+    }
+  }
 }
+
 
 void ConstructorDeclaration():
 {
@@ -1835,12 +1839,13 @@ SimpleNode Block():
 void BlockStatement():
 {}
 {
-  LOOKAHEAD([Annotation()] [ "final" ] Type() Identifier())
+  /*LOOKAHEAD([Annotation()] [ "final" ] Type() Identifier())*/
+  LOOKAHEAD(Modifiers() Type() Identifier())
   LocalVariableDeclaration() ";"
 |
   Statement()
 |
-  ClassOrInterfaceDeclaration(0)
+  ClassOrInterfaceDeclaration()
 }
 
 void LocalVariableDeclaration():
@@ -1850,16 +1855,11 @@ void LocalVariableDeclaration():
  Term annotation=null;
 }
 {
+/*
   [annotation=Annotation()] [ tkf="final" { modifiers|=ModifierSet.FINAL; }] Type() VariableDeclarator() ( "," VariableDeclarator() )*
+*/
+  Modifiers() Type() VariableDeclarator() ( "," VariableDeclarator() )*
   { 
-   Term modifiersTerm=null;
-   if (annotation==null) {
-     modifiersTerm=createTerm("Modifiers",createInt(modifiers));
-     jjtThis.addTerm(modifiersTerm,0); 
-   }else{
-     modifiersTerm=createTerm("Modifiers",annotation,createInt(modifiers));
-     jjtThis.setSubtermAt(0,modifiersTerm);
-   }
    setComment(jjtThis,tkf);
   }
 }
@@ -2278,7 +2278,7 @@ void AnnotationTypeMemberDeclaration():
    LOOKAHEAD(Type() Identifier() "(")
    Type() Identifier() "(" ")" [ DefaultValue() ] ";"
   |
-   ClassOrInterfaceDeclaration(modifiers.getSubtermAt(0).getInt())
+   ClassOrInterfaceDeclaration()
   |
    EnumDeclaration(modifiers.getSubtermAt(0).getInt())
   |

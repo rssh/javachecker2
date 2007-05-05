@@ -151,6 +151,7 @@ public class ASTTransformers {
 
         simplifierBefore_.addRule("MethodDeclaration($tp,$rt,MethodDeclarator($x,$y,$z),$th,$bl) -> MethodDeclaration($tp,ReferenceType($x,$rt),MethodDeclarator($y,$z),$th,$bl)");
 
+
         
         BTStrategy strategyAfter=new BTStrategy();
         simplifierAfter_=new TermSystem(strategyAfter,facts,TermWare.getInstance());
@@ -210,6 +211,8 @@ public class ASTTransformers {
         simplifierAfter_.addRule("MultiplicativeExpression($x,[$y:$z])->MultiplicativeExpression(MultiplicativeExpression($x,$y),$z)");
         simplifierAfter_.addRule("MultiplicativeExpression($x,MultiplicativeOperand($op,$y)) -> MultiplicativeExpression($x,$op,$y)");
         simplifierAfter_.addRule("MultiplicativeExpression($x,[]) -> $x");
+
+        simplifierAfter_.addRule("FormalParameterModifiers($x,$y) -> Modifiers($x,$y)");
                  
         initialized_=true;
     }
@@ -271,6 +274,7 @@ public class ASTTransformers {
             ||t.getName().equals("CatchSequence")
             ||t.getName().equals("AnnotationTypeBody")           
             ||t.getName().equals("MemberValuePairs")           
+            ||t.getName().equals("MemberValueArrayInitializer")           
             ) {
                 retval=javaTermArgsAsList(t,0,true);
             }else if (t.getName().equals("FieldDeclaration")
@@ -287,6 +291,7 @@ public class ASTTransformers {
             ||t.getName().equals("AdditiveExpression")
             ||t.getName().equals("MultiplicativeExpression")
             ||t.getName().equals("Modifiers")
+            ||t.getName().equals("FormalParameterModifiers")
             // ||t.getName().equals("PrimaryExpression")
             ) {
                 retval=javaTermArgsAsList(t,1,true);

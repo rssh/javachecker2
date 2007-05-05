@@ -862,7 +862,9 @@ public class JavaPrinter extends AbstractPrinter {
     }
     
     public void writeFormalParameter(Term t, int level) throws TermWareException {
-        int modifiers=t.getSubtermAt(0).getInt();
+        Term modifiersTerm = t.getSubtermAt(0);
+        int modifiers=modifiersTerm.getSubtermAt(0).getInt();
+//!!TODO: annotations
         if ((modifiers & ModifierSet.FINAL) != 0) {
             out_.print("final ");
         }
