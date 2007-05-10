@@ -17,7 +17,6 @@ import java.util.TreeMap;
 import ua.gradsoft.javachecker.CheckerComment;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.InvalidCheckerCommentException;
-import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.JTerm;
 import ua.gradsoft.termware.Term;

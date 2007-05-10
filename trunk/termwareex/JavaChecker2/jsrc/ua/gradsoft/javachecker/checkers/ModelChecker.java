@@ -70,9 +70,9 @@ public class ModelChecker extends AbstractTypeChecker {
         //openCloseSystem.setDebugEntity("Reductions");
         
         
-        Term ret = termSystem_.reduce(toReduce);
-        if (Main.isDump()) {
-            System.out.println("!!!---!!!");
+          Term ret = termSystem_.reduce(toReduce);
+      
+        if (Main.isDump()) {         
             ret.println(System.out);
         }
     }

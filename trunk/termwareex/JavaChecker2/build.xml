@@ -12,6 +12,7 @@
  <target name="clean">
   <delete>
    <fileset dir="jsrc"   includes="**/*.class" />
+   <fileset dir="jsrc-ann" includes="**/*.class" />
    <fileset dir="jtests" includes="**/*.class" />
   </delete>
  </target>
@@ -36,6 +37,7 @@
    <attribute name="Main-Class" value="ua.gradsoft.javachecker.Main"/>
   </manifest>
   </jar>
+     
  </target>
 
  <target name="build-test-classes"  depends="build-classes">
@@ -123,7 +125,7 @@
    <JavaChecker jchhome="${basedir}" output="jchreport.html" outputFormat="html" prefs="etc/prefs1.xml" debug="false" q="false"  >
     <input dir="jsrc" />
     <classpath>
-			<fileset dir="jlib">
+			<fileset dir="lib">
 				<include name="*.jar" />
 			</fileset>
     </classpath>

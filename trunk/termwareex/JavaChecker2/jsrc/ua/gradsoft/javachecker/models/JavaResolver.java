@@ -1,7 +1,7 @@
 /*
  * JavaResolver.java
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006-2007 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -235,9 +235,9 @@ public class JavaResolver {
     public static JavaTypeModel resolveTypeModelByName(String name, JavaTypeModel where,List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException, TermWareException {
         boolean printDetails=false;
         
-        //if (name.equals("TextDirection")) {
-        //    printDetails=true;
-        //}
+       // if (name.equals("Term")) {
+       //     printDetails=true;
+       // }
         
         if (printDetails) {
             String stv;
@@ -519,9 +519,9 @@ public class JavaResolver {
     public static JavaTypeModel resolveTypeModelByName(String name, JavaUnitModel um, JavaPackageModel pm, List<JavaTypeVariableAbstractModel> typeVariables) throws TermWareException, EntityNotFoundException {
         boolean printDetails=false;
         
-        if (name.equals("T")) {
-            printDetails=true;
-        }
+        //if (name.equals("Term")) {
+        //    printDetails=true;
+        //}
         
         if (printDetails) {
             LOG.log(Level.INFO,"resolveTypeModelByName("+name+","+um.toString()+","+pm.getName()+"), typeVariables="+typeVariables);
@@ -799,12 +799,13 @@ public class JavaResolver {
     
     
     public static JavaTypeModel resolveTypeModelFromPackage(String classShortName,String packageName) throws EntityNotFoundException, TermWareException {
-        //System.out.println("resolveTypeModelFromPackage:"+classShortName+","+packageName);
+       // LOG.info("resolveTypeModelFromPackage:"+classShortName+","+packageName);
         JavaPackageModel packageModel = resolvePackage(packageName);
         return packageModel.findTypeModel(classShortName);
     }
     
     public static JavaTypeModel  resolveTypeModelByFullClassName(String name) throws EntityNotFoundException, TermWareException {
+       // LOG.info("resolveTypeModelByFullClassName:"+name);
         int lastDotIndex=name.lastIndexOf('.');
         if (lastDotIndex!=-1) {
             String packageName = name.substring(0,lastDotIndex);
@@ -1128,9 +1129,9 @@ public class JavaResolver {
     public static JavaMethodModel resolveMethod(String methodName,List<JavaTypeModel> argumentTypes, JavaTypeArgumentsSubstitution substitution,JavaTypeModel where) throws EntityNotFoundException, TermWareException {
         boolean printDetails=false;
         
-        if (methodName.equals("createTerm")) {
-             printDetails=true;
-        }
+     //   if (methodName.equals("createTerm")) {
+     //        printDetails=true;
+     //   }
         
         if (printDetails) {
             StringBuilder sb=new StringBuilder();

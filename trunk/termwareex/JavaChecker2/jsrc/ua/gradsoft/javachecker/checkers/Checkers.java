@@ -9,14 +9,12 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.TreeMap;
-import ua.gradsoft.javachecker.checkers.AbstractChecker;
-import ua.gradsoft.javachecker.checkers.AbstractCompilationUnitChecker;
-import ua.gradsoft.javachecker.checkers.AbstractTypeChecker;
 import ua.gradsoft.javachecker.CheckerComment;
 import ua.gradsoft.javachecker.CheckerType;
 import ua.gradsoft.javachecker.ConfigException;
 import ua.gradsoft.javachecker.JavaFacts;
 import ua.gradsoft.javachecker.Main;
+import ua.gradsoft.javachecker.SourceCodeLocation;
 import ua.gradsoft.javachecker.Violations;
 import ua.gradsoft.javachecker.models.JavaCompilationUnitModel;
 import ua.gradsoft.javachecker.models.JavaTermTypeAbstractModel;
@@ -167,8 +165,12 @@ public class Checkers {
                 if (enabled && ttm!=null) {  
                   try {  
                     checker.run(ttm,astTermHolder,modelTermHolder);
-                  }catch(TermWareException ex){
-                      System.out.println("Exception "+checker.getName()+", class "+ttm.getFullName());
+                  }catch(TermWareException ex){                      
+                      System.out.println("Exception: "+checker.getName()+", during checking type "+ttm.getFullName());
+                      if (ex instanceof SourceCodeLocation) {
+                          SourceCodeLocation scl = (SourceCodeLocation)ex;
+                          System.out.println(scl.getFileAndLine().getFname()+":"+scl.getFileAndLine().getLine());
+                      }
                       ex.printStackTrace();
                   }catch(OutOfMemoryError ex){
                       System.out.println("Out of memory error for check "+checker.getName()+", class "+ttm.getFullName());                            

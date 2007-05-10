@@ -195,7 +195,7 @@ public class JavaTopLevelBlockOwnerModelHelper {
           Term modifiers = fp.getSubtermAt(0);
           Term typeTerm = fp.getSubtermAt(1);
           JavaTypeModel tm = null;
-          try {
+          try {            
              tm = JavaResolver.resolveTypeToModel(typeTerm,executable.getTypeModel(),executable.getTypeParameters());
           }catch(EntityNotFoundException ex){
              ex.setFileAndLine(JUtils.getFileAndLine(fp)); 
