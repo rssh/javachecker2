@@ -13,6 +13,7 @@ import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JavaFacts;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.attributes.JavaTypeModelAttributes;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -173,6 +174,9 @@ public abstract class JavaTypeModel {
     return retval;
   }
   
+  
+  public abstract List<JavaConstructorModel>  getConstructorModels();
+  
   /***
    * key of return values are names of enum constants.
    *When type is not enum - throws NotSupportedException
@@ -232,14 +236,14 @@ public abstract class JavaTypeModel {
    *<code>annotationTypeName</code>, otherwise false
    */
   public boolean hasAnnotation(String annotationTypeName) throws TermWareException
-  { return getAnnotations().containsKey(annotationTypeName); }
+  { return getAnnotationsMap().containsKey(annotationTypeName); }
   
   /**
    *return annottation instance, if one exists. Otherwise - throws NotSupportedException
    */
   public JavaAnnotationInstanceModel  getAnnotation(String annotationName) throws NotSupportedException, TermWareException
   { 
-     JavaAnnotationInstanceModel retval = getAnnotations().get(annotationName);
+     JavaAnnotationInstanceModel retval = getAnnotationsMap().get(annotationName);
      if (retval==null) {
          throw new NotSupportedException();
      }
@@ -247,9 +251,10 @@ public abstract class JavaTypeModel {
   }
  
   /**
-   * get all annotations.
+   * get map of annotations, declared in source code.
    */
-  public abstract Map<String,JavaAnnotationInstanceModel>  getAnnotations() throws TermWareException;
+  public abstract Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap() throws TermWareException;
+   
   
   
   /**

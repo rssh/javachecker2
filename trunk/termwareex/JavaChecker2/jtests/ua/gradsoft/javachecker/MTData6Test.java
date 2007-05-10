@@ -12,7 +12,7 @@ package ua.gradsoft.javachecker;
 import java.util.List;
 import junit.framework.TestCase;
 import ua.gradsoft.javachecker.models.JavaModelConstants;
-import ua.gradsoft.javachecker.models.JavaModifiersModel;
+import ua.gradsoft.javachecker.models.JavaTermModifiersModel;
 import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.termware.Term;
@@ -41,7 +41,7 @@ public class MTData6Test extends TestCase
            Term mt = tm.getModelTerm();
            Term mtSuper = tmSuper.getModelTerm();
            Term modifiers = mt.getSubtermAt(JavaModelConstants.CLASSORINTERFACE_MODEL_MODIFIERS_INDEX);
-           assertTrue("modifiers are public",(JavaModifiersModel.PUBLIC & modifiers.getSubtermAt(0).getInt())!=0);
+           assertTrue("modifiers are public",(JavaTermModifiersModel.PUBLIC & modifiers.getSubtermAt(0).getInt())!=0);
        }
        
        public void testAttributedIndexed() throws Exception

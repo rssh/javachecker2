@@ -9,6 +9,8 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.lang.annotation.ElementType;
+import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.termware.Term;
@@ -21,10 +23,10 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
 {
     
     public JavaTermLocalVariableModel(Term identifierTerm,JavaLocalVariableKind kind, 
-                                      Term typeTerm, 
+                                      Term modifiersTerm, Term typeTerm, 
                                       Term initOrIterateExpressionTerm,
                                       JavaTermExpressionModel initExpression,
-                                      JavaTermStatementModel statement)
+                                      JavaTermStatementModel statement) throws TermWareException
     {
       identifierTerm_=identifierTerm;
       kind_=kind;
@@ -32,6 +34,8 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
       initOrIterateExpressionTerm_=initOrIterateExpressionTerm;
       initExpression_=initExpression;
       statement_=statement;
+      resolvedType_=null;
+      modifiers_=new JavaTermModifiersModel(modifiersTerm,ElementType.LOCAL_VARIABLE,this);
     }
     
     public String getName()
@@ -80,22 +84,37 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
     public Term getInitOrIterateTerm()
     { return initOrIterateExpressionTerm_; }
     
+    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
+    { return modifiers_.getAnnotationsMap(); }
+    
+    public JavaModifiersModel getModifiersModel()
+    { return modifiers_; }
+    
     private JavaTypeModel resolveType() throws TermWareException, EntityNotFoundException
     {
-      try {  
-        return JavaResolver.resolveTypeToModel(typeTerm_,statement_);
-      }catch(EntityNotFoundException ex){
+      if (resolvedType_==null) {  
+        try {  
+          resolvedType_ = JavaResolver.resolveTypeToModel(typeTerm_,statement_);
+        }catch(EntityNotFoundException ex){          
           ex.setFileAndLine(JUtils.getFileAndLine(identifierTerm_));
           throw ex;
+        }
       }
+      return resolvedType_;
     }
+    
+    
+    
     
     private Term identifierTerm_;
     private Term typeTerm_;
+    private Term modifiersTerm_;
     private Term initOrIterateExpressionTerm_;
     private JavaTermExpressionModel initExpression_;
     private JavaLocalVariableKind  kind_;    
     private JavaTermStatementModel statement_;
-    
+
+    private JavaTypeModel resolvedType_;
+    private JavaTermModifiersModel modifiers_;
     
 }

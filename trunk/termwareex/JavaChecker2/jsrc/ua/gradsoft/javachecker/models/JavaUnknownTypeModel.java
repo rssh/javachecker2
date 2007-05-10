@@ -43,7 +43,7 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
         return getShortNameAsTerm();
     }
     
-    public JavaModifiersModel  getModifiersModel()
+    public JavaTermModifiersModel  getModifiersModel()
     { return JavaModelConstants.PUBLIC_MODIFIERS; }
     
     /**
@@ -133,6 +133,9 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     }
     
     
+    public List<JavaConstructorModel>  getConstructorModels()
+    { return Collections.emptyList(); }
+    
     
     public boolean hasMemberVariableModels()
     {
@@ -156,7 +159,7 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     /**
      *@return empty map
      */
-    public Map<String,JavaAnnotationInstanceModel> getAnnotations()
+    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
     { return Collections.emptyMap(); }
     
     

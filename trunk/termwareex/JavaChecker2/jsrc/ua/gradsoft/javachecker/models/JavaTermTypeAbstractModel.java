@@ -33,10 +33,10 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
 {
     
     /** Creates a new instance of JavaTermTypeAbstractModel */
-    public JavaTermTypeAbstractModel(int modifiers, Term t, JavaPackageModel packageModel, JavaUnitModel cuModel) throws TermWareException
+    public JavaTermTypeAbstractModel(Term modifiers, Term t, JavaPackageModel packageModel, JavaUnitModel cuModel) throws TermWareException
     {
         super(packageModel);
-        modifiers_=new JavaModifiersModel(modifiers);
+        modifiers_=new JavaTermModifiersModel(modifiers,ElementType.TYPE,this);
         t_=t;
         t_=TermHelper.setAttribute(t_,"model",new JTerm(this));
         Term commentTerm=TermHelper.getAttribute(t, "comment");
@@ -51,10 +51,9 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
         methodModels_=new TreeMap<String,List<JavaMethodModel> >();
         fieldModels_=new TreeMap<String,JavaMemberVariableModel>();
         nestedTypes_=new TreeMap<String,JavaTypeModel>();
-        constructors_=new LinkedList<JavaTermConstructorModel>();
+        constructors_=new LinkedList<JavaConstructorModel>();
         typeVariables_=new LinkedList<JavaTypeVariableAbstractModel>();
-        initializers_=new LinkedList<JavaTermInitializerModel>();
-        annotations_=new TreeMap<String,JavaAnnotationInstanceModel>();
+        initializers_=new LinkedList<JavaTermInitializerModel>();      
         setUnitModel(cuModel);
     }
     
@@ -100,6 +99,10 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     public Map<String, JavaMemberVariableModel> getMemberVariableModels()
     { return fieldModels_; }
 
+    public List<JavaConstructorModel>  getConstructorModels()
+    { return constructors_; }
+    
+    
     public boolean isNested()
     { return parentType_!=null; }
     
@@ -122,7 +125,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
         parentType_=parentType;
     }
     
-    public JavaModifiersModel getModifiersModel()
+    public JavaTermModifiersModel getModifiersModel()
     { return modifiers_; }
     
     public boolean isArray()
@@ -241,7 +244,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     /**
     * add included class.
     */
-    public void addClassOrInterfaceDeclaration(int modifiers, Term declaration) throws TermWareException
+    public void addClassOrInterfaceDeclaration(Term modifiers, Term declaration) throws TermWareException
     {
       JavaTermClassOrInterfaceModel newModel=new JavaTermClassOrInterfaceModel(modifiers,declaration,this.getPackageModel(),this.getUnitModel());
       newModel.setParentType(this);
@@ -252,7 +255,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     /**
     * add  enum in scope
     */
-    public void addEnumDeclaration(int modifiers, Term declaration)  throws TermWareException
+    public void addEnumDeclaration(Term modifiers, Term declaration)  throws TermWareException
     {
       JavaTermEnumModel newModel=new JavaTermEnumModel(modifiers,declaration,this.getPackageModel(), this.getUnitModel());
       newModel.setParentType(this);
@@ -261,16 +264,16 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     }
 
    /**
-    * add 
+    * add constructor
     */
-    public void addConstructorDeclaration(int modifiers, Term declaration)  throws TermWareException
+    public void addConstructorDeclaration(Term modifiers, Term declaration)  throws TermWareException
     {
       JavaTermConstructorModel m=new JavaTermConstructorModel(modifiers,declaration,this);
       constructors_.add(m);
     }
     
     
-    public void addMethodDeclaration(int modifiers, Term methodDeclaration) throws TermWareException
+    public void addMethodDeclaration(Term modifiers, Term methodDeclaration) throws TermWareException
     {                       
      JavaMethodModel methodModel=new JavaTermMethodModel(modifiers,methodDeclaration,this);
      String methodName=methodModel.getName();
@@ -282,14 +285,14 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
      l.add(methodModel);
     }
 
-    public void addFieldDeclaration(int modifiers, Term fieldDeclaration) throws TermWareException
+    public void addFieldDeclaration(Term modifiers, Term fieldDeclaration) throws TermWareException
     {
       if (!fieldDeclaration.getName().equals("FieldDeclaration")) {
           throw new AssertException("FieldDeclaration expected, have:"+TermHelper.termToString(fieldDeclaration));
       }        
       Term fieldType=fieldDeclaration.getSubtermAt(0);
       Term variableDeclarators=fieldDeclaration.getSubtermAt(1);      
-      while(!variableDeclarators.isNil()) {          
+      while(!variableDeclarators.isNil()) {                    
           JavaTermMemberVariableModel fieldModel=new JavaTermMemberVariableModel(modifiers,fieldType,variableDeclarators.getSubtermAt(0),this);
           fieldModels_.put(fieldModel.getName(),fieldModel);          
           variableDeclarators=variableDeclarators.getSubtermAt(1);
@@ -303,17 +306,6 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
       typeVariables_.add(model);
     }
     
-    /**
-     *add type annotation.
-     */
-    public void addAnnotation(Term annotation) throws TermWareException
-    {
-        JavaTermAnnotationInstanceModel model = new JavaTermAnnotationInstanceModel(ElementType.TYPE,this,annotation);       
-        Term nameTerm = annotation.getSubtermAt(0).getSubtermAt(0);
-        String name = JUtils.getJavaNameLastComponentAsString(nameTerm);
-        annotations_.put(name,model);
-    }
-            
 
     public int getLastLocalTypeIndex()
     { return localTypeIndex_; }
@@ -439,9 +431,9 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     }
     
     
-    public Map<String,JavaAnnotationInstanceModel> getAnnotations()
+    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
     {
-        return annotations_;
+        return modifiers_.getAnnotationsMap();
     }
     
     
@@ -458,15 +450,12 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     protected TreeMap<String, List<JavaMethodModel>> methodModels_;
     protected TreeMap<String, JavaMemberVariableModel> fieldModels_;
     protected List<JavaTermInitializerModel>                  initializers_;
-    protected List<JavaTermConstructorModel>                  constructors_;
+    protected List<JavaConstructorModel>                      constructors_;
     protected List<JavaTypeVariableAbstractModel>             typeVariables_;
     
     protected TreeMap<String,JavaTypeModel>                   nestedTypes_;
-    
-    protected TreeMap<String,JavaAnnotationInstanceModel>   annotations_;
-   
-    
-    private JavaModifiersModel modifiers_;
+               
+    private JavaTermModifiersModel modifiers_;
         
     protected Term   t_;
     protected CheckerComment   checkerComment_ = null;

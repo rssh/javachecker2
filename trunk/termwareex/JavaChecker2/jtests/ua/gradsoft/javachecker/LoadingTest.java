@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.Map;
 import junit.framework.TestCase;
 import ua.gradsoft.javachecker.models.JavaFormalParameterModel;
+import ua.gradsoft.javachecker.models.JavaTermFormalParameterModel;
 import ua.gradsoft.javachecker.models.JavaMemberVariableModel;
 import ua.gradsoft.javachecker.models.JavaMethodModel;
 import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.javachecker.models.JavaTypeVariableAbstractModel;
-import ua.gradsoft.termware.Term;
 
 /**
  *How sources are loading.

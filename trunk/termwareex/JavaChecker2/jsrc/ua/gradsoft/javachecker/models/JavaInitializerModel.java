@@ -8,17 +8,33 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.io.PrintWriter;
+import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermWareException;
+
 /**
  *Model for Java initializer
  * @author Ruslan Shevchenko
  */
-public interface JavaInitializerModel extends JavaTopLevelBlockOwnerModel
+public abstract class JavaInitializerModel implements JavaTopLevelBlockOwnerModel
 {
     
     /**
      * get initializer modifiers.
      */
-    public JavaModifiersModel getModifiers();
+    public abstract JavaTermModifiersModel getModifiers();
     
+    
+    /**
+     *get model term.
+     */
+    public abstract Term getModelTerm() throws TermWareException, EntityNotFoundException;
+    
+    
+    public void printSignature(PrintWriter out)
+    {
+      out.print("{initializer}");  
+    }
     
 }

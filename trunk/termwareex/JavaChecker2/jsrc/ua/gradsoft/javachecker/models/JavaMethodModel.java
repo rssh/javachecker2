@@ -29,7 +29,12 @@ public abstract class JavaMethodModel implements JavaTopLevelBlockOwnerModel
      typeModel_=typeModel;
     }
     
+    /**
+     *get name of method.
+     *@return method name
+     */
     public abstract String getName();    
+    
     
     public abstract JavaModifiersModel getModifiers();
     
@@ -47,60 +52,29 @@ public abstract class JavaMethodModel implements JavaTopLevelBlockOwnerModel
      */
     public abstract List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException, EntityNotFoundException;
     
-    public abstract Map<String,JavaFormalParameterModel>  getFormalParametersMap() throws TermWareException, EntityNotFoundException;
+    /**
+     * get map of formal parameters.
+     */
+    public abstract Map<String, JavaFormalParameterModel>  getFormalParametersMap() throws TermWareException, EntityNotFoundException;
                 
-    public void print(PrintWriter writer) 
+    
+    /**
+     * get Map of annotation.
+     */
+    public abstract Map<String,JavaAnnotationInstanceModel> getAnnotationsMap() throws TermWareException;
+            
+    
+    public void printSignature(PrintWriter out) 
     {
-        List<JavaTypeVariableAbstractModel> tps;
-        boolean wasError=false;
-        try {
-            tps=getTypeParameters();            
-        }catch(TermWareException ex){
-            tps=Collections.emptyList();
-            writer.print("error:"+ex.getMessage());
-            wasError=true;
-        }
-        if (!tps.isEmpty()) {
-            writer.print("<");
-            boolean frs=true;
-            for(JavaTypeVariableAbstractModel tv:tps) {
-                if (!frs) {
-                    writer.print(",");
-                }else{
-                    frs=false;
-                }
-                tv.print(writer);
-                writer.print(">");
-            }
-        }                    
-        writer.print(getName());
-        writer.print("(");
-        boolean frs=true;
-        List<JavaTypeModel> fpts;
-        try {
-            fpts=getFormalParametersTypes();
-        }catch(TermWareException ex){
-            fpts=Collections.emptyList();
-            writer.print("error:"+ex.getMessage());
-        }catch(EntityNotFoundException ex){
-            fpts=Collections.emptyList();                   
-            writer.print("error:"+ex.getMessage());
-        }
-        for(JavaTypeModel tm: fpts) {
-            if (!frs) {
-                writer.print(',');
-            }else{
-                frs=false;
-            }
-            writer.print(tm.getFullName());
-        }
-        writer.print(")");        
+        JavaTopLevelBlockOwnerModelHelper.printTypeParametersSignature(out,this);
+        out.print(getName());
+        JavaTopLevelBlockOwnerModelHelper.printFormalParametersSignature(out,this);
     }
     
     public void print(PrintStream out) 
     {
         PrintWriter writer = new PrintWriter(out);
-        print(writer);
+        printSignature(writer);
         writer.flush();
  //       writer.close();
     }

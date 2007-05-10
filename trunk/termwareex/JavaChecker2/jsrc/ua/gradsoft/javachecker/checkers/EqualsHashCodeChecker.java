@@ -11,6 +11,7 @@ import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JavaFacts;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.javachecker.models.JavaFormalParameterModel;
+import ua.gradsoft.javachecker.models.JavaTermFormalParameterModel;
 import ua.gradsoft.javachecker.models.JavaMethodModel;
 import ua.gradsoft.javachecker.models.JavaTermTypeAbstractModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;

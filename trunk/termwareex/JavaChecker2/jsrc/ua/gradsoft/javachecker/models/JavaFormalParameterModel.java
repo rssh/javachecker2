@@ -1,56 +1,46 @@
 /*
  * JavaFormalParameterModel.java
  *
+ * Created on May 3, 2007, 2:20 PM
  *
- * Copyright (c) 2006 GradSoft  Ukraine
- * All Rights Reserved
+ * To change this template, choose Tools | Template Manager
+ * and open the template in the editor.
  */
-
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Map;
+import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.termware.TermWareException;
+
 /**
- *Model for Java Formal Parameter
- * @author Ruslan Shevchenko
+ *Model for formal parameter
+ * @author rssh
  */
-public class JavaFormalParameterModel implements JavaVariableModel
+public abstract class JavaFormalParameterModel implements JavaVariableModel
 {
     
-    public JavaFormalParameterModel(int modifiers, String name, JavaTypeModel typeModel, JavaTopLevelBlockOwnerModel owner, int index)
-    {
-      modifiers_=new JavaModifiersModel(modifiers);
-      name_=name;
-      typeModel_=typeModel;
-      owner_=owner;
-      index_=index;
-    }
+    public abstract JavaModifiersModel getModifiersModel();
     
-    public JavaModifiersModel getModifiers()
-    { return modifiers_; }
     
-    public String getName()
-    { return name_; }
+    public abstract String getName();
+  
     
     public JavaVariableKind getKind()
     { return JavaVariableKind.FORMAL_PARAMETER; }
     
-    public JavaTypeModel getTypeModel()
-    { return typeModel_; }
+    public abstract JavaTypeModel getTypeModel() throws TermWareException, EntityNotFoundException;
+               
+    public abstract JavaTopLevelBlockOwnerModel  getOwner();
+  
         
-    
-    public JavaTopLevelBlockOwnerModel  getOwner()
-    { return owner_; }
+    public abstract Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap();
+
     
     /**
      *@return index of this formal parameters in call, started from 0
      */
-    public int getIndex()
-    { return index_; }
+    public abstract int getIndex();
     
-    private JavaModifiersModel  modifiers_;
-    private String name_;
-    private JavaTypeModel   typeModel_;
-    private JavaTopLevelBlockOwnerModel owner_;
-    private int index_;
     
 }

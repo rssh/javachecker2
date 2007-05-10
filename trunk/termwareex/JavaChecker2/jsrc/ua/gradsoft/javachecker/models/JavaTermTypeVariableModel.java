@@ -53,7 +53,7 @@ public class JavaTermTypeVariableModel extends JavaTypeVariableAbstractModel
         }
     }
     
-    public JavaModifiersModel getModifiersModel()
+    public JavaTermModifiersModel getModifiersModel()
     {
       return JavaModelConstants.PUBLIC_MODIFIERS; 
     }

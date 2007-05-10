@@ -1,13 +1,15 @@
 /*
  * JavaClassMethodModel.java
  *
- * Copyright (c) 2004-2005 GradSoft  Ukraine
+ * Copyright (c) 2004-2007 GradSoft  Ukraine
  * All Rights Reserved
  */
 
 
 package ua.gradsoft.javachecker.models;
 
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -16,15 +18,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Logger;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.util.Function;
+import ua.gradsoft.javachecker.util.ImmutableMappedList;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *Model class, which based on reflection mechanizm
  * @author Ruslan Shevchenko
  */
-public class JavaClassMethodModel extends JavaMethodModel
+public class JavaClassMethodModel extends JavaMethodModel implements JavaClassTopLevelBlockOwnerModel
 {
     
     /** Creates a new instance of JavaClassMethodModel */
@@ -39,9 +46,14 @@ public class JavaClassMethodModel extends JavaMethodModel
         return method_.getName();
     }
     
-    public JavaModifiersModel getModifiers()
+    public JavaClassTypeModel  getClassTypeModel()
     {
-      return new JavaModifiersModel(JavaClassTypeModel.translateModifiers(method_.getModifiers()));       
+        return (JavaClassTypeModel)getTypeModel();
+    }
+    
+    public JavaTermModifiersModel getModifiers()
+    {
+      return new JavaTermModifiersModel(JavaClassTypeModel.translateModifiers(method_.getModifiers()));       
     }
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters()
@@ -62,17 +74,38 @@ public class JavaClassMethodModel extends JavaMethodModel
     
     public List<JavaTypeModel>  getFormalParametersTypes() throws TermWareException
     {
-        List<JavaTypeModel> retval = new LinkedList<JavaTypeModel>();
-        Type[] parameterTypes=method_.getGenericParameterTypes();
-        for(int i=0; i<parameterTypes.length; ++i) {
-            JavaTypeModel c = JavaClassTypeModel.createTypeModel(parameterTypes[i]);
-            retval.add(c);
-        }
-        return retval;
-    }            
+      return new ImmutableMappedList<JavaFormalParameterModel,JavaTypeModel>(
+              getFormalParametersList(),
+              new Function<JavaFormalParameterModel,JavaTypeModel>() {
+          public JavaTypeModel function(JavaFormalParameterModel x) throws TermWareException {              
+              try{
+                return x.getTypeModel();              
+              }catch(EntityNotFoundException ex){
+                  throw new AssertException(ex.getMessage(),ex);
+              }
+          }
+      }
+              );
+    }
     
+    public boolean isVarArgs()
+    {
+      return method_.isVarArgs();   
+    }
+    
+    public Type[] getClassFormalParameterTypes()
+    { return method_.getGenericParameterTypes(); }
+    
+            
     public List<JavaFormalParameterModel> getFormalParametersList()throws TermWareException
     {
+        boolean debug=false;
+//        if (method_.getName().equals("createTerm")) {
+//            debug=true;
+//        }
+        if (debug) {
+            LOG.info("getFormalParametersList for "+method_.getName());
+        }
         Type[] parameterTypes=method_.getGenericParameterTypes();
         List<JavaFormalParameterModel> retval = new ArrayList<JavaFormalParameterModel>(parameterTypes.length);
         for(int i=0; i<parameterTypes.length; ++i) {
@@ -80,29 +113,73 @@ public class JavaClassMethodModel extends JavaMethodModel
             JavaTypeModel c = JavaClassTypeModel.createTypeModel(parameterTypes[i]);
             int parameterModifiers=0;
             if (i==parameterTypes.length-1) {
-                if (method_.isVarArgs()) {
-                    parameterModifiers |= JavaModifiersModel.VARARGS;
+                if (method_.isVarArgs()) {                    
+                    parameterModifiers |= JavaTermModifiersModel.VARARGS;
+                    c=new JavaArrayTypeModel(c);
+                    if (debug) {
+                        LOG.info("varargs for "+i+", nowc="+c.getName());
+                    }
+                }else{
+                    if (debug) {
+                        LOG.info("not varargs, c="+c.getName());
+                    }
                 }
             }
-            retval.add(new JavaFormalParameterModel(parameterModifiers,name,c,this,i));
+            retval.add(new JavaClassFormalParameterModel(name,new JavaClassModifiersModel(parameterModifiers),c,this,i));
         }
         return retval;
     }
     
     
-    public Map<String,JavaFormalParameterModel> getFormalParametersMap() throws TermWareException
+    public Map<String, JavaFormalParameterModel> getFormalParametersMap() throws TermWareException
     {
+        boolean debug=false;
+   //     if (method_.getName().equals("createTerm")) {
+   //         debug=true;
+   //     }
+        if (debug) {
+            LOG.info("getFormalParametersList for "+method_.getName());
+        }        
        Map<String,JavaFormalParameterModel> retval = new TreeMap<String,JavaFormalParameterModel>(); 
        Type[] parameterTypes=method_.getGenericParameterTypes();
        for(int i=0; i<parameterTypes.length; ++i){
            String name="fp"+i;
            JavaTypeModel c = JavaClassTypeModel.createTypeModel(parameterTypes[i]);
-           retval.put(name,new JavaFormalParameterModel(0,name,c,this,i));
+           int parameterModifiers=0;
+           if (i==parameterTypes.length-1) {
+               if (method_.isVarArgs()) {
+                   parameterModifiers |= JavaTermModifiersModel.VARARGS;
+                   c=new JavaArrayTypeModel(c);
+                    if (debug) {
+                        LOG.info("varargs for "+i+", nowc="+c.getName());
+                    }                   
+               }else{
+                    if (debug) {
+                        LOG.info("not varargs, c="+c.getName());
+                    }                   
+               }
+           }
+           retval.put(name,new JavaClassFormalParameterModel(name,new JavaClassModifiersModel(parameterModifiers),c,this,i));
        }
        return retval;
     }
  
+    public Map<String, JavaAnnotationInstanceModel> getAnnotationsMap()
+    {
+        TreeMap<String,JavaAnnotationInstanceModel> retval = new TreeMap<String,JavaAnnotationInstanceModel>();
+        Annotation[] cas = method_.getAnnotations();
+        for(int i=0; i<cas.length; ++i) {
+            String name = cas[i].annotationType().getSimpleName();
+            JavaAnnotationInstanceModel an = new JavaClassAnnotationInstanceModel(ElementType.METHOD,cas[i],this);
+            retval.put(name,an);
+        }
+        return retval;
+    }
     
+     /**
+      *Class terms does not supports block model, so return false.
+      *@return false
+      */
      public boolean         isSupportBlockModel()
      { return false; }
     
@@ -119,9 +196,10 @@ public class JavaClassMethodModel extends JavaMethodModel
     public JavaTopLevelBlockModel  getTopLevelBlockModel() throws NotSupportedException
     { throw new NotSupportedException(); }
 
-    
+    public  Annotation[][] getParameterAnnotations()
+    { return method_.getParameterAnnotations(); }
     
     private Method   method_;
     
-    
+    private final Logger LOG = Logger.getLogger(JavaClassMethodModel.class.getName());
 }

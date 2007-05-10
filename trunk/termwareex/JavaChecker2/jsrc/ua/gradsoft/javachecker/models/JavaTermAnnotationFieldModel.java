@@ -8,11 +8,9 @@
 
 package ua.gradsoft.javachecker.models;
 
-import java.util.Collections;
-import java.util.List;
+import java.lang.annotation.ElementType;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
-import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -26,10 +24,10 @@ public class JavaTermAnnotationFieldModel extends JavaMemberVariableModel
     /**
      * Creates a new instance of JavaMethodModel
      */
-    public JavaTermAnnotationFieldModel(JavaTypeModel typeModel, int modifiers, Term typeTerm, Term identifierTerm, Term defaultValueTerm) 
+    public JavaTermAnnotationFieldModel(JavaTypeModel typeModel, Term modifiers, Term typeTerm, Term identifierTerm, Term defaultValueTerm) throws TermWareException
     {
       owner_=typeModel;
-      modifiersModel_ = new JavaModifiersModel(modifiers);
+      modifiersModel_ = new JavaTermModifiersModel(modifiers,ElementType.FIELD,this);
       typeTerm_=typeTerm;
       identifierTerm_=identifierTerm;
       defaultValueTerm_=defaultValueTerm;      
@@ -37,10 +35,11 @@ public class JavaTermAnnotationFieldModel extends JavaMemberVariableModel
     
     public String getName()
     {
+       
       return identifierTerm_.getSubtermAt(0).getString();  
     }
     
-    public JavaModifiersModel getModifiersModel()
+    public JavaTermModifiersModel getModifiersModel()
     {
       return modifiersModel_;  
     }
@@ -63,6 +62,8 @@ public class JavaTermAnnotationFieldModel extends JavaMemberVariableModel
     }
     
 
+    public Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap()
+    { return modifiersModel_.getAnnotationsMap(); }
     
     
     /**
@@ -85,7 +86,7 @@ public class JavaTermAnnotationFieldModel extends JavaMemberVariableModel
     }
     
     private JavaTypeModel   owner_;
-    private JavaModifiersModel modifiersModel_;
+    private JavaTermModifiersModel modifiersModel_;
     private Term typeTerm_;
     private JavaTypeModel resolvedType_=null;
     private Term identifierTerm_;

@@ -35,7 +35,7 @@ public class JavaClassTypeVariableModel extends JavaTypeVariableAbstractModel
       return typeVariable_.getName();  
     }
     
-    public JavaModifiersModel  getModifiersModel()
+    public JavaTermModifiersModel  getModifiersModel()
     {
       return JavaModelConstants.PUBLIC_MODIFIERS;  
     }
@@ -62,7 +62,7 @@ public class JavaClassTypeVariableModel extends JavaTypeVariableAbstractModel
         return typeParameter;
     }
 
-    public  Map<String,JavaAnnotationInstanceModel>  getAnnotations()
+    public  Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap()
     { return Collections.emptyMap(); }
     
     private TypeVariable<?> typeVariable_;

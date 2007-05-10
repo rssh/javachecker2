@@ -6,6 +6,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.lang.annotation.ElementType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     /**
      * Creates a new instance of JavaMethodModel
      */
-    public JavaTermMethodModel(int modifiers, Term t, JavaTermTypeAbstractModel owner) throws TermWareException
+    public JavaTermMethodModel(Term modifiers, Term t, JavaTermTypeAbstractModel owner) throws TermWareException
     {
         super(owner);
         t_=t;
@@ -40,7 +41,7 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
         }else{
             throw new AssertException("term must be MethodDeclaration:"+TermHelper.termToString(t));
         }        
-        modifiers_=new JavaModifiersModel(modifiers);
+        modifiers_=new JavaTermModifiersModel(modifiers,ElementType.METHOD,this);
         Term blockTerm = t.getSubtermAt(BLOCK_INDEX);        
         blockModel_= (blockTerm.isNil() ? null : new JavaTermTopLevelBlockModel(this,blockTerm.getSubtermAt(0)));
     }
@@ -52,7 +53,7 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     public  Term getTerm()
     { return t_; }
     
-    public JavaModifiersModel getModifiers()
+    public JavaTermModifiersModel getModifiers()
     { return modifiers_; }
     
     public JavaTypeModel getResultType() throws TermWareException
@@ -82,16 +83,16 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     {      
       if (formalParametersList_==null) {
         Term formalParametersTerm = getFormalParametersTerm();
-        formalParametersList_ = TermUtils.buildFormalParametersList(formalParametersTerm,this);
+        formalParametersList_ = JavaTopLevelBlockOwnerModelHelper.buildFormalParametersList(formalParametersTerm,this);
       }
       return formalParametersList_;
     }                
         
-    public Map<String,JavaFormalParameterModel> getFormalParametersMap() throws TermWareException, EntityNotFoundException
+    public Map<String, JavaFormalParameterModel> getFormalParametersMap() throws TermWareException, EntityNotFoundException
     {      
       if (formalParametersMap_==null) {
         Term formalParametersTerm = getFormalParametersTerm();
-        formalParametersMap_ = TermUtils.buildFormalParametersMap(formalParametersTerm,this);
+        formalParametersMap_ = JavaTopLevelBlockOwnerModelHelper.buildFormalParametersMap(formalParametersTerm,this);
       }
       return formalParametersMap_;
     }        
@@ -100,7 +101,7 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     {
       Map<String,JavaFormalParameterModel> fps=getFormalParametersMap();
       JavaTypeModel[] retval = new JavaTypeModel[fps.size()];
-      for(Map.Entry<String,JavaFormalParameterModel> e:fps.entrySet())
+      for(Map.Entry<String, JavaFormalParameterModel> e:fps.entrySet())
       {
           retval[e.getValue().getIndex()]=e.getValue().getTypeModel();
       }
@@ -110,7 +111,7 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException
     {
         Term tpt = t_.getSubtermAt(TYPE_PARAMETERS_TERM_INDEX);
-        return TermUtils.buildTypeParameters(tpt,getTypeModel());
+        return JavaTopLevelBlockOwnerModelHelper.buildTypeParameters(tpt,getTypeModel());
     }
     
     public  Term  getMethodBody() throws TermWareException
@@ -120,6 +121,9 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     public JavaTermTypeAbstractModel getTermTypeAbstractModel()
     { return (JavaTermTypeAbstractModel)getTypeModel();  }
     
+    
+    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
+    { return modifiers_.getAnnotationsMap(); }
     
     public boolean isSupportBlockModel()
     { return true; }
@@ -158,10 +162,10 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     private String methodName_;
     private Term t_; 
     private JavaTermTopLevelBlockModel blockModel_ =null;    
-    private JavaModifiersModel   modifiers_=null;    
+    private JavaTermModifiersModel   modifiers_=null;    
     
     // some cashed valuse
-    private Map<String,JavaFormalParameterModel> formalParametersMap_=null;
+    private Map<String, JavaFormalParameterModel> formalParametersMap_=null;
     private List<JavaFormalParameterModel>       formalParametersList_=null;
     
     public static final int TYPE_PARAMETERS_TERM_INDEX=0;

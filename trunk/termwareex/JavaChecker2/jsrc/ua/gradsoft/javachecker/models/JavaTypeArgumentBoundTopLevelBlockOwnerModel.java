@@ -5,6 +5,8 @@
 
 package ua.gradsoft.javachecker.models;
 
+import ua.gradsoft.termware.TermWareException;
+
 /**
  *Interface for top level block owner, bound with type variables
  * @author Ruslan Shevchenko
@@ -12,6 +14,10 @@ package ua.gradsoft.javachecker.models;
 public interface JavaTypeArgumentBoundTopLevelBlockOwnerModel extends JavaTopLevelBlockOwnerModel
 {
     
-    //public JavaArgumentBoundTypeModel getArgumentBoundTypeModel();
+    public JavaTopLevelBlockOwnerModel getOrigin();
+    
+    public JavaTypeArgumentsSubstitution getSubstitution() throws TermWareException;
+    
+    public JavaTypeArgumentBoundTypeModel getTypeArgumentBoundTypeModel() throws TermWareException;
     
 }

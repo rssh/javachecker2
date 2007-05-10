@@ -44,7 +44,7 @@ public class JavaTermEnumAnonimousTypeModel extends JavaTermTypeAbstractModel
     
     public JavaTermEnumAnonimousTypeModel(String constantName,Term body,JavaTermEnumModel owner) throws TermWareException
     {
-      super(0,body,owner.getPackageModel(),owner.getUnitModel());  
+      super(TermUtils.createTerm("Modifiers",TermUtils.createInt(0),TermUtils.createNil()),body,owner.getPackageModel(),owner.getUnitModel());  
       constantName_=constantName;        
       fillModels(body);
       superClassTerm_ = owner.getShortNameAsTerm();
@@ -91,7 +91,7 @@ public class JavaTermEnumAnonimousTypeModel extends JavaTermTypeAbstractModel
                     if (st.getName().equals("Initializer")) {
                         addInitializer(st);
                     }else{
-                        int modifiers=declaration.getSubtermAt(0).getSubtermAt(0).getInt();
+                        Term modifiers=declaration.getSubtermAt(0);
                         declaration=declaration.getSubtermAt(1);
                         if (declaration.getName().equals("ClassOrInterfaceDeclaration")) {
                             addClassOrInterfaceDeclaration(modifiers,declaration);

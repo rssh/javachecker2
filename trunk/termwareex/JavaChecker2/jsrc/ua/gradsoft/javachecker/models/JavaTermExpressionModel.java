@@ -348,7 +348,7 @@ public abstract class JavaTermExpressionModel implements JavaExpressionModel
           }  
       }else if(t.getName().equals("Annotation")){
           if (enclosedAnnotation!=null) {
-              JavaAnnotationInstanceModel instanceModel = new JavaTermAnnotationInstanceModel(ElementType.ANNOTATION_TYPE,enclosedType,t);
+              JavaAnnotationInstanceModel instanceModel = new JavaTermAnnotationInstanceModel(t,ElementType.ANNOTATION_TYPE,enclosedType);
               return new JavaTermAnnotationExpressionModel(t,instanceModel,enclosedType,enclosedAnnotation);
           }else{
               throw new InvalidJavaTermException("Annotation expression allowed only inside annotation",t);

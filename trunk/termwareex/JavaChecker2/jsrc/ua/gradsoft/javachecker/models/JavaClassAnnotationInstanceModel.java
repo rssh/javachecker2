@@ -23,10 +23,11 @@ public class JavaClassAnnotationInstanceModel extends JavaAnnotationInstanceMode
 {
     
     /** Creates a new instance of JavaClassAnnotationInstanceModel */
-    public JavaClassAnnotationInstanceModel(ElementType et, Annotation a, JavaClassTypeModel tm) {
-        super(et,tm);
+    public JavaClassAnnotationInstanceModel(ElementType et, Annotation a, Object o) {
+        super(et,o);
         annotation_=a;
     }
+    
     
     public JavaTypeModel  getAnnotationModel() throws TermWareException
     {

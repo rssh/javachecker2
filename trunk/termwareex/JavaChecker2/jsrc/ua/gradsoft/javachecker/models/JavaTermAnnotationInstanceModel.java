@@ -22,10 +22,10 @@ import ua.gradsoft.termware.exceptions.AssertException;
 public class JavaTermAnnotationInstanceModel extends JavaAnnotationInstanceModel {
     
     /** Creates a new instance of JavaTermAnnotationInstanceModel */
-    public JavaTermAnnotationInstanceModel(ElementType elementType,JavaTypeModel typeTarget,Term t)  throws TermWareException
+    public JavaTermAnnotationInstanceModel(Term t, ElementType elementType, Object target)  throws TermWareException
     {
-        super(elementType,typeTarget);
-        build(t,typeTarget);
+        super(elementType,target);
+        build(t,target);
     }
     
     
@@ -69,7 +69,7 @@ public class JavaTermAnnotationInstanceModel extends JavaAnnotationInstanceModel
                 break;
                 case PARAMETER:
                 {
-                    JavaFormalParameterModel fm = (JavaFormalParameterModel)target_;
+                    JavaTermFormalParameterModel fm = (JavaTermFormalParameterModel)target_;
                     annotationType_=JavaResolver.resolveTypeToModel(nameTerm_,fm.getOwner().getTypeModel(),fm.getOwner().getTypeParameters());
                 }
                 break;
@@ -129,17 +129,20 @@ public class JavaTermAnnotationInstanceModel extends JavaAnnotationInstanceModel
         return retval;
     }
     
-    private void build(Term t, JavaTypeModel tm) throws TermWareException
+    public Term getNameTerm()
+    { return nameTerm_; }
+    
+    private void build(Term t, Object target) throws TermWareException
     {
         values_=new TreeMap<String,JavaExpressionModel>();
         if (t.getName().equals("Annotation")) {
             Term t0 = t.getSubtermAt(0);
             if (t0.getName().equals("NormalAnnotation")) {
-                buildNormalAnnotation(t0,tm);
+                buildNormalAnnotation(t0,target);
             }else if (t0.getName().equals("SingleMemberAnnotation")) {
-                buildSingleMemberAnnotation(t0,tm);
+                buildSingleMemberAnnotation(t0,target);
             }else if (t0.getName().equals("MarkerAnnotation")){
-                buildMarkerAnnotation(t0,tm);
+                buildMarkerAnnotation(t0,target);
             }else{
                 throw new InvalidJavaTermException("Invalid annotation type",t);
             }
@@ -150,7 +153,7 @@ public class JavaTermAnnotationInstanceModel extends JavaAnnotationInstanceModel
     }
     
     
-    private void buildNormalAnnotation(Term t, JavaTypeModel tm) throws TermWareException
+    private void buildNormalAnnotation(Term t, Object target) throws TermWareException
     {
         kind_ = JavaAnnotationKind.NORMAL;
         nameTerm_ = t.getSubtermAt(0);
@@ -162,24 +165,81 @@ public class JavaTermAnnotationInstanceModel extends JavaAnnotationInstanceModel
                 l = l.getSubtermAt(1);
                 Term identifier = pair.getSubtermAt(0);
                 String name = identifier.getSubtermAt(0).getString();
-                Term expressionTerm = pair.getSubtermAt(1);
+                Term memberValueTerm = pair.getSubtermAt(1);
+                Term expressionTerm = memberValueTerm.getSubtermAt(0);
+                JavaTypeModel tm = getTargetTypeModel(target);
                 JavaTermExpressionModel expr = createExpressionModel(expressionTerm,tm,name);
                 values_.put(name,expr);
             }
         }
     }
     
-    private void buildSingleMemberAnnotation(Term t, JavaTypeModel tm) throws TermWareException
+    private void buildSingleMemberAnnotation(Term t, Object target) throws TermWareException
     {
-        kind_=JavaAnnotationKind.SINGLE_MEMBER;     
+        kind_=JavaAnnotationKind.SINGLE_MEMBER;   
+        nameTerm_ = t.getSubtermAt(0);
         Term exprTerm = t.getSubtermAt(0);
+        JavaTypeModel tm = getTargetTypeModel(target);
         JavaExpressionModel expr = createExpressionModel(exprTerm,tm,"value");
         values_.put("value",expr);
     }
     
-    private void buildMarkerAnnotation(Term t, JavaTypeModel tm) {
+    private void buildMarkerAnnotation(Term t, Object target) {
         kind_=JavaAnnotationKind.MARKER;
         nameTerm_=t.getSubtermAt(0);
+    }
+    
+    private JavaTypeModel  getTargetTypeModel(Object target) throws AssertException
+    {
+       JavaTypeModel retval=null; 
+       switch(elementType_) {
+           case ANNOTATION_TYPE:
+               retval = (JavaTypeModel)target;
+               break;
+           case CONSTRUCTOR:
+           {
+               JavaConstructorModel constructor = (JavaConstructorModel)target;
+               retval=constructor.getTypeModel();
+           }
+           break;
+           case FIELD: 
+           {
+               JavaMemberVariableModel field = (JavaMemberVariableModel)target;
+               retval = field.getOwner();
+           }
+           break;
+           case LOCAL_VARIABLE:
+           {
+               JavaLocalVariableModel v = (JavaLocalVariableModel)target;
+               retval=v.getStatement().getTopLevelBlockModel().getOwnerModel().getTypeModel();
+           }
+           break;
+           case METHOD:
+           {
+               JavaMethodModel m = (JavaMethodModel)target;
+               retval=m.getTypeModel();
+           }
+           break;
+           case PACKAGE:
+           {
+               retval=null;           
+           }
+           break;
+           case PARAMETER:
+           {
+               JavaTermFormalParameterModel fpm = (JavaTermFormalParameterModel)target;
+               retval = fpm.getOwner().getTypeModel();
+           }
+           break;
+           case TYPE:
+           {
+               retval=(JavaTypeModel)target;
+           }
+           break;
+           default:
+              throw new AssertException("Invalid ElementType:"+elementType_);    
+       }
+       return retval;
     }
     
     private JavaTermExpressionModel  createExpressionModel(Term t, JavaTypeModel tm, String elementName) throws TermWareException

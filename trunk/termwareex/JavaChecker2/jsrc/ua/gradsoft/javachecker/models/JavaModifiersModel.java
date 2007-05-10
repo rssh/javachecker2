@@ -1,140 +1,102 @@
 /*
  * JavaModifiersModel.java
  *
- * Copyright (c) 2006 GradSoft  Ukraine
- * All Rights Reserved
+ * Created on May 3, 2007, 2:04 PM
+ *
+ * To change this template, choose Tools | Template Manager
+ * and open the template in the editor.
  */
-
 
 package ua.gradsoft.javachecker.models;
 
-import java.util.TreeMap;
-import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
  *Model for Java Modifiers
- * @author Ruslan Shevchenko
+ * @author rssh
  */
-public class JavaModifiersModel {
+public abstract class JavaModifiersModel 
+{
     
-    public JavaModifiersModel(int modifiers)
-    {
-        modifiers_=modifiers;
-    }
+    public static final int ABSTRACT = 8;
+
+    public static final int FINAL = 32;
+
+    public static final int NATIVE = 128;
+
+    public static final int PRIVATE = 4;
+
+    public static final int PROTECTED = 2;
+
+
+    public static final int PUBLIC = 1;
+
+    public static final int STATIC = 16;
+
+    public static final int STRICTFP = 4096;
+
+    public static final int SYNCHRONIZED = 64;
+
+    public static final int TRANSIENT = 256;
+
+    public static final int VARARGS = 8192;
+
+    public static final int VOLATILE = 512;
+
+    /**
+     * 
+     * 
+     * @return internal int value
+     */
+    public abstract int getIntValue();
+
+    /*
+     * A set of accessors that indicate whether the specified modifier
+     *         is in the set.
+     */
     
-    public JavaModifiersModel()
-    {
-        modifiers_=0;
-    }
+    
+    public boolean isAbstract()
+    { return (getIntValue() & ABSTRACT)!=0; }
 
-     public static final int PUBLIC = 0x0001;
-     public static final int PROTECTED = 0x0002;
-     public static final int PRIVATE = 0x0004;
-     public static final int ABSTRACT = 0x0008;
-     public static final int STATIC = 0x0010;
-     public static final int FINAL = 0x0020;
-     public static final int SYNCHRONIZED = 0x0040;
-     public static final int NATIVE = 0x0080;
-     public static final int TRANSIENT = 0x0100;
-     public static final int VOLATILE = 0x0200;
-     public static final int STRICTFP = 0x1000;
-     public static final int VARARGS = 0x2000;
+    public boolean isFinal()
+    { return (getIntValue() & FINAL)!=0; }
 
-     /** A set of accessors that indicate whether the specified modifier
-         is in the set. */
+    public boolean isNative()
+    { return (getIntValue() & NATIVE)!=0; }
 
-     public boolean isPublic()
-     {
-       return (modifiers_ & PUBLIC) != 0;
-     }
+    public boolean isPrivate()
+    { return (getIntValue() & PRIVATE)!=0; }
 
-     public boolean isProtected()
-     {
-       return (modifiers_ & PROTECTED) != 0;
-     }
+    public boolean isProtected()
+    { return (getIntValue() & PROTECTED)!=0; }
 
-     public boolean isPrivate()
-     {
-       return (modifiers_ & PRIVATE) != 0;
-     }
+    public boolean isPublic()
+    { return (getIntValue() & PUBLIC)!=0; }
+    
+    public boolean isStatic()
+    { return (getIntValue() & STATIC)!=0; }
+    
 
-     public boolean isStatic()
-     {
-       return (modifiers_ & STATIC) != 0;
-     }
+    public boolean isStrictfp()
+    { return (getIntValue() & STRICTFP)!=0; }
+    
+    public boolean isSynchronized()
+    { return (getIntValue() & SYNCHRONIZED)!=0; }
 
-     public boolean isAbstract()
-     {
-       return (modifiers_ & ABSTRACT) != 0;
-     }
+    public boolean isTransient()
+    { return (getIntValue() & TRANSIENT)!=0; }
 
-     public boolean isFinal()
-     {
-       return (modifiers_ & FINAL) != 0;
-     }
+    public boolean isVarArgs()
+    { return (getIntValue() & VARARGS)!=0; }
 
-     public boolean isNative()
-     {
-       return (modifiers_ & NATIVE) != 0;
-     }
-
-     public boolean isStrictfp()
-     {
-       return (modifiers_ & STRICTFP) != 0;
-     }
-
-     public boolean isSynchronized()
-     {
-       return (modifiers_ & SYNCHRONIZED) != 0;
-     }
-
-     public boolean isTransient()
-      {
-       return (modifiers_ & TRANSIENT) != 0;
-     }
-
-     public boolean isVolatile()
-     {
-       return (modifiers_ & VOLATILE) != 0;
-     }
-
-     public boolean isVarArgs()
-     {
-       return (modifiers_ & VARARGS) != 0;  
-     }
-     
-     /**
-      * Removes the given modifier.
-      */
-      void removeModifier(int mod)
-     {
-        modifiers_ = ( modifiers_ & ~mod );
-     }
-   
-
-      /**
-       *@return internal int value
-       */
-     public int getIntValue()
-     { return modifiers_; }
+    public boolean isVolatile()
+    { return (getIntValue() & VOLATILE)!=0; }
     
      public  Term getModelTerm() throws TermWareException
      {
-         return TermUtils.createTerm("Modifiers",TermUtils.createInt(modifiers_));
+         return TermUtils.createTerm("Modifiers",TermUtils.createInt(getIntValue()));
      }
-     
-     public void  addAnnotation(JavaAnnotationInstanceModel annotation) throws TermWareException, EntityNotFoundException
-     {
-         if (annotations_==null) {
-             annotations_ = new TreeMap<String,JavaAnnotationInstanceModel>();
-         }
-         String name = annotation.getAnnotationModel().getName();
-         annotations_.put(name,annotation);
-     }
-     
-    private int modifiers_;
-    private TreeMap<String,JavaAnnotationInstanceModel> annotations_;
     
 }

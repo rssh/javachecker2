@@ -6,9 +6,12 @@
  */
 package ua.gradsoft.javachecker.models;
 
+import java.lang.annotation.ElementType;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -16,16 +19,16 @@ import ua.gradsoft.termware.TermWareException;
  *Constructor for term.
  * @author Ruslan Shevchenko
  */
-public class JavaTermConstructorModel implements JavaConstructorModel, JavaTermTopLevelBlockOwnerModel
+public class JavaTermConstructorModel extends JavaConstructorModel implements JavaTermTopLevelBlockOwnerModel
 {
     
     /** Creates a new instance of JavaTermConstructorModel */
-    public JavaTermConstructorModel(int modifiers,Term constructor,JavaTermTypeAbstractModel owner) throws TermWareException
+    public JavaTermConstructorModel(Term modifiers,Term constructor,JavaTermTypeAbstractModel owner) throws TermWareException
     {
-        modifiers_=new JavaModifiersModel(modifiers);
+        modifiers_=new JavaTermModifiersModel(modifiers,ElementType.CONSTRUCTOR,this);
         t_=constructor;
-        owner_=owner;
-        build(constructor);
+        owner_=owner;        
+        build(constructor);             
     }
     
     public String getName()
@@ -43,20 +46,20 @@ public class JavaTermConstructorModel implements JavaConstructorModel, JavaTermT
    public List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException
    {
     Term tpt = t_.getSubtermAt(TYPE_PARAMETERS_TERM_INDEX);
-    return TermUtils.buildTypeParameters(tpt,getTypeModel());
+    return JavaTopLevelBlockOwnerModelHelper.buildTypeParameters(tpt,getTypeModel());
    }
 
     public List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException, EntityNotFoundException
     {    
         Term formalParametersList = t_.getSubtermAt(FORMAL_PARAMETERS_TERM_INDEX).getSubtermAt(0);  
-        return TermUtils.buildFormalParametersList(formalParametersList,this);     
+        return JavaTopLevelBlockOwnerModelHelper.buildFormalParametersList(formalParametersList,this);     
     }
    
    
-    public Map<String,JavaFormalParameterModel> getFormalParametersMap() throws TermWareException, EntityNotFoundException
+    public Map<String, JavaFormalParameterModel> getFormalParametersMap() throws TermWareException, EntityNotFoundException
     {
         Term formalParametersList = t_.getSubtermAt(FORMAL_PARAMETERS_TERM_INDEX).getSubtermAt(0);  
-        return TermUtils.buildFormalParametersMap(formalParametersList,this);
+        return JavaTopLevelBlockOwnerModelHelper.buildFormalParametersMap(formalParametersList,this);
     }
     
     public  boolean isSupportBlockModel()
@@ -75,6 +78,10 @@ public class JavaTermConstructorModel implements JavaConstructorModel, JavaTermT
       }
       blockModel_=new JavaTermTopLevelBlockModel(this,blockTerm);      
     }
+
+    
+    public Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap()
+    { return modifiers_.getAnnotationsMap(); }
     
     /**
      *ConstructorModel(modifiers,TypeParameters,identifier,FormalParameters,trowsNameList,BlockModel,context)
@@ -101,9 +108,10 @@ public class JavaTermConstructorModel implements JavaConstructorModel, JavaTermT
     }
     
     private JavaTermTypeAbstractModel      owner_;
-    private JavaModifiersModel modifiers_;
+    private JavaTermModifiersModel modifiers_;
     private Term               t_;
     private JavaTermTopLevelBlockModel blockModel_;
+    private TreeMap<String,JavaAnnotationInstanceModel> annotations_;
     
     public static final int TYPE_PARAMETERS_TERM_INDEX=0;
     public static final int IDENTIFIER_TERM_INDEX=1;

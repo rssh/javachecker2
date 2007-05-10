@@ -42,7 +42,7 @@ public class JavaNullTypeModel extends JavaTypeModel {
         return getShortNameAsTerm();
     }
     
-    public JavaModifiersModel getModifiersModel()
+    public JavaTermModifiersModel getModifiersModel()
     { return JavaModelConstants.PUBLIC_MODIFIERS; }
     
     /**
@@ -170,11 +170,13 @@ public class JavaNullTypeModel extends JavaTypeModel {
     public List<JavaTypeModel> getSuperInterfaces()
     { return Collections.emptyList(); }
     
+    public List<JavaConstructorModel>  getConstructorModels()
+    { return Collections.emptyList(); }
  
     /**
      *@return empty map
      */
-    public Map<String,JavaAnnotationInstanceModel> getAnnotations()
+    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
     { return Collections.emptyMap(); }
     
     /**

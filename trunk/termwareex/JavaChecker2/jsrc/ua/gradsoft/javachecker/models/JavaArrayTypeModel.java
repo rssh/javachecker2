@@ -45,7 +45,7 @@ public class JavaArrayTypeModel extends JavaTypeModel
     }
      */
   
-    public JavaModifiersModel getModifiersModel()
+    public JavaTermModifiersModel getModifiersModel()
     { return JavaModelConstants.PUBLIC_MODIFIERS; }
     
     public boolean isClass()
@@ -113,6 +113,9 @@ public class JavaArrayTypeModel extends JavaTypeModel
     return Collections.<String,JavaMemberVariableModel>singletonMap("length",lengthModel_);  
   }        
 
+  public List<JavaConstructorModel>  getConstructorModels()
+  { return Collections.emptyList(); }
+  
   public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
       throw new NotSupportedException();
     }
@@ -164,13 +167,13 @@ public class JavaArrayTypeModel extends JavaTypeModel
   /**
    *arrays types are not annotated.
    */
-  public Map<String,JavaAnnotationInstanceModel> getAnnotations()
+  public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
   { return Collections.emptyMap(); }
   
   
   class LengthMemberVariableModel extends JavaMemberVariableModel
   {
-    public JavaModifiersModel getModifiersModel()
+    public JavaTermModifiersModel getModifiersModel()
     {
         return JavaModelConstants.PUBLIC_MODIFIERS;
     }
@@ -193,6 +196,8 @@ public class JavaArrayTypeModel extends JavaTypeModel
         return JavaArrayTypeModel.this;
     }
     
+    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
+    { return Collections.emptyMap(); }
     
     /**
      * ArrayLength

@@ -12,3 +12,8 @@ izpackhome=c:/local/IzPack
 #set here location of anf home
 anthome=/usr
 
+#if you work in own cvs tree, set here path from you tree
+#to cvs co of java.net for copying files.
+#note:  you must know what you do.
+javanet.cvs.dir=/home/rssh/work/java.net/javachecker/projects/JavaChecker
+

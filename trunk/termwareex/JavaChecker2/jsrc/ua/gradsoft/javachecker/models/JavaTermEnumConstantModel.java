@@ -8,6 +8,8 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Collections;
+import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
@@ -49,6 +51,10 @@ public class JavaTermEnumConstantModel extends JavaEnumConstantModel
     public JavaTypeModel getOwner()
     { return owner_; }
         
+    
+    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
+    { return Collections.emptyMap(); }
+    
     /**
      * EnumConstantModel(identifierTerm,arguments,subtype)
      */

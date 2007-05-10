@@ -44,7 +44,7 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
     public Term getShortNameAsTerm() {
         return TermUtils.getTermFactory().createAtom(name_); }
     
-    public JavaModifiersModel getModifiersModel() {
+    public JavaTermModifiersModel getModifiersModel() {
         return JavaModelConstants.PUBLIC_MODIFIERS;
     }
     
@@ -119,6 +119,9 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
         throw new NotSupportedException();
     }
     
+    public List<JavaConstructorModel>  getConstructorModels()
+    {  return Collections.emptyList(); }
+    
     public boolean isNested() {
         return false; }
     
@@ -144,7 +147,7 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
     /**
      *@return empty map
      */
-    public Map<String,JavaAnnotationInstanceModel> getAnnotations()
+    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
     { return Collections.emptyMap(); }
     
     

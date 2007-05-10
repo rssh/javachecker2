@@ -238,6 +238,15 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         return retval;
     }
 
+    public List<JavaConstructorModel> getConstructorModels()
+    {
+        List<JavaConstructorModel> origins = origin_.getConstructorModels();
+        List<JavaConstructorModel> retval = new ArrayList(origins.size());        
+        for(JavaConstructorModel cn: origins) {
+            retval.add(new JavaTypeArgumentBoundConstructorModel(cn,this));
+        }
+        return retval;
+    }
     
     public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException
     {
@@ -335,9 +344,9 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
     }
 
    
-    public Map<String,JavaAnnotationInstanceModel> getAnnotations() throws TermWareException
+    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap() throws TermWareException
     {
-        return origin_.getAnnotations();
+        return origin_.getAnnotationsMap();
     }
    
     

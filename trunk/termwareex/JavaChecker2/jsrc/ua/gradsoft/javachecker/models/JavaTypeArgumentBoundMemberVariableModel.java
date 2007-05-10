@@ -8,6 +8,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
@@ -43,6 +44,9 @@ public class JavaTypeArgumentBoundMemberVariableModel extends JavaMemberVariable
       return owner_.getSubstitution().substitute(originTypeModel);
     }
 
+    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap() throws TermWareException
+    { return origin_.getAnnotationsMap(); }
+    
     public JavaModifiersModel  getModifiersModel()
     {
         return origin_.getModifiersModel();

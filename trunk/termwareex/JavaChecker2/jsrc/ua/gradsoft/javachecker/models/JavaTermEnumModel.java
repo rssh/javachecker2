@@ -25,11 +25,10 @@ import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *Model of Enum definition.
- *TODO: implement full model of enum constant (with value and class-body).
  */
 public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     
-    JavaTermEnumModel(int modifiers, Term t,JavaPackageModel packageModel, JavaUnitModel unitModel) throws TermWareException {
+    JavaTermEnumModel(Term modifiers, Term t,JavaPackageModel packageModel, JavaUnitModel unitModel) throws TermWareException {
         super(modifiers,t,packageModel,unitModel);
         enumConstants_=new TreeMap<String,JavaEnumConstantModel>();
         build(t);
@@ -65,14 +64,21 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     }
     
     /**
+     *enum has not constructor
+     */
+    public List<JavaConstructorModel> getConstructorModels()
+    { return Collections.emptyList(); }
+    
+    
+    /**
      * EnumModel(modifiers,identifier,superInterfaces, enumConstantsList,membersList,context)
      */
     public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
         Term modifiersTerm=getModifiersModel().getModelTerm();
-        Term identifierTerm=t_.getSubtermAt(QENUM_IDENTIFIER_INDEX_);
+        Term identifierTerm=t_.getSubtermAt(IDENTIFIER_TERM_INDEX);
         List<JavaTypeModel> si = getSuperInterfaces();
-        Term implementsList = t_.getSubtermAt(IMPLEMENTS_INDEX_);
+        Term implementsList = t_.getSubtermAt(IMPLEMENTS_TERM_INDEX);
         if (implementsList.isComplexTerm()) {
             implementsList=implementsList.getSubtermAt(0);
         }
@@ -105,8 +111,8 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     private void build(Term t) throws TermWareException {
         //System.out.println("JavaTermEnumModel::build:"+TermHelper.termToString(t));
         
-        Term identifierTerm=t.getSubtermAt(QENUM_IDENTIFIER_INDEX_);
-        Term implementsList=t.getSubtermAt(IMPLEMENTS_INDEX_);
+        Term identifierTerm=t.getSubtermAt(IDENTIFIER_TERM_INDEX);
+        Term implementsList=t.getSubtermAt(IMPLEMENTS_TERM_INDEX);
         if (implementsList.isComplexTerm()) {
             implementsList=implementsList.getSubtermAt(0);
         }
@@ -116,7 +122,7 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
             implementsList=implementsList.getSubtermAt(1);
         }
         
-        Term enumBody=t.getSubtermAt(ENUMBODY_INDEX_);
+        Term enumBody=t.getSubtermAt(ENUMBODY_TERM_INDEX);
         name_=identifierTerm.getSubtermAt(0).getString();
         Term curr=enumBody.getSubtermAt(0);
         while(!curr.isNil()) {
@@ -131,7 +137,7 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
                     if (et.getSubtermAt(0).getName().equals("Initializer")) {
                         addInitializer(et.getSubtermAt(0));
                     }else{
-                        int modifiers=et.getSubtermAt(0).getSubtermAt(0).getInt();
+                        Term modifiers=et.getSubtermAt(0);
                         Term declaration=et.getSubtermAt(1);
                         if (declaration.getName().equals("ClassOrInterfaceDeclaration")) {
                             addClassOrInterfaceDeclaration(modifiers,declaration);
@@ -167,9 +173,9 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     private Map<String,JavaEnumConstantModel>  enumConstants_;
 
     
-    private static final int QENUM_IDENTIFIER_INDEX_=0;
-    private static final int IMPLEMENTS_INDEX_=1;
-    private static final int ENUMBODY_INDEX_=2;
+    public static final int  IDENTIFIER_TERM_INDEX=0;
+    public static final int  IMPLEMENTS_TERM_INDEX=1;
+    public static final int  ENUMBODY_TERM_INDEX=2;
     
 public final class ValuesMethodModel extends JavaMethodModel 
 {    
@@ -184,7 +190,7 @@ public final class ValuesMethodModel extends JavaMethodModel
     public String getName()
     { return "values"; }
     
-    public JavaModifiersModel getModifiers()
+    public JavaTermModifiersModel getModifiers()
     { return JavaModelConstants.PUBLIC_STATIC_MODIFIERS; }
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() 
@@ -199,7 +205,7 @@ public final class ValuesMethodModel extends JavaMethodModel
     public List<JavaFormalParameterModel> getFormalParametersList()
     { return Collections.emptyList(); }
     
-    public Map<String,JavaFormalParameterModel>  getFormalParametersMap() 
+    public Map<String, JavaFormalParameterModel>  getFormalParametersMap() 
     { return Collections.emptyMap(); }
             
     public boolean canCheck()
@@ -213,6 +219,9 @@ public final class ValuesMethodModel extends JavaMethodModel
     
     public JavaTopLevelBlockModel  getTopLevelBlockModel() throws NotSupportedException
     { throw new NotSupportedException(); }
+    
+    public Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap()
+    { return Collections.emptyMap(); }
     
     /**
      * MethodModel(modifiers,typeParameters,ResultType,name,formalParameters,throws,block,context)
@@ -245,7 +254,9 @@ public final class ValueOfMethodModel extends JavaMethodModel
     {
       super(JavaTermEnumModel.this);
       try {
-        parameter_=new JavaFormalParameterModel(0, "name", JavaResolver.resolveTypeModelFromPackage("String","java.lang"), this, 0);
+        parameter_=new JavaTermFormalParameterModel(TermUtils.createTerm("Modifiers",TermUtils.createInt(0),TermUtils.createNil()),
+                                                "name", 
+                                                JavaResolver.resolveTypeModelFromPackage("String","java.lang"), this, 0);
       }catch(EntityNotFoundException ex){
           throw new TermWareRuntimeException(ex);
       }
@@ -254,7 +265,7 @@ public final class ValueOfMethodModel extends JavaMethodModel
     public String getName()
     { return "valueOf"; }
     
-    public JavaModifiersModel getModifiers()
+    public JavaTermModifiersModel getModifiers()
     { return JavaModelConstants.PUBLIC_STATIC_MODIFIERS; }
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() 
@@ -269,10 +280,13 @@ public final class ValueOfMethodModel extends JavaMethodModel
     }
             
     public List<JavaFormalParameterModel> getFormalParametersList()
-    { return Collections.singletonList(parameter_); }
+    { return Collections.<JavaFormalParameterModel>singletonList(parameter_); }
     
-    public Map<String,JavaFormalParameterModel>  getFormalParametersMap() 
-    { return Collections.singletonMap(parameter_.getName(),parameter_); }
+    public Map<String, JavaFormalParameterModel>  getFormalParametersMap() 
+    { return Collections.<String,JavaFormalParameterModel>singletonMap(parameter_.getName(),parameter_); }
+    
+    public Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap()
+    { return Collections.emptyMap(); }
             
     public boolean canCheck()
     { return false; }
@@ -314,7 +328,7 @@ public final class ValueOfMethodModel extends JavaMethodModel
       return retval;
     }    
     
-    private JavaFormalParameterModel parameter_;
+    private JavaTermFormalParameterModel parameter_;
     
     
   }

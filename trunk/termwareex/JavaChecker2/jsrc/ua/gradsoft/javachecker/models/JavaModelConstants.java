@@ -77,7 +77,7 @@ public class JavaModelConstants {
     public static final int LOCALVARIABLEDECLARATION_VARIABLEDECLARATORS_INDEX=2;
 
     
-    public final static JavaModifiersModel PUBLIC_MODIFIERS = new JavaModifiersModel(JavaModifiersModel.PUBLIC);
-    public final static JavaModifiersModel PUBLIC_STATIC_MODIFIERS = new JavaModifiersModel(JavaModifiersModel.PUBLIC|JavaModifiersModel.STATIC);
+    public final static JavaTermModifiersModel PUBLIC_MODIFIERS = new JavaTermModifiersModel(JavaTermModifiersModel.PUBLIC);
+    public final static JavaTermModifiersModel PUBLIC_STATIC_MODIFIERS = new JavaTermModifiersModel(JavaTermModifiersModel.PUBLIC|JavaTermModifiersModel.STATIC);
     
 }

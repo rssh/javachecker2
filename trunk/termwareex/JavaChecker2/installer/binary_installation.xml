@@ -4,12 +4,12 @@
     Author     : Ruslan Shevchenko
     Description:
         IzPack install file for TermWare JavaChecker
-    Id:        $Id: binary_installation.xml,v 1.4 2007-04-12 19:39:13 rssh Exp $
+    Id:        $Id: binary_installation.xml,v 1.5 2007-05-10 02:10:01 rssh Exp $
 -->
 <installation version="1.0">
  <info>
   <appname>JavaChecker</appname>
-  <appversion>2.1.0</appversion>
+  <appversion>2.1.1</appversion>
   <url>http://www.gradsoft.ua</url>
   <authors>
    <author name="Ruslan Shevchenko" email="Ruslan@Shevchenko.Kiev.UA" />
@@ -39,6 +39,8 @@
   <file src="JavaChecker.sh" targetdir="$INSTALL_PATH/bin" />
   <parsable targetfile="$INSTALL_PATH/bin/JavaChecker.sh" os="unix"/>
   <parsable targetfile="$INSTALL_PATH/bin/JavaChecker.bat" os="windows"/>
+  <executable targetfile="$INSTALL_PATH/bin/JavaChecker.sh" stage="newer" keep="true" os="unix"/>
+  <executable targetfile="$INSTALL_PATH/bin/JavaChecker.bat" stage="newer" keep="true" os="windows"/>
   <file src="../lib/JavaChecker2.jar" targetdir="$INSTALL_PATH/lib" />
   <file src="../lib/TermWare2.jar"  targetdir="$INSTALL_PATH/lib" />
   <file src="../lib/TermWareJPP.jar"  targetdir="$INSTALL_PATH/lib" />

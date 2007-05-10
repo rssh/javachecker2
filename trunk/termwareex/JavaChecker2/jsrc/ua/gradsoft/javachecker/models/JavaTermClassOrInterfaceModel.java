@@ -25,7 +25,7 @@ public  class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
     
     
     /** Creates a new instance of JavaClassModel */
-    public JavaTermClassOrInterfaceModel(int modifiers, Term t, JavaPackageModel packageModel, JavaUnitModel cuModel) throws TermWareException {
+    public JavaTermClassOrInterfaceModel(Term modifiers, Term t, JavaPackageModel packageModel, JavaUnitModel cuModel) throws TermWareException {
         super(modifiers, t, packageModel, cuModel);
         fillModels();
     }
@@ -104,18 +104,19 @@ public  class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
                     if (st.getName().equals("Initializer")) {
                         addInitializer(st);
                     }else{
-                        int modifiers=declaration.getSubtermAt(0).getSubtermAt(0).getInt();
+                        Term modifiersTerm = declaration.getSubtermAt(0);                                               
+                        int modifiers=modifiersTerm.getSubtermAt(0).getInt();                      
                         declaration=declaration.getSubtermAt(1);
                         if (declaration.getName().equals("ClassOrInterfaceDeclaration")) {
-                            addClassOrInterfaceDeclaration(modifiers,declaration);
+                            addClassOrInterfaceDeclaration(modifiersTerm,declaration);
                         }else if(declaration.getName().equals("EnumDeclaration")) {
-                            addEnumDeclaration(modifiers,declaration);
+                            addEnumDeclaration(modifiersTerm,declaration);
                         }else if(declaration.getName().equals("ConstructorDeclaration")) {
-                            addConstructorDeclaration(modifiers,declaration);
+                            addConstructorDeclaration(modifiersTerm,declaration);
                         }else if(declaration.getName().equals("FieldDeclaration")) {
-                            addFieldDeclaration(modifiers,declaration);
+                            addFieldDeclaration(modifiersTerm,declaration);
                         }else if(declaration.getName().equals("MethodDeclaration")) {
-                            addMethodDeclaration(modifiers,declaration);
+                            addMethodDeclaration(modifiersTerm,declaration);
                         }else{
                             throw new AssertException("Unknown declaration:"+TermHelper.termToString(declaration));
                         }

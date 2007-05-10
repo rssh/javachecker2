@@ -6,6 +6,8 @@
 package ua.gradsoft.javachecker.models;
 
 
+import java.lang.annotation.ElementType;
+import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.JavaFacts;
@@ -25,14 +27,14 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
     /**
      * Creates a new instance of JavaTermMemberVariableModel
      */
-    public JavaTermMemberVariableModel(int modifiers, Term type,Term variableDeclarator, JavaTypeModel owner)  throws TermWareException
+    public JavaTermMemberVariableModel(Term modifiers, Term type,Term variableDeclarator, JavaTypeModel owner)  throws TermWareException
     {
         if (!variableDeclarator.getName().equals("VariableDeclarator")) {
             throw new AssertException("argument of JavaMemberVariableModel constructor must be VariableDeclarator");
         }
         type_=type;
         owner_=owner;      
-        modifiersModel_=new JavaModifiersModel(modifiers);        
+        modifiersModel_=new JavaTermModifiersModel(modifiers, ElementType.FIELD, this);        
         variableDeclarator_=variableDeclarator;
         Term variableDeclaratorId=variableDeclarator.getSubtermAt(0);
         Term identifierTerm = variableDeclaratorId.getSubtermAt(0);
@@ -66,13 +68,15 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
       }
     }
         
-    public JavaModifiersModel  getModifiersModel()
+    public JavaTermModifiersModel  getModifiersModel()
     { return modifiersModel_; }
     
    
     public Term getVariableDeclaratorTerm()
     { return variableDeclarator_; }
     
+    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
+    { return modifiersModel_.getAnnotationsMap(); }
        
     /**
      * MemberVariableModel(modifiers, TypeRef, name, initializer,this)
@@ -96,6 +100,6 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
     private Term    type_=null;
     private Term    variableDeclarator_=null;
     private JavaTypeModel owner_=null;
-    private JavaModifiersModel  modifiersModel_;
+    private JavaTermModifiersModel  modifiersModel_;
     
 }

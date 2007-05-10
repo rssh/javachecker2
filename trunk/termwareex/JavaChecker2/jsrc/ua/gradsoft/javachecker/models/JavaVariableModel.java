@@ -5,6 +5,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.TermWareException;
 
@@ -19,9 +20,26 @@ public interface JavaVariableModel {
      */
     public String getName();
     
+    /**
+     *get kind of variable
+     */
     public JavaVariableKind getKind();
     
+    /**
+     *get type of variable
+     */
     public JavaTypeModel getTypeModel() throws TermWareException, EntityNotFoundException;
+    
+    /**
+     * return modifiers
+     */
+    public JavaModifiersModel  getModifiersModel();
+    
+    
+    /**
+     *return set of annotations for this variable.
+     */
+    public Map<String, JavaAnnotationInstanceModel>  getAnnotationsMap() throws TermWareException;
     
     
 }

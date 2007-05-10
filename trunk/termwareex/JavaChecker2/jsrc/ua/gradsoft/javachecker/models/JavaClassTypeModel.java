@@ -10,6 +10,7 @@ package ua.gradsoft.javachecker.models;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
@@ -18,6 +19,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -121,9 +123,9 @@ public class JavaClassTypeModel extends JavaTypeModel
     return false;  
   }
   
-  public JavaModifiersModel getModifiersModel()
+  public JavaTermModifiersModel getModifiersModel()
   {
-      return new JavaModifiersModel(translateModifiers(theClass_.getModifiers()));
+      return new JavaTermModifiersModel(translateModifiers(theClass_.getModifiers()));
   }
   
   public JavaTypeModel  getSuperClass() throws TermWareException
@@ -221,9 +223,10 @@ public class JavaClassTypeModel extends JavaTypeModel
   public List<JavaMethodModel>  findMethodModels(String name) throws EntityNotFoundException, NotSupportedException
   {
     boolean debug=false;  
-  //  if (name.equals("getPreferredGap"))  {
-  //      debug=true;
-  //  }
+  //!!!
+    if (name.equals("createTerm"))  {
+        debug=true;
+    }
     List<JavaMethodModel> methodModels = new LinkedList<JavaMethodModel>();  
     Method[] methods = theClass_.getDeclaredMethods();
     boolean found=false;
@@ -283,6 +286,19 @@ public class JavaClassTypeModel extends JavaTypeModel
      }
      return retval;
   }
+  
+  
+  public List<JavaConstructorModel>  getConstructorModels()
+  {
+      Constructor[] constructors = theClass_.getConstructors();
+      List<JavaConstructorModel> retval = new ArrayList<JavaConstructorModel>(constructors.length);
+      for(int i=0; i<constructors.length; ++i) {
+          JavaClassConstructorModel cm = new JavaClassConstructorModel(constructors[i],this);
+          retval.add(cm);
+      }
+      return retval;
+  }
+  
   
   public boolean isNested()
   {
@@ -359,7 +375,7 @@ public class JavaClassTypeModel extends JavaTypeModel
       throw new NotSupportedException();      
   }
   
-  public Map<String,JavaAnnotationInstanceModel> getAnnotations() throws TermWareException
+  public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap() throws TermWareException
   {
     TreeMap<String,JavaAnnotationInstanceModel> retval = new TreeMap<String,JavaAnnotationInstanceModel>();
     Annotation[] annotations_ = theClass_.getAnnotations();
@@ -469,6 +485,19 @@ public class JavaClassTypeModel extends JavaTypeModel
         throw new AssertException("Impossible Java type");
     }
   }
+  
+  static public Class forName(String className) throws TermWareException
+  {
+    try {  
+      return Main.getFacts().getPackagesStore().getJarsClassLoader().loadClass(className);
+    }catch(ClassNotFoundException ex){
+      try {  
+        return Class.forName(className);
+      }catch(ClassNotFoundException ex1){
+          throw new AssertException("Can't load class "+className,ex1);
+      }
+    }
+  }
  
     /**
      * translate modifiers from java.lang.reflect modifiers to our ModifiersModel
@@ -477,35 +506,35 @@ public class JavaClassTypeModel extends JavaTypeModel
     {
       int retval=0;
       if (Modifier.isAbstract(jm)) {
-          retval |= JavaModifiersModel.ABSTRACT;
+          retval |= JavaTermModifiersModel.ABSTRACT;
       }
       if (Modifier.isFinal(jm)){
-          retval |= JavaModifiersModel.FINAL;
+          retval |= JavaTermModifiersModel.FINAL;
       }
       if (Modifier.isNative(jm)){
-          retval |= JavaModifiersModel.NATIVE;
+          retval |= JavaTermModifiersModel.NATIVE;
       }
       if (Modifier.isPrivate(jm)) {
-          retval |= JavaModifiersModel.PRIVATE;
+          retval |= JavaTermModifiersModel.PRIVATE;
       }else if(Modifier.isProtected(jm)){
-          retval |= JavaModifiersModel.PROTECTED;
+          retval |= JavaTermModifiersModel.PROTECTED;
       }else if(Modifier.isPublic(jm)){
-          retval |= JavaModifiersModel.PUBLIC;
+          retval |= JavaTermModifiersModel.PUBLIC;
       }
       if (Modifier.isStatic(jm)) {
-          retval |= JavaModifiersModel.STATIC;
+          retval |= JavaTermModifiersModel.STATIC;
       }
       if (Modifier.isStrict(jm)) {
-          retval |= JavaModifiersModel.STRICTFP;
+          retval |= JavaTermModifiersModel.STRICTFP;
       }
       if (Modifier.isSynchronized(jm)) {
-          retval |= JavaModifiersModel.SYNCHRONIZED;
+          retval |= JavaTermModifiersModel.SYNCHRONIZED;
       }
       if (Modifier.isTransient(jm)) {
-          retval |= JavaModifiersModel.TRANSIENT;
+          retval |= JavaTermModifiersModel.TRANSIENT;
       }
       if (Modifier.isVolatile(jm)) {
-          retval |= JavaModifiersModel.VOLATILE;
+          retval |= JavaTermModifiersModel.VOLATILE;
       }
       return retval;        
     }

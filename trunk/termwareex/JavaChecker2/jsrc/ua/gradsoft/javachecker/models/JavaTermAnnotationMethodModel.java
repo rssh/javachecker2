@@ -27,7 +27,7 @@ public class JavaTermAnnotationMethodModel extends JavaMethodModel
     public String getName()
     { return fieldModel_.getName(); }
     
-    public JavaModifiersModel getModifiers()
+    public JavaTermModifiersModel getModifiers()
     { return fieldModel_.getModifiersModel(); }
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException
@@ -43,13 +43,16 @@ public class JavaTermAnnotationMethodModel extends JavaMethodModel
     public List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException
     { return Collections.emptyList(); }
     
-    public Map<String,JavaFormalParameterModel>  getFormalParametersMap() throws TermWareException
+    public Map<String, JavaFormalParameterModel>  getFormalParametersMap() throws TermWareException
     { return Collections.emptyMap(); }
     
     public Term getModelTerm() throws TermWareException
     {
         return fieldModel_.getModelTerm();
     }
+    
+    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
+    { return Collections.emptyMap(); }
     
     public boolean isSupportBlockModel()
     { return false; }

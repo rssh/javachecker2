@@ -24,15 +24,12 @@ import ua.gradsoft.termware.exceptions.AssertException;
  */
 public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
 {
-    
-
-    
-            
-    public JavaTermAnnotationTypeModel(int modifiers, Term t, JavaPackageModel packageModel, JavaUnitModel unitModel) throws TermWareException
+                    
+    public JavaTermAnnotationTypeModel(Term modifiers, Term t, JavaPackageModel packageModel, JavaUnitModel unitModel) throws TermWareException
     {
       super(modifiers,t,packageModel,unitModel);
-      name_=t.getSubtermAt(0).getSubtermAt(0).getString();
-      fillModels(t.getSubtermAt(1));
+      name_=t.getSubtermAt(NAME_TERM_INDEX).getSubtermAt(0).getString();
+      fillModels(t.getSubtermAt(BODY_TERM_INDEX));
     }
     
     public boolean isClass()
@@ -78,6 +75,9 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
         throw new NotSupportedException();
     }
 
+    public List<JavaConstructorModel>  getConstructorModels()
+    { return Collections.emptyList(); }
+    
     public boolean hasASTTerm()
     { return true; }
     
@@ -109,8 +109,7 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
           l=l.getSubtermAt(1);
           if (mb.getName().equals("AnnotationTypeMemberDeclaration")) {
               if (mb.getArity()==2) {          
-                Term modifiersTerm=mb.getSubtermAt(0);
-                int modifiers=modifiersTerm.getSubtermAt(0).getInt();
+                Term modifiers=mb.getSubtermAt(0);
                 Term declaration = mb.getSubtermAt(1);
                 if (declaration.getName().equals("ClassOrInterfaceDeclaration")) {
                       addClassOrInterfaceDeclaration(modifiers,declaration);
@@ -124,15 +123,14 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
                       throw new AssertException("Unknown declaration:"+TermHelper.termToString(declaration));
                  }
               }else if(mb.getArity()==3 || mb.getArity()==4){
-                 Term modifiersTerm=mb.getSubtermAt(0);
-                 int modifiers=modifiersTerm.getSubtermAt(0).getInt();                
+                 Term modifiersTerm=mb.getSubtermAt(0);                            
                  Term typeTerm = mb.getSubtermAt(1);
                  Term identifierTerm = mb.getSubtermAt(2);
                  Term defaultValueTerm = TermUtils.createNil();
                  if (mb.getArity()==4) {
                         defaultValueTerm = mb.getSubtermAt(3);
                  }
-                 addAnnotationFieldDeclaration(modifiers, typeTerm, identifierTerm, defaultValueTerm);
+                 addAnnotationFieldDeclaration(modifiersTerm, typeTerm, identifierTerm, defaultValueTerm);
               }else if (mb.getArity()==0) {
                    // skip empty declaration   
               }else{
@@ -144,13 +142,13 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
       }
     }
     
-    protected void addAnnotationTypeDeclaration(int modifiers, Term t) throws TermWareException
+    protected void addAnnotationTypeDeclaration(Term modifiers, Term t) throws TermWareException
     {
        JavaTermAnnotationTypeModel tm = new JavaTermAnnotationTypeModel(modifiers,t,getPackageModel(),getUnitModel());
        addNestedType(tm.getName(),tm);
     }
 
-    protected void addAnnotationFieldDeclaration(int modifiers, Term typeTerm, Term identifierTerm, Term defaultValueTerm)
+    protected void addAnnotationFieldDeclaration(Term modifiers, Term typeTerm, Term identifierTerm, Term defaultValueTerm) throws TermWareException
     {
         JavaTermAnnotationFieldModel jtamm = new JavaTermAnnotationFieldModel(this,modifiers,typeTerm,identifierTerm,defaultValueTerm);
         JavaMemberVariableModel vm=jtamm;
@@ -160,5 +158,8 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
         List<JavaMethodModel> mml = Collections.<JavaMethodModel>singletonList(mm);
         methodModels_.put(name,mml);
     }
+    
+    public static final int NAME_TERM_INDEX=0;
+    public static final int BODY_TERM_INDEX=1;
     
 }

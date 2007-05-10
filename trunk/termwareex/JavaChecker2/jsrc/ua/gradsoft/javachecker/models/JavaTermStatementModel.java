@@ -228,7 +228,8 @@ public class JavaTermStatementModel implements JavaStatementModel {
             kind_=JavaStatementKind.CLASS_OR_INTERFACE_DECLARATION;
             childs_=Collections.emptyList();
             JavaTypeModel ownerTypeModel = blockModel_.getOwnerModel().getTypeModel();
-            JavaTermClassOrInterfaceModel iTypeModel = new JavaTermClassOrInterfaceModel(0,t,ownerTypeModel.getPackageModel(),ownerTypeModel.getUnitModel());
+            Term modifiersTerm = TermUtils.createTerm("Modifiers",TermUtils.createInt(0),TermUtils.createNil());
+            JavaTermClassOrInterfaceModel iTypeModel = new JavaTermClassOrInterfaceModel(modifiersTerm,t,ownerTypeModel.getPackageModel(),ownerTypeModel.getUnitModel());
             addLocalType(iTypeModel);
             expressions_=Collections.emptyList();
         }else if(t.getName().equals("ExplicitSuperConstructorInvocation")){
@@ -649,7 +650,8 @@ public class JavaTermStatementModel implements JavaStatementModel {
             Term typeTerm = loopHead.getSubtermAt(0);
             Term identifierTerm = loopHead.getSubtermAt(1);
             String name=identifierTerm.getSubtermAt(0).getString();
-            localVariables_.add(new JavaTermLocalVariableModel(identifierTerm,JavaLocalVariableKind.FOR_EACH_LOOP_HEAD,typeTerm,loopHead.getSubtermAt(2),null, this));
+            Term modifiersTerm=TermUtils.createTerm("Modifiers",TermUtils.createInt(0),TermUtils.createNil());
+            localVariables_.add(new JavaTermLocalVariableModel(identifierTerm,JavaLocalVariableKind.FOR_EACH_LOOP_HEAD,modifiersTerm,typeTerm,loopHead.getSubtermAt(2),null, this));
             Term exprTerm = loopHead.getSubtermAt(2);
             JavaTermExpressionModel te = JavaTermExpressionModel.create(exprTerm,this,this.getTopLevelBlockModel().getOwnerModel().getTypeModel());
             expressions_.add(te);
@@ -660,6 +662,7 @@ public class JavaTermStatementModel implements JavaStatementModel {
     }
     
     private void extractLocalVariablesExpressionsAndAnonimousTypesFromLocalVariableDeclaration(Term dcl) throws TermWareException {
+        Term modifiersTerm = dcl.getSubtermAt(0);
         Term typeTerm = dcl.getSubtermAt(1);
         Term dclList=dcl.getSubtermAt(2);
         
@@ -694,7 +697,7 @@ public class JavaTermStatementModel implements JavaStatementModel {
                 expressions_.add(expr);
             }
             //String name=identifier.getSubtermAt(0).getString();
-            localVariables_.add(new JavaTermLocalVariableModel(identifier,JavaLocalVariableKind.LOCAL_VARIABLE_DCL,refTypeTerm,initTerm,expr,this));
+            localVariables_.add(new JavaTermLocalVariableModel(identifier,JavaLocalVariableKind.LOCAL_VARIABLE_DCL,modifiersTerm,refTypeTerm,initTerm,expr,this));
             //!!!
            // if (this.getTopLevelBlockModel().getOwnerModel().getTypeModel().getName().endsWith("Hashtable")) {
            //     System.out.println("add lv "+name+", type: "+refTypeTerm.toString());
@@ -703,6 +706,7 @@ public class JavaTermStatementModel implements JavaStatementModel {
     }
     
     private void extractLocalVariableFromFormalParameter(Term fp) throws TermWareException {
+        Term modifiersTerm = fp.getSubtermAt(0);
         Term typeTerm = fp.getSubtermAt(1);
         Term vid = fp.getSubtermAt(2);
         Term refTypeTerm=typeTerm;
@@ -723,7 +727,7 @@ public class JavaTermStatementModel implements JavaStatementModel {
             throw new AssertException("Invalid VariableDeclaratorId:"+TermHelper.termToString(vid));
         }
         //String name=idTerm.getSubtermAt(0).getString();
-        localVariables_.add(new JavaTermLocalVariableModel(idTerm,JavaLocalVariableKind.CATCH_EXCEPTION,refTypeTerm,init,null,this));        
+        localVariables_.add(new JavaTermLocalVariableModel(idTerm,JavaLocalVariableKind.CATCH_EXCEPTION,modifiersTerm,refTypeTerm,init,null,this));        
     }
     
     private void extractAnonimousTypes(Term expr) throws TermWareException {

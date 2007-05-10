@@ -1128,9 +1128,9 @@ public class JavaResolver {
     public static JavaMethodModel resolveMethod(String methodName,List<JavaTypeModel> argumentTypes, JavaTypeArgumentsSubstitution substitution,JavaTypeModel where) throws EntityNotFoundException, TermWareException {
         boolean printDetails=false;
         
-     //  if (methodName.equals("nullIsEmpty")) {
-     //        printDetails=true;
-     //  }
+        if (methodName.equals("createTerm")) {
+             printDetails=true;
+        }
         
         if (printDetails) {
             StringBuilder sb=new StringBuilder();
@@ -1182,7 +1182,7 @@ public class JavaResolver {
                         StringWriter swr=new StringWriter();
                         PrintWriter wr=new PrintWriter(swr);
                         wr.print("found candidate:");
-                        candidate.print(wr);
+                        candidate.printSignature(wr);
                         wr.flush();
                         String s = swr.toString();
                         wr.close();
@@ -1574,7 +1574,7 @@ public class JavaResolver {
     /**
      * match over list and feel substitution if needed.
      */
-    public static boolean match(List<JavaFormalParameterModel> patterns,List<JavaTypeModel> xs,MethodMatchingConversions conversions, boolean forseVarArgs, boolean debug) throws TermWareException {
+    public static boolean match(List<JavaFormalParameterModel> patterns,List<JavaTypeModel> xs,MethodMatchingConversions conversions, boolean forseVarArgs, boolean debug) throws TermWareException, EntityNotFoundException {
         Iterator<JavaFormalParameterModel> pit = patterns.iterator();
         Iterator<JavaTypeModel> xit = xs.iterator();
         boolean inVarArg=false;
@@ -1602,14 +1602,14 @@ public class JavaResolver {
                 }else if(!xit.hasNext()) {
                     // check, that it was varArgs,
                     //  if yes - one will associated with empty array
-                    retval=(pit.next().getModifiers().isVarArgs());                    
+                    retval=(pit.next().getModifiersModel().isVarArgs());                    
                     break;
                 }     
                 JavaFormalParameterModel p = pit.next();
-                wasVarArgs=p.getModifiers().isVarArgs();
+                wasVarArgs=p.getModifiersModel().isVarArgs();
                 x=xit.next();
-                if ((forseVarArgs && p.getModifiers().isVarArgs()) || !match(p.getTypeModel(),x,conversions,debug)) {
-                    if (p.getModifiers().isVarArgs()) {
+                if ((forseVarArgs && p.getModifiersModel().isVarArgs()) || !match(p.getTypeModel(),x,conversions,debug)) {
+                    if (p.getModifiersModel().isVarArgs()) {
                         try {
                             varArgPattern=p.getTypeModel().getReferencedType();
                         }catch(NotSupportedException ex){

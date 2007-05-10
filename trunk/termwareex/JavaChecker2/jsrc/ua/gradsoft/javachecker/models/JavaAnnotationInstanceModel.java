@@ -150,10 +150,10 @@ public abstract class JavaAnnotationInstanceModel {
         }
     }
     
-    public JavaFormalParameterModel  getTargetFormalParameterModel()throws InvalidAnnotationTargetElementTypeException
+    public JavaTermFormalParameterModel  getTargetFormalParameterModel()throws InvalidAnnotationTargetElementTypeException
     {
         if (elementType_==ElementType.PARAMETER) {
-            return (JavaFormalParameterModel)target_;
+            return (JavaTermFormalParameterModel)target_;
         }else{
             throw new InvalidAnnotationTargetElementTypeException();
         }

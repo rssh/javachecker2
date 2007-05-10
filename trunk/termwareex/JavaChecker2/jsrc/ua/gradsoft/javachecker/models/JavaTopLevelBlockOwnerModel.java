@@ -7,6 +7,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
@@ -33,10 +34,12 @@ public interface JavaTopLevelBlockOwnerModel
      */
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() throws TermWareException;
     
-    
+    /**
+     * get List of formal parameters
+     */
     public  List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException, EntityNotFoundException;
     
-    public Map<String,JavaFormalParameterModel>  getFormalParametersMap() throws TermWareException, EntityNotFoundException;
+    public Map<String, JavaFormalParameterModel>  getFormalParametersMap() throws TermWareException, EntityNotFoundException;
 
     
     /**
@@ -51,8 +54,19 @@ public interface JavaTopLevelBlockOwnerModel
     public JavaTopLevelBlockModel  getTopLevelBlockModel() throws TermWareException, NotSupportedException;
     
     /**
+     * return annotations, associated with model oe costructor
+     */
+    public  Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap() throws TermWareException;
+    
+    /**
      * return model term.
      */
     public Term  getModelTerm() throws TermWareException, EntityNotFoundException;
+    
+    /**
+     * print signature (i. e. string, which depends from type parameters, name and formal parameter types)
+     *ont pwr.
+     */
+    public void printSignature(PrintWriter pwr);
     
 }

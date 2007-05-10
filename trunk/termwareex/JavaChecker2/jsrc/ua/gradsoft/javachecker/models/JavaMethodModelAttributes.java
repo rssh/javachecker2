@@ -7,6 +7,7 @@ package ua.gradsoft.javachecker.models;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import ua.gradsoft.javachecker.attributes.JavaTypeModelAttributes;
 import ua.gradsoft.termware.Term;
 
 /**

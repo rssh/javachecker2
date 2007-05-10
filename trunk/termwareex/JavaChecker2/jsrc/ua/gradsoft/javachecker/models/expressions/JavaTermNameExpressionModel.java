@@ -11,7 +11,6 @@ package ua.gradsoft.javachecker.models.expressions;
 import java.util.Collections;
 import java.util.List;
 import ua.gradsoft.javachecker.EntityNotFoundException;
-import ua.gradsoft.javachecker.FileAndLine;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.models.InvalidJavaTermException;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;

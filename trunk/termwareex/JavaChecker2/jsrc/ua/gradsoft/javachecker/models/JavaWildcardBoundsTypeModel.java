@@ -118,7 +118,7 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
         return retval;
     }
     
-     public JavaModifiersModel getModifiersModel()
+     public JavaTermModifiersModel getModifiersModel()
      { return JavaModelConstants.PUBLIC_MODIFIERS; }
     
       public  boolean isClass() 
@@ -217,6 +217,9 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
       {
         throw new NotSupportedException(); 
       }
+      
+      public List<JavaConstructorModel>  getConstructorModels()
+      { return Collections.emptyList(); }
 
     public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
         throw new NotSupportedException();         
@@ -263,7 +266,7 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
     /**
      *@return empty map
      */
-    public Map<String,JavaAnnotationInstanceModel> getAnnotations()
+    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
     { return Collections.emptyMap(); }
     
     

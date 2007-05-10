@@ -23,7 +23,7 @@ import ua.gradsoft.termware.exceptions.AssertException;
  *Model for Java Initializer, based on Term
  * @author Ruslan Shevchenko
  */
-public class JavaTermInitializerModel implements JavaInitializerModel, JavaTermTopLevelBlockOwnerModel
+public class JavaTermInitializerModel extends JavaInitializerModel implements JavaTermTopLevelBlockOwnerModel
 {
     
     /**
@@ -68,7 +68,7 @@ public class JavaTermInitializerModel implements JavaInitializerModel, JavaTermT
     /**
      * initializers does not have formal parameters, so return empty map.
      */
-    public Map<String,JavaFormalParameterModel> getFormalParametersMap()
+    public Map<String, JavaFormalParameterModel> getFormalParametersMap()
     {
       return Collections.emptyMap();  
     }
@@ -77,10 +77,18 @@ public class JavaTermInitializerModel implements JavaInitializerModel, JavaTermT
     /**
      * get initializer modifiers.
      */
-    public JavaModifiersModel getModifiers()
+    public JavaTermModifiersModel getModifiers()
     { return modifiersModel_; }
     
+    /**
+     *initializers does not have annotations, so return empty Map
+     */
+    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
+    { return Collections.emptyMap(); }
     
+    /**
+     *return true
+     */
     public boolean isSupportBlockModel()
     { return true; }
     
@@ -107,14 +115,14 @@ public class JavaTermInitializerModel implements JavaInitializerModel, JavaTermT
         Term modifiersTerm = t.getSubtermAt(0);
         Term insideModifiers = modifiersTerm.getSubtermAt(0);
         if (insideModifiers.isInt()) {
-          modifiersModel_ = new JavaModifiersModel(modifiersTerm.getSubtermAt(0).getInt());
+          modifiersModel_ = new JavaTermModifiersModel(modifiersTerm.getSubtermAt(0).getInt());
         }else if (insideModifiers.getName().equals("cons")) {
             Term l = insideModifiers;
             while(!l.isNil()) {
                 Term ct = l.getSubtermAt(0);
                 l=l.getSubtermAt(1);
                 if (ct.isInt()) {
-                    modifiersModel_ = new JavaModifiersModel(ct.getInt());                    
+                    modifiersModel_ = new JavaTermModifiersModel(ct.getInt());                    
                 }else{
                     // Annotation is not defined in initailizers
                     throw new AssertException("Annotations is not defined in initializers:"+TermHelper.termToString(ct));
@@ -127,10 +135,10 @@ public class JavaTermInitializerModel implements JavaInitializerModel, JavaTermT
         Term listStatements = blockTerm.getSubtermAt(0);
         blockModel_ = new JavaTermTopLevelBlockModel(this,listStatements);
     }
-    
+      
     
     private JavaTermTypeAbstractModel owner_;
-    private JavaModifiersModel modifiersModel_;
+    private JavaTermModifiersModel modifiersModel_;
     private JavaTermTopLevelBlockModel blockModel_;
     
 }

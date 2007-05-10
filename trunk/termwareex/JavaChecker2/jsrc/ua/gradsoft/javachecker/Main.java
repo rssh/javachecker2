@@ -333,7 +333,7 @@ public class Main
  
  private void readAndCheckSourceFile(String sourceDir, String packageDirName, File f) throws TermWareException
  {
-     if (!qOption_) {
+     if (!qOption_ || !showFiles_) {
        System.out.println("reading file "+f.getAbsolutePath());
      }     
      Term source=null;
@@ -379,6 +379,9 @@ public class Main
            if (true/*isVerbose()*/) {
                ex.printStackTrace();
            }
+       }catch(OutOfMemoryError ex){
+           System.err.println("out of memory during checking "+f.getAbsolutePath()+":"+ex.getMessage());
+           System.err.println("skipping");
        }
      }
           

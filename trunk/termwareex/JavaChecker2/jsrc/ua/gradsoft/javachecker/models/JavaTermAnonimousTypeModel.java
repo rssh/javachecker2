@@ -31,7 +31,8 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
      */
     public JavaTermAnonimousTypeModel(JavaTermStatementModel statement, Term t) throws TermWareException
     {   
-        super(0,t,statement.getTermTopLevelBlockModel().getOwnerTermModel().getTermTypeAbstractModel().getPackageModel(),
+        super(TermUtils.createTerm("Modifiers",TermUtils.createInt(0),TermUtils.createNil()),
+                t,statement.getTermTopLevelBlockModel().getOwnerTermModel().getTermTypeAbstractModel().getPackageModel(),
                   statement.getTermTopLevelBlockModel().getOwnerTermModel().getTermTypeAbstractModel().getUnitModel()
                 );
         statement_=statement;       
@@ -92,7 +93,7 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
                     if (st.getName().equals("Initializer")) {
                         addInitializer(st);
                     }else{
-                        int modifiers=declaration.getSubtermAt(0).getSubtermAt(0).getInt();
+                        Term modifiers=declaration.getSubtermAt(0);
                         declaration=declaration.getSubtermAt(1);
                         if (declaration.getName().equals("ClassOrInterfaceDeclaration")) {
                             addClassOrInterfaceDeclaration(modifiers,declaration);

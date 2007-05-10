@@ -6,6 +6,8 @@
 
 package ua.gradsoft.javachecker.util;
 
+import java.util.Map;
+
 /**
  *Just Pair.
  */
@@ -16,6 +18,11 @@ public class Pair<T1,T2>
     public Pair(T1 first, T2 second) {
         first_=first;
         second_=second;
+    }
+    
+    public Pair(Map.Entry<T1,T2> e)
+    {
+       this(e.getKey(),e.getValue()); 
     }
     
     public T1  getFirst()

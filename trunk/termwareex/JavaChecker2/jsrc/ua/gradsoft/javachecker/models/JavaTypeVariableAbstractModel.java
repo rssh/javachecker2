@@ -160,8 +160,15 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     /**
      *@return empty map
      */
-    public Map<String,JavaAnnotationInstanceModel> getAnnotations()
+    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
     { return Collections.emptyMap(); }
+    
+    /**
+     *@return empty list
+     */
+    public List<JavaConstructorModel>  getConstructorModels()
+    { return Collections.emptyList(); }
+    
     
     public void print(PrintWriter writer)
     {

@@ -9,6 +9,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
@@ -52,6 +53,15 @@ public class JavaTypeArgumentBoundLocalVariableModel implements JavaLocalVariabl
       JavaExpressionModel e = origin_.getInitExpressionModel();
       return (e==null) ? null : new JavaTypeArgumentBoundExpressionModel(e,statement_);
     }
+    
+    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap() throws TermWareException
+    {
+       return origin_.getAnnotationsMap(); 
+    }
+
+    
+    public JavaModifiersModel getModifiersModel()
+    { return origin_.getModifiersModel(); }
     
     /**
      * TypeArgumentBoundLocalVariable(origin,substitution)

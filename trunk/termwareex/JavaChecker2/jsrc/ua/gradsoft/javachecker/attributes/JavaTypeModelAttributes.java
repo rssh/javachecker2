@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package ua.gradsoft.javachecker.models;
+package ua.gradsoft.javachecker.attributes;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,18 +18,21 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.omg.CORBA.DATA_CONVERSION;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.models.*;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
- *
+ *Such object is implicitly binded with each loaded Java type.
  * @author rssh
  */
 public class JavaTypeModelAttributes {
@@ -42,20 +45,23 @@ public class JavaTypeModelAttributes {
     { return owner_; }
     
   
+    /**
+     *get Attribute for type with name <code> name </code> if one was defined,
+     *otherwise return null.
+     */   
     public Term  getTypeAttribute(String name) throws TermWareException
     {        
         if (!isLoaded()) {
             load();
         }
-        Term retval = loadedTypeAttributes_.get(name);        
-        return (retval!=null ? retval : TermUtils.createNil());
+        return data_.getGeneralAttributes().get(name);
     }
        
-    
+              
     public Term findInheriedTypeAttribute(String name) throws TermWareException
     {      
         Term retval = getTypeAttribute(name);
-        if (!retval.isNil()) {
+        if (retval!=null) {
             return retval;
         }
         if (owner_.isClass()) {            
@@ -66,19 +72,18 @@ public class JavaTypeModelAttributes {
             }catch(NotSupportedException ex){
                 /* do nothing */;
             }catch(EntityNotFoundException ex){
-                throw new AssertException("Unable to get super",ex);
+                throw new AssertException("Unable to get superclass",ex);
             }
-            if (!retval.isNil()) {
-                loadedTypeAttributes_.put(name,retval);
+            if (retval!=null) {
+                data_.getGeneralAttributes().put(name,retval);               
                 return retval;
             }
             try {
               List<JavaTypeModel> superInterfaces = owner_.getSuperInterfaces();
               for(JavaTypeModel si: superInterfaces) {
                 retval = si.getAttributes().findInheriedTypeAttribute(name);
-                if (!retval.isNil()) {
-                    loadedTypeAttributes_.put(name,retval);
-                    return retval;
+                if (retval!=null) {
+                    data_.getGeneralAttributes().put(name,retval);
                 }
               }            
             }catch(NotSupportedException ex){
@@ -89,8 +94,8 @@ public class JavaTypeModelAttributes {
               List<JavaTypeModel> superInterfaces = owner_.getSuperInterfaces();
               for(JavaTypeModel si: superInterfaces) {
                 retval = si.getAttributes().findInheriedTypeAttribute(name);
-                if (!retval.isNil()) {
-                    loadedTypeAttributes_.put(name,retval);
+                if (retval!=null) {
+                    data_.getGeneralAttributes().put(name,retval);
                     return retval;
                 }
               }
@@ -100,12 +105,18 @@ public class JavaTypeModelAttributes {
         }
         return retval;
     }
+   
     
-    
-    public Term  getMethodAttribute(String name, JavaMethodSignature methodSignature)
+    public Term getTopLevelBlockOwnerAttribute(JavaTopLevelBlockOwnerModel blockOwner,String name)
     {
-       return getMethodAttribute(name, generateMethodSignatureString(methodSignature));       
+        AttributesData childs = data_.getChilds().get(JavaTopLevelBlockOwnerModelHelper.getStringSignature(blockOwner));
+        if (childs==null) {
+            return null;
+        }else{
+            return childs.getGeneralAttributes().get(name);
+        }
     }
+    
        
     protected void finalize()
     {
@@ -120,21 +131,12 @@ public class JavaTypeModelAttributes {
      }
     }
         
-    private Term getMethodAttribute(String name, String signature)
-    {
-      HashMap<String,Term> methodAttributes = loadedMethodsAttributes_.get(signature);
-      if (methodAttributes==null) {
-          return TermUtils.createNil();
-      }
-      Term retval = methodAttributes.get(name);
-      if (retval==null) {
-          retval=TermUtils.createNil();
-      }
-      return retval;
-    }
+  
     
     private boolean isLoaded()
-    { return loadedTypeAttributes_==null; }
+    { 
+        return data_!=null; 
+    }
     
     private synchronized void load() throws TermWareException
     {
@@ -142,7 +144,7 @@ public class JavaTypeModelAttributes {
            String dirName=JUtils.createDirectoryNameFromPackageName(Main.getTmpDir(),owner_.getPackageModel().getName());
            String fname = JUtils.createSourceFileNameFromClassName(owner_.getName(),".jcswp");
            String fullLoadName = dirName+File.separator+fname;
-           File f = new File(fullLoadName);
+           File f = new File(fullLoadName);           
            if (f.exists()) {
                ObjectInputStream oi = null;
                try {
@@ -168,23 +170,17 @@ public class JavaTypeModelAttributes {
                    }
                }
                if (o!=null) {
-                 if (o instanceof JavaTypeModelAttributesData) {
-                   JavaTypeModelAttributesData data = (JavaTypeModelAttributesData)o;
-                   loadedTypeAttributes_=data.getTypeAttributes();    
-                   loadedMethodsAttributes_=data.getMethodsAttributes();
-                   loadedFieldsAttributes_=data.getFieldsAttributes();
+                 if (o instanceof AttributesData) {
+                   data_ = (AttributesData)o;
                  }else{
                      throw new AssertException("Type of object in "+fullLoadName+" is not JavaTypeModelAttributesData");
                  }
                }
            }           
-       } 
-       if (loadedTypeAttributes_==null) {
-           loadedTypeAttributes_=new HashMap<String,Term>();
-           loadedMethodsAttributes_=new HashMap<String,HashMap<String,Term>>();
-           loadedFieldsAttributes_=new HashMap<String,HashMap<String,Term>>();           
-           loadConfigTypeAttributes();        
-       }       
+       }
+       if (data_==null) {
+           data_=new AttributesData();
+       }
     }
     
     private synchronized void save() throws TermWareException
@@ -194,22 +190,20 @@ public class JavaTypeModelAttributes {
            String fname = JUtils.createSourceFileNameFromClassName(owner_.getName(),".jcswp");
            String fullLoadName = dirName+File.separator+fname;
            File f = new File(fullLoadName);
+           
            if (!f.exists()) {
                try {
                  f.createNewFile();
                }catch(IOException ex){
                  throw new AssertException("Can't create file "+f.getAbsolutePath(),ex);   
                }
+               f.deleteOnExit();
            }
            
            ObjectOutputStream oo=null;
            try {
              oo=new ObjectOutputStream(new FileOutputStream(f));  
-             JavaTypeModelAttributesData data = new JavaTypeModelAttributesData();
-             data.setTypeAttributes(loadedTypeAttributes_);
-             data.setMethodsAttributes(loadedMethodsAttributes_);
-             data.setFieldsAttributes(loadedFieldsAttributes_);
-             oo.writeObject(data);
+             oo.writeObject(data_);
            }catch(FileNotFoundException ex){
                throw new AssertException("Can't open file "+f.getAbsolutePath()+" for writing",ex);
            }catch(IOException ex){
@@ -226,15 +220,11 @@ public class JavaTypeModelAttributes {
         }
     }
     
-    
-    private String generateMethodSignatureString(JavaMethodSignature methodSignature)
-    {
-        JavaTypeModel returnType = methodSignature.getReturnType();
-        throw new RuntimeException("Not implemented!");
-    }
+  
 
     private void loadConfigTypeAttributes()
     {
+        
         throw new RuntimeException("Not implemented!");
         /*
         for(String basedirname: Main.getSourceMetainfoDirs()) {
@@ -253,18 +243,9 @@ public class JavaTypeModelAttributes {
     
     
     private JavaTypeModel        owner_;
-    private HashMap<String,Term> loadedTypeAttributes_=null;
+    private AttributesData       data_;
     
-    /**
-     * HashMap<signature:string,HashMap<name:String,value:Term>>
-     */
-    private HashMap<String,HashMap<String,Term>> loadedMethodsAttributes_=null;
-    
-    
-    /**
-     *HashMap<varname:String,HashMap<name:String,value:Term>>
-     */
-    private HashMap<String,HashMap<String,Term>> loadedFieldsAttributes_=null;
+        
     
     private final static Logger LOG = Logger.getLogger(JavaTypeModelAttributes.class.getName());
     
