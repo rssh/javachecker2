@@ -1700,6 +1700,6 @@ public class JavaResolver {
         }
     }
     
-    private static Logger LOG = Logger.getLogger(JavaResolver.class.getName());
+    private static final Logger LOG = Logger.getLogger(JavaResolver.class.getName());
     
 }

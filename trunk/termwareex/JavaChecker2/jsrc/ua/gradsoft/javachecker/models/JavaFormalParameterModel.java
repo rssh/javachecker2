@@ -11,6 +11,8 @@ package ua.gradsoft.javachecker.models;
 
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.attributes.AttributedEntity;
+import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -42,5 +44,20 @@ public abstract class JavaFormalParameterModel implements JavaVariableModel
      */
     public abstract int getIndex();
     
+    
+    public Term getAttribute(String name) throws TermWareException
+    {
+      return getOwner().getChildAttributes(getName()).getAttribute(name);  
+    }
+    
+    public void setAttribute(String name, Term value) throws TermWareException
+    {
+      getOwner().getChildAttributes(getName()).setAttribute(name,value);
+    }
+    
+    public AttributedEntity  getChildAttributes(String childName) 
+    {
+      return null;  
+    }
     
 }

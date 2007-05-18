@@ -9,6 +9,7 @@
 package ua.gradsoft.javachecker.models;
 
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.attributes.AttributedEntity;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -33,6 +34,21 @@ public abstract class JavaMemberVariableModel implements JavaVariableModel
     {
         return JavaVariableKind.MEMBER_VARIABLE;
     }        
+    
+    public Term  getAttribute(String name)
+    {
+        return getOwner().getAttributes().getFieldAttribute(getName(),name);
+    }
+    
+    public void  setAttribute(String name,Term value)
+    {
+        getOwner().getAttributes().setFieldAttribute(getName(),name,value);
+    }
+    
+    public AttributedEntity  getChildAttributes(String childName)
+    {
+        return null;
+    }
     
     public abstract JavaTypeModel getTypeModel() throws TermWareException, EntityNotFoundException;
     

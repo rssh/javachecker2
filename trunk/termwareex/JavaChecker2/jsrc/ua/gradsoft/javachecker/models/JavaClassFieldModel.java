@@ -8,6 +8,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -63,7 +64,11 @@ public class JavaClassFieldModel extends JavaMemberVariableModel {
                 new Function<String,JavaAnnotationInstanceModel>(){
             public JavaAnnotationInstanceModel function(String value) throws TermWareException
             {
-                return new JavaClassAnnotationInstanceModel(ElementType.FIELD, field_.getAnnotation(JavaClassTypeModel.forName(value)),this);
+                Annotation annotation = field_.getAnnotation(JavaClassTypeModel.forName(value));
+                if (annotation==null) {
+                    return null;
+                }
+                return new JavaClassAnnotationInstanceModel(ElementType.FIELD, annotation ,this);
             }
             
         }

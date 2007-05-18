@@ -13,6 +13,8 @@ import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JavaFacts;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.attributes.AttributedEntity;
+import ua.gradsoft.javachecker.attributes.AttributesData;
 import ua.gradsoft.javachecker.attributes.JavaTypeModelAttributes;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
@@ -21,7 +23,8 @@ import ua.gradsoft.termware.TermWareException;
  *Abstract class for type model of Java Language term
  * @author Ruslan Shevchenko
  */
-public abstract class JavaTypeModel {
+public abstract class JavaTypeModel implements AttributedEntity
+{
     
   JavaTypeModel(JavaPackageModel packageModel)
   {
@@ -96,6 +99,10 @@ public abstract class JavaTypeModel {
   public abstract boolean isUnknown();
   
   
+    /**
+     * get modifiers moder
+     * @return Modifiers model
+     */
   public abstract JavaModifiersModel  getModifiersModel();
   
   /**
@@ -275,6 +282,26 @@ public abstract class JavaTypeModel {
   public  abstract Term  getModelTerm() throws TermWareException, EntityNotFoundException;
   
   
+  public AttributesData getAttributesData() throws TermWareException
+  {
+      return getAttributes().getData();
+  }
+  
+  public Term getAttribute(String name) throws TermWareException
+  {
+      return getAttributes().getTypeAttribute(name);      
+  }
+  
+  
+  public void setAttribute(String name, Term value) throws TermWareException
+  {
+      getAttributes().setTypeAttribute(name,value);
+  }
+  
+  public AttributedEntity  getChildAttributes(String childName) throws TermWareException
+  {
+      return getAttributes().getData().getOrCreateChild(childName);
+  }
   
   /**
    *return attributes of this model

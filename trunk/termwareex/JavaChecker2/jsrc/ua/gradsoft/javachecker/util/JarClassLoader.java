@@ -33,5 +33,9 @@ public class JarClassLoader extends URLClassLoader
         return retval;
     }
     
+    public void addJar(String jarName) throws MalformedURLException
+    {        
+        super.addURL(new URL("file","",jarName));
+    }
     
 }

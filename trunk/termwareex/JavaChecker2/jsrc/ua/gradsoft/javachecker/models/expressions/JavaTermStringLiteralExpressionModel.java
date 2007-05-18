@@ -39,7 +39,7 @@ public class JavaTermStringLiteralExpressionModel extends JavaTermExpressionMode
     
     public JavaExpressionKind getKind()
     {
-      return JavaExpressionKind.CHARACTER_LITERAL;
+      return JavaExpressionKind.STRING_LITERAL;
     }
     
     
@@ -74,7 +74,12 @@ public class JavaTermStringLiteralExpressionModel extends JavaTermExpressionMode
      */
     public Object getConstant() throws TermWareException
     {
-      return evalStringLiteral(getString(),'\"',"String");  
+      return evalStringLiteral(getString());  
+    }
+    
+    public static String evalStringLiteral(String s) throws TermWareException
+    {
+      return evalStringLiteral(s,'\"',"String");  
     }
     
     static String evalStringLiteral(String s, char quote, String kind) throws TermWareException

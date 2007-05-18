@@ -10,6 +10,7 @@ package ua.gradsoft.javachecker.models;
 
 import java.io.PrintWriter;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.attributes.AttributedEntity;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -35,6 +36,25 @@ public abstract class JavaInitializerModel implements JavaTopLevelBlockOwnerMode
     public void printSignature(PrintWriter out)
     {
       out.print("{initializer}");  
+    }
+    
+    
+    public Term  getAttribute(String name)
+    {
+      return getTypeModel().getAttributes().getTopLevelBlockOwnerAttribute(this,name);
+    }
+    
+    public void  setAttribute(String name, Term value)
+    {
+       getTypeModel().getAttributes().setTopLevelBlockOwnerAttribute(this,name,value);
+    }
+    
+    /**
+     *@return null
+     */
+    public AttributedEntity  getChildAttributes(String childName)
+    {
+       return null;
     }
     
 }

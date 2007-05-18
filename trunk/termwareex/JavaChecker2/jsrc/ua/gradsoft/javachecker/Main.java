@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
+import ua.gradsoft.javachecker.attributes.ConfigurationAttributesStorage;
 import ua.gradsoft.javachecker.checkers.Checkers;
 import ua.gradsoft.javachecker.models.AnalyzedUnitRef;
 import ua.gradsoft.javachecker.models.AnalyzedUnitType;
@@ -122,6 +123,9 @@ public class Main
   }catch(TermWareException ex){
     throw new ConfigException("Error during facts initialization",ex);  
   }
+  
+  facts_.getAttributesStorage().getPropertyDirs().add(home_+File.separator+"attrs"); 
+   
   parseArgs(args);    
 
   initTmpDirBase();
@@ -142,7 +146,7 @@ public class Main
  // TODO
  private void parseArgs(String[] args) throws ConfigException
  {
-   ArrayList<String> jars = new ArrayList<String>();
+   ArrayList<String> jars = new ArrayList<String>();   
    for(int i=0; i<args.length; ++i) {
       if (args[i].equals("--prefs")) {
            if (args.length==i+1) {
@@ -185,6 +189,13 @@ public class Main
           String jarName=args[i+1];        
           jars.add(jarName);
           ++i;         
+      }else if(args[i].equals("--attrdir")) {
+          if (args.length==i+1) {
+              throw new ConfigException("--attrdir option require argument");              
+          }
+          String dirName=args[i+1];
+          getFacts().getAttributesStorage().getPropertyDirs().add(dirName);
+          ++i;
       }else if(args[i].equals("--enable")){
           if (args.length==i+1) {
               throw new ConfigException("--enable option require argument");
@@ -286,6 +297,7 @@ public class Main
    System.err.println("  --config  name value           set configuration item of name to value");
    System.err.println("  --include dir                  set directory, where situated source files, from which processed sources are depend");
    System.err.println("  --includejar fname             set jar, where situated classes, from which processed sources are depend  ");
+   System.err.println("  --attrdir dir                  set directory, where external source attributes are stored");
    System.err.println("  --debug                        put to stderr a lot of debug output");
    System.err.println("  --dump                         dump to stdout AST of parsed files");
    System.err.println("  --q                            minimize output to stdout");
@@ -481,6 +493,13 @@ public class Main
   }
  }
  
+ public static void addPropertiesDirectory(String directory)
+ {
+   JavaFacts facts=getFacts();
+   ConfigurationAttributesStorage cfg = facts.getAttributesStorage();
+   List<String> dirs = cfg.getPropertyDirs();
+   dirs.add(directory);
+ }
  
  
  public static String  getHome()

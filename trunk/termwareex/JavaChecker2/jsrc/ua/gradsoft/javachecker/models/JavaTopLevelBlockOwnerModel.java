@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.attributes.AttributedEntity;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -19,7 +20,7 @@ import ua.gradsoft.termware.TermWareException;
  *Generic owner of block (method, constructor or initializer)
  * @author Ruslan Shevchenko
  */
-public interface JavaTopLevelBlockOwnerModel 
+public interface JavaTopLevelBlockOwnerModel extends AttributedEntity
 {
 
     public JavaTypeModel  getTypeModel();
@@ -68,5 +69,7 @@ public interface JavaTopLevelBlockOwnerModel
      *ont pwr.
      */
     public void printSignature(PrintWriter pwr);
+    
+   
     
 }

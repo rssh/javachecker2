@@ -7,13 +7,15 @@ package ua.gradsoft.javachecker.models;
 
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.attributes.AttributedEntity;
 import ua.gradsoft.termware.TermWareException;
 
 /**
  *Model of java variable, which we can see in code.
  * @author Ruslan Shevchenko
  */
-public interface JavaVariableModel {
+public interface JavaVariableModel extends AttributedEntity
+{
     
     /**
      *get name of variable.

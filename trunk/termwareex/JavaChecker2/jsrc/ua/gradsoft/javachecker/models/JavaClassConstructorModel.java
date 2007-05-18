@@ -123,10 +123,14 @@ public class JavaClassConstructorModel extends JavaConstructorModel implements J
                  }),
                new Function<String,JavaAnnotationInstanceModel>(){
            public JavaAnnotationInstanceModel function(String s) throws TermWareException
-           {               
+           {                
+               Annotation annotation = constructor_.getAnnotation(JavaClassTypeModel.forName(s));
+               if (annotation==null) {
+                   return null;
+               }
                return new JavaClassAnnotationInstanceModel(ElementType.CONSTRUCTOR,
-                       constructor_.getAnnotation(JavaClassTypeModel.forName(s)),
-                       JavaClassConstructorModel.this);
+                                                   annotation,
+                                                   JavaClassConstructorModel.this);
            }
        }               
                );

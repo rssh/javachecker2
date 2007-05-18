@@ -10,9 +10,12 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
+import ua.gradsoft.javachecker.JavaFacts;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.javachecker.models.InvalidJavaTermException;
 import ua.gradsoft.javachecker.models.JavaConstructorModel;
@@ -26,7 +29,9 @@ import ua.gradsoft.javachecker.models.JavaTermMethodModel;
 import ua.gradsoft.javachecker.models.JavaTopLevelBlockOwnerModelHelper;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.javachecker.models.JavaTypeVariableAbstractModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermStringLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.TermWareException;
 import ua.gradsoft.termware.exceptions.AssertException;
@@ -39,6 +44,14 @@ import ua.gradsoft.termware.exceptions.AssertException;
 public class ConfigurationAttributesStorage {
     
     
+    public ConfigurationAttributesStorage(JavaFacts facts)
+    {
+      facts_=facts;
+      dirs_=new LinkedList<String>();
+    }
+    
+    public List<String>  getPropertyDirs()
+    { return dirs_; }
     
     public AttributesData readConfiguratedAttributes(JavaTypeModel tm) throws TermWareException, EntityNotFoundException {
         String packageName = tm.getPackageModel().getName();
@@ -46,12 +59,16 @@ public class ConfigurationAttributesStorage {
         AttributesData data = new AttributesData();
         for(String basedirname: dirs_) {
             String dirname = JUtils.createDirectoryNameFromPackageName(basedirname,packageName);
-            String rfname = JUtils.createSourceFileNameFromClassName(className,"javacfg");
+            String rfname = JUtils.createSourceFileNameFromClassName(className,".javacfg");
             String fname = dirname+File.separator+rfname;
             File f = new File(fname);
+            LOG.info("check for file "+f.getAbsolutePath());
             if (f.exists()) {
+                LOG.info("exists, reading");
                 Term cu = JUtils.readSourceFile(f);
                 fillData(tm,cu,data,fname);
+            }else{
+                LOG.info("does not exists");
             }
         }
         return data;
@@ -72,7 +89,7 @@ public class ConfigurationAttributesStorage {
             }else if (ct.getName().equals("ImportDeclaration")) {
                 // skip
             }else if (ct.getName().equals("TypeDeclaration")) {
-                fillTypeData(typeModel,cu,data,null);
+                fillTypeData(typeModel,ct,data,null);
             }else{
                 throw new InvalidJavaTermException("Packade, Import or TypeDeclarations needed.",ct);
             }
@@ -84,7 +101,7 @@ public class ConfigurationAttributesStorage {
     private void fillTypeData(JavaTypeModel tm, Term td, AttributesData data, JavaTypeModel enclosed)
     throws TermWareException,EntityNotFoundException {
         Term modifiers = td.getSubtermAt(0);
-        Term dcl = td.getSubtermAt(1);
+        Term dcl = td.getSubtermAt(1);        
         if (dcl.getName().equals("ClassOrInterfaceDeclaration")) {
             fillClassOrInterfaceDeclarationData(tm,modifiers,dcl,data,enclosed,0);
         }else if(dcl.getName().equals("EnumDeclaration")) {
@@ -125,7 +142,10 @@ public class ConfigurationAttributesStorage {
     
     private void fillClassOrInterfaceBodyDeclarationData(JavaTypeModel tm, Term dcl, AttributesData data, JavaTypeModel enclosed, int level)
     throws TermWareException,EntityNotFoundException {
-        Term t0 = dcl.getSubtermAt(0);
+        if (dcl.getArity()==0) {
+            return;
+        }
+        Term t0=dcl.getSubtermAt(0);
         if (t0.getName().equals("Initializer")){
             // useless, but - skip.
         }else{
@@ -135,14 +155,14 @@ public class ConfigurationAttributesStorage {
                 fillClassOrInterfaceDeclarationData(tm,modifiers,t1,data,tm,level+1);
             }else if (t1.getName().equals("EnumDeclaration")){
                 fillEnumDeclarationData(tm,modifiers,t1,data,tm,level+1);
-            }else if (t1.getName().equals("ConstructoirDeclaration")){
+            }else if (t1.getName().equals("ConstructorDeclaration")){
                 fillConstructorDeclarationData(tm,modifiers,t1,data,level+1);
             }else if (t1.getName().equals("FieldDeclaration")){
                 fillFieldDeclarationData(tm,modifiers,t1,data,level+1);
             }else if (t1.getName().equals("MethodDeclaration")){
                 fieldMethodDeclarationData(tm,modifiers,t1,data,level+1);
             }else{
-                throw new InvalidJavaTermException("invalid context of ClassOrInterfaceBodyDeclaration",dcl);
+                throw new InvalidJavaTermException("invalid context of ClassOrInterfaceBodyDeclaration",t1);
             }
         }
     }
@@ -222,7 +242,7 @@ public class ConfigurationAttributesStorage {
         List<JavaTypeVariableAbstractModel> tpvs = JavaTopLevelBlockOwnerModelHelper.buildTypeParameters(tp,tm);
         JavaTopLevelBlockOwnerModelHelper.printTypeParametersSignature(signatureWriter,tpvs);
         signatureWriter.print(tm.getFullName());
-        JavaTopLevelBlockOwnerModelHelper.printFormalParametersSignature(signatureWriter,tfps,tpvs,tm);
+        JavaTopLevelBlockOwnerModelHelper.printFormalParametersSignature(signatureWriter,tfps.getSubtermAt(0),tpvs,tm);
         signatureWriter.flush();
         
         String signature = sSignatureWriter.toString();
@@ -253,10 +273,22 @@ public class ConfigurationAttributesStorage {
         Term vdcll = dcl.getSubtermAt(1);
         while(!vdcll.isNil()) {
             Term vd = vdcll.getSubtermAt(0);
-            vdcll = vdcll.getSubtermAt(0);
-            Term vdi = vd.getSubtermAt(0);
-            Term identifier = vdi.getSubtermAt(0);
-            String fieldName = identifier.getSubtermAt(0).getString();
+            vdcll = vdcll.getSubtermAt(1); 
+            Term vdi=null;
+            if (vd.getName().equals("VariableDeclaratorId")) {
+                vdi=vd;
+            }else if (vd.getName().equals("VariableDeclarator")) {
+                vdi = vd.getSubtermAt(0);
+            }else{
+                throw new InvalidJavaTermException("VariableDeclarator|VariableDeclaratorId is required",dcl);
+            }
+            Term identifier=vdi.getSubtermAt(0);
+            String fieldName = null;
+            try {
+               fieldName=identifier.getSubtermAt(0).getString();
+            }catch(Exception ex){
+                throw new InvalidJavaTermException("QQQ",vd);
+            }
             AttributesData fData = data.getChilds().get(fieldName);
             if (fData==null) {
                 fData = new AttributesData();
@@ -283,7 +315,7 @@ public class ConfigurationAttributesStorage {
         List<JavaTypeVariableAbstractModel> tpvs = JavaTopLevelBlockOwnerModelHelper.buildTypeParameters(tpt,tm);
         JavaTopLevelBlockOwnerModelHelper.printTypeParametersSignature(pwr,tpvs);
         pwr.print(name);
-        JavaTopLevelBlockOwnerModelHelper.printFormalParametersSignature(pwr,fpls,tpvs,tm);
+        JavaTopLevelBlockOwnerModelHelper.printFormalParametersSignature(pwr,fpls.getSubtermAt(0),tpvs,tm);
         pwr.flush();
         
         
@@ -349,10 +381,29 @@ public class ConfigurationAttributesStorage {
             while(!annotationsList.isNil()) {
                 Term annotation=annotationsList.getSubtermAt(0);
                 annotationsList=annotationsList.getSubtermAt(1);
-                Term identifier = annotation.getSubtermAt(0);
-                String name = identifier.getSubtermAt(0).getString();
-                if (name.equals("CheckerProperties")) {
-                    fillAttributesFromCheckerPropertiesAnnotation(annotation,attributes);
+                Term nameTerm = annotation.getSubtermAt(0).getSubtermAt(0);                
+                String name = null;
+                if (nameTerm.getName().equals("Identifier")) {
+                    name=nameTerm.getSubtermAt(0).getString();
+                }else if (nameTerm.getName().equals("Name")) {
+                    name=JUtils.getJavaNameLastComponentAsString(nameTerm);
+                }else{
+                    throw new InvalidJavaTermException("Name expected",nameTerm);
+                }
+                if (name.equals("CheckerProperties")
+                    ||
+                    name.equals("TypeCheckerProperties")
+                    ||
+                    name.equals("ConstructorCheckerProperties")
+                    ||
+                    name.equals("MethodCheckerProperties")    
+                    ||
+                    name.equals("FieldCheckerProperties")    
+                ) {
+                    fillAttributesFromCheckerPropertiesAnnotation(annotation.getSubtermAt(0),attributes);
+                } else {
+                    // TODO: erase
+                    System.out.println("skip annotation "+name);
                 }
             }
         }
@@ -372,17 +423,18 @@ public class ConfigurationAttributesStorage {
                     if (!name.equals("value")) {
                         throw new InvalidJavaTermException("annotation name must ve 'value'",mvp);
                     }
-                    Term mvpValue=mvp.getSubtermAt(1);
+                    Term mvpValue=mvp.getSubtermAt(1).getSubtermAt(0);
                     fillAttributesFromCheckerPropertiesMemberValue(mvpValue,attributes);
                 }
             }
         }else if (annotation.getName().equals("SingleMemberAnnotation")){
-            Term memberValue=annotation.getSubtermAt(1);
+            Term memberValue=annotation.getSubtermAt(1).getSubtermAt(0);
             fillAttributesFromCheckerPropertiesMemberValue(memberValue,attributes);
         }else if (annotation.getName().equals("MarkerAnnotation")){
             // strange, but if not correct - who care.
+            throw new InvalidJavaTermException("MarkerAnnotation for checker properties is useless",annotation);
         }else{
-            // impossible, do nothing.
+            throw new InvalidJavaTermException("NormalAnnotation|SimgleMemberAnnotation|MarkerAnnotation expected",annotation);
         }
     }
     
@@ -391,12 +443,12 @@ public class ConfigurationAttributesStorage {
         if (mv.getName().equals("MemberValueArrayInitializer")) {
             Term l = mv.getSubtermAt(0);
             while(!l.isNil()) {
-                Term tname = l.getSubtermAt(0);
+                Term tname = l.getSubtermAt(0).getSubtermAt(0);
                 l=l.getSubtermAt(1);
                 if (l.isNil()) {
                     throw new InvalidJavaTermException("odd number of arguments is requred in @CheckerProperties",mv);
                 }
-                Term tvalue = l.getSubtermAt(0);
+                Term tvalue = l.getSubtermAt(0).getSubtermAt(0);
                 l=l.getSubtermAt(1);
                 if (!tname.getName().equals("StringLiteral")) {
                     throw new InvalidJavaTermException("String literal is required",tname);
@@ -404,21 +456,30 @@ public class ConfigurationAttributesStorage {
                     throw new InvalidJavaTermException("String literal is required",tvalue);
                 }
                 String name = tname.getSubtermAt(0).getString();
+                name=JavaTermStringLiteralExpressionModel.evalStringLiteral(name);
                 String value = tvalue.getSubtermAt(0).getString();
+                value=JavaTermStringLiteralExpressionModel.evalStringLiteral(value);
                 Term obj = TermWare.getInstance().getTermFactory().createParsedTerm(value);
+                //LOG.info("put: "+name+","+TermHelper.termToString(obj));
                 attributes.getGeneralAttributes().put(name,obj);
             }
+        } else {
+            throw new InvalidJavaTermException("MemberValueArrayInitializer expected",mv);
         }
     }
     
     
     
-    
-    
+    /**
+     *pointer to factsl
+     */
+    private JavaFacts  facts_;
     
     /**
      * set of directories, read files from
      */
     private List<String>  dirs_;
+    
+    private static final Logger LOG = Logger.getLogger(ConfigurationAttributesStorage.class.getName());
     
 }

@@ -51,6 +51,16 @@ public class JavaTermFormalParameterModel extends JavaFormalParameterModel
     public Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap()
     { return modifiers_.getAnnotationsMap(); }
     
+    public Term getAttribute(String name) throws TermWareException
+    {
+       return owner_.getChildAttributes(name_).getAttribute(name); 
+    }
+    
+    public void setAttribute(String name, Term value) throws TermWareException
+    {
+       owner_.getChildAttributes(name_).setAttribute(name,value);  
+    }
+    
     /**
      *@return index of this formal parameters in call, started from 0
      */

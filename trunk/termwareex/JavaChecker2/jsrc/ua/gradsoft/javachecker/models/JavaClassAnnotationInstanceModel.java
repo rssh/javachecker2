@@ -26,6 +26,9 @@ public class JavaClassAnnotationInstanceModel extends JavaAnnotationInstanceMode
     public JavaClassAnnotationInstanceModel(ElementType et, Annotation a, Object o) {
         super(et,o);
         annotation_=a;
+        if (a==null) {
+            throw new NullPointerException();
+        }
     }
     
     
@@ -37,7 +40,12 @@ public class JavaClassAnnotationInstanceModel extends JavaAnnotationInstanceMode
     public boolean hasElement(String elementName)
     {
         try {
-            Field field = annotation_.annotationType().getField(elementName);
+            Class annotationClass = annotation_.annotationType();
+            if (annotationClass==null) {
+                // this is not annotation ?
+                return false;
+            }
+            Field field = annotationClass.getField(elementName);
         }catch(NoSuchFieldException ex){
             return false;
         }

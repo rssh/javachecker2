@@ -6,10 +6,11 @@
 package ua.gradsoft.javachecker.models;
 
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.attributes.AttributedEntity;
+import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -41,6 +42,21 @@ public abstract class JavaConstructorModel implements JavaTopLevelBlockOwnerMode
         JavaTopLevelBlockOwnerModelHelper.printTypeParametersSignature(out,this);
         out.print(getTypeModel().getFullName());
         JavaTopLevelBlockOwnerModelHelper.printFormalParametersSignature(out,this);
+    }
+    
+    public Term getAttribute(String name)
+    {
+      return getTypeModel().getAttributes().getConstructorAttribute(this,name);  
+    }
+    
+    public void setAttribute(String name,Term value)
+    {
+      getTypeModel().getAttributes().setConstructorAttribute(this,name,value);  
+    }
+    
+    public AttributedEntity getChildAttributes(String childName) throws TermWareException
+    {
+      return getTypeModel().getAttributes().getData().getChildAttributes(JavaTopLevelBlockOwnerModelHelper.getStringSignature(this)).getChildAttributes(childName);  
     }
     
 }

@@ -10,11 +10,11 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+import ua.gradsoft.javachecker.attributes.ConfigurationAttributesStorage;
 import ua.gradsoft.termware.DefaultFacts;
 import ua.gradsoft.termware.IEnv;
 import ua.gradsoft.termware.Term;
@@ -69,6 +69,9 @@ public class JavaFacts extends DefaultFacts {
     {
       return packagesStore_;  
     }
+    
+    public ConfigurationAttributesStorage getAttributesStorage()
+    { return attributesStorage_; }
     
     public Violations getViolations()
     {
@@ -298,7 +301,9 @@ public class JavaFacts extends DefaultFacts {
     private String  methodNamePattern_="[a-z]+([A-Z]|[0-9]|[a-z]|_)*";
     private String  enumConstantNamePattern_="[A-Z](_|[A-Z]|[0-9])*";
     private String  typeArgumentNamePattern_="[A-Z]+([A-Z]|[0-9])*";
+    
     private PackagesStore packagesStore_=new PackagesStore(this);
+    private ConfigurationAttributesStorage attributesStorage_ = new ConfigurationAttributesStorage(this);
     
     private static final Logger LOG = Logger.getLogger(JavaFacts.class.getName());
     

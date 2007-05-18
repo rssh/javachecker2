@@ -11,6 +11,7 @@ package ua.gradsoft.javachecker.models;
 
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.attributes.AttributedEntity;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -77,6 +78,19 @@ public class JavaTypeArgumentBoundLocalVariableModel implements JavaLocalVariabl
     public boolean isForHead()
     { return origin_.isForHead(); }
 
+    public Term getAttribute(String name) throws TermWareException {
+        return origin_.getAttribute(name);
+    }
+
+    public void setAttribute(String name, Term value) throws TermWareException {
+        origin_.setAttribute(name,value);
+    }
+
+    public AttributedEntity getChildAttributes(String childName)
+    {
+        return null;
+    }
+    
     private JavaLocalVariableModel origin_;
     private JavaTypeArgumentBoundStatementModel statement_;
     

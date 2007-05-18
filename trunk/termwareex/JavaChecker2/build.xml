@@ -19,10 +19,17 @@
 
  
  <target name="build-classes">
+   <javac srcdir="jsrc-ann" includes="**/*.java" debug="true">
+       <classpath>
+          <pathelement location="jsrc-ann"/>
+          <pathelement location="${java.class.path}/"/>                 
+       </classpath>
+   </javac>
   <javac srcdir="jsrc" includes="**/*.java" debug="true">
     <!--<compilerarg value="-Xlint:unchecked" />  -->
     <classpath>
       <pathelement location="jsrc"/>
+      <pathelement location="jsrc-ann"/>
       <pathelement location="lib/TermWare2.jar"/>
       <pathelement location="lib/TermWareJPP.jar"/>
       <pathelement location="${java.class.path}/"/>      
@@ -31,11 +38,20 @@
   <jar basedir="jsrc" includes="**/*.class" 
        destfile="lib/JavaChecker2.jar" 
        index="true">
+      <include name="build"/>
+      <manifest>
+          <attribute name="Build-By" value="${user-name}"/>
+          <attribute name="Main-Class" value="ua.gradsoft.javachecker.Main"/>
+      </manifest>
+  </jar>
+  <jar basedir="jsrc-ann" includes="**/*.class" 
+       destfile="lib/JavaChecker2Annotations.jar" 
+       index="true">
   <include name="build"/>
   <manifest>
    <attribute name="Build-By" value="${user-name}"/>
    <attribute name="Main-Class" value="ua.gradsoft.javachecker.Main"/>
-  </manifest>
+  </manifest>  
   </jar>
      
  </target>
@@ -44,6 +60,7 @@
      <javac srcdir="jtests" includes="ua/**/*.java" debug="true" >
          <classpath>
              <pathelement location="lib/JavaChecker2.jar" />
+             <pathelement location="lib/JavaChecker2Annotations.jar" />
              <pathelement location="lib/TermWare2.jar" />
              <pathelement location="lib/TermWareJPP.jar" />
              <pathelement location="lib/junit.jar" />
@@ -67,6 +84,7 @@
          <classpath>
              <pathelement location="jtests" />
              <pathelement location="lib/JavaChecker2.jar" />
+             <pathelement location="lib/JavaChecker2Annotations.jar" />
              <pathelement location="lib/TermWare2.jar" />
              <pathelement location="lib/TermWareJPP.jar" />
              <pathelement location="lib/junit.jar" />

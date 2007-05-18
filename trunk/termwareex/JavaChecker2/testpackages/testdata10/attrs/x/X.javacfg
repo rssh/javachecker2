@@ -1,0 +1,19 @@
+package x;
+
+@TypeCheckerProperties( { "p1", "v1", "p2", "true" } )
+class X
+{
+
+  @ConstructorCheckerProperties({ "c1", "1" })
+  X() {}
+
+  @MethodCheckerProperties({ "BreakFlow", "true" })
+  void throwRuntimeException(String message);
+
+  @TypeCheckerProperties({ "isXX", "true", "aaa", "false" })
+  class XX {};
+  
+  @FieldCheckerProperties({"xx","xx"})
+  int qqq;
+
+}

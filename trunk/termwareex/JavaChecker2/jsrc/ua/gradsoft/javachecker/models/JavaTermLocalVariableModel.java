@@ -13,6 +13,7 @@ import java.lang.annotation.ElementType;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
+import ua.gradsoft.javachecker.attributes.AttributedEntity;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -103,8 +104,25 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
       return resolvedType_;
     }
     
+   
+        private AttributedEntity getLocalVariableAttributesRoot() throws TermWareException
+    {
+        return statement_.getTopLevelBlockModel().getOwnerModel().getChildAttributes("*LocalVariables");
+    }
     
+    public Term getAttribute(String name) throws TermWareException
+    {
+       return getLocalVariableAttributesRoot().getAttribute(name);
+    }
     
+    public void setAttribute(String name, Term value) throws TermWareException
+    {
+       getLocalVariableAttributesRoot().setAttribute(name,value);
+    }
+    
+    public AttributedEntity getChildAttributes(String childName)
+    { return null; }
+
     
     private Term identifierTerm_;
     private Term typeTerm_;
@@ -115,6 +133,6 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
     private JavaTermStatementModel statement_;
 
     private JavaTypeModel resolvedType_;
-    private JavaTermModifiersModel modifiers_;
+    private JavaTermModifiersModel modifiers_;    
     
 }

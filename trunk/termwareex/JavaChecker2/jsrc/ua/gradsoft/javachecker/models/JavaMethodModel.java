@@ -7,11 +7,12 @@ package ua.gradsoft.javachecker.models;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JavaFacts;
+import ua.gradsoft.javachecker.attributes.AttributedEntity;
+import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -84,6 +85,23 @@ public abstract class JavaMethodModel implements JavaTopLevelBlockOwnerModel
     
     public JavaTypeModel getTypeModel()
     { return typeModel_; }
+    
+ 
+    
+    public Term getAttribute(String name)
+    {
+      return getTypeModel().getAttributes().getMethodAttribute(this,name); 
+    }
+    
+    public void setAttribute(String name, Term value)
+    {
+      getTypeModel().getAttributes().setMethodAttribute(this,name,value);  
+    }
+    
+    public AttributedEntity  getChildAttributes(String childName) throws TermWareException
+    {
+       return getTypeModel().getAttributes().getData().getOrCreateChild(JavaTopLevelBlockOwnerModelHelper.getStringSignature(this)).getOrCreateChild(childName); 
+    }
     
     private JavaTypeModel typeModel_;
 }

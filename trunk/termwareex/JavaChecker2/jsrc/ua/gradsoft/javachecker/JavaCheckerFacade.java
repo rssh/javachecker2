@@ -40,6 +40,14 @@ public class JavaCheckerFacade {
     }
     
     /**
+     *add properties directory
+     */
+    public static void addPropertiesDirectory(String inputDirectory)
+    {
+      main_.addPropertiesDirectory(inputDirectory);  
+    }
+    
+    /**
      *get packages store
      */
     public static PackagesStore getPackagesStore()

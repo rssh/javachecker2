@@ -8,6 +8,7 @@
 
 package ua.gradsoft.javachecker;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,6 +76,7 @@ public class PackagesStore
     public  void  setJars(List<String> jars) throws ConfigException
     {
       jars_=jars;  
+      jars_.add(Main.getHome()+File.separator+"JavaChecker2Annotations.jar");
       try {
           classLoader_=new JarClassLoader(jars.toArray(new String[0]));
       }catch(MalformedURLException ex){
