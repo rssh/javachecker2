@@ -62,13 +62,13 @@ public class ConfigurationAttributesStorage {
             String rfname = JUtils.createSourceFileNameFromClassName(className,".javacfg");
             String fname = dirname+File.separator+rfname;
             File f = new File(fname);
-            LOG.info("check for file "+f.getAbsolutePath());
+           // LOG.info("check for file "+f.getAbsolutePath());
             if (f.exists()) {
-                LOG.info("exists, reading");
+             //   LOG.info("exists, reading");
                 Term cu = JUtils.readSourceFile(f);
                 fillData(tm,cu,data,fname);
             }else{
-                LOG.info("does not exists");
+              //  LOG.info("does not exists");
             }
         }
         return data;

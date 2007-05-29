@@ -65,6 +65,8 @@ public class TypeOfViolation {
                out.print(counter_);
                out.print("</td></tr>");
                break;
+           default:
+               throw new RuntimeException("Invalid report format:"+format); 
        }
       }
     }

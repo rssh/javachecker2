@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.FileAndLine;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
@@ -66,7 +68,10 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
      try {   
         return JavaResolver.resolveTypeToModel(resultType,getTypeModel(),getTypeParameters()); 
      }catch(EntityNotFoundException ex){
-        return JavaUnknownTypeModel.INSTANCE;  
+        if (ex.getFileAndLine().equals(FileAndLine.UNKNOWN)) { 
+           ex.setFileAndLine(JUtils.getFileAndLine(resultType)); 
+        }
+        throw new AssertException(ex.getMessage()+" file "+ex.getFileAndLine().getFname()+", line "+ex.getFileAndLine().getLine(),ex);
      }
     }
     

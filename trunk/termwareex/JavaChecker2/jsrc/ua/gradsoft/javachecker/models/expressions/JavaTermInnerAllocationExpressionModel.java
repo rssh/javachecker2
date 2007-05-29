@@ -76,7 +76,7 @@ public class JavaTermInnerAllocationExpressionModel extends JavaTermExpressionMo
           }
           int nReferences=nReferences_;
           while(nReferences>0) {
-              resolvedType_=new JavaArrayTypeModel(resolvedType_);
+              resolvedType_=new JavaArrayTypeModel(resolvedType_,null);
           }
       } 
       return resolvedType_;

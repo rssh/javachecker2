@@ -35,12 +35,12 @@ public abstract class JavaMemberVariableModel implements JavaVariableModel
         return JavaVariableKind.MEMBER_VARIABLE;
     }        
     
-    public Term  getAttribute(String name)
+    public Term  getAttribute(String name) throws TermWareException
     {
         return getOwner().getAttributes().getFieldAttribute(getName(),name);
     }
     
-    public void  setAttribute(String name,Term value)
+    public void  setAttribute(String name,Term value) throws TermWareException
     {
         getOwner().getAttributes().setFieldAttribute(getName(),name,value);
     }
@@ -53,7 +53,11 @@ public abstract class JavaMemberVariableModel implements JavaVariableModel
     public abstract JavaTypeModel getTypeModel() throws TermWareException, EntityNotFoundException;
     
     public abstract JavaTypeModel getOwner();
-        
+    
+    public abstract boolean  isSupportInitializerExpression();
+    
+    public abstract JavaExpressionModel  getInitializerExpression() throws TermWareException, EntityNotFoundException;
+    
     public abstract Term getModelTerm() throws TermWareException, EntityNotFoundException;
     
 }

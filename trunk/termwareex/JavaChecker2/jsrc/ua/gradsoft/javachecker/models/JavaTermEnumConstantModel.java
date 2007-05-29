@@ -67,6 +67,13 @@ public class JavaTermEnumConstantModel extends JavaEnumConstantModel
     public Term getIdentifierTerm()
     { return identifierTerm_; }
     
+    public boolean isSupportInitializerExpression()
+    { return false;}
+    
+    public JavaExpressionModel getInitializerExpression()
+    { return null; }
+    
+    
     private String               name_;
     private Term                 identifierTerm_;
     private Term                 argumentsTerm_;

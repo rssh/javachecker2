@@ -18,6 +18,7 @@
       <pathelement location="jsrc"/>
       <pathelement location="lib/TermWare2.jar"/>
       <pathelement location="lib/JavaChecker2.jar"/>
+      <pathelement location="lib/JavaChecker2Annotations.jar"/>
       <pathelement location="lib/TermWareJPP.jar"/>
       <pathelement location="${java.class.path}/"/>      
      </classpath>

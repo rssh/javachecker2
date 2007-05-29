@@ -97,6 +97,11 @@ public class TermUtils {
       return getTermFactory().createJTerm(o);
     }
     
+    public static final Term createBoolean(boolean b)
+    {
+      return getTermFactory().createBoolean(b);  
+    }
+    
     public static final Term addTermToList(Term list, Term object) throws TermWareException
     {
       if (list.isNil()) {

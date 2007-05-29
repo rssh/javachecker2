@@ -102,7 +102,7 @@ public class JavaClassTypeModel extends JavaTypeModel
       return theClass_.isArray();
   }
   
-  public boolean isTypeArgument()
+  public boolean isTypeVariable()
   {
       return false;
   }
@@ -300,6 +300,11 @@ public class JavaClassTypeModel extends JavaTypeModel
       return retval;
   }
   
+  public List<JavaInitializerModel> getInitializerModels()
+  {
+     return Collections.emptyList(); 
+  }
+  
   
   public boolean isNested()
   {
@@ -406,7 +411,7 @@ public class JavaClassTypeModel extends JavaTypeModel
     if (type instanceof GenericArrayType) {
         GenericArrayType gtype = (GenericArrayType)type;
         JavaTypeModel componentType=createTypeModel(gtype.getGenericComponentType());
-        return new JavaArrayTypeModel(componentType);
+        return new JavaArrayTypeModel(componentType,null);
     }else if (type instanceof ParameterizedType)  {
         ParameterizedType ptype=(ParameterizedType)type;
         List<JavaTypeModel> typeArguments = new LinkedList<JavaTypeModel>();
@@ -457,7 +462,7 @@ public class JavaClassTypeModel extends JavaTypeModel
         Class<?> ctype = (Class<?>)type;
         if (ctype.isArray()) {
             JavaTypeModel componentType = JavaClassTypeModel.createTypeModel(ctype.getComponentType());
-            return new JavaArrayTypeModel(componentType);
+            return new JavaArrayTypeModel(componentType,null);
         }else if (ctype.isPrimitive()) {
             if (ctype.equals(Boolean.TYPE)) {
                 return JavaPrimitiveTypeModel.BOOLEAN;

@@ -52,6 +52,18 @@ public class JavaTypeArgumentBoundMemberVariableModel extends JavaMemberVariable
         return origin_.getModifiersModel();
     }
     
+    public boolean isSupportInitializerExpression()
+    { return origin_.isSupportInitializerExpression(); }
+    
+    public JavaExpressionModel getInitializerExpression() throws TermWareException, EntityNotFoundException
+    {
+       JavaExpressionModel oexpr = origin_.getInitializerExpression();
+       if (oexpr==null) {
+           return null;
+       }else{
+           return new JavaTypeArgumentBoundExpressionModel(oexpr,owner_);
+       }
+    }
     
     /**
      * TypeArgumentBoundMemberVariableModel(originModelTerm,ownerModelTerm)

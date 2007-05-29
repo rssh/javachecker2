@@ -18,6 +18,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -133,38 +134,53 @@ public class JavaTypeModelAttributes {
     }
     
     
-    public Term getTopLevelBlockOwnerAttribute(JavaTopLevelBlockOwnerModel blockOwner,String name) {
+    public Term getTopLevelBlockOwnerAttribute(JavaTopLevelBlockOwnerModel blockOwner,String name) throws TermWareException
+    {
         return getChildAttribute(JavaTopLevelBlockOwnerModelHelper.getStringSignature(blockOwner),name);
     }
     
-    public void setTopLevelBlockOwnerAttribute(JavaTopLevelBlockOwnerModel blockOwner,String name,Term value) {
+    public void setTopLevelBlockOwnerAttribute(JavaTopLevelBlockOwnerModel blockOwner,String name,Term value)  throws TermWareException
+    {
         setChildAttribute(JavaTopLevelBlockOwnerModelHelper.getStringSignature(blockOwner),name,value);
     }
     
-    public Term  getMethodAttribute(JavaMethodModel methodModel, String name) {
+    public AttributesData getTopLevelBlockOwnerChildAttributes(JavaTopLevelBlockOwnerModel blockOwner,String childName)  throws TermWareException
+    {
+        return getChildChildAttributes(JavaTopLevelBlockOwnerModelHelper.getStringSignature(blockOwner),childName);
+    }
+    
+    
+    public Term  getMethodAttribute(JavaMethodModel methodModel, String name)  throws TermWareException
+    {
         return getTopLevelBlockOwnerAttribute(methodModel,name);
     }
     
-    public void  setMethodAttribute(JavaMethodModel methodModel, String name, Term value) {
+    public void  setMethodAttribute(JavaMethodModel methodModel, String name, Term value)  throws TermWareException
+    {
         setTopLevelBlockOwnerAttribute(methodModel,name,value);
     }
     
-    public Term  getConstructorAttribute(JavaConstructorModel constructorModel, String name) {
+    public Term  getConstructorAttribute(JavaConstructorModel constructorModel, String name)  throws TermWareException
+    {
         return getTopLevelBlockOwnerAttribute(constructorModel,name);
     }
     
-    public void  setConstructorAttribute(JavaConstructorModel constructorModel, String name, Term value) {
+    public void  setConstructorAttribute(JavaConstructorModel constructorModel, String name, Term value)  throws TermWareException
+    {
         setTopLevelBlockOwnerAttribute(constructorModel,name,value);
     }
     
-    public Term  getFieldAttribute(String fieldName, String name) {
+    public Term  getFieldAttribute(String fieldName, String name)  throws TermWareException
+    {
         return getChildAttribute(fieldName,name);
     }
     
-    public void  setFieldAttribute(String fieldName, String name, Term value) {
+    public void  setFieldAttribute(String fieldName, String name, Term value)  throws TermWareException
+    {
         setChildAttribute(fieldName,name,value);
     }
     
+  
     public void print(PrintWriter out) {
         if (!isLoaded()) {
             try {
@@ -179,7 +195,11 @@ public class JavaTypeModelAttributes {
         data_.print(out);
     }
     
-    private Term getChildAttribute(String childName, String name) {
+    private Term getChildAttribute(String childName, String name) throws TermWareException
+    {
+       if (!isLoaded()) {        
+             load();
+        }        
         AttributesData child = data_.getChilds().get(childName);
         if (child==null) {
             return TermUtils.createNil();
@@ -189,8 +209,17 @@ public class JavaTypeModelAttributes {
         }
     }
     
-    private void setChildAttribute(String childName,String name,Term value) {
-        AttributesData child = data_.getChilds().get(childName);
+    private void setChildAttribute(String childName,String name,Term value) throws TermWareException
+    { 
+       if (!isLoaded()) {
+            load();
+        }        
+        HashMap<String,AttributesData> childs = data_.getChilds();
+        if (childs==null) {
+            childs=new HashMap<String,AttributesData>();
+            data_.setChilds(childs);            
+        }
+        AttributesData child = childs.get(childName);
         if (child==null) {
             child=new AttributesData();
             data_.getChilds().put(childName,child);
@@ -198,6 +227,15 @@ public class JavaTypeModelAttributes {
         child.getGeneralAttributes().put(name,value);
     }
     
+    private AttributesData getChildChildAttributes(String childName, String childChildName) throws TermWareException
+    {
+      if (!isLoaded())  {
+          load();
+      }      
+      AttributesData childs = data_.getOrCreateChild(childName);
+      AttributesData childsChilds = childs.getOrCreateChild(childChildName);
+      return childsChilds;      
+    }
     
     protected void finalize() {
         if (!owner_.isNested()) {
@@ -228,9 +266,11 @@ public class JavaTypeModelAttributes {
                     throw new AssertException("isNested is true, but getEnclosedType is not supported in "+owner_.getFullName());
                 }
             }else{
-                String dirName=JUtils.createDirectoryNameFromPackageName(Main.getTmpDir(),owner_.getPackageModel().getName());
+                String tmpDir = Main.getTmpDir();
+                String packageName = owner_.getPackageModel().getName();
+                //String dirName=JUtils.createDirectoryNameFromPackageName(Main.getTmpDir(),owner_.getPackageModel().getName());
                 String fname = JUtils.createSourceFileNameFromClassName(owner_.getName(),".jcswp");
-                String fullLoadName = dirName+File.separator+fname;
+                String fullLoadName = tmpDir+File.separator+packageName+"_"+fname;
                 File f = new File(fullLoadName);
                 if (f.exists()) {
                     ObjectInputStream oi = null;
@@ -284,14 +324,16 @@ public class JavaTypeModelAttributes {
     }
     
     private synchronized void save() throws TermWareException {
-        if (isLoaded()) {
-            String dirName=JUtils.createDirectoryNameFromPackageName(Main.getTmpDir(),owner_.getPackageModel().getName());
+        if (isLoaded()) {                       
+            String tmpDir = Main.getTmpDir();
+            String packageName=owner_.getPackageModel().getName();
+            //String dirName=JUtils.createDirectoryNameFromPackageName(Main.getTmpDir(),owner_.getPackageModel().getName());
             String fname = JUtils.createSourceFileNameFromClassName(owner_.getName(),".jcswp");
-            String fullLoadName = dirName+File.separator+fname;
+            String fullLoadName = tmpDir+File.separator+packageName+"_"+fname;          
             File f = new File(fullLoadName);
-            
+                        
             if (!f.exists()) {
-                try {
+                try {                    
                     f.createNewFile();
                 }catch(IOException ex){
                     throw new AssertException("Can't create file "+f.getAbsolutePath(),ex);

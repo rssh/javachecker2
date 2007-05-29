@@ -193,7 +193,7 @@ public class x1Test extends TestCase
         
         
         
-        main.setDump(true);
+        //main.setDump(true);
         main.process();   
       
         
@@ -209,6 +209,34 @@ public class x1Test extends TestCase
         }
         assertTrue("'catch' in defects must be > 0. have "+nCatchesFound,nCatchesFound>0);        
                 
+    }
+    
+    public void testSwitch1() throws Exception
+    {
+        Main main = new Main();
+        String[] args=new String[0];   
+        main.init(args);
+        main.addInputDirectory("testpackages/sw",true); 
+        
+        main.process();   
+
+                List<DefectReportItem> defects = main.getFacts().getDefectReportItems();
+      
+        int nBreakFound=0;
+        int nDefaultFound=0;
+        for(DefectReportItem defect: defects) {
+            String description=defect.getDescription();         
+            //System.out.println("!!!"+description);
+            if (description.matches(".*break.*")) {
+                ++nBreakFound;
+            }else if (description.matches(".*default.*")){
+                ++nDefaultFound;
+            }
+        }
+        assertTrue("'break' in defects must be > 0. have "+nBreakFound,nBreakFound>0);        
+        assertTrue("'default' in defects must be > 0. have "+nDefaultFound,nDefaultFound>0);        
+
+        
     }
     
     

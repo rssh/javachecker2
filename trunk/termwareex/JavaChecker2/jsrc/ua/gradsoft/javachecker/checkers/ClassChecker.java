@@ -5,9 +5,9 @@
 
 package ua.gradsoft.javachecker.checkers;
 
-import ua.gradsoft.javachecker.checkers.AbstractTypeChecker;
 import ua.gradsoft.javachecker.CheckerType;
 import ua.gradsoft.javachecker.ConfigException;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JavaFacts;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.models.JavaTermTypeAbstractModel;
@@ -15,6 +15,7 @@ import ua.gradsoft.javachecker.util.Holder;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *
@@ -68,7 +69,11 @@ public class ClassChecker extends AbstractTypeChecker
     
     public void run(JavaTermTypeAbstractModel tm, Holder<Term> astTermHolder, Holder<Term> modelTermHolder) throws TermWareException
     {
+      try {  
         instance_.process(tm,Main.getFacts());
+      }catch(EntityNotFoundException ex){
+          throw new AssertException(ex.getMessage()+" at "+ex.getFileAndLine().getFname()+","+ex.getFileAndLine().getLine(),ex);
+      }
     }
     
     private JavaTypeModelProcessor instance_;

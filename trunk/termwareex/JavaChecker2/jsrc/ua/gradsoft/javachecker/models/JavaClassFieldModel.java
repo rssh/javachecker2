@@ -75,6 +75,12 @@ public class JavaClassFieldModel extends JavaMemberVariableModel {
         );
     }
     
+    public boolean isSupportInitializerExpression()
+    { return false; }
+    
+    public JavaExpressionModel  getInitializerExpression()
+    { return null; }
+    
     /**
      * ClassField(this)
      */

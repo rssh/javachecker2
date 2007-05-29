@@ -24,8 +24,17 @@ public class JavaTypeArgumentBoundExpressionModel implements JavaExpressionModel
     public JavaTypeArgumentBoundExpressionModel(JavaExpressionModel origin,JavaTypeArgumentBoundStatementModel statement) {
         origin_=origin;
         statement_=statement;
+        enclosedType_=null;
     }
- 
+
+    /** construct expression outside statement **/
+    public JavaTypeArgumentBoundExpressionModel(JavaExpressionModel origin,JavaTypeArgumentBoundTypeModel enclosedType) {
+        origin_=origin;
+        statement_=null;
+        enclosedType_=enclosedType;
+    }
+    
+    
     public JavaExpressionKind  getKind()
     { return origin_.getKind(); }
     
@@ -42,11 +51,14 @@ public class JavaTypeArgumentBoundExpressionModel implements JavaExpressionModel
     
     public JavaTypeModel getEnclosedType() 
     {
-      try {  
-        return getSubstitution().substitute(origin_.getEnclosedType());             
-      }catch(TermWareException ex){
+      if (enclosedType_==null)  {
+        try {  
+          return getSubstitution().substitute(origin_.getEnclosedType());             
+        }catch(TermWareException ex){
           throw new TermWareRuntimeException(ex);
+        }
       }
+      return enclosedType_;
     }
 
     public List<JavaExpressionModel> getSubExpressions() throws TermWareException, EntityNotFoundException
@@ -57,15 +69,21 @@ public class JavaTypeArgumentBoundExpressionModel implements JavaExpressionModel
       }else{
           List<JavaExpressionModel> retval = new ArrayList<JavaExpressionModel>(originSubExpressions.size());
           for(JavaExpressionModel e: originSubExpressions) {
-              retval.add(new JavaTypeArgumentBoundExpressionModel(e,statement_));
+              retval.add(
+                      statement_!=null ? new JavaTypeArgumentBoundExpressionModel(e,statement_)
+                                       : new JavaTypeArgumentBoundExpressionModel(e,enclosedType_));
           }
           return retval;
       }
     }
     
-    private JavaTypeArgumentsSubstitution getSubstitution()
+    private JavaTypeArgumentsSubstitution getSubstitution() throws TermWareException
     {
-      return statement_.getArgumentBoundTopLevelBlockModel().getSubstitution();  
+      if (statement_!=null) {  
+        return statement_.getArgumentBoundTopLevelBlockModel().getSubstitution();  
+      }else{
+        return enclosedType_.getSubstitution();  
+      }
     }
     
     /**
@@ -81,6 +99,7 @@ public class JavaTypeArgumentBoundExpressionModel implements JavaExpressionModel
     
     private JavaExpressionModel origin_;
     private JavaTypeArgumentBoundStatementModel statement_;
+    private JavaTypeArgumentBoundTypeModel     enclosedType_;
             
     
 }

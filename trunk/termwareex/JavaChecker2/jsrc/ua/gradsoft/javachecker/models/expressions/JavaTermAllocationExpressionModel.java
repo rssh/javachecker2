@@ -78,7 +78,7 @@ public class JavaTermAllocationExpressionModel extends JavaTermExpressionModel
           }
           int nReferences=nReferences_;
           while(nReferences>0) {
-              resolvedType_=new JavaArrayTypeModel(resolvedType_);
+              resolvedType_=new JavaArrayTypeModel(resolvedType_,null);
               --nReferences;
           }
       } 

@@ -64,7 +64,7 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
     public boolean isPrimitiveType() {
         return true; }
     
-    public boolean isTypeArgument() {
+    public boolean isTypeVariable() {
         return false; }
     
     public boolean isUnknown() {
@@ -121,6 +121,10 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
     
     public List<JavaConstructorModel>  getConstructorModels()
     {  return Collections.emptyList(); }
+
+    public List<JavaInitializerModel>  getInitializerModels()
+    {  return Collections.emptyList(); }
+    
     
     public boolean isNested() {
         return false; }

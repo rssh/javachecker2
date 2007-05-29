@@ -111,6 +111,30 @@
          <classpath>
              <pathelement location="jtests" />
              <pathelement location="lib/JavaChecker2.jar" />
+             <pathelement location="lib/JavaChecker2Annotations.jar" />
+             <pathelement location="lib/TermWare2.jar" />
+             <pathelement location="lib/TermWareJPP.jar" />
+             <pathelement location="lib/junit.jar" />
+             <pathelement location="${java.class.path}/"/>                   
+         </classpath>
+         <formatter type="xml" usefile="false" />
+         <batchtest  >
+             <fileset dir="jtests"  >
+                 <include name="ua/**/*Test.class"/>
+             </fileset>
+         </batchtest>
+     </junit>
+ </target>
+ 
+ <target name="test-profile" depends="build-test-classes">
+     <junit printsummary="yes" showoutput="true" fork="true" forkmode="once" dir="." >
+            <jvmarg value="-Xmx512M"/>
+            <jvmarg value="-agentpath:/opt/netbeans-5.5/profiler1/lib/deployed/jdk15/linux/libprofilerinterface.so=/opt/netbeans-5.5/profiler1/lib,5140"/>
+            <jvmarg value="-Djavachecker.home=."/>
+         <classpath>
+             <pathelement location="jtests" />
+             <pathelement location="lib/JavaChecker2.jar" />
+             <pathelement location="lib/JavaChecker2Annotations.jar" />
              <pathelement location="lib/TermWare2.jar" />
              <pathelement location="lib/TermWareJPP.jar" />
              <pathelement location="lib/junit.jar" />
@@ -126,12 +150,14 @@
  </target>
  
 
+
  <target name="declareJavaChecker"  depends="build-classes">
     <taskdef name="JavaChecker"  classname="ua.gradsoft.javachecker.ant.JavaCheckerTask">
      <classpath>
       <pathelement location="jsrc"/>
       <pathelement location="lib/TermWare2.jar"/>
       <pathelement location="lib/JavaChecker2.jar"/>
+      <pathelement location="lib/JavaChecker2Annotations.jar" />
       <pathelement location="lib/TermWareJPP.jar"/>
       <pathelement location="${java.class.path}/"/>      
      </classpath>
@@ -140,7 +166,7 @@
 
 
  <target name="check" depends="declareJavaChecker" >
-   <JavaChecker jchhome="${basedir}" output="jchreport.html" outputFormat="html" prefs="etc/prefs1.xml" debug="false" q="false"  >
+   <JavaChecker jchhome="${basedir}" output="jchreport.txt" outputFormat="text" prefs="etc/prefs1.xml" debug="false" q="false"  >
     <input dir="jsrc" />
     <classpath>
 			<fileset dir="lib">

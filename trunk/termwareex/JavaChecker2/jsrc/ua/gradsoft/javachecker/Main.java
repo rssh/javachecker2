@@ -538,7 +538,10 @@ public class Main
  {
      if (tmpDirName_==null) {         
          tmpDirName_=tmpDirBase_+File.separator+"jc"+System.currentTimeMillis();
-     }
+         File f = new File(tmpDirName_);
+         f.mkdir();
+         f.deleteOnExit();
+     }     
      return tmpDirName_;
  }
  
@@ -587,7 +590,7 @@ public class Main
  
  private static IEnv         env_          = null;
 
- private static HashSet      sourcesSet_    = null;
+// private static HashSet      sourcesSet_    = null;
 
 
  private static String       prefsFname_  = null;

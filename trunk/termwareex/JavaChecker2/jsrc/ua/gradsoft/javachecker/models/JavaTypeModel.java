@@ -85,7 +85,7 @@ public abstract class JavaTypeModel implements AttributedEntity
   
   public abstract boolean isArray();
   
-  public abstract boolean isTypeArgument();
+  public abstract boolean isTypeVariable();
   
   public abstract boolean isWildcardBounds();
   
@@ -181,14 +181,24 @@ public abstract class JavaTypeModel implements AttributedEntity
     return retval;
   }
   
-  
+  /**
+   *get list of constructor models.
+   */
   public abstract List<JavaConstructorModel>  getConstructorModels();
+  
+  /**
+   *get list of initializer models
+   */
+  public abstract List<JavaInitializerModel>  getInitializerModels();
+  
   
   /***
    * key of return values are names of enum constants.
    *When type is not enum - throws NotSupportedException
    */  
   public abstract Map<String,JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException;
+  
+  
   
   /**
    * return true if this type is nested inside some other type.

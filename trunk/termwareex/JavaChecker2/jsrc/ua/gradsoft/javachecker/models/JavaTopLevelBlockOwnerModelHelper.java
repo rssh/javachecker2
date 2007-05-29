@@ -12,7 +12,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.FileAndLine;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
@@ -203,7 +205,14 @@ public class JavaTopLevelBlockOwnerModelHelper {
           try {            
              tm = JavaResolver.resolveTypeToModel(typeTerm,executable.getTypeModel(),executable.getTypeParameters());
           }catch(EntityNotFoundException ex){
-             ex.setFileAndLine(JUtils.getFileAndLine(fp)); 
+             if (ex.getFileAndLine()==FileAndLine.UNKNOWN) {  
+                ex.setFileAndLine(JUtils.getFileAndLine(fp));              
+             }
+             //!!!
+             //  this will cause endless loop
+             //LOG.info("executable signature is "+JavaTopLevelBlockOwnerModelHelper.getStringSignature(executable));
+             LOG.info("executable name is "+executable.getName());
+             LOG.info("executable class is "+executable.getTypeModel().getFullName());
              throw ex;    
           }
           Term vdi=fp.getSubtermAt(2);  
@@ -213,7 +222,7 @@ public class JavaTopLevelBlockOwnerModelHelper {
             int nArray = vdi.getSubtermAt(1).getInt();
             name = vdi.getSubtermAt(0).getSubtermAt(0).getString();
             while(nArray > 0) {
-              tm = new JavaArrayTypeModel(tm);
+              tm = new JavaArrayTypeModel(tm,null);
               --nArray;
             }
           }else if(vdi.getName().equals("Identifier")){
@@ -222,7 +231,7 @@ public class JavaTopLevelBlockOwnerModelHelper {
               throw new AssertException("Invalid VariableDeclaratorId in formal parameters:"+TermHelper.termToString(vdi));
           }
           if ((modifiers.getSubtermAt(0).getInt() &  JavaTermModifiersModel.VARARGS)!=0) {        
-              tm = new JavaArrayTypeModel(tm);
+              tm = new JavaArrayTypeModel(tm,null);
           }
           JavaTermFormalParameterModel pm = new JavaTermFormalParameterModel(modifiers,name,tm,executable,index);        
           return pm;
@@ -254,5 +263,5 @@ public class JavaTopLevelBlockOwnerModelHelper {
         return retval;
     }
     
-    
+    private static final Logger LOG = Logger.getLogger(JavaTopLevelBlockOwnerModelHelper.class.getName());
 }

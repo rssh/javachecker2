@@ -83,7 +83,7 @@ public class JavaTypeArgumentsSubstitution {
     {        
       //System.out.println("substitute:"+x.getFullName()+" by "+this.toString());  
       JavaTypeModel retval=x;
-      if (x.isTypeArgument()) {          
+      if (x.isTypeVariable()) {          
           JavaTypeVariableAbstractModel m = (JavaTypeVariableAbstractModel)x;
           JavaTypeModel sx = get(m);
           if (sx!=null) {

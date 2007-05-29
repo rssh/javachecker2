@@ -46,8 +46,13 @@ public class JavaResolver {
     }
     
     public static JavaTypeModel resolveTypeToModel(Term t, JavaStatementModel where) throws EntityNotFoundException, TermWareException {
+        boolean debug=false;
         JavaTypeModel ownerType=where.getTopLevelBlockModel().getOwnerModel().getTypeModel();
         JavaTopLevelBlockOwnerModel blockOwner=where.getTopLevelBlockModel().getOwnerModel();
+        if (debug) {
+            LOG.info("blockOwner name = "+blockOwner.getName());
+            LOG.info("blockOwner signature = "+JavaTopLevelBlockOwnerModelHelper.getStringSignature(blockOwner));
+        }
         List<JavaTypeVariableAbstractModel> typeVariables=blockOwner.getTypeParameters();
         Iterable<JavaTypeModel> localTypes = new LocalTypesIterable(where);
         return resolveTypeToModel(t,ownerType.getUnitModel(),ownerType.getPackageModel(),ownerType,typeVariables,localTypes);
@@ -55,7 +60,7 @@ public class JavaResolver {
     
     
     public static JavaTypeModel resolveTypeToModel(Term t, JavaUnitModel unitModel, JavaPackageModel packageModel, JavaTypeModel where,List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException,TermWareException {
-        boolean printDetails=false;       
+        boolean printDetails=false;      
         
         if (printDetails) {
             String stv = ((typeVariables==null ? "null" :  typeVariables.toString()));
@@ -66,6 +71,7 @@ public class JavaResolver {
                 }
             }
         }
+        
         if (t.isAtom()) {
             if (t.getName().equals("boolean")) {
                 return JavaPrimitiveTypeModel.BOOLEAN;
@@ -102,7 +108,7 @@ public class JavaResolver {
                 JavaTypeModel tm=resolveTypeToModel(t1,unitModel,packageModel,where,typeVariables,localTypes);
                 int referenceLevel=t.getSubtermAt(0).getInt();
                 while(referenceLevel>0) {
-                    tm=new JavaArrayTypeModel(tm);
+                    tm=new JavaArrayTypeModel(tm,null);
                     --referenceLevel;
                 }
                 return tm;
@@ -145,7 +151,7 @@ public class JavaResolver {
                         return frsTypeModel;
                     }else{
                         try {
-                            return resolveRestOfClassOrInterfaceType(frsTypeModel,head.getSubtermAt(1),unitModel,packageModel,where,typeVariables,localTypes);
+                            return resolveRestOfClassOrInterfaceType(frsTypeModel,head.getSubtermAt(1),unitModel,packageModel,where,typeVariables,localTypes,printDetails);
                         }catch(EntityNotFoundException ex){
                             //System.err.println("failed resolveRestOfClassAndInterfaceType");
                             found=false;
@@ -189,10 +195,16 @@ public class JavaResolver {
     }
     
     
-    private static JavaTypeModel  resolveRestOfClassOrInterfaceType(JavaTypeModel prevModel, Term t, JavaUnitModel unitModel,JavaPackageModel packageModel,JavaTypeModel where, List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException, TermWareException {
-        boolean printDetails=false;
+    private static JavaTypeModel  resolveRestOfClassOrInterfaceType(JavaTypeModel prevModel, Term t, JavaUnitModel unitModel,JavaPackageModel packageModel,JavaTypeModel where, List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes, boolean debug) throws EntityNotFoundException, TermWareException {
+        boolean printDetails=debug;
+        
         if (printDetails) {
-            System.err.println("resolveRestOfClassOrInterfaceType "+TermHelper.termToString(t)+", prevModel="+prevModel.getName());
+            LOG.info("resolveRestOfClassOrInterfaceType "+TermHelper.termToString(t)+", prevModel="+prevModel.getName());
+            if (where!=null) {
+              LOG.info("where="+where.getFullName());
+            }else{
+              LOG.info("where=null"); 
+            }
         }
         JavaTypeModel curModel=prevModel;
         while(!t.isNil()) {
@@ -235,7 +247,7 @@ public class JavaResolver {
     public static JavaTypeModel resolveTypeModelByName(String name, JavaTypeModel where,List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException, TermWareException {
         boolean printDetails=false;
         
-       // if (name.equals("Term")) {
+       // if (name.equals("TypeCheckerProperties")) {
        //     printDetails=true;
        // }
         
@@ -457,7 +469,7 @@ public class JavaResolver {
         
         
         //now try to find in statement
-        if (where.isLocal()) {
+        if (where.isLocal()||where.isAnonimous()) {
             JavaStatementModel st = where.getEnclosedStatement();
             JavaTypeModel enclosedType = st.getTopLevelBlockModel().getOwnerModel().getTypeModel();
             List<JavaTypeVariableAbstractModel> enclosedTypeVariables=st.getTopLevelBlockModel().getOwnerModel().getTypeParameters();
@@ -519,9 +531,9 @@ public class JavaResolver {
     public static JavaTypeModel resolveTypeModelByName(String name, JavaUnitModel um, JavaPackageModel pm, List<JavaTypeVariableAbstractModel> typeVariables) throws TermWareException, EntityNotFoundException {
         boolean printDetails=false;
         
-        //if (name.equals("Term")) {
-        //    printDetails=true;
-        //}
+       // if (name.equals("TypeCheckerProperties")) {
+       //     printDetails=true;
+       // }
         
         if (printDetails) {
             LOG.log(Level.INFO,"resolveTypeModelByName("+name+","+um.toString()+","+pm.getName()+"), typeVariables="+typeVariables);
@@ -531,7 +543,9 @@ public class JavaResolver {
         if (typeVariables!=null) {
             for(JavaTypeVariableAbstractModel tv: typeVariables) {
                 if (tv.getName().equals(name)) {
-                    //System.err.println("found in type variables");
+                    if (printDetails) {
+                      LOG.log(Level.INFO,"found in type variables");
+                    }
                     return tv;
                 }
             }
@@ -709,13 +723,14 @@ public class JavaResolver {
         }
         
         if (printDetails) {
-            System.err.println("failed search of type "+name+" outside class ");
+            LOG.log(Level.INFO,"failed search of type "+name+" outside class ");
         }
         //we still here - it means that class was not found in import declarations.
         throw new EntityNotFoundException(" type ",name,"");
     }
     
     public static JavaTypeModel resolveTypeModelWithFullPackage(Term t, JavaTypeModel where, List<JavaTypeVariableAbstractModel> typeVariables) throws EntityNotFoundException, TermWareException {
+        boolean printDetails=false;
         if (!t.getName().equals("ClassOrInterfaceType")) {
             throw new AssertException("argument of resolveTypeModelWithFullPackageName must be ClassOrInterfaceType, we have:"+TermHelper.termToString(t));
         }
@@ -770,7 +785,7 @@ public class JavaResolver {
         try {
             JavaTypeModel retval=resolveTypeModelFromPackage(classShortName,packageName);
             if (!head.isNil()) {
-                return resolveRestOfClassOrInterfaceType(retval,head,unitModel,packageModel,where,typeVariables,null);
+                return resolveRestOfClassOrInterfaceType(retval,head,unitModel,packageModel,where,typeVariables,null,printDetails);
             }
             return retval;
         }catch(EntityNotFoundException ex){
@@ -788,7 +803,7 @@ public class JavaResolver {
                 try {
                     JavaTypeModel retval=resolveTypeModelFromPackage(candidateName,packageName);
                     if (!head.isNil()) {
-                        return resolveRestOfClassOrInterfaceType(retval,head,unitModel,packageModel,where,typeVariables,null);
+                        return resolveRestOfClassOrInterfaceType(retval,head,unitModel,packageModel,where,typeVariables,null,printDetails);
                     }
                 }catch(EntityNotFoundException ex1){
                     ; //ignore
@@ -900,9 +915,9 @@ public class JavaResolver {
     public static JavaVariableModel resolveVariableByName(String name,JavaTypeModel where) throws TermWareException, EntityNotFoundException {
         boolean printDetails=false;
         // check member variable.
-        if (name.equals("widgetType")) {
-            printDetails=true;
-        }
+     //   if (name.equals("facts")) {
+     ///       printDetails=true;
+     //   }
         
         if (printDetails) {
             LOG.log(Level.INFO,"resolveVariableByName("+name+","+where.getFullName()+")");
@@ -923,7 +938,7 @@ public class JavaResolver {
         
         // now, may be we have enclosed statement ?
         JavaTypeModel currWhere = where;
-        while (currWhere.isNested()) {
+        while (currWhere.isNested()||currWhere.isAnonimous()||currWhere.isLocal()) {
             JavaStatementModel st = currWhere.getEnclosedStatement();
             if (st!=null) {
                 try {
@@ -941,6 +956,10 @@ public class JavaResolver {
                         LOG.log(Level.INFO,"not in enclosed statement");
                     }
                     
+                }
+            }else{
+                if (printDetails) {
+                    LOG.log(Level.INFO,"is nested but enclosed statement is null");
                 }
             }
             try {
@@ -1021,9 +1040,9 @@ public class JavaResolver {
     
     public static JavaVariableModel resolveVariableByName(String name, JavaStatementModel statement) throws TermWareException, EntityNotFoundException {
         boolean printDetails=false;
-        //if (name.equals("p")||name.equals("parent")||name.equals("left")) {
-        //    printDetails=true;
-        //}
+    //    if (name.equals("facts")) {
+    //        printDetails=true;
+    //    }
         boolean quit=false;
         JavaStatementModel parentStatement=statement.getParentStatementModel();
         while(!quit) {
@@ -1129,9 +1148,9 @@ public class JavaResolver {
     public static JavaMethodModel resolveMethod(String methodName,List<JavaTypeModel> argumentTypes, JavaTypeArgumentsSubstitution substitution,JavaTypeModel where) throws EntityNotFoundException, TermWareException {
         boolean printDetails=false;
         
-     //   if (methodName.equals("createTerm")) {
-     //        printDetails=true;
-     //   }
+       // if (methodName.equals("addAll")) {
+       //      printDetails=true;
+       // }
         
         if (printDetails) {
             StringBuilder sb=new StringBuilder();
@@ -1241,7 +1260,7 @@ public class JavaResolver {
                     ;
                 }
             }
-            if (currWhere.isTypeArgument()) {
+            if (currWhere.isTypeVariable()) {
                 JavaTypeVariableAbstractModel tmaWhere = (JavaTypeVariableAbstractModel)currWhere;
                 List<JavaTypeModel> bounds = tmaWhere.getBounds();
                 if (printDetails) {                    
@@ -1466,7 +1485,7 @@ public class JavaResolver {
     }
     
     
-    public static boolean match(JavaTypeModel pattern, JavaTypeModel x, MethodMatchingConversions conversions, boolean debug) throws TermWareException {
+    public static boolean match(JavaTypeModel pattern, JavaTypeModel x, MethodMatchingConversions conversions, boolean debug) throws TermWareException, EntityNotFoundException {
         if (pattern.isPrimitiveType() && !x.isPrimitiveType()) {           
             return match1(pattern,JavaTypeModelHelper.unboxingConversion(x,conversions),conversions,debug);
         }else if (!pattern.isPrimitiveType() && x.isPrimitiveType()) {
@@ -1479,7 +1498,7 @@ public class JavaResolver {
     /**
      * match patern type with x and fill substitution if needed after aplying boxing/unboxing conventions.
      */
-    public static boolean match1(JavaTypeModel pattern, JavaTypeModel x,MethodMatchingConversions conversions, boolean topDebug) throws TermWareException {
+    public static boolean match1(JavaTypeModel pattern, JavaTypeModel x,MethodMatchingConversions conversions, boolean topDebug) throws TermWareException, EntityNotFoundException {
         boolean match1DebugEnabled=true;
         boolean debug = topDebug && match1DebugEnabled;
         if (debug) {
@@ -1487,11 +1506,11 @@ public class JavaResolver {
         }
         boolean retval=true;
         MethodMatchingConversions cn=new MethodMatchingConversions(conversions);
-        if (pattern.isTypeArgument()) {
+        if (pattern.isTypeVariable()) {
             JavaTypeVariableAbstractModel vpattern = (JavaTypeVariableAbstractModel)pattern;
             JavaTypeModel matched=conversions.getSubstitution().get(vpattern);
             if (matched!=null) {
-                if (matched.isTypeArgument()) {                    
+                if (matched.isTypeVariable()) {                    
                    if (JavaTypeModelHelper.subtypeOrSame(x,pattern,cn,true,debug)) {                       
                        retval=true;
                    }else{
@@ -1503,10 +1522,16 @@ public class JavaResolver {
                                retval=true;
                                break;
                            }
-                       }                        
+                       }    
                    }
                 }else{
                    retval=match(matched,x,cn,debug);       
+                   if (!retval) {
+                       // may be it is possible to find pattern, which comply matched and x ?
+                       if (refineMatching(vpattern,conversions,matched,x,debug)) {
+                           retval=true;
+                       }
+                   }
                 }                                
             }else{
                 List<JavaTypeModel> bounds = vpattern.getBounds();
@@ -1666,6 +1691,27 @@ public class JavaResolver {
             }
         }
         return retval;
+    }
+    
+    /**
+     * refine matching for <code> pattern </code> in MethodMatchingConversions <code> cn </code> in such way,
+     *that pattern satisficcy both <code> x </code> and <code> y </code>.
+     */
+    private static boolean refineMatching(JavaTypeVariableAbstractModel pattern,MethodMatchingConversions cn, JavaTypeModel x, JavaTypeModel y,boolean debug) throws TermWareException, EntityNotFoundException
+    {
+      List<JavaTypeModel> bounds  = pattern.getBounds();
+      for(JavaTypeModel b: bounds) {
+          if (!JavaTypeModelHelper.subtypeOrSame(x,b) && JavaTypeModelHelper.subtypeOrSame(y,b)) {
+             return false;                           
+          }
+      }           
+      JavaTypeModel newType = JavaTypeModelHelper.minmax(x,y,cn,debug); 
+      if (newType!=null) {
+        cn.getSubstitution().put(pattern,newType);
+        return true;
+      }else{
+          return false;
+      }
     }
     
     public static JavaTypeModel resolveJavaLangObject() throws TermWareException {

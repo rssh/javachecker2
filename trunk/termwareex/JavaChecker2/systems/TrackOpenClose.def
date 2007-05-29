@@ -4,6 +4,8 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
 
      import(general,logical_and),
      import(general,logical_or),
+     import(general,logical_not),
+     import(general,eq),
      import(general,apply),
      import(general,unify),
      import(general,if),
@@ -59,11 +61,26 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      CheckStatement(TryStatementModel($block,$catchSeq,$finally,$ctx),$state) -> ApplyFirst.CheckStatementR(TryStatementModel($block,$catchSeq,$finally,$ctx),apply(TrackOpenClose,$state)),
 
 
-     CheckStatementR(TryStatementModel($block,$catchSeq,$finally,$ctx),$state) -> CheckFinalStatement($finally,CheckStatement($block,$state))
-                                                                               && 
-                                                                                 CheckFinalStatement($finally,CheckStatement($catchSeq,$state)) 
-                                                                              ,
-   
+     CheckStatementR(
+       TryStatementModel(
+          BlockStatementModel([$x:$y],$ctx0),
+          $catchSeq,
+          $finally,
+          $ctx),$state) 
+             ->
+    CheckFinalStatement($finally,CheckStatement($x,CheckStatement($y,$state)))
+        &&
+    CheckFinalStatement($finally,
+        CheckStatement($catchSeq,CheckStatement($x,$state)))
+                                                                 , 
+
+     CheckStatementR(
+       TryStatementModel(
+          BlockStatementModel([],$ctx0),
+          $catchSeq,
+          $finally,
+          $ctx),$state) 
+             -> CheckStatement($finally,$state),
 
      CheckFinalStatement($x,$y) -> unify($y,RETURN($z)) ? RETURN(CheckStatement($x,$z)) : CheckStatement($x,$y) ,
                                  
@@ -142,11 +159,16 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
               $methodModel.getResultType(),
               $ctx.resolveFullClassName("java.io.Closeable")
                        )         
+            &&
+             $methodModel.getAttribute("ResourceFactory")==true
           ] -> CheckReturn($state,merge(CHANGE($var,OPEN,$ctx.getFileAndLine()),$state)) [ [ print("1:"), println($name) ] ]
            !-> CheckReturn($state,CheckExpressions($arguments,$state)),
 
      CheckExpressions([$x:$y],$state) -> CheckExpressions($y,CheckExpression(NONE,$x,$state)),
      CheckExpressions([],$state) -> $state,
+
+     CheckExpressions($var,[$x:$y],$state) -> CheckExpressions($var,$y,CheckExpression($var,$x,$state)),
+     CheckExpressions($var,[],$state) -> $state,
 
      CheckExpression($var, MethodCallModel($obj,$id,$arguments,$methodModel,$ctx), $state)
         [
@@ -154,6 +176,8 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
               $methodModel.getResultType(),
               $ctx.resolveFullClassName("java.io.Closeable")
                        )                   
+            &&
+             $methodModel.getAttribute("ResourceFactory")==true
         ] -> CheckReturn($state,merge(CHANGE($var,OPEN,$ctx.getFileAndLine()),CheckExpression(NONE,$obj,$state))) 
         |
         [
@@ -164,16 +188,29 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
            &&
           $methodModel.getName()=="close"           
         ] 
-           -> CheckReturn($state,merge(CHANGE($obj,CLOSE),$state))
+           -> merge(CHANGE($obj,CLOSE),$state) 
           !-> CheckReturn($state,CheckExpressions($arguments,$state)),
 
 
      CheckExpression($var,AllocationExpressionModel(TypeRef($tname,$type),$arguments,$ctx),$state)
        [
-         $ctx.subtypeOrSame($type,$ctx.resolveFullClassName("java.io.Closeable"))
-       ]
-         -> CheckReturn($state,merge(CHANGE($var,OPEN,$ctx.getFileAndLine()),$state))
-        !-> CheckExpressions($arguments,$state),
+         $ctx.subtypeOrSame($type,$ctx.resolveFullClassName("java.io.Closeable")) 
+         &&
+            ! ($type.getAttribute("NotCloseable")==true)
+       ]-> CheckAllocationNotProxy($var,$type,$arguments,$ctx,$state)
+       !-> CheckExpressions($arguments,$state),
+
+    CheckAllocationNotProxy($var,$type,$arguments,$ctx,$state) 
+        ->  
+           (
+            !($type.getAttribute("CloseableProxy")==true)
+            ||  
+              (apply(openclose::CloseableArguments,apply(NormalizeExpressions,$arguments)))
+           )
+                ?
+                  CheckReturn($state,merge(CHANGE($var,OPEN,$ctx.getFileAndLine()),$state))
+                 :CheckExpressions($var,$arguments,$state),
+
 
 
      CheckExpression($var,InnerAllocationExpressionModel($ownerType,TypeRef($tname,$type),$arguments,$ctx),$state)

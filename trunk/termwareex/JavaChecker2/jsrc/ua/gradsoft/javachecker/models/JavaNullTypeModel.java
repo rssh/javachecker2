@@ -79,7 +79,7 @@ public class JavaNullTypeModel extends JavaTypeModel {
     public boolean isArray()
     { return false; }
     
-    public boolean isTypeArgument()
+    public boolean isTypeVariable()
     { return false; }
     
     public boolean isWildcardBounds()
@@ -173,6 +173,10 @@ public class JavaNullTypeModel extends JavaTypeModel {
     public List<JavaConstructorModel>  getConstructorModels()
     { return Collections.emptyList(); }
  
+    public List<JavaInitializerModel>  getInitializerModels()
+    { return Collections.emptyList(); }
+
+    
     /**
      *@return empty map
      */

@@ -58,13 +58,7 @@ public class JavaClassConstructorModel extends JavaConstructorModel implements J
                 new Function<Integer,JavaTypeModel>(){
             public JavaTypeModel function(Integer i) throws TermWareException
             {
-                JavaTypeModel retval = JavaClassTypeModel.createTypeModel(constructor_.getGenericParameterTypes()[i]);
-                if (i==constructor_.getGenericParameterTypes().length-1) {
-                    if (constructor_.isVarArgs()) {
-                        retval = new JavaArrayTypeModel(retval);
-                    }
-                }
-                return retval;
+                return JavaClassTypeModel.createTypeModel(constructor_.getGenericParameterTypes()[i]);             
             }
         }
                 );

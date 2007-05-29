@@ -9,6 +9,9 @@
 package ua.gradsoft.javachecker.models;
 
 import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.attributes.AttributedEntity;
 import ua.gradsoft.termware.Term;
@@ -24,7 +27,7 @@ public abstract class JavaInitializerModel implements JavaTopLevelBlockOwnerMode
     /**
      * get initializer modifiers.
      */
-    public abstract JavaTermModifiersModel getModifiers();
+    public abstract JavaModifiersModel getModifiers();
     
     
     /**
@@ -39,22 +42,50 @@ public abstract class JavaInitializerModel implements JavaTopLevelBlockOwnerMode
     }
     
     
-    public Term  getAttribute(String name)
+    public Term  getAttribute(String name) throws TermWareException
     {
       return getTypeModel().getAttributes().getTopLevelBlockOwnerAttribute(this,name);
     }
     
-    public void  setAttribute(String name, Term value)
+    public void  setAttribute(String name, Term value) throws TermWareException
     {
        getTypeModel().getAttributes().setTopLevelBlockOwnerAttribute(this,name,value);
     }
     
+    public String getName()  { return "__Initializer"; }
+    
     /**
-     *@return null
+     *@return child attributes.
      */
-    public AttributedEntity  getChildAttributes(String childName)
+    public AttributedEntity  getChildAttributes(String childName) throws TermWareException
     {
-       return null;
+       return getTypeModel().getAttributes().getTopLevelBlockOwnerChildAttributes(this,childName);
     }
+    
+    /**
+     * initializers does not have type parameters, so return empty list.
+     */
+    public List<JavaTypeVariableAbstractModel> getTypeParameters()
+    {
+      return Collections.emptyList(); 
+    }
+
+    /**
+     * initializers does not have formal parameters, so return empty list.
+     */
+    public List<JavaFormalParameterModel> getFormalParametersList()
+    {
+      return Collections.emptyList();  
+    }
+    
+    
+    /**
+     * initializers does not have formal parameters, so return empty map.
+     */
+    public Map<String, JavaFormalParameterModel> getFormalParametersMap()
+    {
+      return Collections.emptyMap();  
+    }
+
     
 }

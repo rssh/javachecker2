@@ -44,8 +44,6 @@ Checkers(
         BT_TYPE_RULESET,
         ruleset(
           import(general,apply),
-
-
           SwitchStatementLabelBlock($label,[$x:$y]) -> RESULT(flows::CheckBreak.CHECK_BREAK($label,cons($x,$y),cons($x,$y)),cons($x,$y)), 
           RESULT(true,$where) -> true [ violationDiscovered(SwitchLabelWithoutBreak,"switch label without break",$where) ],
           RESULT(false,$where) -> false
@@ -54,6 +52,16 @@ Checkers(
         true
  ),
 
+ define(SwitchWithoutDefault,flow,"switch without default label ",
+        BT_TYPE_RULESET,
+        ruleset(
+          import(general,apply),
+          SwitchStatement($expr,$labels) -> RESULT(flows::WithoutDefault.$labels, cons($expr,$labels)) [ print($labels) ], 
+          RESULT(true,$where) -> true [ violationDiscovered(SwitchWithoutDefault,"switch without default label",$where) ],
+          RESULT(false,$where) -> false
+        ),
+        true
+ ),
 
  define(UnclosedCloseable,resources,"unclosed instance of closeable",
         MODEL_RULESET,
@@ -75,9 +83,13 @@ Checkers(
 
         ),
         true
-  )
+  ),
 
 
+ define(UnusedLocally,resources,"unused private methods or fields",
+        JAVA_CLASS, 
+        "ua.gradsoft.javachecker.checkers.UnusedMethodsAndFieldsChecker",
+        true)
 
 ]
 );

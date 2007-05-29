@@ -77,7 +77,23 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
     
     public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
     { return modifiersModel_.getAnnotationsMap(); }
-       
+    
+    
+    public boolean isSupportInitializerExpression()
+    { return variableDeclarator_.getArity()>1; }
+    
+    /**
+     *return intializer expression, if one defined; otherwise - null
+     */
+    public JavaTermExpressionModel getInitializerExpression() throws TermWareException, EntityNotFoundException
+    {
+      if (variableDeclarator_.getArity()>1)  {
+          return JavaTermExpressionModel.create(variableDeclarator_.getSubtermAt(1),null,owner_);
+      }else{
+          return null;
+      }
+    }
+    
     /**
      * MemberVariableModel(modifiers, TypeRef, name, initializer,this)
      */
@@ -95,6 +111,8 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
         Term tthis = TermUtils.createJTerm(this);
         return TermUtils.createTerm("MemberVariableModel",modifiersModelTerm,typeRef,identifierTerm,initializer,tthis);
     }
+    
+    
     
     private String  name_;
     private Term    type_=null;

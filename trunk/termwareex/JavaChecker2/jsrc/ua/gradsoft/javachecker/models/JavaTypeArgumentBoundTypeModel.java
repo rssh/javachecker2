@@ -18,8 +18,12 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.FileAndLine;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.attributes.JavaTypeModelAttributes;
+import ua.gradsoft.javachecker.util.Function;
+import ua.gradsoft.javachecker.util.ImmutableMappedList;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWare;
@@ -69,7 +73,6 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         substitution_=null;
         setUnitModel(unitModel);
 
-        
     }
     
     
@@ -88,6 +91,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         }
         setUnitModel(where.getUnitModel());
         createTermTypeArguments(resolvedTypeArguments);               
+
         
     }
     
@@ -104,6 +108,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
       }      
       setUnitModel(where.getUnitModel());
       createTermTypeArguments(resolvedTypeArguments_);
+
             
     }
     
@@ -180,8 +185,8 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
     public boolean isArray() {
         return origin_.isArray(); }
     
-    public boolean isTypeArgument() {
-        return origin_.isTypeArgument(); }
+    public boolean isTypeVariable() {
+        return origin_.isTypeVariable(); }
     
     public boolean isWildcardBounds() {
         return false; }
@@ -246,6 +251,17 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
             retval.add(new JavaTypeArgumentBoundConstructorModel(cn,this));
         }
         return retval;
+    }
+    
+    public List<JavaInitializerModel> getInitializerModels()
+    {
+        return new ImmutableMappedList<JavaInitializerModel,JavaInitializerModel>(
+                origin_.getInitializerModels(),
+                new Function<JavaInitializerModel,JavaInitializerModel>(){
+            public JavaInitializerModel function(JavaInitializerModel x){
+                return new JavaTypeArgumentBoundInitializerModel(x,JavaTypeArgumentBoundTypeModel.this);
+            }        
+        }    );            
     }
     
     public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException
@@ -368,7 +384,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
      */
     /*
     public JavaTypeModel substituteTypeParameters(JavaTypeModel otherType) throws TermWareException {
-        if (otherType.isTypeArgument()) {
+        if (otherType.isTypeVariable()) {
             try {
                 return resolveTypeParameter(otherType.getName());
             }catch(EntityNotFoundException ex){
@@ -547,6 +563,11 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
     
     public JavaTypeModel getWhere()
     { return where_; }
+    
+    public JavaTypeModelAttributes getAttributes()
+    { return origin_.getAttributes(); }
+    
+    
     
     //TODO:private void createTermTypeArguments()
     

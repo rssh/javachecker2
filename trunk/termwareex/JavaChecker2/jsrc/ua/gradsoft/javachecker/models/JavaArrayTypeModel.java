@@ -24,10 +24,11 @@ public class JavaArrayTypeModel extends JavaTypeModel
 {
     
     /** Creates a new instance of JavaArrayTypeModel */
-    public JavaArrayTypeModel(JavaTypeModel referencedType) {
+    public JavaArrayTypeModel(JavaTypeModel referencedType, JavaExpressionModel lengthInitializer) {
        super(referencedType.getPackageModel());
        referencedType_=referencedType;     
        lengthModel_=new LengthMemberVariableModel();
+       lengthInitializer_=lengthInitializer;
     }
     
     public String getName()
@@ -76,7 +77,7 @@ public class JavaArrayTypeModel extends JavaTypeModel
     { return false; }
     
     
-    public boolean isTypeArgument()
+    public boolean isTypeVariable()
     { return false; }
   
   public  JavaTypeModel  getEnclosedType() throws NotSupportedException
@@ -100,10 +101,10 @@ public class JavaArrayTypeModel extends JavaTypeModel
   { return false; }
     
   /**
-   * key of return values is name of methods.   
+   *@return empty Map  
    */
   public Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException
-  { throw new NotSupportedException(); }
+  { return Collections.emptyMap(); }
         
   public boolean hasMemberVariableModels()
   { return true; }
@@ -114,6 +115,9 @@ public class JavaArrayTypeModel extends JavaTypeModel
   }        
 
   public List<JavaConstructorModel>  getConstructorModels()
+  { return Collections.emptyList(); }
+  
+  public List<JavaInitializerModel>  getInitializerModels()
   { return Collections.emptyList(); }
   
   public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
@@ -206,11 +210,20 @@ public class JavaArrayTypeModel extends JavaTypeModel
     {
        return TermUtils.createAtom("ArrayLength"); 
     }
+    
+    public boolean isSupportInitializerExpression()
+    { return lengthInitializer_!=null; }
+    
+    public  JavaExpressionModel  getInitializerExpression()
+    {
+      return lengthInitializer_;
+    }
       
   }
   
     private JavaTypeModel referencedType_;
     private LengthMemberVariableModel lengthModel_;
+    private JavaExpressionModel lengthInitializer_;
        
 
 }

@@ -61,7 +61,7 @@ public class JavaTermStaticFieldExpressionModel extends JavaTermExpressionModel
       return retval;
     }
     
-    public JavaMemberVariableModel  getMemberVariable()
+    public JavaMemberVariableModel  getFieldModel()
     { return memberVariable_; }
     
     private JavaMemberVariableModel memberVariable_;

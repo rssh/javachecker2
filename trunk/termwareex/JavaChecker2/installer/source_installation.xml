@@ -8,11 +8,11 @@
 <installation version="1.0">
  <info>
   <appname>JavaChecker</appname>
-  <appversion>2.1.1</appversion>
+  <appversion>2.2.0</appversion>
   <url>http://www.gradsoft.ua</url>
   <authors>
    <author name="Ruslan Shevchenko" email="Ruslan@Shevchenko.Kiev.UA" />
-   <author name="Grad-Soft ltd" email="info@gradsoft.ua" />
+   <author name="Grad-Soft Ltd" email="info@gradsoft.ua" />
   </authors>
  </info>
  <guiprefs height="480" resizable="yes" width="640"/>
@@ -48,6 +48,12 @@
   <file src="../build.properties"  targetdir="$INSTALL_PATH" />
   <file src="../build.properties.default"  targetdir="$INSTALL_PATH" />
   <fileset dir="../systems/" targetdir="$INSTALL_PATH/systems" >
+    <exclude name="CVS" />
+    <exclude name="**/CVS" />
+    <exclude name="CVS/*" />
+    <exclude name="**/CVS/*" />
+  </fileset>
+  <fileset dir="../attrs/" targetdir="$INSTALL_PATH/attrs" >
     <exclude name="CVS" />
     <exclude name="**/CVS" />
     <exclude name="CVS/*" />

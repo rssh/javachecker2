@@ -1,0 +1,64 @@
+
+domain(openclose,
+  system("CloseableArguments",
+         javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJavaFacts"),
+     ruleset(
+       import(general,logical_or),
+       import(general,apply),
+
+       [$x:$y] -> $x || $y,
+       [] -> false,
+
+       AllocationExpressionModel($type,$arguments,$ctx) -> CheckAllocation($type,$arguments,$ctx),
+       InnerAllocationExpressionModel($owner,$type,$arguments,$ctx) -> CheckAllocation($type,$arguments,$ctx),
+
+       CheckAllocation(TypeRef($name,$type),$arguments,$ctx) 
+       [
+            $ctx.subtypeOrSame($type,
+               $ctx.resolveFullClassName("java.io.Closeable"))
+         &&
+            !$type.getAttribute("NotCloseable")==true
+         &&
+            (
+              !$type.getAttribute("CloseableProxy")==true
+              ||
+               openclose::CloseableArguments.$arguments
+            )
+       ] -> true
+        !->  $arguments,
+
+       
+
+       ConditionalExpressionModel($c,$x,$y,$ctx) -> $x || $y,
+
+       BinaryExpressionModel($x,$y,$op,$ctx) -> $x || $y,
+
+       UnaryExpressionModel($x,$op,$ctx) -> $x,
+
+       ConstantExpressionModel($type,$x) -> false,
+
+       VariableExpressionModel($x,$y) -> false,
+
+       MethodCallExpressionModel($obj,$methodModel,$arguments,$ctx) 
+       [
+        $ctx.subtypeOrSame(
+         $methodModel.getResultType(),
+         $ctx.resolveFullClassName("java.io.Closeable")
+        )
+         &&
+        $methodModel.getAttribute("ResourceFactoryMethod") == true
+         &&
+        !($methodModel.getResultType().getAttribute("NotCloseable")==true)
+       ] -> true
+        !-> false,
+
+       P($x) -> $x [ [ print("CloseableArguments:"), println($x) ] ],
+
+       (x || y) || z -> x || (y||z),
+
+        false || x -> x
+
+     ),
+     FirstTop
+  )
+);

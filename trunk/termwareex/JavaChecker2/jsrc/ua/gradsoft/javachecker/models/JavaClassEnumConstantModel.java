@@ -12,6 +12,7 @@ package ua.gradsoft.javachecker.models;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Field;
 import java.util.Map;
+import ua.gradsoft.javachecker.models.expressions.JavaClassObjectConstantExpressionModel;
 import ua.gradsoft.javachecker.util.Function;
 import ua.gradsoft.javachecker.util.FunctionMap;
 import ua.gradsoft.javachecker.util.ImmutableMappedCollection;
@@ -74,6 +75,13 @@ public class JavaClassEnumConstantModel extends JavaEnumConstantModel
     public JavaTypeModel  getOwner()
     { return owner_; }
     
+    public boolean isSupportInitializerExpression()
+    { return true; }
+    
+    public JavaExpressionModel getInitializerExpression()
+    {
+        return new JavaClassObjectConstantExpressionModel(instance_,owner_);
+    }
     
     /**
      * ClassEnumConstantModel(this)

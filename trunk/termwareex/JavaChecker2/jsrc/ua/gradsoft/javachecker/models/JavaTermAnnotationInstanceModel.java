@@ -178,7 +178,7 @@ public class JavaTermAnnotationInstanceModel extends JavaAnnotationInstanceModel
     {
         kind_=JavaAnnotationKind.SINGLE_MEMBER;   
         nameTerm_ = t.getSubtermAt(0);
-        Term exprTerm = t.getSubtermAt(0);
+        Term exprTerm = t.getSubtermAt(1);
         JavaTypeModel tm = getTargetTypeModel(target);
         JavaExpressionModel expr = createExpressionModel(exprTerm,tm,"value");
         values_.put("value",expr);

@@ -297,7 +297,7 @@ public class JavaFacts extends DefaultFacts {
     private String  localVariableNamePattern_="[a-z]+([A-Z]|[a-z]|_|[0-9])*";
     private boolean checkClassNamePatterns_=true;
     private String  classNamePattern_="[A-Z_]+.*";
-    private boolean  checkMethodNamePatterns_=true;
+    //private boolean  checkMethodNamePatterns_=true;
     private String  methodNamePattern_="[a-z]+([A-Z]|[0-9]|[a-z]|_)*";
     private String  enumConstantNamePattern_="[A-Z](_|[A-Z]|[0-9])*";
     private String  typeArgumentNamePattern_="[A-Z]+([A-Z]|[0-9])*";

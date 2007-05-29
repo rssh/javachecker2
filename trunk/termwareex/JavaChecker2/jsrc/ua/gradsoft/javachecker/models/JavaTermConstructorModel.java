@@ -111,7 +111,6 @@ public class JavaTermConstructorModel extends JavaConstructorModel implements Ja
     private JavaTermModifiersModel modifiers_;
     private Term               t_;
     private JavaTermTopLevelBlockModel blockModel_;
-    private TreeMap<String,JavaAnnotationInstanceModel> annotations_;
     
     public static final int TYPE_PARAMETERS_TERM_INDEX=0;
     public static final int IDENTIFIER_TERM_INDEX=1;

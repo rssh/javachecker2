@@ -1,0 +1,26 @@
+
+domain(flows,
+  system("WithoutDefault",
+         javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJavaFacts"),
+     ruleset(
+       import(general,unify),
+       import(general,if),
+       import(general,logical_and),
+
+       [$x:$y] -> CheckNoDefault($x) && $y ,
+       []      -> true,
+
+       CheckNoDefault(SwitchStatementLabelBlock($label,$block)) 
+        -> unify($label,SwitchLabel(default)) ? false : true,
+
+       true && $x -> $x,
+       false && $x -> false,
+       ($x && $y) && $z -> $x && ($y && $z),
+
+       p($x) -> $x [ println($x) ], 
+
+       __THIS_IS_ALL -> true
+     ),
+     FirstTop
+  )
+);

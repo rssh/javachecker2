@@ -8,9 +8,10 @@
 
 package ua.gradsoft.javachecker.models;
 
-import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,7 +60,7 @@ public class JavaTypeModelHelper {
             return true;
         }
         MethodMatchingConversions cn=new MethodMatchingConversions(conversions);
-        if (s.isTypeArgument()) {
+        if (s.isTypeVariable()) {
             JavaTypeVariableAbstractModel sv = (JavaTypeVariableAbstractModel)s;
             List<JavaTypeModel> svBounds = sv.getBounds();
             for(JavaTypeModel bound : svBounds) {
@@ -375,7 +376,7 @@ public class JavaTypeModelHelper {
             }else{
                 retval=false;
             }
-        }else if(t.isTypeArgument()){
+        }else if(t.isTypeVariable()){
             if (debug) {
                 LOG.log(Level.INFO,"t is TypeArgument");
             }
@@ -467,8 +468,8 @@ public class JavaTypeModelHelper {
             retval = y.isEnum() && sameNames(x,y);
         }else if (x.isPrimitiveType()) {
             return y.isPrimitiveType() && x.getName().equals(y.getName());
-        }else if (x.isTypeArgument()) {
-            if (y.isTypeArgument()) {
+        }else if (x.isTypeVariable()) {
+            if (y.isTypeVariable()) {
                 JavaTypeVariableAbstractModel xv = (JavaTypeVariableAbstractModel)x;
                 JavaTypeVariableAbstractModel yv = (JavaTypeVariableAbstractModel)y;
                 List<JavaTypeModel> xb = xv.getBounds();
@@ -529,6 +530,239 @@ public class JavaTypeModelHelper {
         return false;
     }
     
+    /**
+     * find minimal maximum from x and y
+     */
+    public static JavaTypeModel minmax(JavaTypeModel x,JavaTypeModel y, MethodMatchingConversions cn, boolean debug) throws TermWareException, EntityNotFoundException
+    {
+       JavaTypeModel retval=null; 
+       if (x.isWildcardBounds()) {
+           JavaWildcardBoundsTypeModel wx = (JavaWildcardBoundsTypeModel)x;
+           if (y.isWildcardBounds()) {
+               JavaWildcardBoundsTypeModel wy = (JavaWildcardBoundsTypeModel)y;
+               switch(wx.getKind()) {
+                   case EXTENDS:
+                       switch(wy.getKind()) {
+                           case EXTENDS:
+                           {
+                               JavaTypeModel bwx = wx.getBoundTypeModel();
+                               JavaTypeModel bwy = wy.getBoundTypeModel();
+                               JavaTypeModel nbw = minmax(bwx,bwy,cn,debug);
+                               retval = new JavaWildcardBoundsTypeModel(JavaWildcardBoundsKind.EXTENDS,nbw);
+                           } 
+                           break;
+                           case SUPER:
+                           {
+                               JavaTypeModel bwx = wx.getBoundTypeModel();
+                               JavaTypeModel bwy = wy.getBoundTypeModel();
+                               if (JavaTypeModelHelper.subtypeOrSame(bwx,bwy,cn,true,debug)) {
+                                   retval = new JavaWildcardBoundsTypeModel(JavaWildcardBoundsKind.OBJECT,null);
+                               }else if(JavaTypeModelHelper.subtypeOrSame(bwy,bwx,cn,true,debug)){
+                                   // TODO:  create bounf with super and extends at the same type.
+                                   retval = bwx;
+                               }else{
+                                   retval = bwy;
+                               }
+                           }
+                           break;
+                           case OBJECT:
+                               retval = new JavaWildcardBoundsTypeModel(JavaWildcardBoundsKind.OBJECT,null);
+                               break;
+                           default:
+                               throw new AssertException("Unknow bound type "+wy.getKind());
+                       }
+                       break;
+                   case SUPER:
+                   {
+                       switch(wy.getKind()) {
+                           case EXTENDS:
+                           {
+                               JavaTypeModel bwx = wx.getBoundTypeModel();
+                               JavaTypeModel bwy = wy.getBoundTypeModel();
+                               if (JavaTypeModelHelper.subtypeOrSame(bwx,bwy,cn,true,debug)) {
+                                   retval=bwy;
+                               }else if(JavaTypeModelHelper.subtypeOrSame(bwy,bwx,cn,true,debug)){
+                                   retval=new JavaWildcardBoundsTypeModel(JavaWildcardBoundsKind.OBJECT,null);
+                               }else{
+                                   retval=bwx;
+                               }
+                           }
+                           break;
+                           case SUPER:
+                           {
+                               JavaTypeModel bwx = wx.getBoundTypeModel();
+                               JavaTypeModel bwy = wy.getBoundTypeModel();
+                               JavaTypeModel nw = minmax(bwx,bwy,cn,debug);
+                               retval = new JavaWildcardBoundsTypeModel(JavaWildcardBoundsKind.SUPER,nw);
+                           }
+                           break;
+                           case OBJECT:
+                               retval=new JavaWildcardBoundsTypeModel(JavaWildcardBoundsKind.OBJECT,null);
+                               break;
+                           default:
+                               throw new AssertException("Unknow bound type "+wy.getKind());
+                       }                      
+                   }
+                   break;
+                   case OBJECT:
+                       retval=new JavaWildcardBoundsTypeModel(JavaWildcardBoundsKind.OBJECT,null);
+                       break;               
+               }                                                 
+           }else{
+             JavaTypeModel bwx = wx.getBoundTypeModel();
+             switch(wx.getKind()) {
+                 case EXTENDS:
+                     if (subtypeOrSame(y,bwx,cn,true,debug)) {
+                         retval=bwx;
+                     }else{
+                         retval=new JavaWildcardBoundsTypeModel(JavaWildcardBoundsKind.OBJECT,null);
+                     }
+                     break;
+                 case SUPER:
+                     if (subtypeOrSame(bwx,y,cn,true,debug)) {
+                         retval=bwx;
+                     }else{
+                         retval=new JavaWildcardBoundsTypeModel(JavaWildcardBoundsKind.OBJECT,null);
+                     }
+                     break;
+                 case OBJECT:
+                     retval=bwx;
+                     break;
+                 default:
+                     throw new AssertException("Invalid wildcard kind:"+wx.getKind());
+             }
+           }
+       }else if (x instanceof JavaTypeArgumentBoundTypeModel) {
+           if (y instanceof JavaTypeArgumentBoundTypeModel) {
+               JavaTypeArgumentBoundTypeModel tx = (JavaTypeArgumentBoundTypeModel)x;
+               JavaTypeArgumentBoundTypeModel ty = (JavaTypeArgumentBoundTypeModel)y;
+               JavaTypeModel otx = tx.getOrigin();
+               JavaTypeModel oty = ty.getOrigin();
+               if (same(otx,oty)) {
+                   List<JavaTypeModel> tvx=tx.getResolvedTypeArguments();
+                   List<JavaTypeModel> tvy=ty.getResolvedTypeArguments();
+                   if (tvx.size()!=tvy.size()) {
+                       // impossible ?
+                       retval=otx;
+                   }else{
+                       Iterator<JavaTypeModel> tvxi=tvx.iterator();
+                       Iterator<JavaTypeModel> tvyi=tvy.iterator();
+                       Iterator<JavaTypeVariableAbstractModel> ai = otx.getTypeParameters().iterator();
+                       List<JavaTypeModel> nv = new ArrayList<JavaTypeModel>(tvx.size());
+                       JavaTypeArgumentsSubstitution s = new JavaTypeArgumentsSubstitution();                                       
+                       while(tvxi.hasNext()) {
+                           JavaTypeModel cx = tvxi.next();
+                           JavaTypeModel cy = tvyi.next();
+                           JavaTypeModel ctn = minmax(cx,cy,cn,debug);
+                           nv.add(cx);                                     
+                           s.put(ai.next(),cx);
+                       }
+                       //Hack (may be pass content ('where' information) here ?)
+                       retval = new JavaTypeArgumentBoundTypeModel(otx,nv,x);
+                   }
+               }else{
+                  // genertal case, do generic evaluation later, as for all 
+               }
+           }else{
+               // May be we compare with original class ?
+               JavaTypeArgumentBoundTypeModel tx = (JavaTypeArgumentBoundTypeModel)x;
+               JavaTypeModel otx = tx.getOrigin();
+               if (JavaTypeModelHelper.same(otx,y)) {
+                   retval=y;
+               }
+           }
+       }else if( y instanceof JavaTypeArgumentBoundTypeModel) {
+           JavaTypeArgumentBoundTypeModel ty = (JavaTypeArgumentBoundTypeModel)y;
+           JavaTypeModel oty = ty.getOrigin();
+           if (JavaTypeModelHelper.same(x,oty)) {
+               retval=x;
+           }
+       }else if (x.isTypeVariable()) {
+           JavaTypeVariableAbstractModel tx = (JavaTypeVariableAbstractModel)x;           
+           if (y.isTypeVariable()) {
+               JavaTypeVariableAbstractModel ty = (JavaTypeVariableAbstractModel)y;
+               List<JavaTypeModel> xbounds = tx.getBounds();
+               List<JavaTypeModel> ybounds = ty.getBounds();
+               if (same(tx,ty)) {
+                   retval=tx;
+               }
+               if (xbounds.isEmpty()||ybounds.isEmpty()) {
+                  retval = JavaResolver.resolveJavaLangObject();
+               }else{
+                   // for now, does not resolve bounds minmax (not needed ?)
+                   retval = JavaResolver.resolveJavaLangObject();
+               }               
+           }else{
+               List<JavaTypeModel> xbounds = tx.getBounds();
+               if (xbounds.size()==0) {
+                   retval = JavaResolver.resolveJavaLangObject();
+               }else{
+                   retval = y; 
+                   for(JavaTypeModel xb: xbounds) {
+                     retval = JavaTypeModelHelper.minmax(retval,xb,cn,debug);
+                   }                 
+               }
+           }
+       }else if (y.isTypeVariable()) {
+           JavaTypeVariableAbstractModel ty = (JavaTypeVariableAbstractModel)y;
+           List<JavaTypeModel> ybounds = ty.getBounds();
+           if (ybounds.size()==0) {
+               retval = JavaResolver.resolveJavaLangObject();
+           }else{
+               retval = x;
+               for(JavaTypeModel yb: ybounds) {
+                   retval = JavaTypeModelHelper.minmax(retval,yb,cn,debug);
+               }
+           }           
+       }else if (x.isPrimitiveType()) {
+           return minmax(boxingConversion(x,cn),y,cn,debug);
+       }else if (y.isPrimitiveType()) {
+           return minmax(x,boxingConversion(y,cn),cn,debug);
+       }
+       
+       // now all special cases are handled, generic algorithm follows:
+       if (retval==null) {     
+           if (subtypeOrSame(x,y,cn,true,debug)) {
+               retval=y;
+           }else if (subtypeOrSame(y,x,cn,true,debug)){
+               retval=x;
+           }else{           
+               LinkedList<JavaTypeModel> toCheck = new LinkedList<JavaTypeModel>();
+               toCheck.add(x);
+               while(!toCheck.isEmpty()) {
+                   JavaTypeModel current = toCheck.removeLast();
+                   if (subtypeOrSame(y,current,cn,true,debug)) {
+                       retval=current;
+                       break;
+                   }else{
+                       try {
+                         List<JavaTypeModel> interfaces = current.getSuperInterfaces();
+                         toCheck.addAll(interfaces);
+                       }catch(NotSupportedException ex){
+                           /* do nothing */
+                           ;
+                       }
+                       if (!current.isEnum()) {
+                         try {  
+                           JavaTypeModel superclass = current.getSuperClass();
+                           if (!superclass.isNull()) {
+                              toCheck.addLast(superclass);
+                           }
+                         }catch(NotSupportedException ex){
+                             /* do nothing */
+                         }
+                       }
+                   }                   
+               } 
+           }           
+       }
+       if (retval==null) {
+           LOG.warning("Possible incorrect minmax between "+x.getFullName()+" and "+y.getFullName());
+           retval=JavaResolver.resolveJavaLangObject();
+       }
+       
+       return retval;       
+    }
     
     public static boolean isBoolean(JavaTypeModel x) {
         return x.equals(JavaPrimitiveTypeModel.BOOLEAN) || x.getFullName().equals("java.lang.Boolean");

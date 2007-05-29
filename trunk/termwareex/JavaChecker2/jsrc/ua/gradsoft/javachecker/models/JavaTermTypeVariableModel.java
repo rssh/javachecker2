@@ -32,7 +32,7 @@ public class JavaTermTypeVariableModel extends JavaTypeVariableAbstractModel
      */
     public JavaTermTypeVariableModel(Term t,JavaTypeModel where) throws TermWareException
     {
-        boolean printDetails=true;               
+        boolean printDetails=false;               
         //bounds_=new LinkedList<JavaTypeModel>();
         bounds_=null;
         termBounds_=TermUtils.createNil();

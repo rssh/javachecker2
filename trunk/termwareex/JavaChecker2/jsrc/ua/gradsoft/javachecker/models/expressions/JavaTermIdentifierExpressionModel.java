@@ -59,6 +59,17 @@ public class JavaTermIdentifierExpressionModel extends JavaTermExpressionModel i
     { return Collections.emptyList(); }
     
     /**
+     *@return variable model, if isType is false, otherwise - null.
+     */
+    public JavaVariableModel getVariableModel() throws TermWareException, EntityNotFoundException
+    {
+        lazyInitJavaVariableModel();
+        return variable_;
+    }
+    
+    
+    
+    /**
      * VariableModel(name,variableModel)
      *|
      * TypeRef(name,typeModel)

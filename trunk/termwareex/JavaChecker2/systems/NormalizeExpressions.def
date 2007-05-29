@@ -1,0 +1,70 @@
+
+system("NormalizeExpressions",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJavaFacts"),
+  ruleset(
+
+     import(general,logical_and),
+     import(general,logical_or),
+     import(general,apply),
+     import(general,unify),
+     import(general,if),
+     import(general,reduce),
+
+     AdditiveExpressionModel($x,$y,$op,$ctx) -> BinaryExpressionModel($x,$y,$op,$ctx),
+     AndExpressionModel($x,$y,$ctx) ->  BinaryExpressionModel($x,$y,"&",$ctx),   
+     ArrayIndexExpressionModel($array,$index,$ctx) -> BinaryExpressionModel($array,$index,"[]",$ctx),
+
+     ArrayInitializerModel($list) -> ConstantExpressionModel("ArrayInitializer",$x),
+
+     CastExpressionModel($type,$x,$ctx) -> UnaryExpressionModel($x,Cast($type),$ctx),
+
+     ClassLiteralModel($typeRef,$ctx) -> ConstantExpressionModel($typeRef,$ctx),
+
+     ConditionalAndExpressionModel($x,$y,$ctx) -> BinaryExpressionModel($x,$y,"&&",$ctx),
+
+     # ConditionalExpression remain unchanged.
+
+
+     ConditionalOrExpressionModel($x,$y,$ctx) -> BinaryExpressionModel($x,$y,"||",$ctx),
+     EqualityExpressionModel($x,$y,$op,$ctx) -> BinaryExpressionModel($x,$y,$op,$ctx),
+     ExclusiveOrExpressionModel($x,$y,$ctx) -> BinaryExpressionModel($x,$y,"^",$ctx),
+     InclusiveOrExpressionModel($x,$y,$ctx) -> BinaryExpressionModel($x,$y,"|",$ctx),
+     MultiplicativeExpressionModel($x,$y,$op,$ctx) -> BinaryExpressionModel($x,$y,$op,$ctx),
+     RelationalExpressionModel($x,$y,$op,$ctx) -> BinaryExpressionModel($x,$y,$op,$ctx),
+     ShiftExpressionModel($x,$y,$op,$ctx) -> BinaryExpressionModel($x,$y,$op,$ctx),
+     InstanceOfExpressionModel($typeRef,$expr,$ctx) -> UnaryExpressionModel($expr,instanceof($typeRef),$ctx),
+     PostfixExpressionModel($x,$op,$ctx) -> UnaryExpressionModel($x,post($op),$ctx),     
+     PredecrementExpressionModel($x,$ctx) -> UnaryExpressionModel($x,pre("--"),$ctx),     
+     PreincrementExpressionModel($x,$ctx) -> UnaryExpressionModel($x,pre("++"),$ctx),     
+
+     FunctionCallModel($name,$arguments,$javaMethodModel,$ctx) -> MethodCallExpressionModel("thisOrStatic",$javaMethodModel,$arguments,$ctx),
+
+     MethodCallModel($obj,$identifier,$arguments,$methodModel,$ctx) -> MethodCallExpressionModel($obj,$methodModel,$arguments,$ctx),
+
+     SpecializedMethodCallModel($bounds,$methodCall,$methodModel,$ctx) -> $methodCall,
+
+     StaticFieldModel($typeRef,$identifier,$memberVariable,$ctx) -> VariableExpressionModel($memberVariable,$ctx),
+
+     #TODO: refine model term
+     VariableModel($name,$type) -> VariableExpressionModel($name,$type),
+     FieldModel($objectOrType,$identifier,$fieldModel,$ctx) -> VariableExpressionModel($fieldModel,$ctx),
+
+     SuperModel($x,$ctx) -> UnaryExpressionModel($x,"super",$ctx),
+
+     SuperPrefixModel($ctx) -> VariableExpressionModel("super",$ctx),
+
+     ThisModel($x,$ctx) -> UnaryExpressionModel($x,"this",$ctx),
+     ThisPrefixExpressionModel($ctx) -> VariableExpressionModel("$this",ctx),
+
+     IntegerLiteral($x) -> ConstantExpressionModel(int,$x),
+     FloatingPointLiteral($x) -> ConstantExpressionModel(FloatingPoint,$x),
+     CharacterLiteral($x) -> ConstantExpressionModel(char,$x),
+     StringLiteral($x) -> ConstantExpressionModel(String,$x),
+     BooleanLiteral($x) -> ConstantExpressionModel(boolean,$x),
+     NullLiteral() -> ConstantExpressionModel(null,null),
+
+
+     protect($x) -> $x [ setCurrentStopFlag(true) ]
+
+  ),
+  FirstTop
+);

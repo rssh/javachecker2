@@ -62,14 +62,7 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     public Map<String, JavaEnumConstantModel> getEnumConstantModels()  {
         return enumConstants_;
     }
-    
-    /**
-     *enum has not constructor
-     */
-    public List<JavaConstructorModel> getConstructorModels()
-    { return Collections.emptyList(); }
-    
-    
+            
     /**
      * EnumModel(modifiers,identifier,superInterfaces, enumConstantsList,membersList,context)
      */
@@ -197,7 +190,7 @@ public final class ValuesMethodModel extends JavaMethodModel
     { return Collections.emptyList(); }
  
     public JavaTypeModel  getResultType() 
-    { return new JavaArrayTypeModel(JavaTermEnumModel.this); }
+    { return new JavaArrayTypeModel(JavaTermEnumModel.this,null); }
     
     public List<JavaTypeModel> getFormalParametersTypes() 
     { return Collections.emptyList(); }

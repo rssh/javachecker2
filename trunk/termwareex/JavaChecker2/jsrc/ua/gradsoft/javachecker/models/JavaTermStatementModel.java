@@ -152,9 +152,13 @@ public class JavaTermStatementModel implements JavaStatementModel {
         }else if(t.getName().equals("BreakStatement")){
             kind_=JavaStatementKind.BREAK_STATEMENT;
             childs_=Collections.emptyList();
+            //TODO: add LabelExpressionModel            
+            expressions_=Collections.emptyList();
         }else if(t.getName().equals("ContinueStatement")){
             kind_=JavaStatementKind.CONTINUE_STATEMENT;
             childs_=Collections.emptyList();
+            //TODO: add LabelExpressionModel
+            expressions_=Collections.emptyList();
         }else if(t.getName().equals("ReturnStatement")){
             kind_=JavaStatementKind.RETURN_STATEMENT;
             childs_=Collections.emptyList();

@@ -14,6 +14,7 @@ import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.models.JavaArrayTypeModel;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
+import ua.gradsoft.javachecker.models.JavaPrimitiveTypeModel;
 import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
@@ -57,7 +58,7 @@ public class JavaTermArrayInitializerExpressionModel extends JavaTermExpressionM
       }else{
           referencedType = subexpressions_.get(0).getType();
       }
-      return new JavaArrayTypeModel(referencedType);
+      return new JavaArrayTypeModel(referencedType,new JavaClassObjectConstantExpressionModel((Integer)subexpressions_.size(),JavaPrimitiveTypeModel.INT));
     }
     
     public List<JavaExpressionModel>  getSubExpressions()

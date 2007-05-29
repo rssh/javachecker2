@@ -42,7 +42,12 @@ public class JavaTermSwitchConstantExpressionModel extends JavaTermExpressionMod
     
     
     public List<JavaExpressionModel> getSubExpressions()
-    { return Collections.emptyList(); }
+    { if (isDefault()) {
+        return Collections.emptyList(); 
+      }else{
+          return Collections.singletonList(switchExpr_);
+      }
+    }
     
     public boolean isDefault()
     { return isDefault_; }

@@ -88,12 +88,12 @@ public abstract class JavaMethodModel implements JavaTopLevelBlockOwnerModel
     
  
     
-    public Term getAttribute(String name)
+    public Term getAttribute(String name) throws TermWareException
     {
       return getTypeModel().getAttributes().getMethodAttribute(this,name); 
     }
     
-    public void setAttribute(String name, Term value)
+    public void setAttribute(String name, Term value) throws TermWareException
     {
       getTypeModel().getAttributes().setMethodAttribute(this,name,value);  
     }

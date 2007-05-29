@@ -44,12 +44,12 @@ public abstract class JavaConstructorModel implements JavaTopLevelBlockOwnerMode
         JavaTopLevelBlockOwnerModelHelper.printFormalParametersSignature(out,this);
     }
     
-    public Term getAttribute(String name)
+    public Term getAttribute(String name) throws TermWareException
     {
       return getTypeModel().getAttributes().getConstructorAttribute(this,name);  
     }
     
-    public void setAttribute(String name,Term value)
+    public void setAttribute(String name,Term value) throws TermWareException
     {
       getTypeModel().getAttributes().setConstructorAttribute(this,name,value);  
     }

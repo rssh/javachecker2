@@ -55,6 +55,22 @@ public class JavaCheckerFacade {
       return main_.getFacts().getPackagesStore();  
     }
     
+    /**
+     * set home
+     */
+    public static void setHome(String home)
+    {
+      main_.setHome(home);  
+    }
+    
+    /**
+     * set home
+     */
+    public static String getHome()
+    {
+      return main_.getHome();
+    }    
+    
     
     private static Main main_;
     

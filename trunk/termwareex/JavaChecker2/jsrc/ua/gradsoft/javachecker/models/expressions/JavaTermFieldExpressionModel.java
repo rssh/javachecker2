@@ -66,6 +66,12 @@ public class JavaTermFieldExpressionModel extends JavaTermExpressionModel
        return Collections.<JavaExpressionModel>singletonList(objectOrType_); 
     }
     
+    public JavaMemberVariableModel getFieldModel() throws TermWareException, EntityNotFoundException
+    {
+        lazyInitFieldModel();
+        return fieldModel_;
+    }
+    
     /**
      *  FieldModel(objectOrType,identifier,fieldModel,ctx)
      */

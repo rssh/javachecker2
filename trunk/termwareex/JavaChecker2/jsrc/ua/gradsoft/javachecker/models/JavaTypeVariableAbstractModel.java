@@ -65,7 +65,7 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     public boolean isArray()
     { return false; }
         
-    public boolean isTypeArgument()
+    public boolean isTypeVariable()
     { return true; }
     
     public boolean isWildcardBounds()
@@ -103,10 +103,10 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
         return false; }
     
     /**
-     * throws NotSupportedException
+     *@return empty map;
      */
     public Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException {
-        throw new NotSupportedException();
+        return Collections.emptyMap();
     }
     
     
@@ -123,6 +123,7 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
         throw new NotSupportedException();
     }
        
+    
     
     public boolean isNested() {
         return false; }
@@ -167,6 +168,12 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
      *@return empty list
      */
     public List<JavaConstructorModel>  getConstructorModels()
+    { return Collections.emptyList(); }
+
+    /**
+     *@return empty list
+     */
+    public List<JavaInitializerModel>  getInitializerModels()
     { return Collections.emptyList(); }
     
     

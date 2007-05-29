@@ -10,6 +10,7 @@
 package ua.gradsoft.javachecker.models;
 
 import java.lang.annotation.ElementType;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.models.expressions.JavaTermAdditiveExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermAllocationExpressionModel;
 import ua.gradsoft.javachecker.models.expressions.JavaTermAndExpressionModel;
@@ -359,6 +360,8 @@ public abstract class JavaTermExpressionModel implements JavaExpressionModel
           }else{
               throw new InvalidJavaTermException("AnnotationMemberValueArrayInitializer allowed only inside annotation",t);
           }
+      }else if(t.getName().equals("MemberValue")) {
+          return create(t.getSubtermAt(0),statement,  enclosedType, enclosedAnnotation, enclosedAnnotationElement);
       }else{
           throw new InvalidJavaTermException("Invalid expression term",t);
       }

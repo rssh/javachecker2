@@ -43,6 +43,9 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
         name_="$"+anonimousIndexInParent_;
         isAnonimous_=true;
         parent.addNestedType(name_,this);
+        if (statement==null) {
+            throw new NullPointerException();
+        }
     }
 
     public String getName() {
@@ -205,7 +208,7 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
 
     private String name_;    
     private int     anonimousIndexInParent_;        
-    private JavaTermStatementModel statement_;
+    //private JavaTermStatementModel statement_;
     private boolean supersAreInitialized_=false;
     
     

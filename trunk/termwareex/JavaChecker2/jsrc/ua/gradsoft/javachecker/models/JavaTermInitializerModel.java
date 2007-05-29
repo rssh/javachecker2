@@ -42,36 +42,11 @@ public class JavaTermInitializerModel extends JavaInitializerModel implements Ja
      */
     public JavaTypeModel  getTypeModel()
     { return owner_; }
-    
-    public String getName()  { return "Initializer"; }
+      
     
     public JavaTermTypeAbstractModel getTermTypeAbstractModel()
     { return owner_; }
     
-    /**
-     * initializers does not have type parameters, so return empty list.
-     */
-    public List<JavaTypeVariableAbstractModel> getTypeParameters()
-    {
-      return Collections.emptyList(); 
-    }
-
-    /**
-     * initializers does not have formal parameters, so return empty list.
-     */
-    public List<JavaFormalParameterModel> getFormalParametersList()
-    {
-      return Collections.emptyList();  
-    }
-    
-    
-    /**
-     * initializers does not have formal parameters, so return empty map.
-     */
-    public Map<String, JavaFormalParameterModel> getFormalParametersMap()
-    {
-      return Collections.emptyMap();  
-    }
     
     
     /**

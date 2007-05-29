@@ -105,7 +105,7 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
     }
     
    
-        private AttributedEntity getLocalVariableAttributesRoot() throws TermWareException
+    private AttributedEntity getLocalVariableAttributesRoot() throws TermWareException
     {
         return statement_.getTopLevelBlockModel().getOwnerModel().getChildAttributes("*LocalVariables");
     }

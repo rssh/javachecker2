@@ -83,8 +83,11 @@ public class JavaClassArgumentBoundMethodModel extends JavaMethodModel implement
     
     public List<JavaTypeModel> getFormalParametersTypes() throws TermWareException, EntityNotFoundException
     {
-      List<JavaTypeModel> ofps = origin_.getFormalParametersTypes();         
-      return getTypeArgumentBoundTypeModel().getSubstitution().substitute(ofps);
+     if (formalParametersTypes_==null) {   
+        List<JavaTypeModel> ofps = origin_.getFormalParametersTypes();         
+        formalParametersTypes_=getTypeArgumentBoundTypeModel().getSubstitution().substitute(ofps);
+     }
+     return formalParametersTypes_;
     }
     
     

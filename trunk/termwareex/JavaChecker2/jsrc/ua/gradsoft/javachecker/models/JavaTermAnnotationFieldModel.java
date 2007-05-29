@@ -85,6 +85,18 @@ public class JavaTermAnnotationFieldModel extends JavaMemberVariableModel
        return retval;
     }
     
+    public boolean isSupportInitializerExpression()
+    { return !defaultValueTerm_.isNil(); }
+    
+    public JavaExpressionModel getInitializerExpression() throws TermWareException
+    {
+       if (!defaultValueTerm_.isNil()) { 
+         return JavaTermExpressionModel.create(defaultValueTerm_.getSubtermAt(0),null,owner_); 
+       }else{
+         return null;  
+       }
+    }
+    
     private JavaTypeModel   owner_;
     private JavaTermModifiersModel modifiersModel_;
     private Term typeTerm_;

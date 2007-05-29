@@ -115,7 +115,8 @@ public class JavaClassMethodModel extends JavaMethodModel implements JavaClassTo
             if (i==parameterTypes.length-1) {
                 if (method_.isVarArgs()) {                    
                     parameterModifiers |= JavaTermModifiersModel.VARARGS;
-                    c=new JavaArrayTypeModel(c);
+                  // we does not need create array type here -- it is as array in parameterTypes. 
+                  //  c=new JavaArrayTypeModel(c,null);
                     if (debug) {
                         LOG.info("varargs for "+i+", nowc="+c.getName());
                     }
@@ -149,7 +150,8 @@ public class JavaClassMethodModel extends JavaMethodModel implements JavaClassTo
            if (i==parameterTypes.length-1) {
                if (method_.isVarArgs()) {
                    parameterModifiers |= JavaTermModifiersModel.VARARGS;
-                   c=new JavaArrayTypeModel(c);
+                   // we does not need create array type here -- it is as array in parameterTypes. 
+                   //c=new JavaArrayTypeModel(c,null);
                     if (debug) {
                         LOG.info("varargs for "+i+", nowc="+c.getName());
                     }                   

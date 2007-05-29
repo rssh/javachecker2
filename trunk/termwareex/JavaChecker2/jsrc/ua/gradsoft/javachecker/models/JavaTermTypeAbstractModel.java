@@ -9,6 +9,7 @@
 package ua.gradsoft.javachecker.models;
 
 import java.lang.annotation.ElementType;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,7 +53,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
         nestedTypes_=new TreeMap<String,JavaTypeModel>();
         constructors_=new LinkedList<JavaConstructorModel>();
         typeVariables_=new LinkedList<JavaTypeVariableAbstractModel>();
-        initializers_=new LinkedList<JavaTermInitializerModel>();      
+        initializers_=new LinkedList<JavaInitializerModel>();      
         setUnitModel(cuModel);
     }
     
@@ -101,6 +102,8 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     public List<JavaConstructorModel>  getConstructorModels()
     { return constructors_; }
     
+    public List<JavaInitializerModel>  getInitializerModels()
+    { return initializers_; }
     
     public boolean isNested()
     { return parentType_!=null; }
@@ -147,7 +150,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
         throw new NotSupportedException();
     }
     
-    public boolean isTypeArgument()
+    public boolean isTypeVariable()
     { return false; }
     
     public boolean isWildcardBounds()
@@ -167,7 +170,21 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
                   }
               }else{                                  
                   if (isNested()) {
-                         resolvedSuperClass_=JavaResolver.resolveTypeToModel(superClassTerm_,getEnclosedType(),getTypeParameters());
+                      List<JavaTypeVariableAbstractModel> tvs = getTypeParameters();
+                      if (statement_!=null) {
+                         JavaTopLevelBlockModel tbm = statement_.getTopLevelBlockModel();
+                         if (tbm!=null) {
+                             JavaTopLevelBlockOwnerModel tbom = tbm.getOwnerModel();
+                             List<JavaTypeVariableAbstractModel> stvs = tbom.getTypeParameters();
+                             if (stvs.size()!=0) {
+                                 List<JavaTypeVariableAbstractModel> prevtvs=tvs;
+                                 tvs = new ArrayList<JavaTypeVariableAbstractModel>();
+                                 tvs.addAll(prevtvs);
+                                 tvs.addAll(stvs);
+                             }
+                         }
+                      }
+                      resolvedSuperClass_=JavaResolver.resolveTypeToModel(superClassTerm_,getEnclosedType(),tvs);
                   }else{  
                          resolvedSuperClass_=JavaResolver.resolveTypeToModel(superClassTerm_,getUnitModel(),getPackageModel(),null,getTypeParameters(),null);
                   }
@@ -448,7 +465,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     protected JavaTypeModel parentType_=null;
     protected TreeMap<String, List<JavaMethodModel>> methodModels_;
     protected TreeMap<String, JavaMemberVariableModel> fieldModels_;
-    protected List<JavaTermInitializerModel>                  initializers_;
+    protected List<JavaInitializerModel>                  initializers_;
     protected List<JavaConstructorModel>                      constructors_;
     protected List<JavaTypeVariableAbstractModel>             typeVariables_;
     
@@ -471,6 +488,6 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     /**
      * statement, in which this class is defined if this is local or anonimous class.
      */
-    private JavaTermStatementModel  statement_;
+    protected JavaTermStatementModel  statement_;
 
 }

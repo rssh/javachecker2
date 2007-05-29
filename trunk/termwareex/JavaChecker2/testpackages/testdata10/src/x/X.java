@@ -2,7 +2,7 @@ package x;
 
 import ua.gradsoft.javachecker.annotations.*;
 
-@TypeCheckerProperties(value={"AAA","true"})
+@TypeCheckerProperties({"AAA","true"})
 public class X
 {
 
