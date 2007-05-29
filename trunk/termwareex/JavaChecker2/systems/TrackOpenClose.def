@@ -68,7 +68,7 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
           $finally,
           $ctx),$state) 
              ->
-    CheckFinalStatement($finally,CheckStatement($x,CheckStatement($y,$state)))
+    CheckFinalStatement($finally,CheckBlock($y,CheckStatement($x,$state)))
         &&
     CheckFinalStatement($finally,
         CheckStatement($catchSeq,CheckStatement($x,$state)))
@@ -188,7 +188,7 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
            &&
           $methodModel.getName()=="close"           
         ] 
-           -> merge(CHANGE($obj,CLOSE),$state) 
+           -> CheckReturn($state,merge(CHANGE($obj,CLOSE),$state)) 
           !-> CheckReturn($state,CheckExpressions($arguments,$state)),
 
 
@@ -334,6 +334,8 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      $x || true -> true,
      true || $x -> true,     
     
+     ( $x || $y ) || $z -> $x || ($y || $z),
+
      CheckReturn($x,$y) -> unify($x,RETURN($z)) ? $x : $y,
 
      RETURN(RETURN($x)) -> RETURN($x),

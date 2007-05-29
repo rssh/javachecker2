@@ -137,13 +137,8 @@ public class JavaTopLevelBlockOwnerModelHelper {
           boolean isFirst=true;
           out.print("(");
           while(!l.isNil()) {
-              Term fp=l.getSubtermAt(0);
-              try {
+              Term fp=l.getSubtermAt(0);             
               l=l.getSubtermAt(1);
-              }catch(Exception ex){
-                  System.err.println("formalParametersList="+TermHelper.termToString(formalParametersList));
-                  throw new InvalidJavaTermException("QQQ",formalParametersList);
-              }
               if (isFirst) {
                   isFirst=true;
               }else{

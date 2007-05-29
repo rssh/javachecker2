@@ -1448,7 +1448,8 @@ public class JavaResolver {
    public static JavaTypeModel resolveTypeModelByName(String name, JavaPlaceContext ctx) throws EntityNotFoundException, TermWareException {
         if (ctx.getStatementModel()!=null) {
             return resolveTypeModelByName(name,ctx.getTypeModel(),ctx.getTopLeveBlockOwnerModel().getTypeParameters(),new LocalTypesIterable(ctx.getStatementModel()));
-        }else if (ctx.getTopLeveBlockOwnerModel()!=null) {
+        }else if (
+                ctx.getTopLeveBlockOwnerModel()!=null) {
             return resolveTypeModelByName(name,ctx.getTypeModel(),ctx.getTopLeveBlockOwnerModel().getTypeParameters(),null);
         }else if (ctx.getTypeModel()!=null) {
             return resolveTypeModelByName(name,ctx.getTypeModel(),null,null);

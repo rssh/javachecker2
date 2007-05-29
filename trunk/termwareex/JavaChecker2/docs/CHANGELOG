@@ -1,3 +1,10 @@
+2.2.0 (27.05.2007)
+    - implemented storing of external source attributes.
+    - TrackOpenClose now aware about 'NotReal' Closeables and proxies. 
+    - added check for unused private fields and methods.
+    - foexed few bugs in resolver.
+    
+
 2.1.1
     - fixed bug with long work of TrackOpenClose in synchronized statements
     - added SwithLabelWithoutBreak check

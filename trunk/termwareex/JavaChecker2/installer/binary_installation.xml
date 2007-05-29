@@ -4,7 +4,7 @@
     Author     : Ruslan Shevchenko
     Description:
         IzPack install file for TermWare JavaChecker
-    Id:        $Id: binary_installation.xml,v 1.6 2007-05-29 09:42:05 rssh Exp $
+    Id:        $Id: binary_installation.xml,v 1.7 2007-05-29 10:49:34 rssh Exp $
 -->
 <installation version="1.0">
  <info>
@@ -42,6 +42,7 @@
   <executable targetfile="$INSTALL_PATH/bin/JavaChecker.sh" stage="newer" keep="true" os="unix"/>
   <executable targetfile="$INSTALL_PATH/bin/JavaChecker.bat" stage="newer" keep="true" os="windows"/>
   <file src="../lib/JavaChecker2.jar" targetdir="$INSTALL_PATH/lib" />
+  <file src="../lib/JavaChecker2Annotations.jar" targetdir="$INSTALL_PATH/lib" />
   <file src="../lib/TermWare2.jar"  targetdir="$INSTALL_PATH/lib" />
   <file src="../lib/TermWareJPP.jar"  targetdir="$INSTALL_PATH/lib" />
   <file src="../etc/prefs1.xml"  targetdir="$INSTALL_PATH/etc" />

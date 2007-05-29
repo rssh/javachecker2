@@ -40,7 +40,8 @@
   <executable targetfile="$INSTALL_PATH/bin/JavaChecker.sh" stage="newer" keep="true" os="unix"/>
   <parsable targetfile="$INSTALL_PATH/bin/JavaChecker.bat" os="windows"/>
   <executable targetfile="$INSTALL_PATH/bin/JavaChecker.bat" stage="newer" keep="true" os="windows"/>
-    <file src="../lib/JavaChecker2.jar" targetdir="$INSTALL_PATH/lib" />
+  <file src="../lib/JavaChecker2.jar" targetdir="$INSTALL_PATH/lib" />
+  <file src="../lib/JavaChecker2Annotations.jar" targetdir="$INSTALL_PATH/lib" />
   <file src="../lib/TermWare2.jar"  targetdir="$INSTALL_PATH/lib" />
   <file src="../lib/TermWareJPP.jar"  targetdir="$INSTALL_PATH/lib" />
   <file src="../build.xml"  targetdir="$INSTALL_PATH" />
@@ -72,6 +73,13 @@
     <exclude name="**/CVS/*" />
   </fileset>
   <fileset dir="../jsrc/" targetdir="$INSTALL_PATH/jsrc" >
+    <exclude name="CVS" />
+    <exclude name="**/CVS" />
+    <exclude name="CVS/*" />
+    <exclude name="**/CVS/*" />
+    <exclude name="**/*.class" />
+  </fileset>
+  <fileset dir="../jsrc-ann/" targetdir="$INSTALL_PATH/jsrc-ann" >
     <exclude name="CVS" />
     <exclude name="**/CVS" />
     <exclude name="CVS/*" />

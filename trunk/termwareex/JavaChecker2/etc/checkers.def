@@ -56,7 +56,7 @@ Checkers(
         BT_TYPE_RULESET,
         ruleset(
           import(general,apply),
-          SwitchStatement($expr,$labels) -> RESULT(flows::WithoutDefault.$labels, cons($expr,$labels)) [ print($labels) ], 
+          SwitchStatement($expr,$labels) -> RESULT(flows::WithoutDefault.$labels, cons($expr,$labels)) , 
           RESULT(true,$where) -> true [ violationDiscovered(SwitchWithoutDefault,"switch without default label",$where) ],
           RESULT(false,$where) -> false
         ),

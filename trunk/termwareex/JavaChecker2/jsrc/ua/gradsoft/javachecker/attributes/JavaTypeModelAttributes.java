@@ -324,7 +324,12 @@ public class JavaTypeModelAttributes {
     }
     
     private synchronized void save() throws TermWareException {
-        if (isLoaded()) {                       
+        if (isLoaded()) {          
+            
+            if (data_.isEmpty()) {
+                return;
+            }
+            
             String tmpDir = Main.getTmpDir();
             String packageName=owner_.getPackageModel().getName();
             //String dirName=JUtils.createDirectoryNameFromPackageName(Main.getTmpDir(),owner_.getPackageModel().getName());
