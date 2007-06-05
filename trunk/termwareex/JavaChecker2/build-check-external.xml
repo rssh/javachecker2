@@ -29,6 +29,7 @@
  <target name="check-jetty" depends="declareJavaChecker" >
    <JavaChecker jchhome="${basedir}" output="jchreport-jetty.txt" outputFormat="text" prefs="etc/prefs1.xml" debug="false" q="false" showFiles="false" >
     <input dir="${jetty.home}/modules/jetty/src/main/java" />
+    <input dir="${jetty.home}/modules/util/src/main/java" />
     <classpath>
 			<fileset dir="${jetty.home}/lib">
 				<include name="*.jar" />

@@ -170,7 +170,9 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      CheckExpressions($var,[$x:$y],$state) -> CheckExpressions($var,$y,CheckExpression($var,$x,$state)),
      CheckExpressions($var,[],$state) -> $state,
 
-     CheckExpression($var, MethodCallModel($obj,$id,$arguments,$methodModel,$ctx), $state)
+     CheckExpression($var, MethodCallModel($obj,$id,$arguments,$methodModel,$ctx), $state) -> CheckExpression($var,MethodCallExpressionModel($obj,$methodModel,$arguments,$ctx),$state),
+
+     CheckExpression($var, MethodCallExpressionModel($obj,$methodModel,$arguments,$ctx), $state)
         [
            $ctx.subtypeOrSame(
               $methodModel.getResultType(),
@@ -202,11 +204,11 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
 
     CheckAllocationNotProxy($var,$type,$arguments,$ctx,$state) 
         ->  
-           (
+          ( (
             !($type.getAttribute("CloseableProxy")==true)
             ||  
-              (apply(openclose::CloseableArguments,apply(NormalizeExpressions,$arguments)))
-           )
+              apply(openclose::CloseableArguments,apply(NormalizeExpressions,$arguments))
+           ) )
                 ?
                   CheckReturn($state,merge(CHANGE($var,OPEN,$ctx.getFileAndLine()),$state))
                  :CheckExpressions($var,$arguments,$state),
@@ -344,7 +346,6 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
 
      RETURN($x) || RETURN($y) -> RETURN( $x || $y),
 
-
 #     CheckThrowed($x,$state) [ CanThrow.canThrow($x) ] -> $state 
 #                                                      !-> true,
 
@@ -356,7 +357,7 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      Q($x && $y) -> Q($x) && Q($y),
      Q(RETURN($x)) -> Q($x),
      Q(NIL) -> true,
-     Q([$x:$y]) -> CheckOpenClose(cons($x,$y)),
+     Q([$x:$y]) -> Q(CheckOpenClose(cons($x,$y))),
 
      CheckOpenClose(NIL) -> true,
      CheckOpenClose(CHANGE($x,CLOSE)) -> true,

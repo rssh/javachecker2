@@ -179,18 +179,12 @@ public class JavaTermStatementModel implements JavaStatementModel {
             kind_=JavaStatementKind.SYNCHRONIZED_STATEMENT;
             childs_=new LinkedList<JavaStatementModel>();
             JavaTermStatementModel prevS=null;
+            Term exprTerm = t.getSubtermAt(0);
+            JavaTermExpressionModel e = JavaTermExpressionModel.create(exprTerm,this,enclosedType);
+            expressions_=Collections.singletonList(e);
             Term blockTerm = t.getSubtermAt(1);
             JavaTermStatementModel st = new JavaTermStatementModel(blockModel_,blockTerm,this,null);
             childs_.add(st);
-            //Term l=blockTerm.getSubtermAt(0);
-            //while(!l.isNil()) {
-            //    Term ct=l.getSubtermAt(0);
-            //    l=l.getSubtermAt(1);
-            //    JavaTermStatementModel s = new JavaTermStatementModel(blockModel_,ct,this,prevS);
-            //    childs_.add(s);
-            //    prevS=s;
-            //}
-            expressions_=Collections.emptyList();
         }else if(t.getName().equals("TryStatement")){
             kind_=JavaStatementKind.TRY_STATEMENT;
             childs_=new LinkedList<JavaStatementModel>();
@@ -575,7 +569,7 @@ public class JavaTermStatementModel implements JavaStatementModel {
             case SYNCHRONIZED_STATEMENT:
             {
                 Term stm = childs_.get(0).getModelTerm();
-                retval = TermUtils.createTerm("SynchronizedStatementModel",t_.getSubtermAt(0),stm,tctx);
+                retval = TermUtils.createTerm("SynchronizedStatementModel",expressions_.get(0).getModelTerm(),stm,tctx);
             }
             break;
             case THROW_STATEMENT:
