@@ -1,8 +1,15 @@
+2.2.1 (06.06.2007)
+    - Checking for unused field and methods now aware about serailization stuff.
+    - fixed bug with non-analyzing expressions inside synchronized statements.
+    - added CheckerDisable annotation.
+    - fixed performance problem in TrackOpenClose.
+
+
 2.2.0 (27.05.2007)
     - implemented storing of external source attributes.
     - TrackOpenClose now aware about 'NotReal' Closeables and proxies. 
     - added check for unused private fields and methods.
-    - foexed few bugs in resolver.
+    - fixed few bugs in resolver.
     
 
 2.1.1

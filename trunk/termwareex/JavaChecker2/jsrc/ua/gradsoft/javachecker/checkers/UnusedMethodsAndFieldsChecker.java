@@ -20,12 +20,15 @@ import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaInitializerModel;
 import ua.gradsoft.javachecker.models.JavaMemberVariableModel;
 import ua.gradsoft.javachecker.models.JavaMethodModel;
+import ua.gradsoft.javachecker.models.JavaModifiersModel;
+import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaStatementModel;
 import ua.gradsoft.javachecker.models.JavaTermMemberVariableModel;
 import ua.gradsoft.javachecker.models.JavaTermMethodModel;
 import ua.gradsoft.javachecker.models.JavaTermTypeAbstractModel;
 import ua.gradsoft.javachecker.models.JavaTopLevelBlockModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.JavaTypeModelHelper;
 import ua.gradsoft.javachecker.models.JavaVariableModel;
 import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.javachecker.models.expressions.JavaTermFieldExpressionModel;
@@ -191,7 +194,7 @@ public class UnusedMethodsAndFieldsChecker implements JavaTypeModelProcessor
        }
    }
    
-   public void printUnused(JavaTypeModel typeModel, JavaFacts facts) throws TermWareException
+   public void printUnused(JavaTypeModel typeModel, JavaFacts facts) throws TermWareException, EntityNotFoundException
    {
        Collection<List<JavaMethodModel>> mmss = Collections.emptyList();
        try {
@@ -199,6 +202,7 @@ public class UnusedMethodsAndFieldsChecker implements JavaTypeModelProcessor
        }catch(NotSupportedException ex){
            ;
        }
+             
        
        for(List<JavaMethodModel> mms: mmss) {
            for(JavaMethodModel mm: mms) {
@@ -208,7 +212,9 @@ public class UnusedMethodsAndFieldsChecker implements JavaTypeModelProcessor
                    if (mm instanceof JavaTermMethodModel) {
                        JavaTermMethodModel tmm = (JavaTermMethodModel)mm;
                        Term t = tmm.getTerm();
-                       facts.violationDiscovered("UnusedLocally","unused private method:"+mm.getName(),t);
+                       if (!isMethodOfSerializable(tmm)) {                                                  
+                         facts.violationDiscovered("UnusedLocally","unused private method:"+mm.getName(),t);
+                       }
                    }                     
                  }
                }
@@ -228,13 +234,59 @@ public class UnusedMethodsAndFieldsChecker implements JavaTypeModelProcessor
                if (attr.isNil()) {
                    if (v instanceof JavaTermMemberVariableModel) {
                        JavaTermMemberVariableModel tv = (JavaTermMemberVariableModel)v;
-                       Term t = tv.getVariableDeclaratorTerm();
-                       facts.violationDiscovered("UnusedLocally","unused private field:"+v.getName(),t);
+                       if (!isFieldOfSerializable(tv)) {
+                         Term t = tv.getVariableDeclaratorTerm();
+                         facts.violationDiscovered("UnusedLocally","unused private field:"+v.getName(),t);
+                       }
                    }
                }
            }
        }
        
    }
+   
+   private boolean isMethodOfSerializable(JavaTermMethodModel tmm) throws TermWareException, EntityNotFoundException
+   {
+      String name = tmm.getName();
+      if (name.equals("writeObject")) {
+          List<JavaTypeModel> fps = tmm.getFormalParametersTypes();
+          if (fps.size()!=1) {
+              return false;
+          }
+          JavaTypeModel fp = fps.get(0);
+          if (JavaTypeModelHelper.same(fp,JavaResolver.resolveTypeModelByFullClassName("java.io.ObjectOutputStream"))){
+              return JavaTypeModelHelper.subtypeOrSame(tmm.getTypeModel(),JavaResolver.resolveTypeModelByFullClassName("java.io.Serializable"));
+          }                   
+      }else if (name.equals("readObject")) {
+          List<JavaTypeModel> fps = tmm.getFormalParametersTypes();
+          if (fps.size()!=1) {
+              return false;
+          }
+          JavaTypeModel fp = fps.get(0);
+          if (JavaTypeModelHelper.same(fp,JavaResolver.resolveTypeModelByFullClassName("java.io.ObjectInputStream"))){
+              return JavaTypeModelHelper.subtypeOrSame(tmm.getTypeModel(),JavaResolver.resolveTypeModelByFullClassName("java.io.Serializable"));
+          }                             
+      }else if (name.equals("readObjectNoData")) {
+          List<JavaTypeModel> fps = tmm.getFormalParametersTypes();
+          if (fps.size()!=0) {
+              return false;
+          }else{
+              return JavaTypeModelHelper.subtypeOrSame(tmm.getTypeModel(),JavaResolver.resolveTypeModelByFullClassName("java.io.Serializable"));              
+          }
+      }
+      return false;      
+   }
+   
+   private boolean isFieldOfSerializable(JavaTermMemberVariableModel tv) throws TermWareException, EntityNotFoundException
+   {
+       if (tv.getName().equals("serialVersionUID")) {
+           JavaModifiersModel m = tv.getModifiersModel();
+           if (m.isFinal() && m.isStatic()) {
+               return JavaTypeModelHelper.subtypeOrSame(tv.getOwner(),JavaResolver.resolveTypeModelByFullClassName("java.io.Serializable"));
+           }
+       }
+       return false;
+   }
+   
    
 }

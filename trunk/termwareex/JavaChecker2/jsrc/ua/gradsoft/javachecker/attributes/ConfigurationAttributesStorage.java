@@ -403,7 +403,7 @@ public class ConfigurationAttributesStorage {
                     fillAttributesFromCheckerPropertiesAnnotation(annotation.getSubtermAt(0),attributes);
                 } else {
                     // TODO: erase
-                    System.out.println("skip annotation "+name);
+                    //System.out.println("skip annotation "+name);
                 }
             }
         }

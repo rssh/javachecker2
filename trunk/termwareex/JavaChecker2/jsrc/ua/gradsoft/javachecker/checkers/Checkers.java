@@ -8,10 +8,12 @@ package ua.gradsoft.javachecker.checkers;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import ua.gradsoft.javachecker.CheckerComment;
 import ua.gradsoft.javachecker.CheckerType;
 import ua.gradsoft.javachecker.ConfigException;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JavaFacts;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.SourceCodeLocation;
@@ -160,6 +162,26 @@ public class Checkers {
                         if (checkerComment.isDisable(e.getKey())||checkerComment.isDisable("All")) {
                             enabled=false;
                         }
+                    }
+                    try {
+                      Set<String> disabledAttributes = ttm.getDisabledChecks();
+                      if (disabledAttributes.contains(e.getKey())||disabledAttributes.contains("All")) {
+                        enabled=false;
+                      }
+                    }catch(TermWareException ex){
+                        //TODO: log to logger.
+                        System.out.println("exception during getting disabled checks");
+                        if (ex instanceof SourceCodeLocation) {
+                          SourceCodeLocation scl = (SourceCodeLocation)ex;
+                          System.out.println(scl.getFileAndLine().getFname()+":"+scl.getFileAndLine().getLine());                            
+                        }
+                    }catch(EntityNotFoundException ex){
+                        //TODO: log to logger.
+                        System.out.println("exception during getting disabled checks");
+                        if (ex instanceof SourceCodeLocation) {
+                          SourceCodeLocation scl = (SourceCodeLocation)ex;
+                          System.out.println(scl.getFileAndLine().getFname()+":"+scl.getFileAndLine().getLine());                            
+                        }                        
                     }
                 }
                 if (enabled && ttm!=null) {  

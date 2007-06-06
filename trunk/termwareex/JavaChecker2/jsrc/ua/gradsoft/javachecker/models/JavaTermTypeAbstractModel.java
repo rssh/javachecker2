@@ -14,11 +14,14 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import ua.gradsoft.javachecker.CheckerComment;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.InvalidCheckerCommentException;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.models.expressions.JavaObjectConstantExpressionModel;
 import ua.gradsoft.termware.JTerm;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
@@ -82,6 +85,50 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
       return checkerComment_;  
     }
         
+    /**
+     * get set of disabled names of checks, configured by CheckerDisable directive.
+     */
+    public Set<String>  getDisabledChecks() throws TermWareException, EntityNotFoundException
+    {
+      if (disabledChecks_==null) {
+          disabledChecks_=new TreeSet<String>();
+          JavaAnnotationInstanceModel am = null;
+          try {
+             am=this.getAnnotation("ua.gradsoft.javachecker.CheckerDisable");
+          }catch(NotSupportedException ex){
+              am=null; 
+          }
+          if (am!=null) {
+              JavaExpressionModel expr = null;
+              try {
+                 expr=am.getElement("value");
+              }catch(NotSupportedException ex){
+                  throw new AssertException("CheckerDisable annotation must have value element");
+              }
+              switch(expr.getKind()) {
+                  case ANNOTATION_MEMBER_VALUE_ARRAY_INITIALIZER:
+                  case ARRAY_INITIALIZER:
+                      for(JavaExpressionModel e:expr.getSubExpressions()) {
+                          if (e.getKind()!=JavaExpressionKind.STRING_LITERAL) {
+                              throw new InvalidJavaTermException("String literal expected inside CheckerDisable annotations",t_);
+                          }
+                          JavaObjectConstantExpressionModel oe=(JavaObjectConstantExpressionModel)e;
+                          Object ooe = oe.getConstant();
+                          if (ooe instanceof String) {
+                               String svalue=(String)ooe;
+                               disabledChecks_.add(svalue);
+                          }else{
+                               throw new AssertException("String expected. internal error");
+                          }
+                      }
+                      break;
+                  default:
+                      throw new InvalidJavaTermException("expected array initalizer, have "+expr.getKind(),t_);
+              }
+          }
+      }  
+      return disabledChecks_;
+    }
     
     public boolean hasMethodModels()
     {
@@ -476,6 +523,8 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     protected Term   t_;
     protected CheckerComment   checkerComment_ = null;
     protected String name_=null;
+    
+    private TreeSet<String>  disabledChecks_ = null;
     
     private   int anonimousTypeIndex_ = 0;
     private   int localTypeIndex_ = 0;
