@@ -94,7 +94,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
           disabledChecks_=new TreeSet<String>();
           JavaAnnotationInstanceModel am = null;
           try {
-             am=this.getAnnotation("ua.gradsoft.javachecker.CheckerDisable");
+             am=this.getAnnotation("ua.gradsoft.javachecker.annotations.CheckerDisable");
           }catch(NotSupportedException ex){
               am=null; 
           }
