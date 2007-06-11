@@ -89,6 +89,8 @@ public class AnalyzedUnitRef {
               retval=cu;              
           }
           break;
+          default:
+              throw new AssertException("Unknown unit type:"+unitType_);
       }
       javaUnitModelRef_ = new SoftReference<JavaUnitModel>(retval);
       return retval;

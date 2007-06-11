@@ -269,6 +269,17 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
       return origin_.getEnumConstantModels();
     }    
     
+    /**
+     *if this is annotation - get DefaultAnnotationInstance, otherwise - throws NotSupportedException.
+     *In our case emulate behaviour of origin.
+     */    
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException, TermWareException 
+    {
+         return origin_.getDefaultAnnotationInstanceModel();
+    }
+        
+    
+    
     public boolean isNested() {
         return origin_.isNested();
     }
@@ -591,6 +602,6 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
     private JavaTypeModel where_;
     private JavaTypeArgumentsSubstitution substitution_;
     
-    private final Logger LOG = Logger.getLogger(JavaTypeArgumentBoundTypeModel.class.getName());
+   // private final Logger LOG = Logger.getLogger(JavaTypeArgumentBoundTypeModel.class.getName());
     
 }

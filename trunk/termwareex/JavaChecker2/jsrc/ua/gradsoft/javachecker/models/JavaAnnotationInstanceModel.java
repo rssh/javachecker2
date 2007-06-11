@@ -163,7 +163,7 @@ public abstract class JavaAnnotationInstanceModel {
      * true, if element whith name <code> elementName </code> is
      *provided in this annotation
      */
-    public abstract boolean   hasElement(String elementName);
+    public abstract boolean   hasElement(String elementName) throws TermWareException;
    
     
     /**

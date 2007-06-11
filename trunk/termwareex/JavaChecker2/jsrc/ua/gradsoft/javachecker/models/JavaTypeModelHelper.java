@@ -109,6 +109,8 @@ public class JavaTypeModelHelper {
                 case SUPER:
                     retval=true;
                     break;
+                default:
+                    throw new AssertException("Invalid wildcard bound type:"+sw.getKind());
             }
             if (retval) {
                 conversions.assign(cn);
@@ -607,6 +609,8 @@ public class JavaTypeModelHelper {
                    case OBJECT:
                        retval=new JavaWildcardBoundsTypeModel(JavaWildcardBoundsKind.OBJECT,null);
                        break;               
+                   default:
+                       throw new AssertException("Unknow bound type "+wx.getKind());
                }                                                 
            }else{
              JavaTypeModel bwx = wx.getBoundTypeModel();
@@ -750,6 +754,7 @@ public class JavaTypeModelHelper {
                            }
                          }catch(NotSupportedException ex){
                              /* do nothing */
+                             ;
                          }
                        }
                    }                   

@@ -108,7 +108,22 @@ public class JavaClassArgumentBoundMethodModel extends JavaMethodModel implement
                                                      getTypeArgumentBoundTypeModel().getSubstitution()           
                                              );
     }
-      
+
+    /**
+     * Argument-bound annotations are illegal.
+     *@return false;
+     */
+    public boolean hasDefaultValue()
+    { return false; }
+
+    /**
+     * Argument-bound annotations are illegal.
+     *throw NotSupportedException
+     */    
+    public JavaExpressionModel  getDefaultValue() throws NotSupportedException
+    { throw new NotSupportedException(); }
+    
+    
     
     /**
      * return ClassTypeArgumentBoundMethodModel(context)

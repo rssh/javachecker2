@@ -125,8 +125,7 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
 
     
     private Term identifierTerm_;
-    private Term typeTerm_;
-    private Term modifiersTerm_;
+    private Term typeTerm_;   
     private Term initOrIterateExpressionTerm_;
     private JavaTermExpressionModel initExpression_;
     private JavaLocalVariableKind  kind_;    

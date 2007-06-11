@@ -13,5 +13,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface CheckerProperties
 {
-   public String[] value = {};
+   public String[] value() default {};
 }

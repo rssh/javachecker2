@@ -283,12 +283,7 @@ public class ConfigurationAttributesStorage {
                 throw new InvalidJavaTermException("VariableDeclarator|VariableDeclaratorId is required",dcl);
             }
             Term identifier=vdi.getSubtermAt(0);
-            String fieldName = null;
-            try {
-               fieldName=identifier.getSubtermAt(0).getString();
-            }catch(Exception ex){
-                throw new InvalidJavaTermException("QQQ",vd);
-            }
+            String fieldName = identifier.getSubtermAt(0).getString();
             AttributesData fData = data.getChilds().get(fieldName);
             if (fData==null) {
                 fData = new AttributesData();
@@ -480,6 +475,6 @@ public class ConfigurationAttributesStorage {
      */
     private List<String>  dirs_;
     
-    private static final Logger LOG = Logger.getLogger(ConfigurationAttributesStorage.class.getName());
+    //private static final Logger LOG = Logger.getLogger(ConfigurationAttributesStorage.class.getName());
     
 }

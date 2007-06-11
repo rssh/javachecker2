@@ -59,10 +59,21 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
         return enumConstants_.keySet();
     }
     
+    /**
+     * get map of enum constants.
+     */
     public Map<String, JavaEnumConstantModel> getEnumConstantModels()  {
         return enumConstants_;
     }
-            
+    
+    /**
+     *throw NotSupportedException
+     */    
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    {
+         throw new NotSupportedException();
+    }    
+    
     /**
      * EnumModel(modifiers,identifier,superInterfaces, enumConstantsList,membersList,context)
      */
@@ -216,6 +227,12 @@ public final class ValuesMethodModel extends JavaMethodModel
     public Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap()
     { return Collections.emptyMap(); }
     
+    public boolean hasDefaultValue()
+    { return false; }
+    
+    public JavaExpressionModel  getDefaultValue() throws NotSupportedException
+    { throw new NotSupportedException(); }
+    
     /**
      * MethodModel(modifiers,typeParameters,ResultType,name,formalParameters,throws,block,context)
      */
@@ -292,6 +309,13 @@ public final class ValueOfMethodModel extends JavaMethodModel
     
     public JavaTopLevelBlockModel  getTopLevelBlockModel() throws NotSupportedException
     { throw new NotSupportedException(); }
+    
+    public boolean hasDefaultValue()
+    { return false; }
+    
+    public JavaExpressionModel  getDefaultValue() throws NotSupportedException
+    { throw new NotSupportedException(); }
+    
     
     /**
      * MethodModel(modifiers,typeParameters,ResultType,name,formalParameters,throws,block,context)

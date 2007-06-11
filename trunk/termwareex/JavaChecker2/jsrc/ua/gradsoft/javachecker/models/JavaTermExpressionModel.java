@@ -355,11 +355,10 @@ public abstract class JavaTermExpressionModel implements JavaExpressionModel
               throw new InvalidJavaTermException("Annotation expression allowed only inside annotation",t);
           }
       }else if(t.getName().equals("MemberValueArrayInitializer")) {
-          if (enclosedAnnotation!=null) {
-              return new JavaTermAnnotationMemberValueArrayInitializerExpressionModel(t,enclosedType,enclosedAnnotation,enclosedAnnotationElement);
-          }else{
-              throw new InvalidJavaTermException("AnnotationMemberValueArrayInitializer allowed only inside annotation",t);
+          if (enclosedAnnotation==null) {
+              throw new InvalidJavaTermException("AnnotationMemberValueArrayInitializer allowed only inside annotation",t);    
           }
+          return new JavaTermAnnotationMemberValueArrayInitializerExpressionModel(t,enclosedType,enclosedAnnotation,enclosedAnnotationElement);
       }else if(t.getName().equals("MemberValue")) {
           return create(t.getSubtermAt(0),statement,  enclosedType, enclosedAnnotation, enclosedAnnotationElement);
       }else{

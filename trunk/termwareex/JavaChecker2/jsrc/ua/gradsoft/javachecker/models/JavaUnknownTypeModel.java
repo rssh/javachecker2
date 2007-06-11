@@ -197,6 +197,14 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
         throw new NotSupportedException();  
     }
     
+    /**
+     *throw NotSupportedException
+     */    
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    {
+         throw new NotSupportedException();
+    }
+    
     
     public boolean hasTypeParameters()
     { return false; }

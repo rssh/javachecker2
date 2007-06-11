@@ -144,7 +144,11 @@ public class JavaResolver {
                         frsTypeModel=resolveTypeModelByName(name,where,typeVariables,localTypes);
                     }
                 }catch(EntityNotFoundException ex){
-                    found=false;
+                    if (ex.getEntityName().equals(name)) {
+                      found=false;
+                    }else{
+                      throw new InvalidJavaTermException(ex.getMessage(),t,ex);  
+                    }
                 }
                 if (found) {
                     if (head.getSubtermAt(1).isNil()) {
@@ -463,6 +467,7 @@ public class JavaResolver {
                     allSupers.add(curr.getEnclosedType());
                 }catch(NotSupportedException ex){
                     // impossible, do nothing.
+                    ;
                 }
             }
         }
@@ -731,7 +736,7 @@ public class JavaResolver {
     
     public static JavaTypeModel resolveTypeModelWithFullPackage(Term t, JavaTypeModel where, List<JavaTypeVariableAbstractModel> typeVariables) throws EntityNotFoundException, TermWareException {
         boolean printDetails=false;
-        if (!t.getName().equals("ClassOrInterfaceType")) {
+        if (!t.getName().equals("ClassOrInterfaceType") && !t.getName().equals("Name")) {
             throw new AssertException("argument of resolveTypeModelWithFullPackageName must be ClassOrInterfaceType, we have:"+TermHelper.termToString(t));
         }
         JavaUnitModel unitModel=null;
@@ -814,7 +819,7 @@ public class JavaResolver {
     
     
     public static JavaTypeModel resolveTypeModelFromPackage(String classShortName,String packageName) throws EntityNotFoundException, TermWareException {
-       // LOG.info("resolveTypeModelFromPackage:"+classShortName+","+packageName);
+        //LOG.info("resolveTypeModelFromPackage:"+classShortName+","+packageName);
         JavaPackageModel packageModel = resolvePackage(packageName);
         return packageModel.findTypeModel(classShortName);
     }
@@ -1161,11 +1166,16 @@ public class JavaResolver {
                 sb.append(at.getName());
             }
             sb.append(")");
-            sb.append("  in "+where.getName());    
-            if (where.hasTypeParameters()) {
+            if (where!=null) {
+              sb.append("  in "+where.getName());    
+              if (where.hasTypeParameters()) {
                 sb.append(", tp="+where.getTypeParameters() );
+              }
+              LOG.log(Level.INFO,sb.toString());
+            }else{
+                sb.append("outside class: impossible");
+                throw new NullPointerException();
             }
-            LOG.log(Level.INFO,sb.toString());
         }
         boolean found=false;
         LinkedList<Pair<JavaTypeModel,Integer>> toCheck = new LinkedList<Pair<JavaTypeModel,Integer>>();
@@ -1241,8 +1251,13 @@ public class JavaResolver {
             }
             // if we here, than nothing found here, try supers
             if (!currWhere.isNull() && !(currWhere.isEnum() && currWhere.getFullName().equals("java.lang.Enum"))) {
-                try {                    
-                    toCheck.add(new Pair<JavaTypeModel,Integer>(currWhere.getSuperClass(),nSupers+1));
+                try {        
+                    JavaTypeModel currSuper = currWhere.getSuperClass();
+                    if (currSuper!=null) {
+                       toCheck.add(new Pair<JavaTypeModel,Integer>(currWhere.getSuperClass(),nSupers+1));
+                    }else{
+                        throw new AssertException("super for "+currWhere.getFullName()+" is null");
+                    }
                 }catch(NotSupportedException ex){
                     // impossible,
                     ;
@@ -1252,7 +1267,7 @@ public class JavaResolver {
                 try {
                     List<JavaTypeModel> interfaces = currWhere.getSuperInterfaces(); 
                     int nextNSupers=nSupers+1;
-                    for(JavaTypeModel si:currWhere.getSuperInterfaces()) {
+                    for(JavaTypeModel si: interfaces) {
                       toCheck.add(new Pair<JavaTypeModel,Integer>(si,nextNSupers));
                     }
                 }catch(NotSupportedException ex){
@@ -1289,7 +1304,12 @@ public class JavaResolver {
             //then may be this is a method of enclosing class ?
             if (currWhere.isNested()) {
                 try {
-                    toCheck.addLast(new Pair<JavaTypeModel,Integer>(currWhere.getEnclosedType(),nSupers));
+                    JavaTypeModel enclosed = currWhere.getEnclosedType();
+                    if (enclosed!=null) {
+                       toCheck.addLast(new Pair<JavaTypeModel,Integer>(enclosed,nSupers));
+                    }else{
+                        throw new AssertException("class "+currWhere.getFullName()+" is nested, but enclosed class is null");
+                    }
                 }catch(NotSupportedException ex){
                     ;
                     //impossible, ignore.

@@ -129,10 +129,23 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
   
       public  boolean isEnum()
       { return false; }
-  
+
+      /**
+       *@return false
+       */
       public boolean isAnnotationType()
       { return false; }
     
+    /**
+     *throw NotSupportedException
+     */    
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    {
+         throw new NotSupportedException();
+    }
+      
+      
+      
       public boolean isPrimitiveType()
       { return false; }
   

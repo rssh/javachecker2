@@ -1,0 +1,4 @@
+package java.io;
+
+@TypeCheckerProperties( { "NotCloseable","true" } )
+class StringReader {}

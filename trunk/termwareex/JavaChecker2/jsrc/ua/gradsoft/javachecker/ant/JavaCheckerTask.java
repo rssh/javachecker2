@@ -2,7 +2,7 @@
  * JavaCheckerTask.java
  *
  * Created 07/04/2004, 4:11
- * $Id: JavaCheckerTask.java,v 1.4 2007-03-27 09:33:26 rssh Exp $
+ * $Id: JavaCheckerTask.java,v 1.5 2007-06-11 09:32:47 rssh Exp $
  */
 
 package ua.gradsoft.javachecker.ant;
@@ -20,11 +20,16 @@ import ua.gradsoft.javachecker.ConfigException;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.ProcessingException;
 import ua.gradsoft.javachecker.ReportFormat;
+import ua.gradsoft.javachecker.annotations.CheckerDisable;
+import ua.gradsoft.termware.TermWareRuntimeException;
 
 /**
  *Ant task for JavaChecker
  * @author  Ruslan Shevchenko
+ *
+ *(all checks is disabled becouse ANT is not in common classpath)
  */
+@CheckerDisable({"All"})
 public class JavaCheckerTask extends Task {
     
     /** Creates a new instance of JavaCheckerTask */
@@ -205,6 +210,10 @@ public class JavaCheckerTask extends Task {
       try {
           main.process();
       }catch(ProcessingException ex){
+          ex.printStackTrace();
+          throw new BuildException(ex.getMessage(),ex);
+      }catch(TermWareRuntimeException ex){
+          ex.printStackTrace();
           throw new BuildException(ex.getMessage(),ex);
       }
     }

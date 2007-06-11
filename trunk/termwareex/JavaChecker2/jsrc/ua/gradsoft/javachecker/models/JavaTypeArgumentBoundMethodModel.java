@@ -89,6 +89,12 @@ public class JavaTypeArgumentBoundMethodModel extends JavaMethodModel implements
        } 
         return (JavaTypeArgumentBoundTypeModel)getTypeModel();
     }
+
+    public boolean hasDefaultValue()
+    { return origin_.hasDefaultValue(); }
+    
+    public JavaExpressionModel  getDefaultValue() throws NotSupportedException, TermWareException
+    { return origin_.getDefaultValue(); }
     
     public JavaMethodModel  getOrigin()
     { return origin_; }

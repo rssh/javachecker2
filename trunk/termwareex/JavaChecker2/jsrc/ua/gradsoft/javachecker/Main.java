@@ -345,7 +345,7 @@ public class Main
  
  private void readAndCheckSourceFile(String sourceDir, String packageDirName, File f) throws TermWareException
  {
-     if (!qOption_ || !showFiles_) {
+     if (!qOption_ && showFiles_) {
        System.out.println("reading file "+f.getAbsolutePath());
      }     
      Term source=null;
@@ -458,6 +458,15 @@ public class Main
      dump_=dump;
  }
  
+ public static boolean isShowFileLoading()
+ {
+    return showFileLoading_; 
+ }
+ 
+ public static void setShowFileLoading(boolean showFileLoading)
+ {
+   showFileLoading_=showFileLoading;  
+ }
  
  public static ReportFormat  getReportFormat()
  {  return reportFormat_; }
@@ -512,6 +521,7 @@ public class Main
  { 
    return nProcessedFiles_;
  }
+ 
  
  public static JavaFacts getFacts()
  { return facts_; }
@@ -598,6 +608,8 @@ public class Main
  
  private static String       tmpDirName_  = null;
  private static String       tmpDirBase_  = null;
+ 
+ private static boolean      showFileLoading_ = false;
  
  private static boolean      debug_ = false;
  private static boolean      showFiles_ = false;

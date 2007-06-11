@@ -32,7 +32,8 @@ public class JavaDelegatedAnnotationInstanceModel extends JavaAnnotationInstance
         return origin_.getModelTerm();
     }
 
-    public boolean hasElement(String elementName) {
+    public boolean hasElement(String elementName) throws TermWareException
+    {
         return origin_.hasElement(elementName);
     }
     

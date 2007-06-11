@@ -27,7 +27,7 @@ public final class JUtils {
 
      public static Term readSourceFile(File f) throws TermWareException
      {
-      if (Main.isShowFiles() && !Main.isQOption()) {
+      if (Main.isShowFileLoading()) {
         logger_.info("reading file:"+f.getAbsolutePath());   
       }
       Term parserOption=TermWare.getInstance().getTermFactory().createAtom("simplify");

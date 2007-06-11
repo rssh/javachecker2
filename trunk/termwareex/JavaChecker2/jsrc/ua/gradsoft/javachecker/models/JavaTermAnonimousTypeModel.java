@@ -64,6 +64,15 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
         throw new NotSupportedException();
     }
 
+        /**
+     *throw NotSupportedException
+     */    
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    {
+         throw new NotSupportedException();
+    }
+
+    
     
     public boolean isInterface()
     { return false; }

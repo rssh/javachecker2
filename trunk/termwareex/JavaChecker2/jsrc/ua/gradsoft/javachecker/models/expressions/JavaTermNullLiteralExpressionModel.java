@@ -26,7 +26,7 @@ import ua.gradsoft.termware.TermWareException;
  *NullLiteral
  * @author Ruslan Shevchenko
  */
-public class JavaTermNullLiteralExpressionModel extends JavaTermExpressionModel implements JavaLiteralModel
+public class JavaTermNullLiteralExpressionModel extends JavaTermExpressionModel implements JavaLiteralModel, JavaObjectConstantExpressionModel
 {
 
    public JavaTermNullLiteralExpressionModel(Term t,JavaTermStatementModel st,JavaTypeModel enclosedType) throws TermWareException
@@ -52,6 +52,9 @@ public class JavaTermNullLiteralExpressionModel extends JavaTermExpressionModel 
     {
         return Collections.emptyList();
     }
+    
+    public Object getConstant()
+    { return null; }
     
     /**
      * NullLiteral()

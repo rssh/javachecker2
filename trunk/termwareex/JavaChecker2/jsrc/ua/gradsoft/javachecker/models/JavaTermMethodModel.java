@@ -13,6 +13,7 @@ import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.FileAndLine;
 import ua.gradsoft.javachecker.JUtils;
+import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
@@ -129,6 +130,15 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     
     public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
     { return modifiers_.getAnnotationsMap(); }
+    
+    public boolean  hasDefaultValue()
+    { return false; }
+    
+    public JavaExpressionModel  getDefaultValue() throws NotSupportedException
+    {
+       throw new NotSupportedException();
+    }
+    
     
     public boolean isSupportBlockModel()
     { return true; }

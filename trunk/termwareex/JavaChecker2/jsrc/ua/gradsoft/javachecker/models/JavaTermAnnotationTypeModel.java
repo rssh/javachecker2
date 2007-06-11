@@ -74,6 +74,14 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
     public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
         throw new NotSupportedException();
     }
+    
+    public JavaAnnotationInstanceModel  getDefaultAnnotationInstanceModel() throws TermWareException
+    {
+        if (annotationDefaultInstanceModel_==null) {
+            annotationDefaultInstanceModel_=new JavaAnnotationDefaultInstanceModel(this);
+        }
+        return annotationDefaultInstanceModel_;
+    }
 
     public List<JavaConstructorModel>  getConstructorModels()
     { return Collections.emptyList(); }
@@ -130,7 +138,7 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
                  if (mb.getArity()==4) {
                         defaultValueTerm = mb.getSubtermAt(3);
                  }
-                 addAnnotationFieldDeclaration(modifiersTerm, typeTerm, identifierTerm, defaultValueTerm);
+                 addAnnotationMethodDeclaration(modifiersTerm, typeTerm, identifierTerm, defaultValueTerm);
               }else if (mb.getArity()==0) {
                    // skip empty declaration   
               }else{
@@ -148,16 +156,15 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
        addNestedType(tm.getName(),tm);
     }
 
-    protected void addAnnotationFieldDeclaration(Term modifiers, Term typeTerm, Term identifierTerm, Term defaultValueTerm) throws TermWareException
+    protected void addAnnotationMethodDeclaration(Term modifiers, Term typeTerm, Term identifierTerm, Term defaultValueTerm) throws TermWareException
     {
-        JavaTermAnnotationFieldModel jtamm = new JavaTermAnnotationFieldModel(this,modifiers,typeTerm,identifierTerm,defaultValueTerm);
-        JavaMemberVariableModel vm=jtamm;
+        JavaTermAnnotationMethodModel jtamm = new JavaTermAnnotationMethodModel(this,modifiers,typeTerm,identifierTerm,defaultValueTerm);     
         String name = identifierTerm.getSubtermAt(0).getString();
-        fieldModels_.put(name,vm);
-        JavaTermAnnotationMethodModel mm = new JavaTermAnnotationMethodModel(jtamm);
-        List<JavaMethodModel> mml = Collections.<JavaMethodModel>singletonList(mm);
+        List<JavaMethodModel> mml = Collections.<JavaMethodModel>singletonList(jtamm);
         methodModels_.put(name,mml);
     }
+    
+    private JavaAnnotationDefaultInstanceModel  annotationDefaultInstanceModel_=null;
     
     public static final int NAME_TERM_INDEX=0;
     public static final int BODY_TERM_INDEX=1;

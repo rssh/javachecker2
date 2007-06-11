@@ -25,10 +25,21 @@ public class JavaTermEnumAnonimousTypeModel extends JavaTermTypeAbstractModel
 {
         
 
+    /**
+     *return false
+     */
     public boolean isAnnotationType() {
         return false;
     }
         
+    /**
+     *throw NotSupportedException
+     */    
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    {
+         throw new NotSupportedException();
+    }
+    
     public boolean isClass() {
         return false;
     }

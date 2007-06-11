@@ -46,6 +46,9 @@ public class JavaTermIdentifierExpressionModel extends JavaTermExpressionModel i
     public JavaTypeModel  getType() throws TermWareException, EntityNotFoundException
     {
       lazyInitJavaVariableModel();
+      if (type_==null) {
+          throw new InvalidJavaTermException("Impossible: type_==null",t_);
+      }
       return type_;
     }
     
@@ -98,7 +101,7 @@ public class JavaTermIdentifierExpressionModel extends JavaTermExpressionModel i
        if (variable_==null && type_==null) {
           JavaPlaceContext ctx = createPlaceContext();
           try {
-            variable_=JavaResolver.resolveVariableByName(name,ctx);            
+            variable_=JavaResolver.resolveVariableByName(name,ctx);                     
             isType_=false;
           }catch(EntityNotFoundException ex){
               if (!ex.getEntityName().equals(name)) {
@@ -106,6 +109,7 @@ public class JavaTermIdentifierExpressionModel extends JavaTermExpressionModel i
               }
               try {
                 type_=JavaResolver.resolveTypeTerm(t_,ctx);
+                variable_ = null;
                 isType_=true;
               }catch(EntityNotFoundException ex1){
                   EntityNotFoundException newEx=new EntityNotFoundException("type or variable",getIdentifier(),"");
@@ -113,10 +117,25 @@ public class JavaTermIdentifierExpressionModel extends JavaTermExpressionModel i
                   throw newEx;
               }
           }
-          if (variable_!=null && type_==null) {              
-              type_ = variable_.getTypeModel();
-          }
-        }        
+          if (type_==null) {        
+              if (variable_!=null) {
+                 try { 
+                    type_ = variable_.getTypeModel();              
+                 }finally{
+                   if (type_==null) {
+                      variable_=null;                      
+                   }
+                 }
+                 if (type_==null) {
+                     variable_=null;
+                     // impossible.
+                    throw new InvalidJavaTermException("variable_.getTypeModel return null",t_);
+                 }
+              }else{
+                 throw new InvalidJavaTermException("type_==null",t_);    
+              }                            
+          }    
+       }        
     }
     
     public String getIdentifier()

@@ -194,10 +194,16 @@ public abstract class JavaTypeModel implements AttributedEntity
   
   /***
    * key of return values are names of enum constants.
-   *When type is not enum - throws NotSupportedException
+   *When type is not enum - throws NotSupportedException 
+   *TODO: change to return empty map ?
    */  
   public abstract Map<String,JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException;
   
+  
+  /**
+   * if this is annotation, get annotation instance model, otherwise throw NotSupportedException
+   */
+  public abstract JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException, TermWareException;
   
   
   /**
@@ -216,6 +222,7 @@ public abstract class JavaTypeModel implements AttributedEntity
    */
   public abstract Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException, TermWareException;
  
+  
   public JavaTypeModel findNestedTypeModel(String name) throws EntityNotFoundException, NotSupportedException, TermWareException
   {
     JavaTypeModel retval=getNestedTypeModels().get(name);

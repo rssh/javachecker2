@@ -119,6 +119,15 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
         throw new NotSupportedException();
     }
     
+    /**
+     *throw NotSupportedException
+     */    
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    {
+         throw new NotSupportedException();
+    }
+        
+    
     public List<JavaConstructorModel>  getConstructorModels()
     {  return Collections.emptyList(); }
 

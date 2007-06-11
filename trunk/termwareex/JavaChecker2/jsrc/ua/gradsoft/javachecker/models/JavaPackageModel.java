@@ -209,6 +209,7 @@ public class JavaPackageModel {
         return retval;
       }catch(ClassNotFoundException ex){
           // do nothing. if not found, than let it be not found.
+          ;
       }
 
       

@@ -59,6 +59,15 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     public boolean isAnnotationType()
     { return false; }
     
+    /**
+     *throw NotSupportedException
+     */    
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    {
+         throw new NotSupportedException();
+    }
+    
+    
     public boolean isPrimitiveType()
     { return false; }
         

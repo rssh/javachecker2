@@ -6,6 +6,7 @@
 package ua.gradsoft.javachecker.models;
 
 import java.lang.annotation.ElementType;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 import ua.gradsoft.javachecker.EntityNotFoundException;
@@ -74,7 +75,13 @@ public class JavaTermAnnotationInstanceModel extends JavaAnnotationInstanceModel
                 }
                 break;
                 case TYPE:
-                    annotationType_=JavaResolver.resolveTypeToModel(nameTerm_,(JavaTypeModel)target_);
+                    // hack to handle CheckerDisable from environment, where nothing is resolved.
+                    try {
+                       annotationType_=JavaResolver.resolveTypeToModel(nameTerm_,(JavaTypeModel)target_);
+                    }catch(InvalidJavaTermException ex){
+                        //if (ex.getCause() instanceof EntityNotFoundException) {}                        
+                        annotationType_=JavaResolver.resolveTypeToModel(nameTerm_,((JavaTypeModel)target_).getUnitModel(),((JavaTypeModel)target_).getPackageModel(),null,null,null);
+                    }
                     break;
                 default:
                     throw new AssertException("Invalid ElementType:"+elementType_);

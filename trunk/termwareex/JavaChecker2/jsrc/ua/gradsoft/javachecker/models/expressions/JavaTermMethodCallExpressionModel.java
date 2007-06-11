@@ -117,10 +117,15 @@ public class JavaTermMethodCallExpressionModel extends JavaTermExpressionModel
           String methodName = t_.getSubtermAt(1).getSubtermAt(0).getString();
           JavaTypeArgumentsSubstitution s = new JavaTypeArgumentsSubstitution();
           try {
+             if (subexpressions_.get(0).getType()==null) {
+                 System.err.println("!!!__:"+TermHelper.termToString(t_));                 
+                 System.err.println("!!!M:"+TermHelper.termToString(subexpressions_.get(0).getModelTerm()));
+             }
+             
              methodModel_ = JavaResolver.resolveMethod(methodName,argumentTypes,s,subexpressions_.get(0).getType());
              substitution_=s;
           }catch(EntityNotFoundException ex){
-              System.err.println("!!!!_____:"+TermHelper.termToString(t_));
+              //System.err.println("!!!!_____:"+TermHelper.termToString(t_));
               ex.setFileAndLine(JUtils.getFileAndLine(t_));
               throw ex;
           }

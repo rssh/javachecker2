@@ -305,6 +305,17 @@ public class JavaClassTypeModel extends JavaTypeModel
      return Collections.emptyList(); 
   }
   
+  public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException, TermWareException
+  {
+   if (annotationDefaultInstance_==null) {
+      if (!theClass_.isAnnotation()) {
+          throw new NotSupportedException();
+      }else{
+          annotationDefaultInstance_= new JavaAnnotationDefaultInstanceModel(this);           
+      }
+   }
+   return annotationDefaultInstance_;
+  }
   
   public boolean isNested()
   {
@@ -546,6 +557,7 @@ public class JavaClassTypeModel extends JavaTypeModel
     }
     
     private Class<?> theClass_;
+    private JavaAnnotationDefaultInstanceModel annotationDefaultInstance_;
     private static final Logger LOG = Logger.getLogger(JavaClassTypeModel.class.getName());
     
 }

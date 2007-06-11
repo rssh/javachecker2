@@ -166,8 +166,9 @@
 
 
  <target name="check" depends="declareJavaChecker" >
-   <JavaChecker jchhome="${basedir}" output="jchreport.txt" outputFormat="text" prefs="etc/prefs1.xml" debug="false" q="false"  >
+   <JavaChecker jchhome="${basedir}" output="jchreport.txt" outputFormat="text" prefs="etc/prefs1.xml" showFiles="true" debug="false" q="false"  >
     <input dir="jsrc" />
+    <input dir="jsrc-ann" />
     <classpath>
 			<fileset dir="lib">
 				<include name="*.jar" />

@@ -51,6 +51,18 @@ public class DefectReportItem {
              out.println("</td>");
              out.println("</tr>");
            break;
+         default:
+             // UNKNOWN
+          out.println("Warning: unknown output format:"+format);
+          // output as text.
+          out.print(marker_.getFname());   
+          out.print(":");   
+          out.print(marker_.getLine());   
+          out.print(":(");   
+          out.print(category_);
+          out.print(") ");
+          out.print(description_);
+          out.println();                     
      }  
     }
     

@@ -46,6 +46,11 @@
                 <location>lib/JavaChecker2.jar</location>
                 <build-target>build</build-target>
             </export>
+            <export>
+                <type>jar</type>
+                <location>lib/JavaChecker2Annotations.jar</location>
+                <build-target>build</build-target>
+            </export>
             <view>
                 <items>
                     <source-folder style="packages">
@@ -85,7 +90,7 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
             <compilation-unit>
                 <package-root>jsrc</package-root>
-                <classpath mode="compile">lib/TermWare2.jar:lib/TermWareJPP.jar</classpath>
+                <classpath mode="compile">lib/TermWare2.jar:lib/TermWareJPP.jar:lib/JavaChecker2Annotations.jar</classpath>
                 <built-to>lib/JavaChecker2.jar</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
@@ -97,6 +102,7 @@
             </compilation-unit>
             <compilation-unit>
                 <package-root>jsrc-ann</package-root>
+                <built-to>lib/JavaChecker2Annotations.jar</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>

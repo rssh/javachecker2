@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JavaFacts;
+import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.javachecker.attributes.AttributedEntity;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
@@ -86,7 +87,17 @@ public abstract class JavaMethodModel implements JavaTopLevelBlockOwnerModel
     public JavaTypeModel getTypeModel()
     { return typeModel_; }
     
- 
+    /**
+     *If method has default value
+     *@return true if method has default value. (i.,e. this is annotation method).    
+     */
+    public abstract boolean hasDefaultValue();
+
+    /**
+     *return default value of method.
+     *If method has not default value: throws NotSupportedException   
+     */
+    public abstract JavaExpressionModel  getDefaultValue() throws NotSupportedException, TermWareException;
     
     public Term getAttribute(String name) throws TermWareException
     {

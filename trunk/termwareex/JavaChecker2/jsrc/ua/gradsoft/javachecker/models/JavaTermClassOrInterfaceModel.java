@@ -144,13 +144,26 @@ public  class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
     public boolean isEnum() {
         return false; }
 
+    /**
+     *throw NotSupportedException
+     */
     public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
         throw new NotSupportedException();
     }
-    
-    
+        
+    /**
+     *@return false
+     */
     public boolean isAnnotationType() {
         return false; }
+
+    /**
+     *throw NotSupportedException
+     */    
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    {
+         throw new NotSupportedException();
+    }
     
     /**
      *true, if this type su[pports TypeParameters.

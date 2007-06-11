@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.CONSTRUCTOR)
 public @interface ConstructorCheckerProperties {
-public String[] value = {};   
+public String[] value() default {};   
 }
 
 
