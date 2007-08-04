@@ -114,14 +114,10 @@ public class JJTJavaParser
     private final void setComment(JavaNode node, Token tk) 
     {
      if (tk!=null) {
-       try{
          if (tk.specialToken!=null) {
            String comment=getSpecialToken(tk);                
            node.setAttribute("original_comment",comment);
          }
-       }catch(TermWareException ex){
-         throw new TermWareRuntimeException(ex);      
-       }
      }
     }
 

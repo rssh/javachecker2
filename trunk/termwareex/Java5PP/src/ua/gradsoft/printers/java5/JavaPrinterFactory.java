@@ -8,7 +8,7 @@
 
 package ua.gradsoft.printers.java5;
 
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import ua.gradsoft.termware.IPrinter;
 import ua.gradsoft.termware.IPrinterFactory;
 import ua.gradsoft.termware.Term;
@@ -25,7 +25,7 @@ public class JavaPrinterFactory implements IPrinterFactory
     /**
      * create printer.
      */
-    public IPrinter createPrinter(PrintStream out, String outTag, TermSystem sys, Term arg) throws TermWareException {
+    public IPrinter createPrinter(PrintWriter out, String outTag, TermSystem sys, Term arg) throws TermWareException {
         return new JavaPrinter(out, outTag);
     }
 

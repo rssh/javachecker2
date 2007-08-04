@@ -8,10 +8,8 @@
 
 package ua.gradsoft.printers.java5;
 
-import java.io.PrintStream;
-import java.util.Map;
+import java.io.PrintWriter;
 import ua.gradsoft.parsers.java5.jjt.ModifierSet;
-import ua.gradsoft.termware.Attributed;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
@@ -27,7 +25,7 @@ import ua.gradsoft.termware.printers.AbstractPrinter;
 public class JavaPrinter extends AbstractPrinter {
     
     /** Creates a new instance of JavaPrinter */
-    public JavaPrinter(PrintStream out, String outTag) {
+    public JavaPrinter(PrintWriter out, String outTag) {
         super(out,outTag);
     }
     

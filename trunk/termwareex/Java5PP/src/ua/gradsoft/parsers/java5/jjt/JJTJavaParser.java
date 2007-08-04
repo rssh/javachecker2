@@ -76,14 +76,10 @@ public class JJTJavaParser/*@bgen(jjtree)*/implements JJTJavaParserTreeConstants
     private final void setComment(JavaNode node, Token tk)
     {
      if (tk!=null) {
-       try{
          if (tk.specialToken!=null) {
            String comment=getSpecialToken(tk);
            node.setAttribute("original_comment",comment);
          }
-       }catch(TermWareException ex){
-         throw new TermWareRuntimeException(ex);
-       }
      }
     }
 
@@ -7540,6 +7536,21 @@ void ArrayDimsAndInits():
     finally { jj_save(41, xla); }
   }
 
+  final private boolean jj_3R_153() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_3R_152()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_80() {
+    if (jj_scan_token(DOT)) return true;
+    if (jj_scan_token(SUPER)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_141()) jj_scanpos = xsp;
+    return false;
+  }
+
   final private boolean jj_3R_187() {
     if (jj_scan_token(EXTENDS)) return true;
     if (jj_3R_164()) return true;
@@ -10469,21 +10480,6 @@ void ArrayDimsAndInits():
 
   final private boolean jj_3R_176() {
     if (jj_3R_187()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_153() {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_152()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_80() {
-    if (jj_scan_token(DOT)) return true;
-    if (jj_scan_token(SUPER)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_141()) jj_scanpos = xsp;
     return false;
   }
 
