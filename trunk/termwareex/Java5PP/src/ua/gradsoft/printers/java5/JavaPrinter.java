@@ -367,22 +367,20 @@ public class JavaPrinter extends AbstractPrinter {
             out_.print('?');
         }else{
             Term t0=t.getSubtermAt(0);
-            if (t0.getName().equals("WildcardBounds")) {
-              out_.print("? ");
-              writeTerm(t0,level);
-            }else{
-              writeTerm(t0,level);  
-            }
+            writeTerm(t0,level);
         }
     }
     
     public void writeWildcardBounds(Term t,int level) throws TermWareException {
-        Term ct=t.getSubtermAt(0);
-        writeTerm(ct,level);        
-        out_.print(" ");    
-        if (t.getArity()>1) {
+        out_.print("? ");
+        if (t.getArity()!=0) {
+          Term ct=t.getSubtermAt(0);
+          writeTerm(ct,level);        
+          out_.print(" ");    
+          if (t.getArity()>1) {
             writeTerm(t.getSubtermAt(1),level);
             out_.print(" ");
+          }
         }
     }
     
@@ -749,7 +747,7 @@ public class JavaPrinter extends AbstractPrinter {
             writeIdent(level+1);
             //out_.print("!1,level="+level);
             boolean frs=true;
-            while(!st.isNil()) {
+            while(!st.isNil() && st.getName().equals("cons") && st.getArity()==2) {
                 if (!frs) {                    
                     writeIdent(level+1);
                     //out_.print("!2,level="+level);
@@ -762,6 +760,11 @@ public class JavaPrinter extends AbstractPrinter {
                 }
                 out_.println();
                 st=st.getSubtermAt(1);
+            }
+            if (!st.isNil()) {
+                out_.print("[!");
+                writeTerm(st);
+                out_.print("!]");
             }
             writeIdent(level);
             //out_.print("!3,level="+level);
@@ -808,8 +811,10 @@ public class JavaPrinter extends AbstractPrinter {
     public void writeVariableDeclarator(Term t, int level)  throws TermWareException {        
         writeTerm(t.getSubtermAt(0),level);
         if (t.getArity()==2) {
-            out_.print("=");
-            writeTerm(t.getSubtermAt(1),level);
+            if (!t.getSubtermAt(1).isNil()) {
+              out_.print("=");
+              writeTerm(t.getSubtermAt(1),level);
+            }
         }
     }
     
@@ -1000,8 +1005,10 @@ public class JavaPrinter extends AbstractPrinter {
         out_.print(")");
         writeTerm(t.getSubtermAt(1),level);
         if (t.getArity()==3) {
-            out_.print(" else ");
-            writeTerm(t.getSubtermAt(2),level);
+            if (!t.getSubtermAt(2).isNil()) {
+              out_.print(" else ");
+              writeTerm(t.getSubtermAt(2),level);
+            }
         }
     }
     
@@ -1030,8 +1037,10 @@ public class JavaPrinter extends AbstractPrinter {
     public void writeBreakStatement(Term t, int level) throws TermWareException {
         out_.print("break");
         if (t.getArity()>0) {
-            out_.print(' ');
-            writeTerm(t.getSubtermAt(0),level);
+            if (!t.getSubtermAt(0).isNil()) {
+              out_.print(' ');
+              writeTerm(t.getSubtermAt(0),level);
+            }
         }
         out_.print(";");
     }
@@ -1280,7 +1289,9 @@ public class JavaPrinter extends AbstractPrinter {
         }
         writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.SHIFT_EXPRESSION_PRIORITY);
         if (t.getArity()>1) {
-          writeList(t.getSubtermAt(1),"",level);
+          String op = t.getSubtermAt(1).getString();
+          out_.print(op);
+          writeTerm(t.getSubtermAt(2),level,ExpressionPriorities.SHIFT_EXPRESSION_PRIORITY);
         }      
         if (topPriority > ExpressionPriorities.SHIFT_EXPRESSION_PRIORITY) {
             out_.print(")");
@@ -1523,7 +1534,12 @@ public class JavaPrinter extends AbstractPrinter {
     public void writeFloatingPointLiteral(Term t, int level) throws TermWareException
     {
         Term ct = t.getSubtermAt(0);
-        if (ct.isString()) {
+        if (ct.isFloat()) {
+            out_.print(ct.getFloat());
+            out_.print('F');
+        }else if(ct.isDouble()){
+            out_.print(ct.getDouble());
+        }else if (ct.isString()) {
             out_.print(ct.getString());
         }else{
             writeTerm(ct,level);
@@ -1532,7 +1548,12 @@ public class JavaPrinter extends AbstractPrinter {
     
     public void writeIntegerLiteral(Term t,int level) throws TermWareException {
         Term ct=t.getSubtermAt(0);
-        if (ct.isString()) {
+        if (ct.isInt()) {
+            out_.print(ct.getInt());
+        }else if (ct.isLong()) {
+            out_.print(ct.getLong());
+            out_.print('L');
+        }else if (ct.isString()) {
             out_.print(ct.getString());
         }else{
             writeTerm(ct,level);

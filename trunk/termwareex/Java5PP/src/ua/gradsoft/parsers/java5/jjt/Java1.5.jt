@@ -7,7 +7,7 @@
  * these intellectual property rights may include one or more of the U.S.
  * patents listed at http://www.sun.com/patents and one or more additional
  * patents or pending patent applications in the U.S. and in other countries.
- * U.S. Government Rights - Commercial software. Government users are subject
+ * U.S. Government Rights - CommercIial software. Government users are subject
  * to the Sun Microsystems, Inc. standard license agreement and applicable
  * provisions of the FAR and its supplements.  Use is subject to license terms.
  * Sun,  Sun Microsystems,  the Sun logo and  Java are trademarks or registered
@@ -149,6 +149,28 @@ public class JJTJavaParser
   Term createString(String x)
   {
    return TermWare.getInstance().getTermFactory().createString(x);
+  }
+
+  Term createIntegerOrLong(String x)
+  {
+   Term retval=null;
+   if (x.endsWith("L")||x.endsWith("l")) {
+      retval=TermWare.getInstance().getTermFactory().createLong(Long.parseLong(x.substring(0, x.length()-1)));
+   }else{
+      retval=TermWare.getInstance().getTermFactory().createInt(Integer.parseInt(x));
+   }
+   return retval;
+  }
+
+  Term createDoubleOrFloat(String x)
+  {
+   Term retval=null;
+   if (x.endsWith("F")||x.endsWith("f")) {
+      retval=TermWare.getInstance().getTermFactory().createFloat(Float.parseFloat(x.substring(0, x.length()-1)));
+   }else{
+      retval=TermWare.getInstance().getTermFactory().createDouble(Double.parseDouble(x));
+   }
+   return retval;
   }
 
   Term createBoolean(boolean x)
@@ -1587,7 +1609,7 @@ void IntegerLiteral():
   tk=<INTEGER_LITERAL>  
   { 
    setComment(jjtThis,tk);
-   jjtThis.addTerm(createString(tk.image),0); 
+   jjtThis.addTerm(createIntegerOrLong(tk.image),0); 
   }
 }
 
@@ -1615,7 +1637,7 @@ void FloatingPointLiteral():
   tk=<FLOATING_POINT_LITERAL>  
   { 
     setComment(jjtThis,tk);
-    jjtThis.addTerm(createString(tk.image),0); 
+    jjtThis.addTerm(createDoubleOrFloat(tk.image),0); 
   }
 }
 
