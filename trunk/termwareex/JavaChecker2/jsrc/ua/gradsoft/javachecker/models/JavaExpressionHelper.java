@@ -188,9 +188,18 @@ public class JavaExpressionHelper {
         }else if (expr.getName().equals("BooleanLiteral")) {
             return JavaPrimitiveTypeModel.BOOLEAN;
         }else if (expr.getName().equals("IntegerLiteral")) {
-            return getIntegerLiteralType(expr.getSubtermAt(0).getString());
+            Term ct  = expr.getSubtermAt(0);
+            if (ct.isLong()) {
+                return JavaPrimitiveTypeModel.LONG;
+            }else{
+                return JavaPrimitiveTypeModel.INT;
+            }        
         }else if (expr.getName().equals("FloatingPointLiteral")) {
-            return getFloatingPointLiteralType(expr.getSubtermAt(0).getString());
+            if (expr.getSubtermAt(0).isFloat()) {
+                return JavaPrimitiveTypeModel.FLOAT;
+            }else{
+                return JavaPrimitiveTypeModel.DOUBLE;   
+            }            
         }else if (expr.getName().equals("CharacterLiteral")){
             return JavaPrimitiveTypeModel.CHAR;
         }else if (expr.getName().equals("StringLiteral")) {
@@ -231,7 +240,7 @@ public class JavaExpressionHelper {
             // check for variable.
             String name = expr.getSubtermAt(0).getString();
             JavaVariableModel v = JavaResolver.resolveVariableByName(name,context);
-            return v.getTypeModel();
+            return v.getType();
         }else if (expr.getName().equals("This")) {
             JavaTypeModel tm = JavaResolver.resolveTypeTerm(expr.getSubtermAt(0),context);
             return tm;
@@ -276,7 +285,7 @@ public class JavaExpressionHelper {
                 ownerModel = resolveExpressionType(owner,context);
             }
             JavaMemberVariableModel mv = JavaResolver.resolveMemberVariableByName(expr.getSubtermAt(1).getSubtermAt(0).getString(),ownerModel);
-            return mv.getTypeModel();
+            return mv.getType();
         }else if (expr.getName().equals("SpecializedField")) {
             Term owner=expr.getSubtermAt(0);
             JavaTypeModel ownerModel=null;
@@ -287,7 +296,7 @@ public class JavaExpressionHelper {
             }
             //ownerModel = new JavaArgumentBoundTypeModel(ownerModel,expr.getSubtermAt(1));
             JavaMemberVariableModel mv = JavaResolver.resolveMemberVariableByName(expr.getSubtermAt(2).getSubtermAt(0).getString(),ownerModel);
-            return mv.getTypeModel();
+            return mv.getType();
         }else if (expr.getName().equals("ArrayIndex")) {
             Term arrayExpression = expr.getSubtermAt(0);
             JavaTypeModel arrayType = resolveExpressionType(arrayExpression,context);
@@ -357,6 +366,8 @@ public class JavaExpressionHelper {
         }
     }
     
+    
+    
     static JavaTypeModel resolveNameExpressionType(Term t, boolean allowsTypes,JavaPlaceContext ctx) throws TermWareException, EntityNotFoundException {
         Term list=t.getSubtermAt(0);
         String firstName=list.getSubtermAt(0).getSubtermAt(0).getString();
@@ -404,9 +415,9 @@ public class JavaExpressionHelper {
     
     public static JavaTypeModel  resolveFieldInName(JavaVariableModel v, Term l) throws EntityNotFoundException, TermWareException {
         if (l.isNil()) {
-            return v.getTypeModel();
+            return v.getType();
         }else{
-            JavaTypeModel vt=v.getTypeModel();
+            JavaTypeModel vt=v.getType();
             String name = l.getSubtermAt(0).getSubtermAt(0).getString();
             JavaMemberVariableModel mv=JavaResolver.resolveMemberVariableByName(name,vt);
             return resolveFieldInName(mv,l.getSubtermAt(1));
@@ -421,7 +432,7 @@ public class JavaExpressionHelper {
             try {
                 JavaMemberVariableModel mv=JavaResolver.resolveMemberVariableByName(name,tm);
                 // TODO: check that one is static.
-                return resolveSubclassesAndStaticFieldsInName(mv.getTypeModel(),l.getSubtermAt(1));
+                return resolveSubclassesAndStaticFieldsInName(mv.getType(),l.getSubtermAt(1));
             }catch(EntityNotFoundException ex){
                 ;
             }

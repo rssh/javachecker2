@@ -66,6 +66,12 @@ public class JavaTermSuperExpressionModel extends JavaTermExpressionModel
     public List<JavaExpressionModel> getSubExpressions()
     { return Collections.singletonList(subexpression_); }
     
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+        return subexpression_.isConstantExpression();
+    }
+    
+    
     private JavaExpressionModel  subexpression_;
     
     

@@ -16,17 +16,19 @@ import ua.gradsoft.javachecker.models.JavaExpressionHelper;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaLiteralModel;
+import ua.gradsoft.javachecker.models.JavaPrimitiveTypeModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *IntegerLiteral
  * @author Ruslan Shevchenko
  */
-public class JavaTermIntegerLiteralExpressionModel extends JavaTermExpressionModel implements JavaLiteralModel
+public class JavaTermIntegerLiteralExpressionModel extends JavaTermExpressionModel implements JavaLiteralModel, JavaObjectConstantExpressionModel
 {
     
    public JavaTermIntegerLiteralExpressionModel(Term t,JavaTermStatementModel st,JavaTypeModel enclosedType) throws TermWareException
@@ -40,9 +42,25 @@ public class JavaTermIntegerLiteralExpressionModel extends JavaTermExpressionMod
     }
     
     
+    public Object getConstant() throws TermWareException
+    {        
+      Object retval=null; 
+      Term ct = t_.getSubtermAt(0);
+      if (ct.isLong()) {
+          retval = ct.getLong();
+      }else {
+          retval = ct.getString();
+      }
+      return retval;
+    }
+    
     public JavaTypeModel getType() throws TermWareException, EntityNotFoundException
     {
-      return JavaExpressionHelper.getIntegerLiteralType(t_.getSubtermAt(0).getString());
+      if (t_.getSubtermAt(0).isLong()) {
+          return JavaPrimitiveTypeModel.LONG;
+      } else {
+          return JavaPrimitiveTypeModel.INT;
+      } 
     }
     
     public boolean isType()
@@ -54,15 +72,29 @@ public class JavaTermIntegerLiteralExpressionModel extends JavaTermExpressionMod
         return Collections.emptyList();
     }
     
+    public boolean isConstantExpression()
+    {
+        return true;
+    }
+    
+    
     /**
-     * IntegerLiteral("String")
+     * IntegerLiteral(Long|Int)
      */
     public Term getModelTerm()
     { return getTerm(); }
     
     
     public String getString()
-    { return t_.getSubtermAt(0).getString(); }
+    { 
+        if (t_.getSubtermAt(0).isLong()) {
+            return Long.toString(t_.getSubtermAt(0).getLong())+"L";
+        }else{
+            return Integer.toString(t_.getSubtermAt(0).getInt());
+        }
+    }
+    
+    
                 
     
 }

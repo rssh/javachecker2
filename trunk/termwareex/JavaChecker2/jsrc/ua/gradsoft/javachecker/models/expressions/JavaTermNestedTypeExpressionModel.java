@@ -39,6 +39,11 @@ public class JavaTermNestedTypeExpressionModel extends JavaTermTypeExpressionMod
       return Collections.emptyList();  
     }
     
+    public boolean isConstantExpression()
+    {
+      return true;  
+    }
+    
     /**
      * TypeRef(t_,type_)
      */

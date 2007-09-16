@@ -13,9 +13,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.FileAndLine;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
+import ua.gradsoft.javachecker.models.JavaExpressionModelHelper;
 import ua.gradsoft.javachecker.models.JavaMethodModel;
 import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
@@ -38,6 +40,14 @@ public class JavaTermMethodCallExpressionModel extends JavaTermExpressionModel
     {
       super(t,st,enclosedType);
       //System.out.println("MethodCall:"+TermHelper.termToString(t));
+      //!!!
+      FileAndLine fl = JUtils.getFileAndLine(t);
+      if (fl.getFname().endsWith("ORBUtilSystemException.java")) {
+          if (fl.getLine()==5675) {
+              System.err.println("!!!, t=" + TermHelper.termToString(t));
+          }
+      }
+      //!!!
       Term objectOrType=t.getSubtermAt(0);
       subexpressions_=new LinkedList<JavaExpressionModel>();
       JavaExpressionModel e = JavaTermExpressionModel.create(t.getSubtermAt(0),st,enclosedType);
@@ -64,12 +74,6 @@ public class JavaTermMethodCallExpressionModel extends JavaTermExpressionModel
       
       JavaTypeModel retval= substitution_.substitute(methodModel_.getResultType());      
       String methodName = t_.getSubtermAt(1).getSubtermAt(0).getString();
-      if (methodName.equals("unwrap")) {
-          System.out.println("method model for "+TermHelper.termToString(t_)+" created.");
-          System.out.println("method result type: "+methodModel_.getResultType().getName());
-          System.out.println("substitution_:"+substitution_.toString());
-          System.out.println("retval getType:"+retval.getName()+", class="+retval.getClass().getName());
-      }            
       return retval;
     }
     
@@ -80,6 +84,12 @@ public class JavaTermMethodCallExpressionModel extends JavaTermExpressionModel
     {   
         return subexpressions_; 
     }
+    
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+        return JavaExpressionModelHelper.subExpressionsAreConstants(this);
+    }
+   
     
     public JavaMethodModel  getMethodModel() throws TermWareException, EntityNotFoundException
     {

@@ -53,7 +53,7 @@ public class JavaTermFieldExpressionModel extends JavaTermExpressionModel
     
     public JavaTypeModel getType() throws TermWareException, EntityNotFoundException
     { lazyInitFieldModel();
-      return fieldModel_.getTypeModel();
+      return fieldModel_.getType();
     }
     
     public boolean isType()
@@ -86,6 +86,14 @@ public class JavaTermFieldExpressionModel extends JavaTermExpressionModel
         return retval;
     }
     
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+      return false;
+    }
+        
+    
+    
+    
     private void lazyInitFieldModel() throws TermWareException, EntityNotFoundException
     {
       if (fieldModel_==null)  {
@@ -99,6 +107,8 @@ public class JavaTermFieldExpressionModel extends JavaTermExpressionModel
           }
       }
     }
+    
+    
     
     private JavaMemberVariableModel fieldModel_=null;
     private JavaTermExpressionModel objectOrType_;

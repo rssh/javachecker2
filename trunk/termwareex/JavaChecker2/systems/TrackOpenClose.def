@@ -7,7 +7,6 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      import(general,logical_not),
      import(general,eq),
      import(general,apply),
-     import(general,unify),
      import(general,if),
      import(general,reduce),
 
@@ -34,7 +33,7 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      CheckFunctions(ConstructorModel($modifiers,$typeParameters,$identifier,$formalParameters,$trowsNameList,$blockModel,$context),$ctx) -> true,
 #CheckBlock($blockModel),
 
-     CheckFunctions(MethodModel($modifiers,$typeParameters,$returnType, $identifier,$formalParameters,$trowsNameList,$blockModel,$context),$classCtx) -> Q(CheckBlock($blockModel)),
+     CheckFunctions(MethodModel($modifiers,$typeParameters,$returnType, $identifier,$formalParameters,$trowsNameList,$blockModel,$context),$classCtx) -> Q(CheckBlock($blockModel)) ,
      CheckFunctions(MemberVariableModel($modifiers, $typeRef, $name, $initializer,$model),$classCtx) -> true,
 
      CheckBlock($x) -> CheckBlock($x,[]),
@@ -58,7 +57,11 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      CheckStatement(BlockStatementModel([],$ctx),$state) -> $state,
 
 
-     CheckStatement(TryStatementModel($block,$catchSeq,$finally,$ctx),$state) -> ApplyFirst.CheckStatementR(TryStatementModel($block,$catchSeq,$finally,$ctx),apply(TrackOpenClose,$state)),
+     CheckStatement(TryStatementModel($block,$catchSeq,$finally,$ctx),$state) 
+           -> 
+  CheckStatementR(TryStatementModel($block,$catchSeq,$finally,$ctx),$evstate)
+            where ( $evstate <- $state )
+      ,
 
 
      CheckStatementR(
@@ -82,14 +85,15 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
           $ctx),$state) 
              -> CheckStatement($finally,$state),
 
-     CheckFinalStatement($x,$y) -> unify($y,RETURN($z)) ? RETURN(CheckStatement($x,$z)) : CheckStatement($x,$y) ,
+     CheckFinalStatement($x,RETURN($y)) -> CheckStatement($x,$y),
+     CheckFinalStatement($x,$y) -> CheckStatement($x,$y) ,
                                  
      CheckStatement(ThrowStatementModel($expr,$ctx),$state) -> $state,
 
      CheckStatement(LocalVariableDeclarationModel([$x:$y],$ctx),$state) -> CheckStatement(LocalVariableDeclarationModel($y,$ctx),addLocalVariable($x,$state)),
      CheckStatement(LocalVariableDeclarationModel([],$ctx),$state) -> $state,
 
-     addLocalVariable(LocalVariableModel(TypeRef($tname,$type),$id,$expr,$ctx),$state) -> CheckExpression($id,$expr,$state),
+     addLocalVariable(LocalVariableModel($modifiers,TypeRef($tname,$type),$id,$expr,$ctx),$state) -> CheckExpression($id,$expr,$state),
                                                                                     
      CheckStatement(StatementExpressionStatement($expr,$ctx),$state) -> CheckExpression(NONE,$expr,$state),
 
@@ -98,7 +102,10 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      CheckStatement(BreakStatementModel($label,$ctx),$state) -> $state,
      CheckStatement(ContinueStatementModel($label,$ctx),$state) -> $state,
 
-     CheckStatement(CatchSequenceModel([$x:$y],$ctx),$state) -> CheckStatement(CatchSequenceModelR([$x:$y]),ApplyFirst.apply(TrackOpenClose,$state)),
+     CheckStatement(CatchSequenceModel([$x:$y],$ctx),$state) -> 
+      let ( $evstate <- $state )
+      CheckStatement(CatchSequenceModelR([$x:$y]),$evstate),
+
      CheckStatement(CatchSequenceModelR([$x:$y]),$state) -> CheckStatement($x,$state) && CheckStatement(CatchSequenceModelR($y),$state),
      CheckStatement(CatchSequenceModelR([]),$state) -> $state,
 
@@ -117,7 +124,9 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
 
      CheckStatementR(WhileStatementModel($expr,$child,$ctx),$state) -> CheckStatement($child,CheckExpression(NONE,$expr,$state)) || CheckExpression(NONE,$expr,$state),
 
-     CheckStatement(IfStatementModel($expr,$s1,$s2,$ctx),$state) -> ApplyFirst.CheckStatementR(IfStatementModel($expr,$s1,$s2,$ctx),apply(TrackOpenClose,$state)),
+     CheckStatement(IfStatementModel($expr,$s1,$s2,$ctx),$state) -> 
+        let ($evstate <- $state )
+        CheckStatementR(IfStatementModel($expr,$s1,$s2,$ctx),$evstate),
 
      CheckStatementR(IfStatementModel($expr,$s1,$s2,$ctx),$state) -> CheckReturn($state,CheckStatement($s1,CheckExpression(NONE,$expr,$state)) || CheckReturn($state,CheckStatement($s2,CheckExpression(NONE,$expr,$state)))),
 
@@ -152,6 +161,10 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      CheckStatement(SwitchLabelBlockModel($expr,$statements,$ctx),$state) -> CheckBlock($statements,$state),
 
      CheckStatement(SynchronizedStatementModel($expr,$stmt,$ctx),$state) -> CheckStatement($stmt,$state),
+
+     CheckStatement([],$state) -> $state ,
+
+     second($x,$y) -> $y,
 
      CheckExpression($var,FunctionCallModel($name,$arguments,$methodModel,$ctx),$state)
           [           
@@ -230,7 +243,7 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      CheckExpression($var,AdditiveExpressionModel($x,$y,$op,$ctx),$state) -> CheckExpression($var,$y,CheckExpression($var,$x,$state)),
      CheckExpression($var,AndExpressionModel($x,$y,$ctx),$state) -> CheckExpression($var,$y,CheckExpression($var,$x,$state)),    
      CheckExpression($var,ArrayIndexExpressionModel($array,$index,$ctx),$state) -> CheckExpression(NONE,$index,CheckExpression(NONE,$array,$state)),
-     CheckExpression($var,ArrayInitializerModel($list),$state) -> $state,
+     CheckExpression($var,ArrayInitializerModel($list,$ctx),$state) -> $state,
      CheckExpression($var,CastExpressionModel($type,$x,$ctx),$state) -> CheckExpression($var,$x,$state),
      CheckExpression($var,ClassLiteralModel($typeRef,$ctx),$state) -> $state,
      CheckExpression($var,ConditionalAndExpressionModel($x,$y,$ctx),$state) -> CheckExpression(NONE,$y,CheckExpression(NONE,$x,$state)),
@@ -274,7 +287,10 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      CheckExpression($var,UnaryExpressionModel($x,$op,$ctx),$state) -> CheckExpression(NONE,$x,$state),
 
 
+     CheckExpression($var,BinaryExpressionModel($x,$y,$op,$ctx),$state) -> CheckExpression(NONE,$x,CheckExpression(NONE,$y,$state)),
 
+     CheckExpression($var,VariableExpressionModel($name,$type), $state) -> $state,
+     CheckExpression($var,ConstantExpressionModel($type,$x), $state) -> $state,
 
      CheckExpression($var,IntegerLiteral($x),$state) -> $state,
      CheckExpression($var,FloatingPointLiteral($x),$state) -> $state,
@@ -338,7 +354,8 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
     
      ( $x || $y ) || $z -> $x || ($y || $z),
 
-     CheckReturn($x,$y) -> unify($x,RETURN($z)) ? $x : $y,
+     CheckReturn(RETURN($x),$y) -> $x,
+     CheckReturn($x,$y) -> $y,
 
      RETURN(RETURN($x)) -> RETURN($x),
 

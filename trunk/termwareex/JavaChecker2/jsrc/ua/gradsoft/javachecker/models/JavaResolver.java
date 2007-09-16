@@ -1263,7 +1263,7 @@ public class JavaResolver {
                     ;
                 }
             }
-            if(true /*currWhere.isInterface()||currWhere.getModifiersModel().isAbstract()*/) {
+            if(true /*currWhere.isInterface()||currWhere.getModifiers().isAbstract()*/) {
                 try {
                     List<JavaTypeModel> interfaces = currWhere.getSuperInterfaces(); 
                     int nextNSupers=nSupers+1;
@@ -1649,16 +1649,16 @@ public class JavaResolver {
                 }else if(!xit.hasNext()) {
                     // check, that it was varArgs,
                     //  if yes - one will associated with empty array
-                    retval=(pit.next().getModifiersModel().isVarArgs());                    
+                    retval=(pit.next().getModifiers().isVarArgs());                    
                     break;
                 }     
                 JavaFormalParameterModel p = pit.next();
-                wasVarArgs=p.getModifiersModel().isVarArgs();
+                wasVarArgs=p.getModifiers().isVarArgs();
                 x=xit.next();
-                if ((forseVarArgs && p.getModifiersModel().isVarArgs()) || !match(p.getTypeModel(),x,conversions,debug)) {
-                    if (p.getModifiersModel().isVarArgs()) {
+                if ((forseVarArgs && p.getModifiers().isVarArgs()) || !match(p.getType(),x,conversions,debug)) {
+                    if (p.getModifiers().isVarArgs()) {
                         try {
-                            varArgPattern=p.getTypeModel().getReferencedType();
+                            varArgPattern=p.getType().getReferencedType();
                         }catch(NotSupportedException ex){
                             throw new AssertException("VarArgs parameter must be array");
                         }

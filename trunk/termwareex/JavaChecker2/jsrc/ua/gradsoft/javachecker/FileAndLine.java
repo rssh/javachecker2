@@ -38,6 +38,11 @@ public class FileAndLine {
     public int hashCode()
     { return fname_.hashCode()+line_; }
     
+    public String toString()
+    {
+       return fname_+":"+line_; 
+    }
+    
     private String fname_;
     private int    line_;
 

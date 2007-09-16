@@ -13,6 +13,7 @@ import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaPlaceContext;
 import ua.gradsoft.javachecker.models.JavaPlaceContextFactory;
 import ua.gradsoft.javachecker.models.JavaStatementModel;
+import ua.gradsoft.javachecker.models.JavaTraceContext;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
@@ -69,6 +70,14 @@ public class JavaClassObjectConstantExpressionModel implements JavaObjectConstan
         Term x2 = TermUtils.createJTerm(ctx);
         Term retval = TermUtils.createTerm("ObjectConstantExpressionModel",x1,x2);
         return retval;
+    }
+    
+    public boolean isConstantExpression()
+    { return true; }
+    
+    public JavaExpressionModel eval(JavaTraceContext ctx)
+    {
+        return this;
     }
     
     private Object o_;

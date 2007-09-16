@@ -33,8 +33,18 @@ public class JavaArrayTypeModel extends JavaTypeModel {
     public String getName() {
         return referencedType_.getName()+"[]"; }
     
+    public String getErasedName() {
+        return referencedType_.getErasedName()+"[]";
+    }
+    
+    
     public Term getShortNameAsTerm() throws TermWareException {
         return TermUtils.createTerm("ReferenceType",TermUtils.createInt(1), referencedType_.getShortNameAsTerm());
+    }
+    
+    public Term getFullNameAsTerm() throws TermWareException
+    {
+        return TermUtils.createTerm("ReferenceType",TermUtils.createInt(1), referencedType_.getFullNameAsTerm());
     }
     
     /*
@@ -176,7 +186,7 @@ public class JavaArrayTypeModel extends JavaTypeModel {
     
     
     class LengthMemberVariableModel extends JavaMemberVariableModel {
-        public JavaTermModifiersModel getModifiersModel() {
+        public JavaTermModifiersModel getModifiers() {
             return JavaModelConstants.PUBLIC_MODIFIERS;
         }
         
@@ -187,11 +197,11 @@ public class JavaArrayTypeModel extends JavaTypeModel {
             return "length";
         }
         
-        public JavaTypeModel getTypeModel() {
+        public JavaTypeModel getType() {
             return JavaPrimitiveTypeModel.INT;
         }
         
-        public  JavaTypeModel getOwner() {
+        public  JavaTypeModel getOwnerType() {
             return JavaArrayTypeModel.this;
         }
         

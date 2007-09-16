@@ -17,6 +17,7 @@ import ua.gradsoft.javachecker.models.JavaTypeArgumentBoundTypeModel;
 import ua.gradsoft.javachecker.models.JavaArrayTypeModel;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
+import ua.gradsoft.javachecker.models.JavaExpressionModelHelper;
 import ua.gradsoft.javachecker.models.JavaPlaceContext;
 import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
@@ -88,6 +89,11 @@ public class JavaTermAllocationExpressionModel extends JavaTermExpressionModel
     public List<JavaExpressionModel> getSubExpressions()
     {
         return subExpressions_;
+    }
+    
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+      return JavaExpressionModelHelper.subExpressionsAreConstants(this);  
     }
     
     

@@ -31,7 +31,7 @@ public class JavaTermFormalParameterModel extends JavaFormalParameterModel
     }
 
     
-    public JavaTermModifiersModel getModifiersModel()
+    public JavaTermModifiersModel getModifiers()
     { return modifiers_; }
     
     public String getName()
@@ -40,11 +40,11 @@ public class JavaTermFormalParameterModel extends JavaFormalParameterModel
     public JavaVariableKind getKind()
     { return JavaVariableKind.FORMAL_PARAMETER; }
     
-    public JavaTypeModel getTypeModel()
+    public JavaTypeModel getType()
     { return typeModel_; }
         
     
-    public JavaTopLevelBlockOwnerModel  getOwner()
+    public JavaTopLevelBlockOwnerModel  getTopLevelBlockOwner()
     { return owner_; }
     
     

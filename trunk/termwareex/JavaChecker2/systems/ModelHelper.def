@@ -4,14 +4,13 @@ system("ModelHelper",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJa
 
      import(general,logical_and),
      import(general,apply),
-     import(general,assign),
 
       
      getVariableName(VariableModel($name,$model)) -> $name,
 
 
      getType(TypeRef($tname,$type)) -> $type,
-     getType(VariableModel($id,$model)) -> $model.getTypeModel(),
+     getType(VariableModel($id,$model)) -> $model.getType(),
      getType(AllocationExpressionModel(TypeRef($tname,$type),$arguments,$ctx)) -> $type,
 
      getType(AdditiveExpressionModel($x,$y,$op,$ctx)) -> $ctx.getExpressionModel().getType(),

@@ -23,7 +23,7 @@ public class JavaCheckerFacade {
     
     /**
      * initialize JavaCheker.
-     *Must be called before any operation on it.
+     *Must be called before any operation on it or on resolver.
      */
     public static void init() throws ConfigException
     {
@@ -46,6 +46,7 @@ public class JavaCheckerFacade {
     {
       main_.addPropertiesDirectory(inputDirectory);  
     }
+        
     
     /**
      *get packages store
@@ -70,7 +71,17 @@ public class JavaCheckerFacade {
     {
       return main_.getHome();
     }    
+
+    public static void process() throws ProcessingException
+    {
+        main_.process();
+    }
     
+    public static void processOneFile(String fullClassName) throws ProcessingException 
+    {
+        main_.processOneClass(fullClassName);
+    }
+   
     
     private static Main main_;
     

@@ -16,7 +16,7 @@ package ua.gradsoft.javachecker.models;
 public abstract class JavaEnumConstantModel extends JavaMemberVariableModel
 {
 
-    public JavaTermModifiersModel getModifiersModel()
+    public JavaTermModifiersModel getModifiers()
     {
       return MODIFIERS_MODEL;
     }

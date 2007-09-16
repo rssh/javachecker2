@@ -3,10 +3,10 @@ domain(flows,
   system("CheckBreak",
          javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJavaFacts"),
      ruleset(
-       import(general,unify),
        import(general,if),
 
-       CHECK_BREAK($label,$x,$y) -> unify($label,SwitchLabel(default)) ? false : CHECK_BREAK($x,$y),
+       CHECK_BREAK(SwitchLabel(default),$x,$y) -> false,
+       CHECK_BREAK($label,$x,$y) -> CHECK_BREAK($x,$y),
 
        CHECK_BREAK(NIL,$where) -> true,
        CHECK_BREAK([$x:$y],$where) -> IS_BREAK($x) ? false : CHECK_BREAK($y,$where),

@@ -40,9 +40,16 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
     public String getName() {
         return name_; }
     
+    public String getErasedName()
+    { return name_; }
     
     public Term getShortNameAsTerm() {
         return TermUtils.getTermFactory().createAtom(name_); }
+    
+    public Term getFullNameAsTerm() {
+        return getShortNameAsTerm(); 
+    }
+    
     
     public JavaTermModifiersModel getModifiersModel() {
         return JavaModelConstants.PUBLIC_MODIFIERS;

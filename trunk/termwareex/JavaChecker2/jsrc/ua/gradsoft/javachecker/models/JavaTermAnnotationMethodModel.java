@@ -105,7 +105,7 @@ public class JavaTermAnnotationMethodModel extends JavaMethodModel
     public boolean hasDefaultValue()
     { return !defaultValueTerm_.isNil(); }
     
-    public JavaExpressionModel getDefaultValue() throws TermWareException
+    public JavaExpressionModel getDefaultValue() throws TermWareException, EntityNotFoundException
     {
        if (!defaultValueTerm_.isNil()) { 
          try {  

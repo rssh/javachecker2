@@ -83,6 +83,37 @@ public class LocallyUnusedTest extends TestCase
         }
         assertTrue("'unused' in defects must be 0. have "+nUnusedFound,nUnusedFound==0);                
     }   
- 
+
+    public void  testUsedInPropertyManager() throws Exception
+    {
+        Main main = new Main();
+        String[] args=new String[0];   
+        main.init(args);
+        main.addInputDirectory("testpackages/testdata11/e3",true); 
+        
+        //TermSystem system0 = TermWare.getInstance().getRoot().resolveSystem("TrackOpenClose");
+        //system0.setDebugEntity("SystemReductions");
+        //system0.setDebugMode(true);
+
+        //system0.getFacts().setDebugEntity("All");
+        //system0.getFacts().setDebugMode(true);
+        
+        
+        //main.setDump(true);
+        main.process();   
+              
+        List<DefectReportItem> defects = main.getFacts().getDefectReportItems();
+      
+        int nUnusedFound=0;
+        for(DefectReportItem defect: defects) {
+            String description=defect.getDescription();         
+            //System.out.println("!!!"+description);
+            if (description.matches(".*unused.*")) {
+                ++nUnusedFound;
+            }
+        }
+        assertTrue("'unused' in defects must be 0. have "+nUnusedFound,nUnusedFound==0);                
+    }   
+      
  
 }

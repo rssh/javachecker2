@@ -17,6 +17,7 @@ import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
+import ua.gradsoft.javachecker.models.JavaTraceContext;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
@@ -49,6 +50,8 @@ public class JavaTermAdditiveExpressionModel extends JavaTermExpressionModel
       subExpressions_.add(JavaTermExpressionModel.create(frs,st,enclosedType));
       subExpressions_.add(JavaTermExpressionModel.create(snd,st,enclosedType));
     }
+    
+    
     
     public JavaExpressionKind  getKind()
     {
@@ -88,6 +91,37 @@ public class JavaTermAdditiveExpressionModel extends JavaTermExpressionModel
         Term ctx = TermUtils.createJTerm(createPlaceContext());
         return TermUtils.createTerm("AdditiveExpressionModel",frs,snd,kindTerm,ctx);
     }
+    
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+        for(JavaExpressionModel expr: subExpressions_) {
+            if (!expr.isConstantExpression()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public JavaExpressionModel eval(JavaTraceContext trace) throws TermWareException
+    {        
+        /*
+        JavaExpressionModel frs=subExpressions_.get(0);
+        JavaExpressionModel snd=subExpressions_.get(1);
+        frs=frs.eval(trace);        
+        snd=snd.eval(trace);
+        if (  (frs instanceof JavaObjectConstantExpressionModel)
+            &&(snd instanceof JabaObjectConstantExpressionModel)
+                ) {
+            JavaObjectConstantExpressionModel ofrs = (JavaObjectConstantExpressionModel)frs;
+            JavaObjectConstantExpressionModel osnd = (JavaObjectConstantExpressionModel)snd;
+            Object cfrs = ofrs.getConstant();
+            Object csnd = osnd.getConstant();
+            if (cfrs.)
+        }
+         */
+        throw new AssertException("Not implemented");
+    }
+    
     
     private List<JavaExpressionModel> subExpressions_;
     private JavaAdditiveOperatorKind     additiveKind_;            

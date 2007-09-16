@@ -36,16 +36,16 @@ public class JavaClassFormalParameterModel extends JavaFormalParameterModel
         index_=index;
     }
     
-    public JavaModifiersModel  getModifiersModel()
+    public JavaModifiersModel  getModifiers()
     { return modifiers_; }
     
     public String getName()
     { return name_; }
     
-    public JavaTypeModel getTypeModel()
+    public JavaTypeModel getType()
     { return type_; }
     
-    public JavaTopLevelBlockOwnerModel getOwner()
+    public JavaTopLevelBlockOwnerModel getTopLevelBlockOwner()
     { return owner_; }
     
     public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()

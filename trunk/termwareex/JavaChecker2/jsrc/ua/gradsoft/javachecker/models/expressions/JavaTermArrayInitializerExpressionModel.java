@@ -64,6 +64,9 @@ public class JavaTermArrayInitializerExpressionModel extends JavaTermExpressionM
     public List<JavaExpressionModel>  getSubExpressions()
     { return subexpressions_; }
     
+    public boolean isConstantExpression()
+    { return true; }
+    
     /***
      * ArrayInitializerModel([expr1,..exprN], ctx)
      */

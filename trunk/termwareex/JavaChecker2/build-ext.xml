@@ -41,7 +41,7 @@
 
  <target name="binary_installation" depends="build,docs,cpTermWare">
   <izpack input="installer/binary_installation.xml"
-          output="installer/JavaCheckerBinaryInstaller-2.2.2.jar"
+          output="installer/JavaCheckerBinaryInstaller-2.2.3.jar"
           installerType="standard"
           basedir="installer"
           IzPackDir="${izpackhome}"
@@ -50,7 +50,7 @@
 
  <target name="source_installation" depends="build,docs,cpTermWare">
   <izpack input="installer/source_installation.xml"
-          output="installer/JavaCheckerSourceInstaller-2.2.2.jar"
+          output="installer/JavaCheckerSourceInstaller-2.2.3.jar"
           installerType="standard"
           basedir="installer"
           IzPackDir="${izpackhome}"

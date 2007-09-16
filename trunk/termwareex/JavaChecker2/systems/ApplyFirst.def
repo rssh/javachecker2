@@ -1,7 +1,8 @@
 
 system("ApplyFirst",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJavaFacts"),
   ruleset(
-     import(general,apply)
+     import(general,apply),
+     apply(TrackOpenClose,[]) -> []
   ),
   FirstTop
 );

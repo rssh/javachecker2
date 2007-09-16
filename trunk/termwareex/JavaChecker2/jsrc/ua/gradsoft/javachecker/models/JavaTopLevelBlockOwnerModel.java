@@ -71,5 +71,9 @@ public interface JavaTopLevelBlockOwnerModel extends AttributedEntity
     public void printSignature(PrintWriter pwr);
     
    
+    /**
+     * print signature, where type parameters are erased.
+     */
+    public void printErasedSignature(PrintWriter pwr);
     
 }

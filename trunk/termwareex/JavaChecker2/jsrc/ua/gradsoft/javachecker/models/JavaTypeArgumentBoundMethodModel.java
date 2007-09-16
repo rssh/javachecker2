@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.NotSupportedException;
-import ua.gradsoft.javachecker.util.Function;
-import ua.gradsoft.javachecker.util.ImmutableMappedMap;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -93,7 +91,7 @@ public class JavaTypeArgumentBoundMethodModel extends JavaMethodModel implements
     public boolean hasDefaultValue()
     { return origin_.hasDefaultValue(); }
     
-    public JavaExpressionModel  getDefaultValue() throws NotSupportedException, TermWareException
+    public JavaExpressionModel  getDefaultValue() throws NotSupportedException, TermWareException, EntityNotFoundException
     { return origin_.getDefaultValue(); }
     
     public JavaMethodModel  getOrigin()

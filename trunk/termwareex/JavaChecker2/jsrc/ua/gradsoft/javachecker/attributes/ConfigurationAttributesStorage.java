@@ -241,7 +241,7 @@ public class ConfigurationAttributesStorage {
         
         List<JavaTypeVariableAbstractModel> tpvs = JavaTopLevelBlockOwnerModelHelper.buildTypeParameters(tp,tm);
         JavaTopLevelBlockOwnerModelHelper.printTypeParametersSignature(signatureWriter,tpvs);
-        signatureWriter.print(tm.getFullName());
+        signatureWriter.print(tm.getName());
         JavaTopLevelBlockOwnerModelHelper.printFormalParametersSignature(signatureWriter,tfps.getSubtermAt(0),tpvs,tm);
         signatureWriter.flush();
         

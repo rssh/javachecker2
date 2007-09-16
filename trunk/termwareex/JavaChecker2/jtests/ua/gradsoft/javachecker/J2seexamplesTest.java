@@ -88,16 +88,16 @@ public class J2seexamplesTest extends TestCase
     public void testEnumResolvingEx3() throws Exception
     {
       JavaTypeModel eiTypeModel = JavaResolver.resolveTypeModelByFullClassName("j2seexamples.ex3.EnumImporter");  
-      JavaTypeModel studentsTypeModel = JavaResolver.resolveMemberVariableByName("students",eiTypeModel).getTypeModel();
+      JavaTypeModel studentsTypeModel = JavaResolver.resolveMemberVariableByName("students",eiTypeModel).getType();
       assertTrue("EnumImporter.students must be array",studentsTypeModel.isArray());
       JavaTypeModel studentTypeModel = studentsTypeModel.getReferencedType();
-      JavaTypeModel gradeTypeModel = studentTypeModel.findMemberVariableModel("grade").getTypeModel();
+      JavaTypeModel gradeTypeModel = studentTypeModel.findMemberVariableModel("grade").getType();
       assertTrue("Strudent.grade must be an enum",gradeTypeModel.isEnum());
       JavaMethodModel printGradesModel = eiTypeModel.getMethodModels().get("printGrades").get(0);
       JavaTopLevelBlockModel block = printGradesModel.getTopLevelBlockModel();      
       JavaStatementModel st = block.getStatements().get(0);
       JavaVariableModel v = JavaResolver.resolveVariableByName("INCOMPLETE",st);
-      JavaTypeModel vTypeModel = v.getTypeModel();
+      JavaTypeModel vTypeModel = v.getType();
       assertTrue("v type must be enum",vTypeModel.isEnum());
     }
     
@@ -105,7 +105,7 @@ public class J2seexamplesTest extends TestCase
     {
       JavaTypeModel opTypeModel = JavaResolver.resolveTypeModelByFullClassName("j2seexamples.ex7.Operation");
       JavaMemberVariableModel mv = JavaResolver.resolveMemberVariableByName("DIVIDED_BY",opTypeModel);
-      JavaTypeModel mvt = mv.getTypeModel();
+      JavaTypeModel mvt = mv.getType();
       assertTrue("type of OPERATION.DIVIDE_BY must be enum",mvt.isEnum());
       String divideTypeName=mvt.getName();
       assertTrue("type of OPERATION.DIVIDE_BT must have not null name",divideTypeName!=null);            

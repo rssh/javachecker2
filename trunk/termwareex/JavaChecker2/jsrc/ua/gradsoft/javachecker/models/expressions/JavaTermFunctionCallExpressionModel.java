@@ -16,6 +16,7 @@ import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
+import ua.gradsoft.javachecker.models.JavaExpressionModelHelper;
 import ua.gradsoft.javachecker.models.JavaMethodModel;
 import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
@@ -67,6 +68,10 @@ public class JavaTermFunctionCallExpressionModel extends JavaTermExpressionModel
     public List<JavaExpressionModel>  getSubExpressions()
     { return arguments_; }
     
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+        return JavaExpressionModelHelper.subExpressionsAreConstants(this);
+    }
     
     /**
      * FunctionCallModel(name,argumentsList,javaMethodModel,ctx)
@@ -92,6 +97,9 @@ public class JavaTermFunctionCallExpressionModel extends JavaTermExpressionModel
       lazyInitMethodModel();
       return methodModel_;
     }
+    
+        
+    
     
     private void lazyInitMethodModel() throws TermWareException, EntityNotFoundException
     {

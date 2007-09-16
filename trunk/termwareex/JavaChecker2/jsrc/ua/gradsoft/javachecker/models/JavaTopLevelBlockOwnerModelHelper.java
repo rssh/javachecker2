@@ -93,7 +93,28 @@ public class JavaTopLevelBlockOwnerModelHelper {
      *within classes, in such cases. So, modify it with care. When you changing this class, you must change also
      *lass, which generate unique description of constructor or model from term.
      */
-    public static void printFormalParametersSignature(PrintWriter out,JavaTopLevelBlockOwnerModel executable) {
+     public static void printFormalParametersSignature(PrintWriter out,JavaTopLevelBlockOwnerModel executable) {
+        printFormalParametersSignature(out,executable,false);
+     }
+
+    /**
+     * print list of erased formal parameters types in curve brackets throught comma without whitescapes
+     *otherwise - do nothing.
+     *i. e.:
+     *<code>
+     *  ()
+     *  (int,java.util.List)
+     *</code>
+     *Note, that this method used not only for cosmetic, but for identifying constructors and methods
+     *within classes, in such cases. So, modify it with care. When you changing this class, you must change also
+     *lass, which generate unique description of constructor or model from term.
+     */
+     public static void printErasedFormalParametersSignature(PrintWriter out,JavaTopLevelBlockOwnerModel executable) {
+        printFormalParametersSignature(out,executable,true);
+     }
+     
+
+     public static void printFormalParametersSignature(PrintWriter out,JavaTopLevelBlockOwnerModel executable, boolean erased) {
         List<JavaFormalParameterModel> fps=null;
         try{
             fps=executable.getFormalParametersList();
@@ -112,12 +133,20 @@ public class JavaTopLevelBlockOwnerModelHelper {
                     out.print(",");
                 }
                 try {
-                    JavaTypeModel tm = fp.getTypeModel();
-                    if (fp.getModifiersModel().isVarArgs()) {
-                        out.print(tm.getReferencedType().getFullName());
+                    JavaTypeModel tm = fp.getType();
+                    if (fp.getModifiers().isVarArgs()) {
+                        if (!erased) {
+                           out.print(tm.getReferencedType().getFullName());
+                        }else{
+                           out.print(tm.getReferencedType().getErasedFullName()); 
+                        }                        
                         out.print("...");
                     }else{
-                        out.print(tm.getFullName());
+                        if (!erased) {
+                           out.print(tm.getFullName());
+                        }else{
+                           out.print(tm.getErasedFullName()); 
+                        }
                     }
                 }catch(TermWareException ex){
                     out.print("(error:"+ex.getMessage()+")");

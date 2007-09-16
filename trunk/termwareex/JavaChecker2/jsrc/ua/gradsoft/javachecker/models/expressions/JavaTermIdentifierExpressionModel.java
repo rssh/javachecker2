@@ -15,6 +15,9 @@ import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.models.InvalidJavaTermException;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
+import ua.gradsoft.javachecker.models.JavaLocalVariableModel;
+import ua.gradsoft.javachecker.models.JavaMemberVariableModel;
+import ua.gradsoft.javachecker.models.JavaModifiersModel;
 import ua.gradsoft.javachecker.models.JavaPlaceContext;
 import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
@@ -24,6 +27,7 @@ import ua.gradsoft.javachecker.models.JavaVariableModel;
 import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *Expression emodel for identifier.
@@ -70,6 +74,46 @@ public class JavaTermIdentifierExpressionModel extends JavaTermExpressionModel i
         return variable_;
     }
     
+    
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+        JavaVariableModel vm = getVariableModel();
+        JavaModifiersModel m = vm.getModifiers();
+        if (!m.isFinal()) {
+            return false;
+        }else{
+            boolean retval=false;
+            switch(vm.getKind()) {
+                case FORMAL_PARAMETER:
+                    break;
+                case LOCAL_VARIABLE:
+                {
+                    JavaLocalVariableModel lvm = (JavaLocalVariableModel)vm;
+                    if (lvm.getInitExpressionModel()!=null) {
+                        retval=lvm.getInitExpressionModel().isConstantExpression();
+                    }else{
+                        retval=false;
+                    }
+                    
+                }
+                break;
+                case MEMBER_VARIABLE:
+                {
+                    JavaMemberVariableModel mvm = (JavaMemberVariableModel)vm;
+                    JavaExpressionModel initExpr = mvm.getInitializerExpression();
+                    if (initExpr!=null) {
+                        retval=initExpr.isConstantExpression();
+                    }else{
+                        retval=false;
+                    }                    
+                }
+                break;
+                default:
+                    throw new AssertException("Invalid variable kind:"+vm.getKind());
+            }
+            return retval;
+        }
+    }
     
     
     /**
@@ -120,7 +164,7 @@ public class JavaTermIdentifierExpressionModel extends JavaTermExpressionModel i
           if (type_==null) {        
               if (variable_!=null) {
                  try { 
-                    type_ = variable_.getTypeModel();              
+                    type_ = variable_.getType();              
                  }finally{
                    if (type_==null) {
                       variable_=null;                      

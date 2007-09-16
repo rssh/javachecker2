@@ -61,7 +61,7 @@ public class EqualsHashCodeChecker implements JavaTypeModelProcessor
             List<JavaFormalParameterModel> fpl = m.getFormalParametersList();
             if (fpl.size()==1) {
                 JavaFormalParameterModel fp0 = fpl.get(0);
-                JavaTypeModel fp0t = fp0.getTypeModel();
+                JavaTypeModel fp0t = fp0.getType();
                 if (fp0t.getFullName().equals("java.lang.Object")) {
                     return true;
                 }

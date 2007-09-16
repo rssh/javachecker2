@@ -97,6 +97,19 @@ public class JavaTypeArgumentBoundExpressionModel implements JavaExpressionModel
       return retval;
     }
     
+    public boolean isConstantExpression() throws TermWareException,EntityNotFoundException
+    {
+      return origin_.isConstantExpression();  
+    }
+    
+    //public JavaExpressionModel eval(JavaTraceContext trace)
+    //{
+    //    JavaExpressionModel retval;
+    //    trace.addTypeSubstitution(getSubstitution());
+    //    retval=origin_.eval(trace);
+    //    trace.removeTypeSubstitution(getSubstitution());
+    //}
+    
     private JavaExpressionModel origin_;
     private JavaTypeArgumentBoundStatementModel statement_;
     private JavaTypeArgumentBoundTypeModel     enclosedType_;

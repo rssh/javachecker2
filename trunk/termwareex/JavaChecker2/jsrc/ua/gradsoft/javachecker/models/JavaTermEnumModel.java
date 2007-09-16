@@ -286,7 +286,7 @@ public final class ValueOfMethodModel extends JavaMethodModel
     
     public List<JavaTypeModel> getFormalParametersTypes() throws TermWareException
     { 
-      return Collections.singletonList(parameter_.getTypeModel());
+      return Collections.singletonList(parameter_.getType());
     }
             
     public List<JavaFormalParameterModel> getFormalParametersList()

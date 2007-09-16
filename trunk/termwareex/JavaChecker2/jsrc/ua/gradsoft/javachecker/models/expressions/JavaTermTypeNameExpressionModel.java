@@ -38,6 +38,8 @@ public class JavaTermTypeNameExpressionModel extends JavaTermTypeExpressionModel
     public List<JavaExpressionModel>  getSubExpressions()
     { return Collections.emptyList(); }
     
+    public boolean isConstantExpression()
+    { return true; }
     
     /**
      * TypeRef(t,type_)

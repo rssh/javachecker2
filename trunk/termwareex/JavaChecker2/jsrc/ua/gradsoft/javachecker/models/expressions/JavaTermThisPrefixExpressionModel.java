@@ -53,6 +53,12 @@ public class JavaTermThisPrefixExpressionModel extends JavaTermExpressionModel
         return Collections.emptyList();
     }
     
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+        return true;
+    }
+    
+    
     /**
      * ThisPrefixExpressionModel(ctx)
      */

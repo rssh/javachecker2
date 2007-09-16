@@ -33,7 +33,11 @@ public abstract class JavaTypeModel implements AttributedEntity
     
   public abstract String getName();
   
+  public abstract String getErasedName();
+  
   public abstract Term getShortNameAsTerm() throws TermWareException;
+  
+  public abstract Term getFullNameAsTerm() throws TermWareException;
   
   
   /**
@@ -53,7 +57,26 @@ public abstract class JavaTypeModel implements AttributedEntity
           return getPackageModel().getName()+"."+getName(); 
       }
   }  
-   
+
+  /**
+   * return full name (i. e. with package part).
+   */
+  public String getErasedFullName()
+  { 
+      if (isNested()) {
+         try { 
+          return getEnclosedType().getErasedFullName()+"."+getErasedName();
+         }catch(NotSupportedException ex){
+             return packageModel_.getName()+"."+getErasedName();
+         }catch(TermWareException ex){
+             return packageModel_.getName()+".<error>."+getErasedName();
+         }
+      }else{
+          return getPackageModel().getName()+"."+getErasedName(); 
+      }
+  }  
+  
+  
   
   /**
    * get canonical name, siutable for use in JVM
@@ -203,7 +226,7 @@ public abstract class JavaTypeModel implements AttributedEntity
   /**
    * if this is annotation, get annotation instance model, otherwise throw NotSupportedException
    */
-  public abstract JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException, TermWareException;
+  public abstract JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException, TermWareException, EntityNotFoundException;
   
   
   /**

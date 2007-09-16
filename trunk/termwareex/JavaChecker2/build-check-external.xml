@@ -55,7 +55,8 @@
  </target>
 
  <target name="check-jdk" depends="declareJavaChecker" >
-   <JavaChecker jchhome="${basedir}" output="jchreport-jdk.txt" outputFormat="text" prefs="etc/prefs1.xml" debug="false" q="false" showFiles="false" >
+   <JavaChecker jchhome="${basedir}" output="jchreport-jdk.txt" outputFormat="text" prefs="etc/prefs1.xml" debug="true" q="false" showFiles="true" fork="true" >
+    <jvmarg value="-Xmx512M" />
     <input  dir="${jdk.home}/src" />
     <disable check="NamePatterns" />
     <!--<disable check="UnclosedCloseable" />-->

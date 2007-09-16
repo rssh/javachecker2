@@ -40,9 +40,15 @@ public abstract class JavaConstructorModel implements JavaTopLevelBlockOwnerMode
     
     public void printSignature(PrintWriter out) {
         JavaTopLevelBlockOwnerModelHelper.printTypeParametersSignature(out,this);
-        out.print(getTypeModel().getFullName());
+        out.print(getTypeModel().getName());
         JavaTopLevelBlockOwnerModelHelper.printFormalParametersSignature(out,this);
     }
+
+    public void printErasedSignature(PrintWriter out) {
+        out.print(getTypeModel().getErasedName());
+        JavaTopLevelBlockOwnerModelHelper.printErasedFormalParametersSignature(out,this);
+    }
+    
     
     public Term getAttribute(String name) throws TermWareException
     {

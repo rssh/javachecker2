@@ -89,6 +89,13 @@ public class JavaTermNameExpressionModel extends JavaTermExpressionModel {
         return Collections.<JavaExpressionModel>singletonList(proxy_);
     }
     
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+        lazyInitProxy();
+        return proxy_.isConstantExpression();
+    }
+   
+    
     /**
      *@return model term of proxy
      */
@@ -198,7 +205,7 @@ public class JavaTermNameExpressionModel extends JavaTermExpressionModel {
             Term idt = rest.getSubtermAt(0);
             String name = idt.getSubtermAt(0).getString();
             rest=rest.getSubtermAt(1);
-            JavaTypeModel vmType = vm.getTypeModel();
+            JavaTypeModel vmType = vm.getType();
             if (debug) {
                 System.out.println("vmType="+vmType.getFullName());
             }
@@ -224,8 +231,8 @@ public class JavaTermNameExpressionModel extends JavaTermExpressionModel {
             try {
                 JavaMemberVariableModel mv = JavaResolver.resolveMemberVariableByName(name,current.getType());
                
-                JavaModifiersModel mvm=mv.getModifiersModel();
-                JavaTypeModel mvo = mv.getOwner();               
+                JavaModifiersModel mvm=mv.getModifiers();
+                JavaTypeModel mvo = mv.getOwnerType();               
                 if (mvm.isStatic()||mvo.isInterface()||mvo.isEnum()) {
                     Term nct = TermUtils.createTerm("StaticField",current.getTerm(),idt);
                     JavaTermExpressionModel nc = new JavaTermStaticFieldExpressionModel(mv,nct,getTermStatementModel(),getEnclosedType());

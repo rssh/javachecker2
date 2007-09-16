@@ -20,7 +20,7 @@ import ua.gradsoft.termware.TermWareException;
  *Null type model.  (represents superclasses of primitive and object)
  * @author Ruslan Shevchenko
  */
-public class JavaNullTypeModel extends JavaTypeModel {
+public final class JavaNullTypeModel extends JavaTypeModel {
     
     /** Creates a new instance of JavaUnknownTypeModel */
     private JavaNullTypeModel() {
@@ -30,6 +30,9 @@ public class JavaNullTypeModel extends JavaTypeModel {
     
     public String getName() {
         return "null"; }
+    
+    public String getErasedName()
+    { return getName(); }
     
     public Term getShortNameAsTerm() throws TermWareException {
         return TermWare.getInstance().getTermFactory().createAtom("null"); }

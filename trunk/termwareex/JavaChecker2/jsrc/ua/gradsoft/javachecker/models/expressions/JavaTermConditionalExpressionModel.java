@@ -74,6 +74,12 @@ public class JavaTermConditionalExpressionModel extends JavaTermExpressionModel
       return retval;
     }
     
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+      return condition_.isConstantExpression() && ifTrue_.isConstantExpression() && ifFalse_.isConstantExpression();
+    }
+    
+    
     private JavaTermExpressionModel condition_;
     private JavaTermExpressionModel ifTrue_;
     private JavaTermExpressionModel ifFalse_;    

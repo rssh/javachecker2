@@ -319,6 +319,8 @@ public class JavaTypeModelAttributes {
                 data_.merge(loadSourceAttributes());
             }catch(TermWareException ex){
                 LOG.log(Level.WARNING,"exception dureing reading source attributes",ex);
+            }catch(EntityNotFoundException ex){
+                LOG.log(Level.WARNING,"exception dureing reading source attributes",ex);
             }
         }
     }
@@ -377,13 +379,13 @@ public class JavaTypeModelAttributes {
         }
     }
     
-    private AttributesData loadSourceAttributes() throws TermWareException {
-        AttributesData retval = new AttributesData();
+    private AttributesData loadSourceAttributes() throws TermWareException, EntityNotFoundException {
+        AttributesData retval = new AttributesData();        
         loadSourceAttributes(owner_,retval);
         return retval;
     }
     
-    private void loadSourceAttributes(JavaTypeModel tm, AttributesData data) throws TermWareException {
+    private void loadSourceAttributes(JavaTypeModel tm, AttributesData data) throws TermWareException, EntityNotFoundException {
         JavaAnnotationInstanceModel typeAnnotation = null ;
         try {
             typeAnnotation = tm.getAnnotation("ua.gradsoft.javachecker.annotations.TypeCheckerProperties");
@@ -499,7 +501,7 @@ public class JavaTypeModelAttributes {
         }
     }
     
-    private void fillSourceValueExpression(AttributesData data, JavaExpressionModel expr) throws TermWareException {
+    private void fillSourceValueExpression(AttributesData data, JavaExpressionModel expr) throws TermWareException, EntityNotFoundException {
         String svalue=null;
         switch(expr.getKind()) {
             case ANNOTATION_MEMBER_VALUE_ARRAY_INITIALIZER:

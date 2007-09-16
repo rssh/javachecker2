@@ -69,6 +69,12 @@ public class JavaTermStringLiteralExpressionModel extends JavaTermExpressionMode
     public Term getModelTerm()
     { return t_; }
     
+    public boolean isConstantExpression() 
+    {
+        return true;
+    }
+    
+    
     /**
      * return lexical translation of string inside literal
      */

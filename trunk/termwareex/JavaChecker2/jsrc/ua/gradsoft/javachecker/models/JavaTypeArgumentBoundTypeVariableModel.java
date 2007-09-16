@@ -32,6 +32,9 @@ public class JavaTypeArgumentBoundTypeVariableModel extends JavaTypeVariableAbst
     public String getName()
     { return origin_.getName(); }
     
+    public String getErasedName()
+    { return origin_.getErasedName(); }
+    
     public JavaModifiersModel  getModifiersModel()
     { return origin_.getModifiersModel(); }
     

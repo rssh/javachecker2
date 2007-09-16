@@ -12,6 +12,7 @@ package ua.gradsoft.javachecker.models;
 
 import java.util.List;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.PartialConditionResult;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -43,6 +44,15 @@ public interface JavaExpressionModel {
      * enclosing type of statement.
      */
     public JavaTypeModel  getEnclosedType();
+    
+    public boolean  isConstantExpression() throws TermWareException, EntityNotFoundException;
+    
+    //public PartialConditionResult forse(JavaTraceContext trace);
+      
+    //TODO:
+    //   think about semantics: this must be full or partial evaluation ?
+    //   if full -- may be check at first.
+    //public JavaExpressionModel  eval(JavaTraceContext trace);
     
     
        

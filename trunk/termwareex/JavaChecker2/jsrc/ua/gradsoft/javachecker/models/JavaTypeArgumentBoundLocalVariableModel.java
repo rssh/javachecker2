@@ -40,12 +40,17 @@ public class JavaTypeArgumentBoundLocalVariableModel implements JavaLocalVariabl
       return origin_.getKind();  
     }
     
-    public JavaTypeModel  getTypeModel() throws TermWareException, EntityNotFoundException
+    public JavaTypeModel  getType() throws TermWareException, EntityNotFoundException
     { 
-        return statement_.getArgumentBoundTopLevelBlockModel().getSubstitution().substitute(origin_.getTypeModel());
+        return statement_.getArgumentBoundTopLevelBlockModel().getSubstitution().substitute(origin_.getType());
     }
         
-        
+    public JavaTypeModel  getOwnerType()
+    { return origin_.getOwnerType(); }
+
+    public JavaTopLevelBlockOwnerModel getTopLevelBlockOwner()
+    { return origin_.getTopLevelBlockOwner(); }
+    
     public JavaStatementModel getStatement()
     { return statement_; }
     
@@ -61,8 +66,8 @@ public class JavaTypeArgumentBoundLocalVariableModel implements JavaLocalVariabl
     }
 
     
-    public JavaModifiersModel getModifiersModel()
-    { return origin_.getModifiersModel(); }
+    public JavaModifiersModel getModifiers()
+    { return origin_.getModifiers(); }
     
     /**
      * TypeArgumentBoundLocalVariable(origin,substitution)

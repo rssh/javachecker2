@@ -47,7 +47,7 @@ public class LoadingTest extends TestCase
         Map<String,JavaFormalParameterModel> mfp=methodModel.getFormalParametersMap();
         JavaFormalParameterModel fp = mfp.get("args");
         assertTrue("main must have args parameter",fp!=null);
-        JavaTypeModel argsTypeModel=fp.getTypeModel();
+        JavaTypeModel argsTypeModel=fp.getType();
         assertEquals("java.lang.String[]",argsTypeModel.getFullName());        
         Map<String,JavaTypeModel> nested = zModel.getNestedTypeModels();
         JavaTypeModel eTypeModel = nested.get("E");
@@ -58,13 +58,13 @@ public class LoadingTest extends TestCase
         assertTrue("Z must have member variable",mf.size()>0);
         JavaMemberVariableModel xmf = mf.get("x");
         assertTrue("Z must have member variable x",xmf!=null);
-        sTypeModel = xmf.getTypeModel();
+        sTypeModel = xmf.getType();
         assertEquals("String",sTypeModel.getName());
         mf=eTypeModel.getMemberVariableModels();
         assertTrue("E must have member variable",mf.size()>0);
         xmf = mf.get("x");
         assertTrue("E must have member variable x",xmf!=null);
-        sTypeModel = xmf.getTypeModel();
+        sTypeModel = xmf.getType();
         assertEquals("String",sTypeModel.getName());
     }
     
@@ -104,7 +104,7 @@ public class LoadingTest extends TestCase
         assertEquals(2,zzzCmfpm.size());
         JavaFormalParameterModel fml1=zzzCmfpm.get("l1");
         assertTrue("l1 is a first argument of createList",fml1.getIndex()==0);
-        assertEquals("l1 type is java.lang.Integer","java.lang.Integer",fml1.getTypeModel().getFullName());
+        assertEquals("l1 type is java.lang.Integer","java.lang.Integer",fml1.getType().getFullName());
         
         List<JavaMethodModel> zzzPml = zzzModel.findMethodModels("printList");
         JavaMethodModel zzzPm = zzzPml.get(0);
@@ -118,7 +118,7 @@ public class LoadingTest extends TestCase
         assertEquals("printList have 1 parameter",1,zzzPmfpm.size());
         
         JavaFormalParameterModel zzzPmfp=zzzPmfpm.get("l");
-        JavaTypeModel fp=zzzPmfp.getTypeModel();
+        JavaTypeModel fp=zzzPmfp.getType();
         assertEquals("printList l formal parameter type","List<T>",fp.getName());
         
     }

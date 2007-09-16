@@ -2,17 +2,25 @@
  * JavaCheckerTask.java
  *
  * Created 07/04/2004, 4:11
- * $Id: JavaCheckerTask.java,v 1.5 2007-06-11 09:32:47 rssh Exp $
+ * $Id: JavaCheckerTask.java,v 1.6 2007-09-16 15:11:29 rssh Exp $
  */
 
 package ua.gradsoft.javachecker.ant;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.taskdefs.Execute;
+import org.apache.tools.ant.taskdefs.ExecuteWatchdog;
+import org.apache.tools.ant.taskdefs.LogStreamHandler;
+import org.apache.tools.ant.types.Commandline;
+import org.apache.tools.ant.types.CommandlineJava;
 import org.apache.tools.ant.types.DirSet;
 import org.apache.tools.ant.types.Path;
 import ua.gradsoft.javachecker.ConfigException;
@@ -139,9 +147,55 @@ public class JavaCheckerTask extends Task {
         includeJars_.addAll(Arrays.asList(path.list()));
     }
     
+    public void setFork(boolean fork)
+    {
+        fork_=fork;
+    }
     
+    public Commandline.Argument createJvmarg()
+    {
+        return cmd.createVmArgument();
+    }
     
+    public void  setFailOnError(boolean value)
+    {
+        failOnError_=value;
+    }
+        
     public void execute() throws BuildException
+    {
+        if (failOnError_) {
+            executeWithError();
+        }else{
+            try {
+                executeWithError();
+            }catch(BuildException ex){
+                log("Caught exception :"+ex.getMessage(),Project.MSG_WARN);
+                Throwable ex1 = ex;
+                while(ex1!=null) {
+                    StackTraceElement[] stack = ex1.getStackTrace();
+                    for(int i=0; i<stack.length; ++i) {
+                        log(stack[i].getClassName()+"."+stack[i].getMethodName()+" at "+stack[i].getFileName()+","+stack[i].getLineNumber(),Project.MSG_VERBOSE);
+                    }
+                    ex1 = ex1.getCause();
+                    if (ex1!=null) {
+                        log("Caused by "+ex1.getMessage(),Project.MSG_VERBOSE);
+                    }
+                }
+            }
+        }
+    }
+    
+    private void executeWithError() throws BuildException
+    {
+        if (fork_) {
+            executeFork();
+        }else{
+            executeNoFork();
+        }
+    }
+    
+    private void executeNoFork() throws BuildException
     {
       Main main=new Main();
       main.setQOption(q_);
@@ -218,6 +272,97 @@ public class JavaCheckerTask extends Task {
       }
     }
     
+    private void executeFork() throws BuildException
+    {
+      addJavaCheckerTasksToClassPath();     
+      if (q_) {
+          cmd.createArgument().setValue("--q");
+      }
+      if (showFiles_) {
+          cmd.createArgument().setValue("--showFiles");
+      }
+      if (debug_) {
+          cmd.createArgument().setValue("--debug");
+      } 
+      
+      for(String include: includeDirectories_) {
+          cmd.createArgument().setValue("--include");
+          cmd.createArgument().setValue(include);
+      }
+
+      for(String include: includeJars_) {
+          cmd.createArgument().setValue("--includejar");
+          cmd.createArgument().setValue(include);
+      }
+      
+      if (outputFname_!=null) {
+          cmd.createArgument().setValue("--output");
+          cmd.createArgument().setValue(outputFname_);
+      }
+      if (prefsFname_!=null) {
+          cmd.createArgument().setValue("--prefs");
+          cmd.createArgument().setValue(prefsFname_);
+      }
+      if (jchhome_==null) {
+          throw new BuildException("jchhome parameter is required");
+      }else{
+          cmd.createVmArgument().setValue("-Djavachecker.home="+jchhome_);
+      }
+
+      for(CheckName cname: enabled_) {
+          cmd.createArgument().setValue("--enable");
+          cmd.createArgument().setValue(cname.getCheck());
+      }
+      for(CheckName cname: disabled_) {
+          cmd.createArgument().setValue("--disable");
+          cmd.createArgument().setValue(cname.getCheck());          
+      }
+      for(ConfigNVPair nvPair: configNVPairs_) {
+          cmd.createArgument().setValue("--config");
+          cmd.createArgument().setValue(nvPair.getName());          
+          cmd.createArgument().setValue(nvPair.getValue());          
+      }
+      
+      
+      Path classpath=cmd.createClasspath(getProject());
+      classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"TermWare2.jar");
+      classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"JavaChecker2.jar");
+      classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"JavaChecker2Annotations.jar");
+      classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"TermWareJPP.jar");
+      
+      cmd.setClassname("ua.gradsoft.javachecker.Main");
+      
+      if (inputDirectory_!=null) {
+          cmd.createArgument().setValue(inputDirectory_);
+      }else if (inputDirectories_.size()!=0) {
+          for(String s: inputDirectories_) {
+              cmd.createArgument().setValue(s);
+          }
+      }else{
+          throw new BuildException("inputdirectory must be set");
+      }
+      
+      ExecuteWatchdog watchdog = null; // TODO: add timeout and rral watchdog.
+      Execute execute = new Execute(new LogStreamHandler(this,Project.MSG_INFO,Project.MSG_WARN),watchdog);
+      execute.setCommandline(cmd.getCommandline());
+      int retcode=0;
+      try {
+          retcode = execute.execute();
+      }catch(IOException ex){
+          throw new BuildException("fork failed",ex,getLocation());
+      }
+      if (failOnError_ && Execute.isFailure(retcode)) {
+          throw new BuildException("fork process return with error",null,getLocation());
+      }
+      
+    }
+
+    private void addJavaCheckerTasksToClassPath()
+    {
+      //   File f = LoaderUtils.getResourceSource();
+    }
+   
+    
     
     private boolean q_=false;
     private boolean showFiles_=false;
@@ -231,8 +376,12 @@ public class JavaCheckerTask extends Task {
     private List<CheckName>  disabled_=new LinkedList<CheckName>();
     private List<ConfigNVPair> configNVPairs_=new LinkedList<ConfigNVPair>();
     
+    
     private List<String> inputDirectories_=new LinkedList<String>();
     private List<String> includeDirectories_=new LinkedList<String>();
     private List<String> includeJars_=new LinkedList<String>();
     
+    private boolean fork_=false;
+    private boolean failOnError_=true;
+    private CommandlineJava cmd=new CommandlineJava();
 }

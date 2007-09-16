@@ -45,6 +45,12 @@ public class JavaTermAnnotationExpressionModel extends JavaTermExpressionModel
         return retval;
     }
     
+    public boolean isConstantExpression() 
+    {
+      return true;
+    }
+      
+    
     public Term getModelTerm() throws TermWareException, EntityNotFoundException
     { return instanceModel_.getModelTerm(); }
     

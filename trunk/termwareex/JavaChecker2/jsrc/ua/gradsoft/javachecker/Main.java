@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.InvalidPreferencesFormatException;
@@ -17,8 +16,13 @@ import ua.gradsoft.javachecker.attributes.ConfigurationAttributesStorage;
 import ua.gradsoft.javachecker.checkers.Checkers;
 import ua.gradsoft.javachecker.models.AnalyzedUnitRef;
 import ua.gradsoft.javachecker.models.AnalyzedUnitType;
+import ua.gradsoft.javachecker.models.InvalidJavaTermException;
 import ua.gradsoft.javachecker.models.JavaCompilationUnitModel;
 import ua.gradsoft.javachecker.models.JavaPackageModel;
+import ua.gradsoft.javachecker.models.JavaResolver;
+import ua.gradsoft.javachecker.models.JavaTermTypeAbstractModel;
+import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.JavaUnitModel;
 import ua.gradsoft.termware.IEnv;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
@@ -301,6 +305,7 @@ public class Main
    System.err.println("  --debug                        put to stderr a lot of debug output");
    System.err.println("  --dump                         dump to stdout AST of parsed files");
    System.err.println("  --q                            minimize output to stdout");
+   System.err.println("  --file fname                   check only file in this directory ");
    System.err.println();
    System.err.println("note, that JavaChecker rules are configured throught preferences.");
    System.err.println("example of preferences file can be found in 'etc' subdirectory of distribution.");
@@ -377,37 +382,57 @@ public class Main
        JavaCompilationUnitModel cu = new JavaCompilationUnitModel(f.getAbsolutePath());
        cu.setPackageModel(pm);
        AnalyzedUnitRef ref = new AnalyzedUnitRef(AnalyzedUnitType.SOURCE,sourceDir+"/"+packageDirName.replace('.','/'),f.getName(),cu);
-       pm.addCompilationUnit(source,cu,ref);   
+       try {
+          pm.addCompilationUnit(source,cu,ref);   
+       }catch(InvalidJavaTermException ex){
+           FileAndLine fl = ex.getFileAndLine();
+           System.err.print("error during reading sources at " +fl.toString());
+           ex.printStackTrace();
+       }catch(TermWareException ex){
+           System.err.print("error during reading sources");
+           ex.printStackTrace();
+       }
        
        try {
-          checkSource(source,cu);              
-       }catch(TermWareException ex){
+          checkSource(f.getAbsolutePath(), source,cu);              
+       }catch(ProcessingException ex){
            System.err.println("error during checking "+f.getAbsolutePath()+":"+ex.getMessage());
-           if (ex instanceof SourceCodeLocation) {
-               FileAndLine fileAndLine=((SourceCodeLocation)ex).getFileAndLine();
-               System.err.println("at "+fileAndLine.getFname()+","+fileAndLine.getLine());
-           }
-           System.err.println("skipping");
-           if (true/*isVerbose()*/) {
-               ex.printStackTrace();
-           }
-       }catch(OutOfMemoryError ex){
-           System.err.println("out of memory during checking "+f.getAbsolutePath()+":"+ex.getMessage());
-           System.err.println("skipping");
        }
      }
           
      ++nLoadedFiles_;          
  }
  
- private void checkSource(Term source, JavaCompilationUnitModel cu) throws TermWareException
+ 
+ private void checkSource(String fname, Term source, JavaCompilationUnitModel cu) throws ProcessingException
  {   
-   checkers_.checkCompilationUnitAST(source);  
-   checkers_.checkTypes(cu);  
+   checkers_.checkCompilationUnitAST(fname, source);  
+   checkers_.checkTypes(fname, cu);  
    ++nProcessedFiles_;
  }
  
- 
+  public static void processOneClass(String fullClassName) throws ProcessingException 
+    {
+       try {
+          JavaTypeModel tm = JavaResolver.resolveTypeModelByFullClassName(fullClassName);
+          JavaUnitModel um = tm.getUnitModel();
+          if (um==null) {
+             throw new ProcessingException("Can't determinate unit model for "+fullClassName);
+          }else if (um instanceof JavaCompilationUnitModel) {
+             JavaTermTypeAbstractModel ttm = (JavaTermTypeAbstractModel)tm;
+             JavaCompilationUnitModel cu = (JavaCompilationUnitModel)um;           
+             FileAndLine fl = JUtils.getFileAndLine(ttm.getASTTerm());                     
+             checkers_.checkTypes(fl.getFname(),cu);
+         }else {
+           throw new ProcessingException("Sources for class "+fullClassName+" is not found");
+         }
+       } catch (TermWareException ex){
+          exceptionHandler_.handle("resoving("+fullClassName+")","unknonwn",ex,JUtils.getSourceCodeLocation(ex)); 
+       }  catch (EntityNotFoundException ex){
+         exceptionHandler_.handle("resoving("+fullClassName+")","unknonwn",ex,JUtils.getSourceCodeLocation(ex));            
+       }        
+    }
+
  
  private void report() throws AssertException
  {   
@@ -544,6 +569,16 @@ public class Main
    prefsFname_=prefsFname;
  }  
  
+ public  static JavaCheckerExceptionHandler getExceptionHandler()
+ {
+   return exceptionHandler_;  
+ }
+ 
+ public  static void setExceptionHandler(JavaCheckerExceptionHandler exceptionHandler)
+ {
+   exceptionHandler_=exceptionHandler;  
+ }
+ 
  public  static String getTmpDir()
  {
      if (tmpDirName_==null) {         
@@ -595,9 +630,9 @@ public class Main
      tmpDirBase_=candidate;
    }
  }
- 
- 
- 
+
+
+
  private static IEnv         env_          = null;
 
 // private static HashSet      sourcesSet_    = null;
@@ -628,6 +663,7 @@ public class Main
  private static JavaFacts    facts_ = null;
  //private static TermSystem   mainSystem_ = null;
  private static Checkers      checkers_ = null;
+ private static JavaCheckerExceptionHandler exceptionHandler_=new DefaultExceptionHandler();
  
  private static boolean      inShutdown_ = false;
  

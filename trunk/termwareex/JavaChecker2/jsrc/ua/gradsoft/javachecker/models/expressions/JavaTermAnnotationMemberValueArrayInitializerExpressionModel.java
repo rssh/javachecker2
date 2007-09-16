@@ -26,7 +26,7 @@ import ua.gradsoft.termware.TermWareException;
 import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
- *
+ *MemberValueArryaInitializer inside annotation,
  * @author rssh
  */
 public class JavaTermAnnotationMemberValueArrayInitializerExpressionModel extends JavaTermExpressionModel
@@ -54,14 +54,20 @@ public class JavaTermAnnotationMemberValueArrayInitializerExpressionModel extend
       try {  
         JavaTypeModel tm = enclosedAnnotation_.getAnnotationModel();
         JavaMemberVariableModel mv = tm.getMemberVariableModels().get(elementName_);
-        return mv.getTypeModel();
+        return mv.getType();
       }catch(NotSupportedException ex){
-          throw new InvalidJavaTermException("Incorrect annotation elment "+elementName_,t_,ex);
+          throw new InvalidJavaTermException("Incorrect annotation element "+elementName_,t_,ex);
       }
     }
     
     public List<JavaExpressionModel>  getSubExpressions()
     { return subexpressions_; }
+    
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+      return true;
+    }
+      
     
     /**
      * AnnotationMemberValueArrayInitalizerExpression(Identifier(name),[subexprs..],ctx)

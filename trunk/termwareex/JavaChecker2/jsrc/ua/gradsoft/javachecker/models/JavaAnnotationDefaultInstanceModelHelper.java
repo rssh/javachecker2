@@ -10,6 +10,7 @@
 package ua.gradsoft.javachecker.models;
 
 import java.lang.annotation.ElementType;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.javachecker.models.expressions.JavaObjectConstantExpressionModel;
 import ua.gradsoft.termware.TermWareException;
@@ -22,7 +23,7 @@ import ua.gradsoft.termware.exceptions.AssertException;
 class JavaAnnotationDefaultInstanceModelHelper {
 
     
-    static ElementType mapAnnotationElementType(JavaTypeModel annotationType) throws TermWareException
+    static ElementType mapAnnotationElementType(JavaTypeModel annotationType) throws TermWareException, EntityNotFoundException
     {
       JavaExpressionModel expr = null;  
       try {  

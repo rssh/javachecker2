@@ -32,6 +32,10 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     public String getName() {
         return "UNKNOWN"; }
     
+    public String getErasedName() {
+        return "UNKNOWN"; }
+        
+    
     public Term getShortNameAsTerm() throws TermWareException {
         return TermWare.getInstance().getTermFactory().createAtom("UNKNOWN"); }
     

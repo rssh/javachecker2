@@ -12,6 +12,7 @@ import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.models.JavaTypeArgumentBoundMethodModel;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
+import ua.gradsoft.javachecker.models.JavaExpressionModelHelper;
 import ua.gradsoft.javachecker.models.JavaMethodModel;
 import ua.gradsoft.javachecker.models.JavaPlaceContext;
 import ua.gradsoft.javachecker.models.JavaResolver;
@@ -87,6 +88,12 @@ public final class JavaTermSpecializedMethodCallExpressionModel extends JavaTerm
     {   
         return Collections.<JavaExpressionModel>singletonList(unboundMethodCall_); 
     }
+    
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+        return JavaExpressionModelHelper.subExpressionsAreConstants(this);
+    }
+    
     
     /**
      * SpecializedMethodCallModel(bounds,methodCallModelTerm,methodModel,ctx)

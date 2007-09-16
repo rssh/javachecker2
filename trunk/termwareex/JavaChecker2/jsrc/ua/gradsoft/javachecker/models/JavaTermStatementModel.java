@@ -413,7 +413,7 @@ public class JavaTermStatementModel implements JavaStatementModel {
                     argsList = TermUtils.createTerm("cons",te,argsList);
                 }
                 argsList=TermUtils.reverseListTerm(argsList);
-                retval = TermUtils.createTerm("ExplicitSuperInvocationModel",primary,argsList,tctx);
+                retval = TermUtils.createTerm("ExplicitSuperConstructorInvocationModel",primary,argsList,tctx);
             }
             break;
             case EXPLICIT_THIS_CONSTRUCTOR_INVOCATION:
@@ -424,7 +424,7 @@ public class JavaTermStatementModel implements JavaStatementModel {
                     argsList = TermUtils.createTerm("cons",te,argsList);
                 }
                 argsList=TermUtils.reverseListTerm(argsList);
-                retval = TermUtils.createTerm("ExplicitThisInvocationModel",argsList,tctx);
+                retval = TermUtils.createTerm("ExplicitThisConstructorInvocationModel",argsList,tctx);
             }
             break;
             case FOR_STATEMENT:

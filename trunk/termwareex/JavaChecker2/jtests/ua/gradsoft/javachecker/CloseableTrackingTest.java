@@ -25,9 +25,10 @@ public class CloseableTrackingTest extends TestCase
         main.init(args);
         main.addInputDirectory("testpackages/testdata8/e1", true); 
 
-      //  TermSystem system0 = TermWare.getInstance().getRoot().resolveSystem("TrackOpenClose");
-      //  system0.setDebugEntity("SystemReductions");
-      //  system0.setDebugMode(true);
+       TermSystem system0 = TermWare.getInstance().getRoot().resolveSystem("TrackOpenClose");
+       //system0.setLoggedEntity("SystemReductions");
+        //system0.setLoggedEntity("Rules");
+        //system0.setLoggingMode(true);
         
         
       //  TermSystem system = TermWare.getInstance().getRoot().resolveSystem("ResourceLeak");
@@ -61,6 +62,7 @@ public class CloseableTrackingTest extends TestCase
         assertTrue("'closed' in defects must be > 0. have "+nClosedFound,nClosedFound>0);        
                 
     }
+    
     
     public void testForgottenFile2() throws Exception
     {

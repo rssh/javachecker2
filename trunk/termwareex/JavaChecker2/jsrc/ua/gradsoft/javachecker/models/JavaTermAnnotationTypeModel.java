@@ -75,7 +75,7 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
         throw new NotSupportedException();
     }
     
-    public JavaAnnotationInstanceModel  getDefaultAnnotationInstanceModel() throws TermWareException
+    public JavaAnnotationInstanceModel  getDefaultAnnotationInstanceModel() throws TermWareException, EntityNotFoundException
     {
         if (annotationDefaultInstanceModel_==null) {
             annotationDefaultInstanceModel_=new JavaAnnotationDefaultInstanceModel(this);

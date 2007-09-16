@@ -115,6 +115,10 @@ public class TermUtils {
       }
     }
     
+    public static final Term createList(Term[] array)
+    {
+        return getTermFactory().createList(array);
+    }
 
      /**
       *TODO: change type names in bounds to type-ref

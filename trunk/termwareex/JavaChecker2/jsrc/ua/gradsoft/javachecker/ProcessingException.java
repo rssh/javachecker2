@@ -25,16 +25,14 @@ public class ProcessingException extends Exception {
      * Constructs an instance of <code>ProcessingException</code> with the specified detail message.
      * @param msg the detail message.
      */
-    public ProcessingException(String msg, Exception ex) {
-        super(msg,ex);
-        ex_=ex;
+    public ProcessingException(String msg, Throwable ex) {
+        super(msg,ex);     
     }
    
-    public Exception getInternalException()
+    public Throwable getInternalException()
     {
-        return ex_; 
+        return getCause();
     }
     
-    private Exception ex_=null;
     
 }

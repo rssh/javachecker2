@@ -7,6 +7,7 @@
 
 package ua.gradsoft.javachecker.models.expressions;
 
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.termware.TermWareException;
 
@@ -20,6 +21,6 @@ public interface JavaObjectConstantExpressionModel extends JavaExpressionModel
     /**
      *@return value of expression as Java object constant.
      */
-    public  Object getConstant() throws TermWareException;
+    public  Object getConstant() throws TermWareException, EntityNotFoundException;
     
 }

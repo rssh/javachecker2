@@ -81,7 +81,7 @@ public class JavaClassMethodModel extends JavaMethodModel implements JavaClassTo
               new Function<JavaFormalParameterModel,JavaTypeModel>() {
           public JavaTypeModel function(JavaFormalParameterModel x) throws TermWareException {              
               try{
-                return x.getTypeModel();              
+                return x.getType();              
               }catch(EntityNotFoundException ex){
                   throw new AssertException(ex.getMessage(),ex);
               }

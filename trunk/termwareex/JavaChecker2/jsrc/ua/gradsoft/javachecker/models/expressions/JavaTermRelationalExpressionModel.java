@@ -14,6 +14,7 @@ import java.util.List;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
+import ua.gradsoft.javachecker.models.JavaExpressionModelHelper;
 import ua.gradsoft.javachecker.models.JavaPrimitiveTypeModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
@@ -71,6 +72,12 @@ public class JavaTermRelationalExpressionModel extends JavaTermExpressionModel
     
     public List<JavaExpressionModel>  getSubExpressions()
     { return subExpressions_; }
+    
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+        return JavaExpressionModelHelper.subExpressionsAreConstants(this);
+    }    
+    
     
     /**
      * RelationalExpressionModel(x,y,op,ctx)

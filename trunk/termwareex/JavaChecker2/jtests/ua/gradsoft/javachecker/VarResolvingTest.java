@@ -43,7 +43,7 @@ public class VarResolvingTest extends TestCase
         JavaStatementModel last=statements.get(statements.size()-1);
         JavaVariableModel xmd = JavaResolver.resolveVariableByName("x",last);
         assertTrue("x in doSomething is formal parametet",xmd.getKind()==JavaVariableKind.FORMAL_PARAMETER);
-        JavaTypeModel dd=xmd.getTypeModel();
+        JavaTypeModel dd=xmd.getType();
         assertTrue("x type must be double",dd.getName().equals("double"));
         JavaMethodModel getxm=tm.findMethodModels("getX").get(0);
         tplb=getxm.getTopLevelBlockModel();
@@ -51,7 +51,7 @@ public class VarResolvingTest extends TestCase
         last=statements.get(statements.size()-1);
         JavaVariableModel xmi = JavaResolver.resolveVariableByName("x",last);        
         assertEquals("x in getX is member",JavaVariableKind.MEMBER_VARIABLE,xmi.getKind());
-        JavaTypeModel xt=xmi.getTypeModel();
+        JavaTypeModel xt=xmi.getType();
         assertTrue("x type must be int",xt.getName().equals("int"));   
         JavaMethodModel dlxm=tm.findMethodModels("doLocalX").get(0);
         tplb=dlxm.getTopLevelBlockModel();
@@ -59,7 +59,7 @@ public class VarResolvingTest extends TestCase
         last=statements.get(statements.size()-1);
         JavaVariableModel xmf = JavaResolver.resolveVariableByName("x",last); 
         assertEquals("x in doLocalX is local varibale",JavaVariableKind.LOCAL_VARIABLE,xmf.getKind());
-        xt=xmf.getTypeModel();
+        xt=xmf.getType();
         assertTrue("x type must be float",xt.getName().equals("float"));   
     }
     
@@ -73,7 +73,7 @@ public class VarResolvingTest extends TestCase
         JavaVariableModel xvm = JavaResolver.resolveVariableByName("x",last);
         assertEquals("x in sumSuper is member",JavaVariableKind.MEMBER_VARIABLE,xvm.getKind());
         JavaMemberVariableModel xvmm=(JavaMemberVariableModel)xvm;
-        assertEquals("owner of x is Hd1","Hd1",xvmm.getOwner().getName());        
+        assertEquals("owner of x is Hd1","Hd1",xvmm.getOwnerType().getName());        
      }
     
      public void testSystemOutPrintln() throws Exception

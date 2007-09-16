@@ -113,7 +113,7 @@ public class NamePatternsChecker implements JavaTypeModelProcessor {
     
     
     public void checkMemberVariableNamePatterns(JavaTermMemberVariableModel v, JavaFacts facts) throws TermWareException {
-        if (v.getModifiersModel().isFinal()) {
+        if (v.getModifiers().isFinal()) {
             if (!v.getName().matches(facts.getFinalFieldNamePattern())) {
                 facts.violationDiscovered("NamePatterns", "final field name pattern violation", v.getVariableDeclaratorTerm());
             }
@@ -123,8 +123,8 @@ public class NamePatternsChecker implements JavaTypeModelProcessor {
             }
         }
         if (facts.isCheckEnabled("NonFinalPublicFields")) {
-            if (v.getModifiersModel().isPublic()) {
-                if (!v.getModifiersModel().isFinal()) {
+            if (v.getModifiers().isPublic()) {
+                if (!v.getModifiers().isFinal()) {
                     facts.violationDiscovered("NonFinalPublicFields","non-final public field discovered",v.getVariableDeclaratorTerm());
                 }
             }

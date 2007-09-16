@@ -83,6 +83,9 @@ public class JavaTermTypeVariableModel extends JavaTypeVariableAbstractModel
     public String getName()
     { return name_; }
     
+    public String getErasedName()
+    { return "Object"; }
+    
     public List<JavaTypeModel> getBounds() throws TermWareException 
     {
       if (bounds_==null) {

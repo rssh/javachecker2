@@ -68,6 +68,11 @@ public class JavaTermInstanceOfExpressionModel extends JavaTermExpressionModel
         return Collections.singletonList(e);
     }
     
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+        return subExpression_.isConstantExpression();
+    }
+    
     
     /**
      * InstanceOfExpressionModel(typeRef,expression,ctx)

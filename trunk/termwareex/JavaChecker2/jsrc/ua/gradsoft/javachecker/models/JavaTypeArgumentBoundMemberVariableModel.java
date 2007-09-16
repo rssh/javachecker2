@@ -32,14 +32,22 @@ public class JavaTypeArgumentBoundMemberVariableModel extends JavaMemberVariable
     public String getName()
     { return origin_.getName(); }
     
-    public JavaTypeModel  getOwner()
+    public JavaTypeModel  getOwnerType()
     { 
        return owner_;  
     }
     
-    public JavaTypeModel  getTypeModel() throws TermWareException, EntityNotFoundException
+    /**
+     *@return null
+     */
+    public JavaTopLevelBlockOwnerModel getTopLevelBlockOwner()
     {
-      JavaTypeModel originTypeModel = origin_.getTypeModel();
+       return null; 
+    }
+    
+    public JavaTypeModel  getType() throws TermWareException, EntityNotFoundException
+    {
+      JavaTypeModel originTypeModel = origin_.getType();
       //return owner_.substituteTypeParameters(originTypeModel);
       return owner_.getSubstitution().substitute(originTypeModel);
     }
@@ -47,9 +55,9 @@ public class JavaTypeArgumentBoundMemberVariableModel extends JavaMemberVariable
     public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap() throws TermWareException
     { return origin_.getAnnotationsMap(); }
     
-    public JavaModifiersModel  getModifiersModel()
+    public JavaModifiersModel  getModifiers()
     {
-        return origin_.getModifiersModel();
+        return origin_.getModifiers();
     }
     
     public boolean isSupportInitializerExpression()

@@ -48,7 +48,7 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
     /**
      * get type model.  
      */
-    public JavaTypeModel getTypeModel() throws TermWareException, EntityNotFoundException
+    public JavaTypeModel getType() throws TermWareException, EntityNotFoundException
     { return resolveType(); }
     
     public JavaStatementModel getStatement()
@@ -61,11 +61,12 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
     { return initExpression_; }
             
     /**
-     * LocalVariableModel(TyeRef(),Identifier,Init)
+     * LocalVariableModel(Modifiers,TypeRef(),Identifier,Init, ctx)
      */
     public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
         JavaTypeModel type=resolveType();
+        Term modifiersTerm = modifiers_.getModelTerm();
         Term typeRef=TermUtils.createTerm("TypeRef",typeTerm_,TermUtils.createJTerm(type));
         Term identifier=identifierTerm_;
         Term initTerm = TermUtils.createNil();
@@ -74,7 +75,7 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
         }
         JavaPlaceContext ctx = JavaPlaceContextFactory.createNewStatementContext(statement_);
         Term tctx = TermUtils.createJTerm(ctx);
-        Term retval = TermUtils.createTerm("LocalVariableModel",typeRef,identifier,initTerm,tctx);
+        Term retval = TermUtils.createTerm("LocalVariableModel",modifiersTerm,typeRef,identifier,initTerm,tctx);
         return retval;
     }
     
@@ -88,8 +89,17 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
     public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
     { return modifiers_.getAnnotationsMap(); }
     
-    public JavaModifiersModel getModifiersModel()
+    public JavaModifiersModel getModifiers()
     { return modifiers_; }
+    
+    public JavaTypeModel getOwnerType()
+    {
+        return getTopLevelBlockOwner().getTypeModel(); 
+    }
+    
+    public JavaTopLevelBlockOwnerModel getTopLevelBlockOwner()
+    { return statement_.getTopLevelBlockModel().getOwnerModel(); }
+    
     
     private JavaTypeModel resolveType() throws TermWareException, EntityNotFoundException
     {

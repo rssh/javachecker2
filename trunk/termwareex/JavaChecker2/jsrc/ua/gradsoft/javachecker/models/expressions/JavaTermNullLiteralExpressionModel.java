@@ -53,6 +53,12 @@ public class JavaTermNullLiteralExpressionModel extends JavaTermExpressionModel 
         return Collections.emptyList();
     }
     
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+        return true;
+    }
+    
+    
     public Object getConstant()
     { return null; }
     

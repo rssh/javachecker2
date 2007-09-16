@@ -16,9 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 import ua.gradsoft.javachecker.EntityNotFoundException;
-import ua.gradsoft.javachecker.FileAndLine;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.javachecker.attributes.JavaTypeModelAttributes;
@@ -123,6 +121,11 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         return origin_.getName()+sTypeArguments;
     }
     
+    public String getErasedName()
+    {
+        return origin_.getErasedName();
+    }
+    
     public Term getShortNameAsTerm() throws TermWareException {
         Term t = origin_.getShortNameAsTerm();
         Term retval=t;
@@ -139,14 +142,18 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         return retval;
     }
     
-    /*
+    
     public Term getFullNameAsTerm() throws TermWareException
     {
         Term t=origin_.getFullNameAsTerm();
         Term retval=t;
         Term fTATerm=TermWare.getInstance().getTermFactory().createNil();
-        for(int i=getResolvedTypeArguments().size();i>0;--i) {
+        try {
+          for(int i=getResolvedTypeArguments().size();i>0;--i) {
             fTATerm=TermWare.getInstance().getTermFactory().createTerm("cons",getResolvedTypeArguments().get(i-1).getFullNameAsTerm(),fTATerm);
+          }
+        }catch(EntityNotFoundException ex){
+            throw new AssertException("Can't get full name of type",ex);
         }
         fTATerm=TermWare.getInstance().getTermFactory().createTerm("TypeArguments",fTATerm);
         if (!t.getName().equals("ClassOrInterfaceType")) {
@@ -162,7 +169,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         }
         return retval;
     }
-     */
+     
     
     public JavaModifiersModel getModifiersModel()
     { return origin_.getModifiersModel(); }
@@ -273,7 +280,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
      *if this is annotation - get DefaultAnnotationInstance, otherwise - throws NotSupportedException.
      *In our case emulate behaviour of origin.
      */    
-    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException, TermWareException 
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException, TermWareException, EntityNotFoundException 
     {
          return origin_.getDefaultAnnotationInstanceModel();
     }

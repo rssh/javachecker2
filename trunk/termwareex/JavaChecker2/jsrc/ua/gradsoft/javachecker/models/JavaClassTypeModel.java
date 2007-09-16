@@ -28,6 +28,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
@@ -53,6 +54,15 @@ public class JavaClassTypeModel extends JavaTypeModel
     {       
        return theClass_.getSimpleName(); 
     }
+    
+    /**
+     *all classes from reflection are already erased
+     */
+    public String getErasedName()
+    {       
+       return theClass_.getSimpleName(); 
+    }
+    
   
     public Term getShortNameAsTerm() throws TermWareException
     {
@@ -62,6 +72,10 @@ public class JavaClassTypeModel extends JavaTypeModel
         return identifier;
     }
   
+    public Term getFullNameAsTerm() throws TermWareException
+    {
+        return JUtils.createJavaNameWithPackage(theClass_.getPackage().getName(),theClass_.getSimpleName());
+    }
   
    
   /**
@@ -305,12 +319,12 @@ public class JavaClassTypeModel extends JavaTypeModel
      return Collections.emptyList(); 
   }
   
-  public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException, TermWareException
+  public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException, TermWareException, EntityNotFoundException
   {
    if (annotationDefaultInstance_==null) {
       if (!theClass_.isAnnotation()) {
           throw new NotSupportedException();
-      }else{
+      }else{         
           annotationDefaultInstance_= new JavaAnnotationDefaultInstanceModel(this);           
       }
    }

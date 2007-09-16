@@ -58,6 +58,11 @@ public class JavaTermSuperPrefixExpressionModel extends JavaTermExpressionModel
         return Collections.emptyList();
     }
     
+    public boolean isConstantExpression()
+    {
+        return true;
+    }
+    
     /**
      * SuperPrefixModel(ctx)
      */

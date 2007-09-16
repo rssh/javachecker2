@@ -229,7 +229,7 @@ public class UnusedMethodsAndFieldsChecker implements JavaTypeModelProcessor
        }
        
        for(JavaMemberVariableModel v: vs) {
-           if (v.getModifiersModel().isPrivate()) {
+           if (v.getModifiers().isPrivate()) {
                Term attr = v.getAttribute(this.getClass().getName());
                if (attr.isNil()) {
                    if (v instanceof JavaTermMemberVariableModel) {
@@ -280,7 +280,7 @@ public class UnusedMethodsAndFieldsChecker implements JavaTypeModelProcessor
    private boolean isFieldOfSerializable(JavaTermMemberVariableModel tv) throws TermWareException, EntityNotFoundException
    {
        if (tv.getName().equals("serialVersionUID")) {
-           JavaModifiersModel m = tv.getModifiersModel();
+           JavaModifiersModel m = tv.getModifiers();
            if (m.isFinal() && m.isStatic()) {
                return JavaTypeModelHelper.subtypeOrSame(tv.getOwner(),JavaResolver.resolveTypeModelByFullClassName("java.io.Serializable"));
            }

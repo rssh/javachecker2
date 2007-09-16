@@ -34,6 +34,10 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     
     public  Term  getShortNameAsTerm() throws TermWareException
     { return TermUtils.createIdentifier(getName()); }
+
+    public  Term  getFullNameAsTerm() throws TermWareException
+    { return TermUtils.createIdentifier(getName()); }
+    
     
     /**
      * return false;

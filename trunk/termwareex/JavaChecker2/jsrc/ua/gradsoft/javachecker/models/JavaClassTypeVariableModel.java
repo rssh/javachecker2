@@ -35,6 +35,11 @@ public class JavaClassTypeVariableModel extends JavaTypeVariableAbstractModel
       return typeVariable_.getName();  
     }
     
+    public String getErasedName()
+    {
+        return "Object";
+    }
+    
     public JavaTermModifiersModel  getModifiersModel()
     {
       return JavaModelConstants.PUBLIC_MODIFIERS;  

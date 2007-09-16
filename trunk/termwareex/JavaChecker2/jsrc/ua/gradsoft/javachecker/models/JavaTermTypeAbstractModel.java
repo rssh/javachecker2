@@ -20,6 +20,7 @@ import java.util.TreeSet;
 import ua.gradsoft.javachecker.CheckerComment;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.InvalidCheckerCommentException;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.javachecker.models.expressions.JavaObjectConstantExpressionModel;
 import ua.gradsoft.termware.JTerm;
@@ -65,9 +66,17 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
         return name_;
     }
     
+    public String getErasedName()
+    { return name_; }
+    
     public Term getShortNameAsTerm() throws TermWareException
     {
        return TermUtils.createIdentifier(name_);
+    }
+    
+    public Term getFullNameAsTerm() throws TermWareException
+    {
+       return JUtils.createJavaNameWithPackage(this.getPackageModel().getName(),name_);
     }
     
    public boolean isPrimitiveType()

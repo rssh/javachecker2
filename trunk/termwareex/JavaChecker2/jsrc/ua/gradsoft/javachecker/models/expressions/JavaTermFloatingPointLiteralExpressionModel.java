@@ -16,17 +16,20 @@ import ua.gradsoft.javachecker.models.JavaExpressionHelper;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaLiteralModel;
+import ua.gradsoft.javachecker.models.JavaPrimitiveTypeModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *Model for floating point literal expression
  * @author Ruslan Shevchenko
  */
-public class JavaTermFloatingPointLiteralExpressionModel extends JavaTermExpressionModel implements JavaLiteralModel
+public class JavaTermFloatingPointLiteralExpressionModel extends JavaTermExpressionModel implements JavaLiteralModel, JavaObjectConstantExpressionModel
 {
 
    public JavaTermFloatingPointLiteralExpressionModel(Term t,JavaTermStatementModel st,JavaTypeModel enclosedType) throws TermWareException
@@ -42,7 +45,16 @@ public class JavaTermFloatingPointLiteralExpressionModel extends JavaTermExpress
     
     public JavaTypeModel getType() throws TermWareException, EntityNotFoundException
     {
-      return JavaExpressionHelper.getFloatingPointLiteralType(t_.getSubtermAt(0).getString());
+      Term ct = t_.getSubtermAt(0);
+      if (ct.isFloat()) {
+          return JavaPrimitiveTypeModel.FLOAT;
+      }else if(ct.isDouble()){
+          return JavaPrimitiveTypeModel.DOUBLE;
+      }else if(ct.isString()){
+         return JavaExpressionHelper.getFloatingPointLiteralType(t_.getSubtermAt(0).getString());
+      }else{
+          throw new AssertException("invalid kind of FloatingPointLiteral:"+ct.getPrimaryType1());
+      }
     }
     
     public boolean isType()
@@ -54,14 +66,40 @@ public class JavaTermFloatingPointLiteralExpressionModel extends JavaTermExpress
         return Collections.emptyList();
     }
     
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+      return true;
+    }
+    
+    public Object getConstant() throws TermWareException, EntityNotFoundException
+    {
+       Term ct = t_.getSubtermAt(0);
+       if (ct.isDouble()) {
+           return ct.getDouble();
+       }else if (ct.isFloat()) {
+           return ct.getFloat();
+       }else{
+           throw new AssertException("Impossible type for FloatingPointLiteral:"+ct);
+       }
+    }
+    
     /**
-     * FloatingPointLiteral(<string>)
+     * FloatingPointLiteral(Double|Float)
      */
     public Term getModelTerm()
     { return getTerm(); }
     
     public String getString()
-    { return t_.getSubtermAt(0).getString(); }
+    { 
+      Term ct = t_.getSubtermAt(0);
+      if (ct.isDouble()) {
+          return Double.toString(ct.getDouble());
+      }else if (ct.isFloat()) {
+          return Float.toString(ct.getFloat())+'F';
+      }else{
+          return TermHelper.termToString(ct);
+      }
+    }
                 
     
     

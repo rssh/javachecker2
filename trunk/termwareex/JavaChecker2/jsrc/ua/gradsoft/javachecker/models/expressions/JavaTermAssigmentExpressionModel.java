@@ -66,6 +66,10 @@ public class JavaTermAssigmentExpressionModel extends JavaTermExpressionModel
       return retval;
     }
 
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+        return rightPart_.isConstantExpression();
+    }
     
     private JavaTermExpressionModel         leftPart_;
     private JavaTermExpressionModel         rightPart_;

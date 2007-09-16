@@ -53,7 +53,7 @@ public class SelfLoadingTest extends TestCase
         
         JavaMemberVariableModel sem = tm.findMemberVariableModel("subExpressions_");
         
-        JavaTypeModel semType = sem.getTypeModel();
+        JavaTypeModel semType = sem.getType();
                                 
         //System.out.println("semType="+semType.getName());
         

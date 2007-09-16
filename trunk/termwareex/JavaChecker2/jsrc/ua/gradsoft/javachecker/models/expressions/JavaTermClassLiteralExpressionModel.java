@@ -68,6 +68,9 @@ public class JavaTermClassLiteralExpressionModel extends JavaTermExpressionModel
         return Collections.emptyList();
     }
     
+    public boolean isConstantExpression()
+    { return true; }
+    
     /**
      * ClassLiteralModel(TypeRef,tctx)
      */

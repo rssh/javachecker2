@@ -14,6 +14,7 @@ import java.util.List;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
+import ua.gradsoft.javachecker.models.JavaExpressionModelHelper;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
@@ -58,6 +59,12 @@ public class JavaTermUnaryExpressionModel extends JavaTermExpressionModel
         JavaExpressionModel e = subexpression_;
         return Collections.singletonList(e);
     }
+    
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+        return JavaExpressionModelHelper.subExpressionsAreConstants(this);
+    }
+    
     
     /**
      * UnaryExpressionModel(x,op,ctx)

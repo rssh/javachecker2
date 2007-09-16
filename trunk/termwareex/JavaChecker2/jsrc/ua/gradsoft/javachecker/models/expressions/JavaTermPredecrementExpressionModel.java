@@ -55,6 +55,12 @@ public class JavaTermPredecrementExpressionModel extends JavaTermExpressionModel
         return Collections.singletonList(e);
     }
     
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+        return subexpression_.isConstantExpression();
+    }
+    
+    
     /**
      * PredecrementExpressionModel(x,ctx)
      */

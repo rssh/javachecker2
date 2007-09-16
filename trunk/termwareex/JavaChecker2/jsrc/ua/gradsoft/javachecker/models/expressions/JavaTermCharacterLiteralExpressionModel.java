@@ -67,6 +67,8 @@ public class JavaTermCharacterLiteralExpressionModel extends JavaTermExpressionM
         return evalCharacterLiteral(getString());
     }
     
+    public boolean isConstantExpression()
+    { return true; }
     
     static char evalCharacterLiteral(String s) throws TermWareException
     {      

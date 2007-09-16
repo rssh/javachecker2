@@ -73,6 +73,13 @@ public abstract class JavaMethodModel implements JavaTopLevelBlockOwnerModel
         JavaTopLevelBlockOwnerModelHelper.printFormalParametersSignature(out,this);
     }
     
+    public void printErasedSignature(PrintWriter out) 
+    {
+        out.print(getName());
+        JavaTopLevelBlockOwnerModelHelper.printErasedFormalParametersSignature(out,this);
+    }
+    
+    
     public void print(PrintStream out) 
     {
         PrintWriter writer = new PrintWriter(out);
@@ -97,7 +104,7 @@ public abstract class JavaMethodModel implements JavaTopLevelBlockOwnerModel
      *return default value of method.
      *If method has not default value: throws NotSupportedException   
      */
-    public abstract JavaExpressionModel  getDefaultValue() throws NotSupportedException, TermWareException;
+    public abstract JavaExpressionModel  getDefaultValue() throws NotSupportedException, TermWareException, EntityNotFoundException;
     
     public Term getAttribute(String name) throws TermWareException
     {

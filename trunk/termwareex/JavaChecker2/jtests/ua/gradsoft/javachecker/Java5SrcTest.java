@@ -48,7 +48,8 @@ public class Java5SrcTest extends TestCase {
             ex.printStackTrace();
             disabled_=true;
         }
-        disabled_=true;
+        //disabled_=true;
+        disabledLong_=true;
         Main.setQOption(false);
         Main.setShowFiles(true);
     }
@@ -58,7 +59,7 @@ public class Java5SrcTest extends TestCase {
     public void testComJava5Models() throws Exception {
         JavaCheckerFacade.init();
         int prevLoadedFiles = nLoadedFiles_;        
-        if (!disabled_  && javaSrcHome_!=null) {
+        if (!disabled_  && !disabledLong_ && javaSrcHome_!=null) {
             JavaCheckerFacade.addInputDirectory(javaSrcHome_,true);
             String dirName = javaSrcHome_ + File.separator +"com";
             File f = new File(dirName);
@@ -102,6 +103,18 @@ public class Java5SrcTest extends TestCase {
         JavaTypeModel tm = JavaResolver.resolveTypeModelByFullClassName("javax.swing.text.rtf.RTFParser");
         Term mt=tm.getModelTerm();
     }
+
+    public void testComSunJavaSwingPlafWindowsWindowsGraphicUtils() throws Exception {
+        if (javaSrcHome_==null) {
+            return;
+        }
+        JavaCheckerFacade.init();
+        JavaCheckerFacade.addInputDirectory(javaSrcHome_,true);
+        JavaTypeModel tm = JavaResolver.resolveTypeModelByFullClassName("com.sun.java.swing.plaf.windows.WindowsGraphicsUtils");
+        Term mt=tm.getModelTerm();
+        // now visit all nodes, to forse full build.      
+    }
+    
     
     public void testComSunSourceUtilTreePath() throws Exception {
         if(javaSrcHome_==null) {
@@ -169,11 +182,22 @@ public class Java5SrcTest extends TestCase {
         Term mt = tm.getModelTerm();        
     }
     
+    public void testComSunCorbaSeImplLoggingORBUtilSystemException() throws Exception
+    {
+        if(javaSrcHome_==null) {
+            return;
+        }
+        JavaCheckerFacade.init();
+        JavaCheckerFacade.addInputDirectory(javaSrcHome_,true);
+        JavaTypeModel tm = JavaResolver.resolveTypeModelByFullClassName("com.sun.corba.se.impl.logging.ORBUtilSystemException");
+        Term mt = tm.getModelTerm();        
+    }
+    
     
     public void _testDirJava5Models(String pkg) throws Exception {
         JavaCheckerFacade.init();
         int prevLoadedFiles = nLoadedFiles_;
-        if (!disabled_ && javaSrcHome_!=null) {
+        if (!disabled_ && !disabledLong_ && javaSrcHome_!=null) {
             JavaCheckerFacade.addInputDirectory(javaSrcHome_,true);
             String dirName = javaSrcHome_ + File.separator +pkg;
             File f = new File(dirName);
@@ -186,7 +210,7 @@ public class Java5SrcTest extends TestCase {
     public void _testDirJava5Models(String pkg1, String pkg2) throws Exception {
         JavaCheckerFacade.init();
         int prevLoadedFiles = nLoadedFiles_;
-        if (!disabled_) {
+        if (!disabled_ && !disabledLong_ ) {
             JavaCheckerFacade.addInputDirectory(javaSrcHome_,true);
             String dirName = javaSrcHome_ + File.separator +pkg1 + File.separator + pkg2;
             File f = new File(dirName);
@@ -339,10 +363,15 @@ public class Java5SrcTest extends TestCase {
     
     
     static boolean disabled_;
-    static String  javaSrcHome_; //="/usr/java/jdk1.6.0_01/src";
+    
+    /**
+     * disabled long tests, which check all
+     */
+    static boolean disabledLong_;
+    static String  javaSrcHome_ ="/usr/java/jdk1.6.0_01/src";
     
     static boolean qOption_=false;
-    static boolean dump_=false;
+    static boolean dump_=false;    
     static int     nLoadedFiles_=0;
     
     public void setQOption_(boolean qOption_) {

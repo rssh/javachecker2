@@ -43,12 +43,12 @@ public class JavaTermEnumConstantModel extends JavaEnumConstantModel
     }
     
     
-    public JavaTypeModel getTypeModel()
+    public JavaTypeModel getType()
     {
       return (subtype_==null) ? owner_ : subtype_;  
     }
     
-    public JavaTypeModel getOwner()
+    public JavaTypeModel getOwnerType()
     { return owner_; }
         
     

@@ -28,17 +28,17 @@ public class JavaTypeSubstitutedFormalParameterModel extends JavaFormalParameter
         blockOwner_=blockOwner;
     }
     
-    public JavaModifiersModel getModifiersModel()
-    {  return origin_.getModifiersModel(); }
+    public JavaModifiersModel getModifiers()
+    {  return origin_.getModifiers(); }
     
     
     public String getName()
     { return origin_.getName(); }
          
-    public JavaTypeModel getTypeModel() throws TermWareException, EntityNotFoundException
-    { return blockOwner_.getTypeArgumentBoundTypeModel().getSubstitution().substitute(origin_.getTypeModel()); }
+    public JavaTypeModel getType() throws TermWareException, EntityNotFoundException
+    { return blockOwner_.getTypeArgumentBoundTypeModel().getSubstitution().substitute(origin_.getType()); }
                    
-    public JavaTopLevelBlockOwnerModel  getOwner()
+    public JavaTopLevelBlockOwnerModel  getTopLevelBlockOwner()
     { return blockOwner_; }
   
         

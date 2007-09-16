@@ -9,6 +9,8 @@ package ua.gradsoft.javachecker;
 import java.io.File;
 import java.io.Reader;
 import java.util.logging.Logger;
+import ua.gradsoft.javachecker.annotations.Nullable;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.IParser;
 import ua.gradsoft.termware.IParserFactory;
 import ua.gradsoft.termware.Term;
@@ -172,6 +174,21 @@ public final class JUtils {
         return retval;
     }
 
+    public static Term createJavaNameWithPackage(String packageName, String name) throws TermWareException
+    {
+        String[] packageNameComponents = packageName.split("\\.");
+        String[] classNameComponents = name.split("$");
+        Term[] ncs = new Term[packageNameComponents.length+classNameComponents.length];
+        int i;
+        for(i=0; i< packageNameComponents.length; ++i) {
+            ncs[i]=TermUtils.createIdentifier(packageNameComponents[i]);
+        }
+        for(i=0; i<classNameComponents.length; ++i) {
+            ncs[packageNameComponents.length+i]=TermUtils.createIdentifier(classNameComponents[i]);
+        }
+        return TermUtils.createTerm("Name",TermUtils.createList(ncs));
+    }
+    
     /**
      * search java_identifier term in current subterm.
      *   (parser set attributes (file and line) to java_identifier terms).
@@ -253,6 +270,20 @@ public final class JUtils {
       return t;
     }
 
+    @Nullable
+    public static SourceCodeLocation getSourceCodeLocation(Throwable e)
+    {
+       Throwable ex=e; 
+       while(ex !=null) {
+           if (ex instanceof SourceCodeLocation) {
+               return (SourceCodeLocation)ex;
+           }else{
+               ex = ex.getCause();
+           }
+       } 
+       return null;
+    }
+    
     
     /**
      * generate name of setter method for variable <name>.

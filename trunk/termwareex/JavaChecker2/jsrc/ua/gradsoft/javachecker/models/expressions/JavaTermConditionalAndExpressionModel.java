@@ -14,13 +14,13 @@ import java.util.List;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
+import ua.gradsoft.javachecker.models.JavaExpressionModelHelper;
 import ua.gradsoft.javachecker.models.JavaPrimitiveTypeModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
-import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -69,6 +69,9 @@ public class JavaTermConditionalAndExpressionModel extends JavaTermExpressionMod
     
     public List<JavaExpressionModel>  getSubExpressions()
     { return subExpressions_; }
+    
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    { return JavaExpressionModelHelper.subExpressionsAreConstants(this); }
     
     private List<JavaExpressionModel> subExpressions_;
     

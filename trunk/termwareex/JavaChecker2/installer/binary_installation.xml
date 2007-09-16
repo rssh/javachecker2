@@ -4,12 +4,12 @@
     Author     : Ruslan Shevchenko
     Description:
         IzPack install file for TermWare JavaChecker
-    Id:        $Id: binary_installation.xml,v 1.8 2007-06-11 09:32:47 rssh Exp $
+    Id:        $Id: binary_installation.xml,v 1.9 2007-09-16 15:11:28 rssh Exp $
 -->
 <installation version="1.0">
  <info>
   <appname>JavaChecker</appname>
-  <appversion>2.2.2</appversion>
+  <appversion>2.2.3</appversion>
   <url>http://www.gradsoft.ua</url>
   <authors>
    <author name="Ruslan Shevchenko" email="Ruslan@Shevchenko.Kiev.UA" />

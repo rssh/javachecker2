@@ -69,10 +69,10 @@ public class JavaClassEnumConstantModel extends JavaEnumConstantModel
     public String getName()
     { return instance_.toString(); }
     
-    public JavaTypeModel  getTypeModel()
+    public JavaTypeModel  getType()
     { return owner_; }
     
-    public JavaTypeModel  getOwner()
+    public JavaTypeModel  getOwnerType()
     { return owner_; }
     
     public boolean isSupportInitializerExpression()

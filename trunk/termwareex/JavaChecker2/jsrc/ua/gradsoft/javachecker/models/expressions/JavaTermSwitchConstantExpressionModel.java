@@ -49,6 +49,11 @@ public class JavaTermSwitchConstantExpressionModel extends JavaTermExpressionMod
       }
     }
     
+    public boolean isConstantExpression()
+    {
+        return true;
+    }
+    
     public boolean isDefault()
     { return isDefault_; }
     

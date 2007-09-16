@@ -109,7 +109,7 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
       JavaTypeModel[] retval = new JavaTypeModel[fps.size()];
       for(Map.Entry<String, JavaFormalParameterModel> e:fps.entrySet())
       {
-          retval[e.getValue().getIndex()]=e.getValue().getTypeModel();
+          retval[e.getValue().getIndex()]=e.getValue().getType();
       }
       return Arrays.asList(retval);
     }

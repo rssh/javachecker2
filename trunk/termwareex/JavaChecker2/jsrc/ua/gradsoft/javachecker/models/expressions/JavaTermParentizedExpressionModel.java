@@ -47,6 +47,11 @@ public class JavaTermParentizedExpressionModel extends JavaTermExpressionModel
     public boolean isType() throws TermWareException, EntityNotFoundException
     { return subExpression_.isType(); }
     
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+        return subExpression_.isConstantExpression();
+    }
+   
     
     public List<JavaExpressionModel>  getSubExpressions()
     { return Collections.singletonList(subExpression_); }

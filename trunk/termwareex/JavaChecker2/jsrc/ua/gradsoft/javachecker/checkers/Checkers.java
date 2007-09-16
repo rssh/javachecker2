@@ -14,8 +14,10 @@ import ua.gradsoft.javachecker.CheckerComment;
 import ua.gradsoft.javachecker.CheckerType;
 import ua.gradsoft.javachecker.ConfigException;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.JavaFacts;
 import ua.gradsoft.javachecker.Main;
+import ua.gradsoft.javachecker.ProcessingException;
 import ua.gradsoft.javachecker.SourceCodeLocation;
 import ua.gradsoft.javachecker.Violations;
 import ua.gradsoft.javachecker.models.JavaCompilationUnitModel;
@@ -121,23 +123,26 @@ public class Checkers {
         }
     }
     
-    public void checkCompilationUnitAST(Term compilationUnitAST) throws TermWareException
+    public void checkCompilationUnitAST(String fname, Term compilationUnitAST) throws ProcessingException
     {
        for(Map.Entry<String,AbstractChecker> e: checkers_.entrySet()) {
            AbstractChecker checker0 = e.getValue();
            if (checker0 instanceof AbstractCompilationUnitChecker) {
                AbstractCompilationUnitChecker checker = (AbstractCompilationUnitChecker)checker0;
                if (facts_.isCheckEnabled(e.getKey())) {
+                 try {  
                    checker.run(compilationUnitAST);
-               }
-               
+                 }catch(Throwable ex){
+                     Main.getExceptionHandler().handle(checker.getName(),fname,ex,JUtils.getSourceCodeLocation(ex));
+                 }
+               }               
            }else{
                continue;
            }
        } 
     }
     
-    public void checkTypes(JavaCompilationUnitModel cu) throws TermWareException
+    public void checkTypes(String fname, JavaCompilationUnitModel cu) throws ProcessingException
     {
                 
         // for all types all type checkers.
@@ -187,15 +192,8 @@ public class Checkers {
                 if (enabled && ttm!=null) {  
                   try {  
                     checker.run(ttm,astTermHolder,modelTermHolder);
-                  }catch(TermWareException ex){                      
-                      System.out.println("Exception: "+checker.getName()+", during checking type "+ttm.getFullName());
-                      if (ex instanceof SourceCodeLocation) {
-                          SourceCodeLocation scl = (SourceCodeLocation)ex;
-                          System.out.println(scl.getFileAndLine().getFname()+":"+scl.getFileAndLine().getLine());
-                      }
-                      ex.printStackTrace();
-                  }catch(OutOfMemoryError ex){
-                      System.out.println("Out of memory error for check "+checker.getName()+", class "+ttm.getFullName());                            
+                  }catch(Throwable ex){                                            
+                      Main.getExceptionHandler().handle(checker.getName(),fname,ex,JUtils.getSourceCodeLocation(ex));
                   }
                 }
             }
@@ -261,6 +259,7 @@ public class Checkers {
     private String getEtcDirectory() {
         return Main.getHome()+File.separator+"etc";
     }
+    
     
     private JavaFacts facts_;
     

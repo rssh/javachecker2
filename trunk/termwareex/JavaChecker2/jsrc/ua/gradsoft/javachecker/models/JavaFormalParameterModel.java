@@ -22,7 +22,7 @@ import ua.gradsoft.termware.TermWareException;
 public abstract class JavaFormalParameterModel implements JavaVariableModel
 {
     
-    public abstract JavaModifiersModel getModifiersModel();
+    public abstract JavaModifiersModel getModifiers();
     
     
     public abstract String getName();
@@ -31,9 +31,14 @@ public abstract class JavaFormalParameterModel implements JavaVariableModel
     public JavaVariableKind getKind()
     { return JavaVariableKind.FORMAL_PARAMETER; }
     
-    public abstract JavaTypeModel getTypeModel() throws TermWareException, EntityNotFoundException;
+    public abstract JavaTypeModel getType() throws TermWareException, EntityNotFoundException;
                
-    public abstract JavaTopLevelBlockOwnerModel  getOwner();
+    public abstract JavaTopLevelBlockOwnerModel  getTopLevelBlockOwner();
+    
+    public JavaTypeModel  getOwnerType()
+    {
+      return getTopLevelBlockOwner().getTypeModel();  
+    }
   
         
     public abstract Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap();
@@ -47,12 +52,12 @@ public abstract class JavaFormalParameterModel implements JavaVariableModel
     
     public Term getAttribute(String name) throws TermWareException
     {
-      return getOwner().getChildAttributes(getName()).getAttribute(name);  
+      return getTopLevelBlockOwner().getChildAttributes(getName()).getAttribute(name);  
     }
     
     public void setAttribute(String name, Term value) throws TermWareException
     {
-      getOwner().getChildAttributes(getName()).setAttribute(name,value);
+      getTopLevelBlockOwner().getChildAttributes(getName()).setAttribute(name,value);
     }
     
     public AttributedEntity  getChildAttributes(String childName) 

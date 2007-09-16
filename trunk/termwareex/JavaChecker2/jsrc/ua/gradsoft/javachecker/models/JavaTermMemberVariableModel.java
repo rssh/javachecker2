@@ -57,7 +57,7 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
     public JavaTypeModel  getOwner()
     { return owner_; }
     
-    public JavaTypeModel  getTypeModel() throws TermWareException, EntityNotFoundException
+    public JavaTypeModel  getType() throws TermWareException, EntityNotFoundException
     { 
       try {  
         return JavaResolver.resolveTypeToModel(type_,owner_); 
@@ -68,9 +68,13 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
       }
     }
         
-    public JavaTermModifiersModel  getModifiersModel()
+    public JavaTermModifiersModel  getModifiers()
     { return modifiersModel_; }
-    
+   
+    public JavaTypeModel getOwnerType()
+    {
+        return owner_;
+    }
    
     public Term getVariableDeclaratorTerm()
     { return variableDeclarator_; }
@@ -100,7 +104,7 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
     public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
         Term modifiersModelTerm = modifiersModel_.getModelTerm();
-        JavaTypeModel tm = getTypeModel();
+        JavaTypeModel tm = getType();
         Term ttm= TermUtils.createJTerm(tm);
         Term typeRef = TermUtils.createTerm("TypeRef",type_,ttm);
         Term identifierTerm = variableDeclarator_.getSubtermAt(0).getSubtermAt(0);

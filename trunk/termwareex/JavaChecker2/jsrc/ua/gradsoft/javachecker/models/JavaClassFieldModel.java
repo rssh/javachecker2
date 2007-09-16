@@ -37,16 +37,16 @@ public class JavaClassFieldModel extends JavaMemberVariableModel {
         return field_.getName();
     }
     
-    public JavaModifiersModel getModifiersModel() {
+    public JavaModifiersModel getModifiers() {
         int jmodifiers=field_.getModifiers();
         return new JavaClassModifiersModel(JavaClassTypeModel.translateModifiers(jmodifiers));
     }
     
-    public JavaTypeModel getOwner() {
+    public JavaTypeModel getOwnerType() {
         return classTypeModel_;
     }
     
-    public JavaTypeModel getTypeModel() throws TermWareException {
+    public JavaTypeModel getType() throws TermWareException {
         Type fieldType = field_.getGenericType();
         return JavaClassTypeModel.createTypeModel(fieldType);
     }

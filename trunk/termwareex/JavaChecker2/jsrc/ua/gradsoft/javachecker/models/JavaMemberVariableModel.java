@@ -20,7 +20,7 @@ import ua.gradsoft.termware.TermWareException;
 public abstract class JavaMemberVariableModel implements JavaVariableModel
 {
     
-    public abstract JavaModifiersModel getModifiersModel();
+    public abstract JavaModifiersModel getModifiers();
 
     /**
      *@return name of member variable.
@@ -37,12 +37,12 @@ public abstract class JavaMemberVariableModel implements JavaVariableModel
     
     public Term  getAttribute(String name) throws TermWareException
     {
-        return getOwner().getAttributes().getFieldAttribute(getName(),name);
+        return getOwnerType().getAttributes().getFieldAttribute(getName(),name);
     }
     
     public void  setAttribute(String name,Term value) throws TermWareException
     {
-        getOwner().getAttributes().setFieldAttribute(getName(),name,value);
+        getOwnerType().getAttributes().setFieldAttribute(getName(),name,value);
     }
     
     public AttributedEntity  getChildAttributes(String childName)
@@ -50,9 +50,11 @@ public abstract class JavaMemberVariableModel implements JavaVariableModel
         return null;
     }
     
-    public abstract JavaTypeModel getTypeModel() throws TermWareException, EntityNotFoundException;
+    public abstract JavaTypeModel getType() throws TermWareException, EntityNotFoundException;
     
-    public abstract JavaTypeModel getOwner();
+    public abstract JavaTypeModel getOwnerType();
+    
+    public JavaTopLevelBlockOwnerModel getTopLevelBlockOwner() { return null; }
     
     public abstract boolean  isSupportInitializerExpression();
     

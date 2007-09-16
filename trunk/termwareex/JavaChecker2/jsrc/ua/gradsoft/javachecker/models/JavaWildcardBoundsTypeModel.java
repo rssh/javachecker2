@@ -91,7 +91,23 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
         return sb.toString();
     }
     
+    public String getErasedName()
+    {
+       return "Object"; 
+    }
+    
     public Term getShortNameAsTerm() throws TermWareException
+    {
+        return constructNameAsTerm(true);
+    }
+    
+    public Term getFullNameAsTerm() throws TermWareException
+    {
+        return constructNameAsTerm(false);
+    }
+    
+    
+    private Term constructNameAsTerm(boolean isShort) throws TermWareException
     {
         int arity=0;
         Term internalTerm=null;
@@ -109,11 +125,11 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
                 arity=0;
                 break;
         }
-        if (arity==2) {
-            Term boundTerm=boundTypeModel_.getShortNameAsTerm();
+        if (arity==2) {            
+            Term boundTerm=(isShort ? boundTypeModel_.getShortNameAsTerm() : boundTypeModel_.getFullNameAsTerm()) ;
             retval=TermUtils.createTerm("WildcardBounds",internalTerm,boundTerm);
         }else{
-            retval=TermUtils.createTerm("WildCardBounds");
+            retval=TermUtils.createTerm("WildcardBounds");
         }
         return retval;
     }

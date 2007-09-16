@@ -45,7 +45,7 @@ public class AnalyzedUnitRef {
         javaUnitModelRef_=new SoftReference<JavaUnitModel>(unitModel);
     }
     
-    JavaUnitModel getJavaUnitModel() throws TermWareException
+    public JavaUnitModel getJavaUnitModel() throws TermWareException
     {
       JavaUnitModel retval=javaUnitModelRef_.get();
       if (retval!=null) {

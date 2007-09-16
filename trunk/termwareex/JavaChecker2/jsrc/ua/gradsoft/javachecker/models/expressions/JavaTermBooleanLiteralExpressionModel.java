@@ -60,6 +60,11 @@ public class JavaTermBooleanLiteralExpressionModel  extends JavaTermExpressionMo
         return t_;
     }
     
+    public boolean isConstantExpression()
+    {
+        return true;
+    }
+    
     public String getString()
     { return t_.getSubtermAt(0).getString(); }
                         

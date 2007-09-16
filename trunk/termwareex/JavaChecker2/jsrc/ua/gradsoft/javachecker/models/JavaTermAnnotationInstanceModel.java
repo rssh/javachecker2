@@ -46,7 +46,7 @@ public class JavaTermAnnotationInstanceModel extends JavaAnnotationInstanceModel
                 case FIELD:
                 {
                     JavaMemberVariableModel mvm = (JavaMemberVariableModel)target_;
-                    annotationType_=JavaResolver.resolveTypeToModel(nameTerm_,mvm.getOwner());
+                    annotationType_=JavaResolver.resolveTypeToModel(nameTerm_,mvm.getOwnerType());
                 }
                 break;
                 case LOCAL_VARIABLE:
@@ -71,7 +71,7 @@ public class JavaTermAnnotationInstanceModel extends JavaAnnotationInstanceModel
                 case PARAMETER:
                 {
                     JavaTermFormalParameterModel fm = (JavaTermFormalParameterModel)target_;
-                    annotationType_=JavaResolver.resolveTypeToModel(nameTerm_,fm.getOwner().getTypeModel(),fm.getOwner().getTypeParameters());
+                    annotationType_=JavaResolver.resolveTypeToModel(nameTerm_,fm.getTopLevelBlockOwner().getTypeModel(),fm.getTopLevelBlockOwner().getTypeParameters());
                 }
                 break;
                 case TYPE:
@@ -212,7 +212,7 @@ public class JavaTermAnnotationInstanceModel extends JavaAnnotationInstanceModel
            case FIELD: 
            {
                JavaMemberVariableModel field = (JavaMemberVariableModel)target;
-               retval = field.getOwner();
+               retval = field.getOwnerType();
            }
            break;
            case LOCAL_VARIABLE:
@@ -235,7 +235,7 @@ public class JavaTermAnnotationInstanceModel extends JavaAnnotationInstanceModel
            case PARAMETER:
            {
                JavaTermFormalParameterModel fpm = (JavaTermFormalParameterModel)target;
-               retval = fpm.getOwner().getTypeModel();
+               retval = fpm.getTopLevelBlockOwner().getTypeModel();
            }
            break;
            case TYPE:

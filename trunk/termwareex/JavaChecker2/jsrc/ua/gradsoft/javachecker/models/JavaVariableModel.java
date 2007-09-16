@@ -30,12 +30,12 @@ public interface JavaVariableModel extends AttributedEntity
     /**
      *get type of variable
      */
-    public JavaTypeModel getTypeModel() throws TermWareException, EntityNotFoundException;
+    public JavaTypeModel getType() throws TermWareException, EntityNotFoundException;
     
     /**
      * return modifiers
      */
-    public JavaModifiersModel  getModifiersModel();
+    public JavaModifiersModel  getModifiers();
     
     
     /**
@@ -43,5 +43,16 @@ public interface JavaVariableModel extends AttributedEntity
      */
     public Map<String, JavaAnnotationInstanceModel>  getAnnotationsMap() throws TermWareException;
     
+    /**
+     * return type which own this variable.
+     *(i. e. class where one is defined)
+     */
+    public JavaTypeModel getOwnerType();
+    
+    /**
+     * return owner of top level block, where variablke is defined (constructor or method or initializer)
+     *if one exists, otherwise return null.
+     */
+    public JavaTopLevelBlockOwnerModel getTopLevelBlockOwner();
     
 }

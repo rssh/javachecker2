@@ -78,6 +78,9 @@ public class JavaTermCastExpressionModel extends JavaTermExpressionModel
         return retval;
     }
     
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    { return subExpression_.isConstantExpression(); }
+    
     private JavaTermExpressionModel subExpression_;
     private Term                    typeTerm_;
     private JavaTypeModel           resolvedType_;

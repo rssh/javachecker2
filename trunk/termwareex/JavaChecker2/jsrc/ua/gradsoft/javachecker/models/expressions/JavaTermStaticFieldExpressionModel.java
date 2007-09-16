@@ -11,6 +11,7 @@ import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaMemberVariableModel;
+import ua.gradsoft.javachecker.models.JavaModifiersModel;
 import ua.gradsoft.javachecker.models.JavaPlaceContext;
 import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
@@ -40,10 +41,26 @@ public class JavaTermStaticFieldExpressionModel extends JavaTermExpressionModel
     { return false; }
     
     public JavaTypeModel getType() throws TermWareException, EntityNotFoundException
-    { return memberVariable_.getTypeModel(); }
+    { return memberVariable_.getType(); }
     
     public List<JavaExpressionModel> getSubExpressions()
     { return Collections.emptyList(); }
+    
+    public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
+    {
+       JavaModifiersModel modifiers = memberVariable_.getModifiers();
+       if (!modifiers.isFinal()) {
+           return false;
+       }else{
+           JavaExpressionModel em = memberVariable_.getInitializerExpression();
+           if (em==null) {
+               return false;
+           }else{
+               return em.isConstantExpression();
+           }
+       }
+    }
+    
     
     /**
      * StaticFieldModel(typeRef,identifier,memberVariable,ctx)

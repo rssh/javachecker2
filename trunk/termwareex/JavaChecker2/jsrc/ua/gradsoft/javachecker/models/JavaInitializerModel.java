@@ -40,6 +40,11 @@ public abstract class JavaInitializerModel implements JavaTopLevelBlockOwnerMode
     {
       out.print("{initializer}");  
     }
+
+    public void printErasedSignature(PrintWriter out)
+    {
+      out.print("{initializer}");  
+    }
     
     
     public Term  getAttribute(String name) throws TermWareException
@@ -53,6 +58,8 @@ public abstract class JavaInitializerModel implements JavaTopLevelBlockOwnerMode
     }
     
     public String getName()  { return "__Initializer"; }
+    
+    
     
     /**
      *@return child attributes.

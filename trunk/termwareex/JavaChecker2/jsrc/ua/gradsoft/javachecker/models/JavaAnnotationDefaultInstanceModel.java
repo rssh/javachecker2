@@ -10,6 +10,7 @@ package ua.gradsoft.javachecker.models;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
@@ -25,7 +26,7 @@ public class JavaAnnotationDefaultInstanceModel extends JavaAnnotationInstanceMo
     /**
      * Creates a new instance of JavaAnnotationDefaultInstanceModel
      */
-    public JavaAnnotationDefaultInstanceModel(JavaTypeModel annotationType) throws TermWareException
+    public JavaAnnotationDefaultInstanceModel(JavaTypeModel annotationType) throws TermWareException, EntityNotFoundException
     {
         super(JavaAnnotationDefaultInstanceModelHelper.mapAnnotationElementType(annotationType),null);
         annotationType_=annotationType;
@@ -66,6 +67,8 @@ public class JavaAnnotationDefaultInstanceModel extends JavaAnnotationInstanceMo
                           elements_.put(m.getName(),m.getDefaultValue());
                         }catch(NotSupportedException ex){
                             throw new AssertException("get default value for method "+m.getName()+" in "+annotationType_.getFullName()+" must be supported");
+                        }catch(EntityNotFoundException ex){
+                            throw new AssertException("exception during getting annotation default value",ex);
                         }
                     }
                 }
