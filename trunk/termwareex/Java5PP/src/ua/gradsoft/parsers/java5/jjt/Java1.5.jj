@@ -153,24 +153,55 @@ public class JJTJavaParser/*@bgen(jjtree)*/implements JJTJavaParserTreeConstants
    return TermWare.getInstance().getTermFactory().createString(x);
   }
 
-  Term createIntegerOrLong(String x)
+  Term createIntegerOrLong(String x) throws ParseException
   {
-   Term retval=null;
-   if (x.endsWith("L")||x.endsWith("l")) {
-      retval=TermWare.getInstance().getTermFactory().createLong(Long.parseLong(x.substring(0, x.length()-1)));
-   }else{
-      retval=TermWare.getInstance().getTermFactory().createInt(Integer.parseInt(x));
+   try {
+     Term retval=null;
+     if (x.endsWith("L")||x.endsWith("l")) {
+         try {
+           retval=TermWare.getInstance().getTermFactory().createLong(Long.decode(x.substring(0, x.length()-1)));
+         }catch(NumberFormatException ex){
+           // it can be just too big, becouse literals can be unsigned, while decode does not handle unsogned,
+           //  bigger then MAX
+           // Here we will handle one case, which exists in JDK sources. (java/lang/Long.java)
+           if (x.length()>2) {
+             char last=x.charAt(x.length()-2);
+             long l = Long.decode(x.substring(0,x.length()-2));
+             char x0 = x.charAt(0);
+             char x1 = x.charAt(1);
+             if (x0=='0') {
+               if (x1=='x'||x1=='X') {
+                 // hex
+                 int l1=Character.digit(last,16);
+                 l=((l<<8)+l1);
+               }else{
+                 // oct
+                 int l1=Character.digit(last,8);
+                 l=((l<<4)+l1);
+               }
+             }
+             retval=TermWare.getInstance().getTermFactory().createLong(l);
+           }else{
+             throw ex;
+           }
+         }
+     }else{            
+         long l = Long.decode(x);
+         retval=TermWare.getInstance().getTermFactory().createInt((int)l);
+     }
+     return retval;
+   }catch(NumberFormatException ex){
+      throw new ParseException("Can't read IntegerLiteral "+ex.getMessage()+"(s="+x+") "+" in file "+inFname);
    }
-   return retval;
   }
 
   Term createDoubleOrFloat(String x)
   {
    Term retval=null;
    if (x.endsWith("F")||x.endsWith("f")) {
-      retval=TermWare.getInstance().getTermFactory().createFloat(Float.parseFloat(x.substring(0, x.length()-1)));
+      retval=TermWare.getInstance().getTermFactory().createFloat(Float.valueOf(x.substring(0, x.length()-1)));
    }else{
-      retval=TermWare.getInstance().getTermFactory().createDouble(Double.parseDouble(x));
+      retval=TermWare.getInstance().getTermFactory().createDouble(Double.valueOf(x));
    }
    return retval;
   }
