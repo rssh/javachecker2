@@ -52,6 +52,9 @@ public class JavaTermEnumAnonimousTypeModel extends JavaTermTypeAbstractModel
         return true;
     }
     
+    public boolean isAnonimous()
+    { return true; }
+    
     
     public JavaTermEnumAnonimousTypeModel(String constantName,Term body,JavaTermEnumModel owner) throws TermWareException
     {

@@ -94,6 +94,10 @@ public class JavaTypeArgumentBoundMethodModel extends JavaMethodModel implements
     public JavaExpressionModel  getDefaultValue() throws NotSupportedException, TermWareException, EntityNotFoundException
     { return origin_.getDefaultValue(); }
     
+    public boolean isSynthetic() throws TermWareException
+    { return origin_.isSynthetic(); }
+    
+    
     public JavaMethodModel  getOrigin()
     { return origin_; }
     

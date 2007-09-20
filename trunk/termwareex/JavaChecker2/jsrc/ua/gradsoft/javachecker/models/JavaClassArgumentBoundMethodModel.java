@@ -95,6 +95,9 @@ public class JavaClassArgumentBoundMethodModel extends JavaMethodModel implement
     {
      return origin_.getAnnotationsMap();
     }
+    
+    public boolean isSynthetic() throws TermWareException
+    { return origin_.isSynthetic(); }
         
     public  boolean isSupportBlockModel()
     {

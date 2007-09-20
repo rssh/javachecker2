@@ -19,6 +19,7 @@ import ua.gradsoft.javachecker.models.JavaPrimitiveTypeModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.parsers.java5.ParserHelper;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -60,20 +61,16 @@ public class JavaTermCharacterLiteralExpressionModel extends JavaTermExpressionM
     { return getTerm(); }
     
     public String getString()
-    { return t_.getSubtermAt(0).getString(); }
+    { return ParserHelper.codeCharLiteral(t_.getSubtermAt(0).getChar()); }
                 
     public Object getConstant() throws TermWareException
     {
-        return evalCharacterLiteral(getString());
+      return t_.getSubtermAt(0).getChar();
     }
     
     public boolean isConstantExpression()
     { return true; }
     
-    static char evalCharacterLiteral(String s) throws TermWareException
-    {      
-      return JavaTermStringLiteralExpressionModel.evalStringLiteral(s,'\'',"Character").charAt(0);
-    }
               
       
     

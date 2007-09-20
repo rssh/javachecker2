@@ -103,7 +103,7 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
             enumConstantsList = TermUtils.createTerm("cons",enumConstantModelTerm,enumConstantsList);
         }
         enumConstantsList = TermUtils.reverseListTerm(enumConstantsList);
-        Term membersList = getMemberModelsList();
+        Term membersList = getOtherMemberModelsList();
         JavaPlaceContext ctx = JavaPlaceContextFactory.createNewTypeContext(this);
         Term tctx=TermUtils.createJTerm(ctx);
         return TermUtils.createTerm("EnumModel",modifiersTerm,
@@ -111,6 +111,47 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
                 enumConstantsList, membersList,tctx
                 );
     }
+    
+    private Term getOtherMemberModelsList() throws TermWareException, EntityNotFoundException
+    {
+       Term retval=TermUtils.createNil();       
+       if (initializers_!=null) {
+          for(JavaInitializerModel x: initializers_) {
+              retval=TermUtils.createTerm("cons",x.getModelTerm(),retval);
+          }          
+       }   
+       if (constructors_!=null) {
+           for(JavaConstructorModel x: constructors_) {
+               retval=TermUtils.createTerm("cons",x.getModelTerm(),retval);
+           }
+       }
+       if (methodModels_!=null) {
+           for(Map.Entry<String,List<JavaMethodModel>> e: methodModels_.entrySet()) {
+               for(JavaMethodModel x: e.getValue()) {
+                   retval=TermUtils.createTerm("cons",x.getModelTerm(),retval);
+               }
+           }
+       }
+       if (fieldModels_!=null) {
+           for(Map.Entry<String, JavaMemberVariableModel> e:fieldModels_.entrySet()) {
+               JavaMemberVariableModel x = e.getValue();
+               if (! (x instanceof JavaEnumConstantModel)) {
+                  retval=TermUtils.createTerm("cons",x.getModelTerm(),retval);
+               }
+           }
+       }
+       if (nestedTypes_!=null) {
+           for(Map.Entry<String,JavaTypeModel> e: nestedTypes_.entrySet()) {
+              JavaTypeModel x = e.getValue();
+              if (!x.isAnonimous() && !x.isLocal()) {
+                  retval=TermUtils.createTerm("cons",x.getModelTerm(),retval);
+              }
+           }
+       }
+       retval=TermUtils.reverseListTerm(retval);
+       return retval;
+    }
+
     
     private void build(Term t) throws TermWareException {
         //System.out.println("JavaTermEnumModel::build:"+TermHelper.termToString(t));
@@ -233,6 +274,9 @@ public final class ValuesMethodModel extends JavaMethodModel
     public JavaExpressionModel  getDefaultValue() throws NotSupportedException
     { throw new NotSupportedException(); }
     
+    public boolean isSynthetic()
+    { return true; }
+    
     /**
      * MethodModel(modifiers,typeParameters,ResultType,name,formalParameters,throws,block,context)
      */
@@ -244,7 +288,7 @@ public final class ValuesMethodModel extends JavaMethodModel
       Term rt = TermUtils.createTerm("TypeRef",rtm.getShortNameAsTerm(),TermUtils.createJTerm(rtm));
       Term identifier = TermUtils.createIdentifier(getName());
       Term ofp = TermUtils.createNil();
-      Term fp = ofp; /*buildFormalParametersModelTerm(formalParametersMap_,ofp);*/
+      Term fp = TermUtils.createTerm("FormalParameters",ofp);
       Term tht = TermUtils.createNil();
       Term blockModelTerm = TermUtils.createNil();
       JavaPlaceContext ctx = JavaPlaceContextFactory.createNewMethodContext(this);
@@ -316,6 +360,8 @@ public final class ValueOfMethodModel extends JavaMethodModel
     public JavaExpressionModel  getDefaultValue() throws NotSupportedException
     { throw new NotSupportedException(); }
     
+    public boolean isSynthetic()
+    { return true; }
     
     /**
      * MethodModel(modifiers,typeParameters,ResultType,name,formalParameters,throws,block,context)
@@ -328,13 +374,14 @@ public final class ValueOfMethodModel extends JavaMethodModel
       Term rt = TermUtils.createTerm("TypeRef",rtm.getShortNameAsTerm(),TermUtils.createJTerm(rtm));
       Term identifier = TermUtils.createIdentifier(getName());
       Term vid = TermUtils.createIdentifier("name");
-      vid = TermUtils.createTerm("cons",vid,TermUtils.createNil());
-      vid = TermUtils.createTerm("VariableDeclaratorId",vid);
-      Term cls = TermUtils.createNil();
-      Term cls1 = TermUtils.createTerm("Identifier",TermUtils.createString("String"));
-      cls = TermUtils.createTerm("cons",cls1,cls);
-      cls = TermUtils.createTerm("ClassOrInterfaceDeclaration",cls);
-      Term fp0 = TermUtils.createTerm("FormalParameter",TermUtils.createInt(0),cls,vid);
+      //vid = TermUtils.createTerm("cons",vid,TermUtils.createNil());
+      vid = TermUtils.createTerm("VariableDeclaratorId",vid,TermUtils.createInt(0));
+      //Term cls = TermUtils.createNil();
+      Term cls = TermUtils.createTerm("Identifier",TermUtils.createString("String"));
+      //cls = TermUtils.createTerm("cons",cls1,cls);
+      //cls = TermUtils.createTerm("ClassOrInterfaceDeclaration",cls);
+      Term fpm = TermUtils.createTerm("Modifiers",TermUtils.createInt(0),TermUtils.createNil());
+      Term fp0 = TermUtils.createTerm("FormalParameter",fpm,cls,vid);
       Term ofp = TermUtils.createTerm("cons",fp0,TermUtils.createNil());
       Term fp = TermUtils.createTerm("FormalParameters",ofp);
       Term tht = TermUtils.createNil();

@@ -139,6 +139,8 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
        throw new NotSupportedException();
     }
     
+    public boolean isSynthetic()
+    { return false; }
     
     public boolean isSupportBlockModel()
     { return true; }

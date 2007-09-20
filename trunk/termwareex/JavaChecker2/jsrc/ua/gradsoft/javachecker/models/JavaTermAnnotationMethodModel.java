@@ -82,6 +82,8 @@ public class JavaTermAnnotationMethodModel extends JavaMethodModel
     public JavaTopLevelBlockModel getTopLevelBlockModel()
     {  return null; }
  
+    public boolean isSynthetic()
+    { return false; }
     
     /**
      * AnnotationFieldModel(modifiers,name,type,defaultValue, context)

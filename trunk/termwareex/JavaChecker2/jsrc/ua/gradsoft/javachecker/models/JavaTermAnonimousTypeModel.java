@@ -90,9 +90,16 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
         
     private void fillModels() throws TermWareException
     {
-    
-      Term classOrInterfaceBody = t_.getSubtermAt(CLASS_OR_INTEFACE_BODY_TERM_INDEX);
-      Term membersList = classOrInterfaceBody.getSubtermAt(0);
+
+      Term classOrInterfaceBody=null;
+      Term membersList=null;
+
+      try {  
+        classOrInterfaceBody = t_.getSubtermAt(CLASS_OR_INTEFACE_BODY_TERM_INDEX);
+        membersList = classOrInterfaceBody.getSubtermAt(0);
+      }catch(Exception ex){
+          throw new AssertException("exception: t_="+TermHelper.termToString(t_),ex);
+      }
       
        while(!membersList.isNil()) {
             if (membersList.getName().equals("cons")) {
@@ -214,8 +221,7 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
         Term tctx=TermUtils.createJTerm(ctx);
         return TermUtils.createTerm("AnonimousClassModel",idTerm,superTerm,membersList,tctx);
     }
-
-    private String name_;    
+    
     private int     anonimousIndexInParent_;        
     //private JavaTermStatementModel statement_;
     private boolean supersAreInitialized_=false;

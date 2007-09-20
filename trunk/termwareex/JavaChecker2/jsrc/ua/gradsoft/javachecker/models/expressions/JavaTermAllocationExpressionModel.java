@@ -20,6 +20,7 @@ import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaExpressionModelHelper;
 import ua.gradsoft.javachecker.models.JavaPlaceContext;
 import ua.gradsoft.javachecker.models.JavaResolver;
+import ua.gradsoft.javachecker.models.JavaTermAnonimousTypeModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
@@ -37,7 +38,7 @@ public class JavaTermAllocationExpressionModel extends JavaTermExpressionModel
     public JavaTermAllocationExpressionModel(Term t,JavaTermStatementModel st,JavaTypeModel enclosedType) throws TermWareException
     {
        super(t,st,enclosedType);       
-       typeTerm_=t.getSubtermAt(0);       
+       typeOrAnonimousSuperTerm_=t.getSubtermAt(0);       
        typeArgumentsTerm_ = t.getSubtermAt(1);
        nReferences_=0;
        subExpressions_=new LinkedList<JavaExpressionModel>();
@@ -48,7 +49,14 @@ public class JavaTermAllocationExpressionModel extends JavaTermExpressionModel
        }else{
            getArrayDimsAndInits(arrayDimsAndInitsOrArgumentsTerm,st,enclosedType);
        }           
-       resolvedType_=null;
+       if (t.getArity() > 3 && !t.getSubtermAt(3).isNil()) {           
+           JavaTermAnonimousTypeModel tm = new JavaTermAnonimousTypeModel(st,t);         
+           resolvedType_=tm;
+           // tm added to parent in constructor. 
+           
+       }else{
+          resolvedType_=null;
+       }
     }
     
     public JavaExpressionKind getKind()
@@ -69,7 +77,7 @@ public class JavaTermAllocationExpressionModel extends JavaTermExpressionModel
       if (resolvedType_==null) {       
           JavaPlaceContext ctx = createPlaceContext();
           try {
-            resolvedType_=JavaResolver.resolveTypeTerm(typeTerm_,ctx);
+            resolvedType_=JavaResolver.resolveTypeTerm(typeOrAnonimousSuperTerm_,ctx);
           }catch(EntityNotFoundException ex){
               ex.setFileAndLine(JUtils.getFileAndLine(t_));
               throw ex;
@@ -144,7 +152,7 @@ public class JavaTermAllocationExpressionModel extends JavaTermExpressionModel
     }
     
     private List<JavaExpressionModel> subExpressions_;
-    private Term                    typeTerm_;
+    private Term                    typeOrAnonimousSuperTerm_;
     private Term                    typeArgumentsTerm_;
     private int                     nReferences_=0;
     private JavaTypeModel           resolvedType_;

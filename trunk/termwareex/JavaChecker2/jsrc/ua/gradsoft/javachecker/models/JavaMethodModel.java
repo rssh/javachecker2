@@ -64,7 +64,15 @@ public abstract class JavaMethodModel implements JavaTopLevelBlockOwnerModel
      * get Map of annotation.
      */
     public abstract Map<String,JavaAnnotationInstanceModel> getAnnotationsMap() throws TermWareException;
-            
+    
+    
+    /**
+     * true for synthetic
+     */
+    public abstract boolean isSynthetic() throws TermWareException;
+    
+        
+    
     
     public void printSignature(PrintWriter out) 
     {

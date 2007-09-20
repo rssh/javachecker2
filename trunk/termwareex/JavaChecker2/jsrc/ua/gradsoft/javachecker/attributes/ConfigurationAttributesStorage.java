@@ -451,9 +451,11 @@ public class ConfigurationAttributesStorage {
                     throw new InvalidJavaTermException("String literal is required",tvalue);
                 }
                 String name = tname.getSubtermAt(0).getString();
-                name=JavaTermStringLiteralExpressionModel.evalStringLiteral(name);
+                //name=JavaTermStringLiteralExpressionModel.evalStringLiteral(name);
+                //TODO: erase comment out (now name is keeped is interpreted)
                 String value = tvalue.getSubtermAt(0).getString();
-                value=JavaTermStringLiteralExpressionModel.evalStringLiteral(value);
+                //value=JavaTermStringLiteralExpressionModel.evalStringLiteral(value);
+                //TODO: erase comment out (now inside StringlIteral is evaluated string).
                 Term obj = TermWare.getInstance().getTermFactory().createParsedTerm(value);
                 //LOG.info("put: "+name+","+TermHelper.termToString(obj));
                 attributes.getGeneralAttributes().put(name,obj);

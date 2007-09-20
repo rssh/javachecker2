@@ -95,6 +95,9 @@ public class JavaClassMethodModel extends JavaMethodModel implements JavaClassTo
       return method_.isVarArgs();   
     }
     
+    public boolean isSynthetic()
+    { return method_.isSynthetic(); }
+    
     public Type[] getClassFormalParameterTypes()
     { return method_.getGenericParameterTypes(); }
     
