@@ -3,6 +3,7 @@ package ua.gradsoft.parsers.java5.jjt;
 import java.io.*;
 import ua.gradsoft.termware.*;
 import ua.gradsoft.parsers.java5.JavaNode;
+import ua.gradsoft.parsers.java5.ParserHelper;
 
 public class JJTJavaParserTokenManager implements JJTJavaParserConstants
 {

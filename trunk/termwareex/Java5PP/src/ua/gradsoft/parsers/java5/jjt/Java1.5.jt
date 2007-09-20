@@ -41,6 +41,7 @@ package ua.gradsoft.parsers.java5.jjt;
 import java.io.*;
 import ua.gradsoft.termware.*;
 import ua.gradsoft.parsers.java5.JavaNode;
+import ua.gradsoft.parsers.java5.ParserHelper;
 
 /**
  * Grammar to parse Java version 1.5
@@ -145,6 +146,13 @@ public class JJTJavaParser
   {
    return TermWare.getInstance().getTermFactory().createInt(x);
   }
+
+  Term createChar(char x)
+  {
+   return TermWare.getInstance().getTermFactory().createChar(x);
+  }
+
+
 
   Term createString(String x)
   {
@@ -1653,9 +1661,13 @@ void CharacterLiteral():
 }
 {
   tk=<CHARACTER_LITERAL>  
-  {
-    setComment(jjtThis,tk);
-    jjtThis.addTerm(createString(tk.image),0); 
+  { 
+    try {
+      setComment(jjtThis,tk);
+      jjtThis.addTerm(createChar(ParserHelper.decodeCharLiteral(tk.image)),0); 
+    }catch(TermWareException ex){
+      throw new ParseException(ex.getMessage());
+    }
   }
 }
 
@@ -1680,8 +1692,12 @@ void StringLiteral():
 {
   tk=<STRING_LITERAL>  
   {
+   try {
     setComment(jjtThis,tk);
-    jjtThis.addTerm(createString(tk.image),0); 
+    jjtThis.addTerm(createString(ParserHelper.decodeStringLiteral(tk.image)),0); 
+   }catch(TermWareException ex){
+      throw new ParseException(ex.getMessage());
+   }
   }
 }
 

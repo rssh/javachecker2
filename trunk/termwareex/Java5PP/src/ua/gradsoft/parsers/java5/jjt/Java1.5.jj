@@ -40,6 +40,7 @@ package ua.gradsoft.parsers.java5.jjt;
 import java.io.*;
 import ua.gradsoft.termware.*;
 import ua.gradsoft.parsers.java5.JavaNode;
+import ua.gradsoft.parsers.java5.ParserHelper;
 
 /**
  * Grammar to parse Java version 1.5
@@ -147,6 +148,13 @@ public class JJTJavaParser/*@bgen(jjtree)*/implements JJTJavaParserTreeConstants
   {
    return TermWare.getInstance().getTermFactory().createInt(x);
   }
+
+  Term createChar(char x)
+  {
+   return TermWare.getInstance().getTermFactory().createChar(x);
+  }
+
+
 
   Term createString(String x)
   {
@@ -3940,9 +3948,13 @@ void CharacterLiteral():
     jjtc000 = false;
   }
 /*@egen*/  
-  {
-    setComment(jjtn000,tk);
-    jjtn000.addTerm(createString(tk.image),0); 
+  { 
+    try {
+      setComment(jjtn000,tk);
+      jjtn000.addTerm(createChar(ParserHelper.decodeCharLiteral(tk.image)),0); 
+    }catch(TermWareException ex){
+      throw new ParseException(ex.getMessage());
+    }
   }/*@bgen(jjtree)*/
   } finally {
     if (jjtc000) {
@@ -4001,8 +4013,12 @@ void StringLiteral():
   }
 /*@egen*/  
   {
+   try {
     setComment(jjtn000,tk);
-    jjtn000.addTerm(createString(tk.image),0); 
+    jjtn000.addTerm(createString(ParserHelper.decodeStringLiteral(tk.image)),0); 
+   }catch(TermWareException ex){
+      throw new ParseException(ex.getMessage());
+   }
   }/*@bgen(jjtree)*/
   } finally {
     if (jjtc000) {

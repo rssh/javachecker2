@@ -9,6 +9,7 @@
 package ua.gradsoft.printers.java5;
 
 import java.io.PrintWriter;
+import ua.gradsoft.parsers.java5.ParserHelper;
 import ua.gradsoft.parsers.java5.jjt.ModifierSet;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
@@ -615,6 +616,9 @@ public class JavaPrinter extends AbstractPrinter {
     }
     
     public void writeClassOrInterfaceDeclaration(Term t,int level) throws TermWareException {
+        if (t.getArity()<6) {
+           throw new AssertException("small arity for ClassOrInterfaceDeclaration:"+TermHelper.termToString(t));
+        }
         Term kind=t.getSubtermAt(0);
         Term name=t.getSubtermAt(1);
         Term typeParameters=t.getSubtermAt(2);
@@ -812,8 +816,10 @@ public class JavaPrinter extends AbstractPrinter {
         writeTerm(t.getSubtermAt(0),level);
         if (t.getArity()==2) {
             if (!t.getSubtermAt(1).isNil()) {
-              out_.print("=");
-              writeTerm(t.getSubtermAt(1),level);
+              if (t.getSubtermAt(1).getArity()>0 && !t.getSubtermAt(1).getSubtermAt(0).isNil()) {  
+                out_.print("=");
+                writeTerm(t.getSubtermAt(1),level);
+              }
             }
         }
     }
@@ -866,17 +872,26 @@ public class JavaPrinter extends AbstractPrinter {
     
     public void writeFormalParameter(Term t, int level) throws TermWareException {
         Term modifiersTerm = t.getSubtermAt(0);
-        int modifiers=modifiersTerm.getSubtermAt(0).getInt();
+        if (modifiersTerm.getArity()<1 ||
+           !modifiersTerm.getSubtermAt(0).isInt()) {
+          writeTerm(modifiersTerm,level);
+          out_.print(" ");
+          writeTerm(t.getSubtermAt(1),level);
+          out_.print(" ");
+          writeTerm(t.getSubtermAt(2),level);
+        }else{
+          int modifiers=modifiersTerm.getSubtermAt(0).getInt();
 //!!TODO: annotations
-        if ((modifiers & ModifierSet.FINAL) != 0) {
+          if ((modifiers & ModifierSet.FINAL) != 0) {
             out_.print("final ");
-        }
-        writeTerm(t.getSubtermAt(1),level);
-        out_.print(' ');
-        if ((modifiers & ModifierSet.VARARGS) != 0) {
+          }        
+          writeTerm(t.getSubtermAt(1),level);
+          out_.print(' ');
+          if ((modifiers & ModifierSet.VARARGS) != 0) {
             out_.print("... ");
+          }
+          writeTerm(t.getSubtermAt(2),level);
         }
-        writeTerm(t.getSubtermAt(2),level);
     }
     
     
@@ -1095,7 +1110,11 @@ public class JavaPrinter extends AbstractPrinter {
         }
         if (t.getArity()==3) {
             writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.EXPRESSION_PRIORITY);
-            writeTerm(t.getSubtermAt(1),level,ExpressionPriorities.EXPRESSION_PRIORITY);
+            if (t.getSubtermAt(1).isString()) {
+               out_.print(t.getSubtermAt(1).getString());
+            }else{
+               writeTerm(t.getSubtermAt(1),level,ExpressionPriorities.EXPRESSION_PRIORITY); 
+            }
             writeTerm(t.getSubtermAt(2),level,ExpressionPriorities.EXPRESSION_PRIORITY);
         }else if (t.getArity()==1) {
             writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.EXPRESSION_PRIORITY);
@@ -1516,7 +1535,7 @@ public class JavaPrinter extends AbstractPrinter {
     public void writeStringLiteral(Term t, int level) throws TermWareException {
         Term ct=t.getSubtermAt(0);
         if (ct.isString()) {
-            out_.print(ct.getString());
+            out_.print(ParserHelper.codeStringLiteral(ct.getString()));
         }else{
             writeTerm(ct,level);
         }
@@ -1524,8 +1543,8 @@ public class JavaPrinter extends AbstractPrinter {
     
     public void writeCharacterLiteral(Term t, int level) throws TermWareException {
         Term ct=t.getSubtermAt(0);
-        if (ct.isString()) {
-            out_.print(ct.getString());
+        if (ct.isChar()) {
+            out_.print(ParserHelper.codeCharLiteral(ct.getChar()));            
         }else{
             writeTerm(ct,level);
         }
@@ -1793,7 +1812,10 @@ public class JavaPrinter extends AbstractPrinter {
             out_.print(" ");
         }        
         if (t.getArity() > 2) {
-            writeTerm(t.getSubtermAt(2),level);
+            Term body = t.getSubtermAt(2);
+            if (!body.isNil()) {
+              writeTerm(body,level);
+            }
         }
     }
     
