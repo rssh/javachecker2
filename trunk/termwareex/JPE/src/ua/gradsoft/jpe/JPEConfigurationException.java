@@ -1,9 +1,8 @@
 /*
  * JPEConfigurationException.java
  *
- * Created on понеділок, 1, січня 2007, 23:47
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006 - 2007 GradSoft  Ukraine
  * All Rights Reserved
  */
 

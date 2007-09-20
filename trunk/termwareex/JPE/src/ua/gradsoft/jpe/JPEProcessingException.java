@@ -1,7 +1,6 @@
 /*
  * JPEProcessingException.java
  *
- * Created on вівторок, 2, січня 2007, 3:12
  *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved

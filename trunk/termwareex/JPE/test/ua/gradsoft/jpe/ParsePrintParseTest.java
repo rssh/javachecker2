@@ -1,9 +1,9 @@
 /*
  * ParsePrintParseTest.java
  *
- * Created on четвер, 18, січня 2007, 16:34
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006, 2007 GradSoft  Ukraine
+ * http://www.gradsoft.ua
  * All Rights Reserved
  */
 
@@ -100,6 +100,70 @@ public class ParsePrintParseTest extends TestCase
         main.init(configuration);
         main.run();
         int nReadedFiles = checkAllSourcesAreParsed("output/id-example5");
+        assertTrue("all files are read",nReadedFiles>0);        
+    }
+    
+    public void testExample1_JPE1_t() throws Exception
+    {
+        Configuration configuration = new Configuration();
+        configuration.setJPEHome(".");
+        configuration.setInputDir("testdata/example1");
+        configuration.setOutputDir("output/jpe-example1-t");
+        configuration.getCompileTimeProperties().put("DEBUG","true");
+        configuration.setTransformationName("JPE");
+        configuration.setCreateOutputDir(true);
+        Main main = new Main();
+        main.init(configuration);
+        main.run();
+        int nReadedFiles = checkAllSourcesAreParsed("output/jpe-example1-t");
+        assertTrue("all files are read",nReadedFiles>0);        
+    }
+    
+    public void testExample1_JPE1_f() throws Exception
+    {
+        Configuration configuration = new Configuration();
+        configuration.setJPEHome(".");
+        configuration.setInputDir("testdata/example1");
+        configuration.setOutputDir("output/jpe-example1-f");
+        configuration.getCompileTimeProperties().put("DEBUG","false");
+        configuration.setTransformationName("JPE");
+        configuration.setCreateOutputDir(true);
+        Main main = new Main();
+        main.init(configuration);
+        main.run();
+        int nReadedFiles = checkAllSourcesAreParsed("output/jpe-example1-f");
+        assertTrue("all files are read",nReadedFiles>0);        
+    }
+    
+    public void testExample6_JPE1_1() throws Exception
+    {
+        Configuration configuration = new Configuration();
+        configuration.setJPEHome(".");
+        configuration.setInputDir("testdata/example6");
+        configuration.setOutputDir("output/jpe-example6-1");
+        configuration.getCompileTimeProperties().put("q1","1");
+        configuration.setTransformationName("JPE");
+        configuration.setCreateOutputDir(true);
+        Main main = new Main();
+        main.init(configuration);
+        main.run();
+        int nReadedFiles = checkAllSourcesAreParsed("output/jpe-example6-1");
+        assertTrue("all files are read",nReadedFiles>0);        
+    }
+    
+    public void testExample7_JPE1_1() throws Exception
+    {
+        Configuration configuration = new Configuration();
+        configuration.setJPEHome(".");
+        configuration.setInputDir("testdata/example7");
+        configuration.setOutputDir("output/jpe-example7-1");
+        configuration.getCompileTimeProperties().put("q1","1");
+        configuration.setTransformationName("JPE");
+        configuration.setCreateOutputDir(true);
+        Main main = new Main();
+        main.init(configuration);
+        main.run();
+        int nReadedFiles = checkAllSourcesAreParsed("output/jpe-example7-1");
         assertTrue("all files are read",nReadedFiles>0);        
     }
     

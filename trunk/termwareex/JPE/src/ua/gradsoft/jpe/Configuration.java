@@ -1,7 +1,6 @@
 /*
  * Configuration.java
  *
- * Created on понеділок, 1, січня 2007, 23:36
  *
  * Copyright (c) 2006-2007 GradSoft  Ukraine
  * All Rights Reserved
@@ -12,6 +11,9 @@ package ua.gradsoft.jpe;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  *Class which store JPE Configuration.
@@ -28,6 +30,12 @@ public class Configuration implements Serializable {
                 }
                 inputDir_=args[i+1];
                 ++i;
+            }else if(args[i].equals("--include-dir")) {
+                if (i==args.length-1) {
+                    throw new JPEConfigurationException("option --input-dir must have argument");
+                }
+                includeDirs_.add(args[i+1]);
+                ++i;                
             }else if(args[i].equals("--output-dir")) {
                 if (i==args.length-1) {
                     throw new JPEConfigurationException("option --output-dir must have argument");
@@ -153,13 +161,34 @@ public class Configuration implements Serializable {
        createOutputDir_=createOutputDir; 
     }
     
+    public void addIncludeDir(String includeDir)
+    {
+        includeDirs_.add(includeDir);
+    }
+    
+    public List<String>  getIncludeDirs()
+    {
+        return includeDirs_;
+    }
+    
+    public void  setIncludeDirs(List<String> includeDirs)
+    {
+        includeDirs_=includeDirs;
+    }
+    
+    public Map<String,String>  getCompileTimeProperties()
+    {
+       return compileTimeProperties_; 
+    }
+    
     private boolean dump_=false;
-    private boolean createOutputDir_=false;
+    private boolean createOutputDir_=false;    
     private String inputDir_=null;
     private String outputDir_=null;
+    private List<String>  includeDirs_=new LinkedList<String>();
     private String compileTimeClass_=null;
     private String jpeHome_=null;
     private String transformationName_="JPE";
-    private HashMap compileTimeProperties_=new HashMap();
+    private HashMap<String,String> compileTimeProperties_=new HashMap<String,String>();
     
 }
