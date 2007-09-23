@@ -302,6 +302,8 @@ public class JavaPrinter extends AbstractPrinter {
             writeClassLiteral(t,level);
         }else if (t.getName().equals("ArrayIndex")){
             writeArrayIndex(t,level);
+        }else if (t.getName().equals("ThisPrefix")){
+            writeThisPrefix(t,level);
         }else{
             // yet not implemented or not java.
             t.print(out_);
@@ -815,11 +817,20 @@ public class JavaPrinter extends AbstractPrinter {
     public void writeVariableDeclarator(Term t, int level)  throws TermWareException {        
         writeTerm(t.getSubtermAt(0),level);
         if (t.getArity()==2) {
-            if (!t.getSubtermAt(1).isNil()) {
-              if (t.getSubtermAt(1).getArity()>0 && !t.getSubtermAt(1).getSubtermAt(0).isNil()) {  
+            Term initializer = t.getSubtermAt(1);
+            boolean toPrint=true;
+            if (!initializer.isNil()) {
+                if (initializer.getName().equals("VariableInitializer")) {
+                    if (initializer.getSubtermAt(0).isNil()) {
+                        toPrint=false;
+                    }
+                }
+            }else{
+                toPrint=false;
+            }
+            if (toPrint) {                
                 out_.print("=");
-                writeTerm(t.getSubtermAt(1),level);
-              }
+                writeTerm(initializer,level);
             }
         }
     }
@@ -906,8 +917,10 @@ public class JavaPrinter extends AbstractPrinter {
     public  void writeReturnStatement(Term t, int level) throws TermWareException {
         out_.print("return");
         if (t.getArity()>0) {
-            out_.print(' ');
-            writeTerm(t.getSubtermAt(0),level);
+            if (!t.getSubtermAt(0).isNil()) {
+              out_.print(' ');
+              writeTerm(t.getSubtermAt(0),level);
+            }
         }
         out_.print(";");
     }
@@ -1087,8 +1100,10 @@ public class JavaPrinter extends AbstractPrinter {
         writeTerm(t.getSubtermAt(0),level);
         writeTerm(t.getSubtermAt(1),level);
         if (t.getArity() > 2) {
-            out_.print("finally ");
-            writeTerm(t.getSubtermAt(2),level);
+            if (!t.getSubtermAt(2).isNil()) {
+              out_.print("finally ");
+              writeTerm(t.getSubtermAt(2),level);
+            }
         }
     }
     
@@ -1188,7 +1203,7 @@ public class JavaPrinter extends AbstractPrinter {
         writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.CONDITIONAL_OR_EXPRESSION_PRIORITY);
         if (t.getArity()>1) {
             out_.print("||");
-            writeList(t.getSubtermAt(1),"||",level,ExpressionPriorities.CONDITIONAL_OR_EXPRESSION_PRIORITY);
+            writeTerm(t.getSubtermAt(1),level,ExpressionPriorities.CONDITIONAL_OR_EXPRESSION_PRIORITY);
         }
         if (topPriority > ExpressionPriorities.CONDITIONAL_OR_EXPRESSION_PRIORITY) {
             out_.print(")");
@@ -1202,7 +1217,7 @@ public class JavaPrinter extends AbstractPrinter {
         writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.CONDITIONAL_AND_EXPRESSION_PRIORITY);
         if (t.getArity()>1) {
             out_.print("&&");
-            writeList(t.getSubtermAt(1),"&&",level,ExpressionPriorities.CONDITIONAL_AND_EXPRESSION_PRIORITY);
+            writeTerm(t.getSubtermAt(1),level,ExpressionPriorities.CONDITIONAL_AND_EXPRESSION_PRIORITY);
         }
         if (topPriority > ExpressionPriorities.CONDITIONAL_AND_EXPRESSION_PRIORITY) {
             out_.print(")");
@@ -1216,7 +1231,7 @@ public class JavaPrinter extends AbstractPrinter {
         writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.INCLUSIVE_OR_EXPRESSION_PRIORITY);
         if (t.getArity()>1) {
             out_.print("|");
-            writeList(t.getSubtermAt(1),"|",level,ExpressionPriorities.INCLUSIVE_OR_EXPRESSION_PRIORITY);
+            writeTerm(t.getSubtermAt(1),level,ExpressionPriorities.INCLUSIVE_OR_EXPRESSION_PRIORITY);
         }
         if (topPriority > ExpressionPriorities.INCLUSIVE_OR_EXPRESSION_PRIORITY) {
             out_.print(")");
@@ -1230,7 +1245,7 @@ public class JavaPrinter extends AbstractPrinter {
         writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.EXCLUSIVE_OR_EXPRESSION_PRIORITY);
         if (t.getArity()>1) {
             out_.print("^");
-            writeList(t.getSubtermAt(1),"^",level,ExpressionPriorities.EXCLUSIVE_OR_EXPRESSION_PRIORITY);
+            writeTerm(t.getSubtermAt(1),level,ExpressionPriorities.EXCLUSIVE_OR_EXPRESSION_PRIORITY);
         }
         if (topPriority > ExpressionPriorities.EXCLUSIVE_OR_EXPRESSION_PRIORITY) {
             out_.print(")");
@@ -1244,7 +1259,7 @@ public class JavaPrinter extends AbstractPrinter {
         writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.AND_EXPRESSION_PRIORITY);
         if (t.getArity()>1) {
             out_.print("&");
-            writeList(t.getSubtermAt(1),"&",level,ExpressionPriorities.AND_EXPRESSION_PRIORITY);
+            writeTerm(t.getSubtermAt(1),level,ExpressionPriorities.AND_EXPRESSION_PRIORITY);
         }
         if (topPriority > ExpressionPriorities.AND_EXPRESSION_PRIORITY) {
             out_.print(")");
@@ -1453,7 +1468,7 @@ public class JavaPrinter extends AbstractPrinter {
     
     public void writePrimaryExpression(Term t, int level, int topPriority) throws TermWareException {
         boolean quoted=(topPriority > ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
-        if (quoted) { out_.print("("); }
+        if (quoted) { out_.print("("); }       
         writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
         if (t.getArity()==2) {
             writeList(t.getSubtermAt(1),"",level,ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
@@ -1700,8 +1715,12 @@ public class JavaPrinter extends AbstractPrinter {
     public void writeExplicitSuperConstructorInvocation(Term t, int level) throws TermWareException
     {        
         if (t.getArity()==2) {
-            writeTerm(t.getSubtermAt(0),level);
-            out_.print(".super");
+            if (!t.getSubtermAt(0).isNil()) {
+               writeTerm(t.getSubtermAt(0),level);
+               out_.print(".super");
+            }else{
+               out_.print("super"); 
+            }
             writeTerm(t.getSubtermAt(1),level);
             out_.print(";");
         }else if(t.getArity()==1) {        
@@ -1787,6 +1806,12 @@ public class JavaPrinter extends AbstractPrinter {
       writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.PRIMARY_EXPRESSION_PRIORITY);
       out_.print(".this");
     }
+
+    public void writeThisPrefix(Term t, int level) throws TermWareException
+    {    
+      out_.print("this");
+    }
+    
     
     public void writeSuper(Term t, int level) throws TermWareException
     {
