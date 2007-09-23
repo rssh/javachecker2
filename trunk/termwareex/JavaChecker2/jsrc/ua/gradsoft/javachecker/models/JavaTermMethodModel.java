@@ -120,6 +120,14 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
         return JavaTopLevelBlockOwnerModelHelper.buildTypeParameters(tpt,getTypeModel());
     }
     
+    public List<JavaTypeModel> getThrowsList() throws TermWareException, EntityNotFoundException
+    {
+        if (throwsList_==null) {
+            throwsList_ = JavaTopLevelBlockOwnerModelHelper.buildThrowsList(t_.getSubtermAt(THROWS_SPECIFICATION_INDEX),this);
+        }
+        return throwsList_;
+    }
+    
     public  Term  getMethodBody() throws TermWareException
     { return t_.getSubtermAt(BLOCK_INDEX); }
         
@@ -155,8 +163,8 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
       Term rt = TermUtils.createTerm("TypeRef",getResultTypeAsTerm(),TermUtils.createJTerm(getResultType()));
       Term identifier = t_.getSubtermAt(METHOD_DECLARATOR_INDEX).getSubtermAt(METHOD_DECLARATOR__IDENTIFIER_INDEX);
       Term ofp = t_.getSubtermAt(METHOD_DECLARATOR_INDEX).getSubtermAt(METHOD_DECLARATOR__FORMAL_PARAMETERS_INDEX);
-      Term fp = ofp; /*buildFormalParametersModelTerm(formalParametersMap_,ofp);*/
-      Term tht = t_.getSubtermAt(THROWS_SPECIFICATION_INDEX);
+      Term fp = TermUtils.buildFormalParametersModelTerm(getFormalParametersList(),ofp);
+      Term tht = TermUtils.buildThrowsNameListModelTerm(getThrowsList(),t_.getSubtermAt(THROWS_SPECIFICATION_INDEX));
       Term blockModelTerm = TermUtils.createNil();
       if (blockModel_!=null) {
           blockModelTerm=blockModel_.getModelTerm();
@@ -184,6 +192,7 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     // some cashed valuse
     private Map<String, JavaFormalParameterModel> formalParametersMap_=null;
     private List<JavaFormalParameterModel>       formalParametersList_=null;
+    private List<JavaTypeModel>                  throwsList_=null;
     
     public static final int TYPE_PARAMETERS_TERM_INDEX=0;
     public static final int RESULT_TYPE_TERM_INDEX=1;

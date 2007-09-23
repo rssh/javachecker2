@@ -90,6 +90,10 @@ public class JavaClassArgumentBoundMethodModel extends JavaMethodModel implement
      return formalParametersTypes_;
     }
     
+    public List<JavaTypeModel> getThrowsList() throws TermWareException, EntityNotFoundException
+    {
+        return getTypeArgumentBoundTypeModel().getSubstitution().substitute(origin_.getThrowsList());
+    }
     
     public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap() throws TermWareException
     {

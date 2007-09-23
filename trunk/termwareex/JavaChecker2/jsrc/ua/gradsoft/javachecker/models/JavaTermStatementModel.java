@@ -345,8 +345,22 @@ public class JavaTermStatementModel implements JavaStatementModel {
             case CATCH:
             {
                 Term fp = t_.getSubtermAt(0);
+                Term modifiers = fp.getSubtermAt(0);
+                Term typeTerm = fp.getSubtermAt(1);
+                Term vdid = fp.getSubtermAt(2);
+                Term identifier = vdid.getSubtermAt(0);
+                Term nReferences = vdid.getSubtermAt(1); // =0 : it is impossibe to cathc arrays.
+                Term typeRef = null;
+                try {
+                    JavaTypeModel tm = JavaResolver.resolveTypeTerm(typeTerm,ctx);
+                    typeRef = TermUtils.createTerm("TypeRef",typeTerm,TermUtils.createJTerm(tm));
+                }catch(EntityNotFoundException ex){
+                    ex.setFileAndLine(ctx.getFileAndLine());
+                    throw ex;
+                }
+                Term fpm = TermUtils.createTerm("FormalParameterModel",modifiers,typeRef,identifier,tctx);
                 Term blockModel = childs_.get(0).getModelTerm();
-                retval = TermUtils.createTerm("CatchModel",fp,blockModel,tctx);
+                retval = TermUtils.createTerm("CatchModel",fpm,blockModel,tctx);
             }
             break;
             case CATCH_SEQUENCE:
@@ -435,6 +449,7 @@ public class JavaTermStatementModel implements JavaStatementModel {
                             }
                             lvList=TermUtils.reverseListTerm(lvList);
                             initTerm=lvList;
+                            initTerm=TermUtils.createTerm("LocalVariableDeclarationModel",initTerm,tctx);
                         }else if(initTerm.getName().equals("StatementExpressionList")){
                             Term exprList = TermUtils.createNil();
                             Term l=initTerm.getSubtermAt(0);
@@ -446,6 +461,7 @@ public class JavaTermStatementModel implements JavaStatementModel {
                             }
                             exprList=TermUtils.reverseListTerm(exprList);
                             initTerm=exprList;
+                            initTerm=TermUtils.createTerm("StatementExpressionList",initTerm);
                         }else{
                             throw new InvalidJavaTermException("Invalid ForInit: LocalVariableDeclaration or StatementExpressionList expected",initTerm);
                         }
@@ -470,12 +486,20 @@ public class JavaTermStatementModel implements JavaStatementModel {
                         }
                         exprList=TermUtils.reverseListTerm(exprList);
                         incrExprTerm=exprList;
+                        incrExprTerm=TermUtils.createTerm("StatementExpressionList",incrExprTerm);
                     }
                     loopHead = TermUtils.createTerm("TraditionalForLoopHeadModel",initTerm,condExprTerm,incrExprTerm);
                 }else if(loopHead.getName().equals("ForEachLoopHead")) {
-                    // TODO:
-                    //  s/getSunbtermAt(0)/typeTerm ?
-                    loopHead = TermUtils.createTerm("ForEachLoopHeadModel",loopHead.getSubtermAt(0),loopHead.getSubtermAt(1),expressions_.get(0).getModelTerm());
+                    Term typeTerm = loopHead.getSubtermAt(0);
+                    Term typeRef = null;
+                    try {
+                        JavaTypeModel tm = JavaResolver.resolveTypeTerm(typeTerm,ctx);
+                        typeRef = TermUtils.createTerm("TypeRef",typeTerm,TermUtils.createJTerm(tm));
+                    }catch(EntityNotFoundException ex){
+                        ex.setFileAndLine(ctx.getFileAndLine());
+                        throw ex;
+                    }
+                    loopHead = TermUtils.createTerm("ForEachLoopHeadModel",typeRef,loopHead.getSubtermAt(1),expressions_.get(0).getModelTerm());
                 }else{
                     throw new AssertException("Invalid for loop head:"+TermHelper.termToString(loopHead));
                 }

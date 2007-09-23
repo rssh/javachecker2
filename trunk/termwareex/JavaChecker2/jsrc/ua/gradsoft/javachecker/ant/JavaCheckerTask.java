@@ -2,7 +2,7 @@
  * JavaCheckerTask.java
  *
  * Created 07/04/2004, 4:11
- * $Id: JavaCheckerTask.java,v 1.6 2007-09-16 15:11:29 rssh Exp $
+ * $Id: JavaCheckerTask.java,v 1.7 2007-09-23 17:58:02 rssh Exp $
  */
 
 package ua.gradsoft.javachecker.ant;
@@ -122,7 +122,6 @@ public class JavaCheckerTask extends Task {
     
     public void addConfiguredConfig(ConfigNVPair nvPair)
     {
-      System.err.println("addConfiguredConfig:"+nvPair.toString());  
       configNVPairs_.add(nvPair);  
     }
        
@@ -255,11 +254,8 @@ public class JavaCheckerTask extends Task {
           throw new BuildException("inputDirectory tag or input nested tag must be present in task");
       }
       
-      try {
-         main.getFacts().getPackagesStore().setJars(includeJars_);
-      }catch(ConfigException ex){
-          throw new BuildException(ex.getMessage(),ex);
-      }
+   
+      main.getFacts().getPackagesStore().setJars(includeJars_);
       
       try {
           main.process();

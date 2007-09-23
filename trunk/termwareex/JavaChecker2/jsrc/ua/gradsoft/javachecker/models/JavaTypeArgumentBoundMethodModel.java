@@ -51,13 +51,7 @@ public class JavaTypeArgumentBoundMethodModel extends JavaMethodModel implements
     
     public List<JavaFormalParameterModel>  getFormalParametersList() throws TermWareException, EntityNotFoundException
     {                
-      List<JavaFormalParameterModel> ol = origin_.getFormalParametersList();  
-      ArrayList<JavaFormalParameterModel> retval = new ArrayList<JavaFormalParameterModel>(ol.size());
-      for(JavaFormalParameterModel ofp: ol) {
-          JavaFormalParameterModel newModel = new JavaTypeSubstitutedFormalParameterModel(ofp,this);
-          retval.add(newModel);
-      }
-      return retval;
+        return JavaTypeArgumentBoundTopLevelBlockOwnerModelHelper.getFormalParametersList(this);
     }
     
     public Map<String, JavaFormalParameterModel>  getFormalParametersMap() throws TermWareException, EntityNotFoundException
@@ -69,6 +63,12 @@ public class JavaTypeArgumentBoundMethodModel extends JavaMethodModel implements
     {
       return substitution_.substitute(origin_.getFormalParametersTypes()); 
     }
+
+    public  List<JavaTypeModel> getThrowsList() throws TermWareException, EntityNotFoundException
+    {
+      return substitution_.substitute(origin_.getThrowsList()); 
+    }
+    
     
     public Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap() throws TermWareException
     { return origin_.getAnnotationsMap(); }

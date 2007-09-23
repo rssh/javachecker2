@@ -94,5 +94,10 @@ public abstract class JavaInitializerModel implements JavaTopLevelBlockOwnerMode
       return Collections.emptyMap();  
     }
 
+    /**
+     * initializers does not have throw specifications.
+     */
+    public List<JavaTypeModel> getThrowsList()
+    { return Collections.emptyList(); }
     
 }

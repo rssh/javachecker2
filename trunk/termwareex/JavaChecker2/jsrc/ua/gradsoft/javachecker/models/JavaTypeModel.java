@@ -47,7 +47,7 @@ public abstract class JavaTypeModel implements AttributedEntity
   { 
       if (isNested()) {
          try { 
-          return getEnclosedType().getFullName()+"."+getName();
+            return getEnclosedType().getFullName()+"."+getName();
          }catch(NotSupportedException ex){
              return packageModel_.getName()+"."+getName();
          }catch(TermWareException ex){

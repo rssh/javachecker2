@@ -133,6 +133,28 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
 
      CheckStatement(ForStatementModel(ForEachLoopHeadModel($type,$id,$expr),$statement,$ctx),$state) -> CheckStatement($statement,CheckExpression(NONE,$expr,$state)),
 
+     CheckStatement(
+       ForStatementModel(
+         TraditionalForLoopHeadModel(
+           LocalVariableDeclarationModel($init,$ctx),$condition,$incrementi
+         ),
+         $statement,
+         $ctx),
+       $state
+     ) -> CheckStatement($statement,
+             CheckExpression(NONE,$condition,CheckForInits($init,$state))),
+
+     CheckStatement(
+       ForStatementModel(
+         TraditionalForLoopHeadModel(
+          StatementExpressionList($init),$condition,$incrementi
+         ),
+         $statement,
+         $ctx),
+       $state
+     ) -> CheckStatement($statement,
+             CheckExpression(NONE,$condition,CheckExpressions($init,$state))),
+
      CheckStatement(ForStatementModel(TraditionalForLoopHeadModel($init,$condition,$increment),$statement,$ctx),$state) -> CheckStatement($statement,CheckExpression(NONE,$condition,CheckForInits($init,$state))),
 
      CheckForInits([],$state) -> $state,

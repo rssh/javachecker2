@@ -29,23 +29,37 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
      *create new model of  anonimous type, where t is AllocatorExpression with type
      *definition, 
      */
-    public JavaTermAnonimousTypeModel(JavaTermStatementModel statement, Term t) throws TermWareException
+    public JavaTermAnonimousTypeModel(JavaTermStatementModel statement, Term t, JavaTypeModel enclosedType) throws TermWareException
     {   
         super(TermUtils.createTerm("Modifiers",TermUtils.createInt(0),TermUtils.createNil()),
-                t,statement.getTermTopLevelBlockModel().getOwnerTermModel().getTermTypeAbstractModel().getPackageModel(),
+                t,
+                statement!=null ?
+                    statement.getTermTopLevelBlockModel().getOwnerTermModel().getTermTypeAbstractModel().getPackageModel()
+                   :
+                    enclosedType.getPackageModel() 
+                 ,
+                statement!=null ?
                   statement.getTermTopLevelBlockModel().getOwnerTermModel().getTermTypeAbstractModel().getUnitModel()
+                  :
+                   enclosedType.getUnitModel() 
                 );
         statement_=statement;       
-        fillModels();          
-        JavaTermTypeAbstractModel parent = statement.getTermTopLevelBlockModel().getOwnerTermModel().getTermTypeAbstractModel();        
+        fillModels();                        
+        JavaTermTypeAbstractModel parent = null;
+        if (statement!=null) {
+          parent = statement.getTermTopLevelBlockModel().getOwnerTermModel().getTermTypeAbstractModel();        
+        }else{            
+          if (enclosedType instanceof JavaTermTypeAbstractModel) { 
+            parent = (JavaTermTypeAbstractModel)enclosedType; 
+          }else{
+            throw new AssertException("Enclosed type for JavaTermAnonimousTypeModel must be instance of JavaTermTypeAbstractModel");  
+          }
+        } 
         setParentType(parent);
         anonimousIndexInParent_=parent.nextAnonimousTypeIndex();        
         name_="$"+anonimousIndexInParent_;
         isAnonimous_=true;
         parent.addNestedType(name_,this);
-        if (statement==null) {
-            throw new NullPointerException();
-        }
     }
 
     public String getName() {
@@ -223,7 +237,6 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
     }
     
     private int     anonimousIndexInParent_;        
-    //private JavaTermStatementModel statement_;
     private boolean supersAreInitialized_=false;
     
     

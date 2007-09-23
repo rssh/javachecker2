@@ -155,26 +155,28 @@ public class IntegerOrderList implements List<Integer> {
     class HereIterator implements ListIterator<Integer>
     {
      public HereIterator(Integer index)
-     { index_=index; }
+     { index_=index-1; }
      
      public void add(Integer e)
      { throw new UnsupportedOperationException(); }
      
      public boolean hasNext()
-     { return index_ < hbound_-1; }
+     {          
+         return index_ < hbound_-1; 
+     }
      
      public boolean hasPrevious()
      { return index_ > lbound_; }
      
      public Integer next()
-     { return index_++; }
+     { return ++index_; }
      
      public int nextIndex()
      { return index_-lbound_+1; }
      
      
      public Integer previous()
-     { return index_--; }
+     { return --index_; }
      
      public int previousIndex()
      { return index_-lbound_-1; }

@@ -286,6 +286,36 @@ public class JavaTopLevelBlockOwnerModelHelper {
         }
         return retval;
     }
+     
+    public static List<JavaTypeModel>  buildThrowsList(Term throwsNameList, JavaTopLevelBlockOwnerModel executable) throws TermWareException, EntityNotFoundException
+    {       
+      if (throwsNameList.isNil()) {
+          return Collections.emptyList();
+      }  
+      List<JavaTypeModel> retval = new LinkedList<JavaTypeModel>();
+      try{
+      Term ct = throwsNameList.getSubtermAt(0);
+      while(!ct.isNil()) {
+          Term nameTerm = ct.getSubtermAt(0);
+          ct = ct.getSubtermAt(1);
+          JavaTypeModel tm = null;
+          try {            
+             tm = JavaResolver.resolveTypeToModel(nameTerm,executable.getTypeModel(),executable.getTypeParameters());
+          }catch(EntityNotFoundException ex){
+             if (ex.getFileAndLine()==FileAndLine.UNKNOWN) {  
+                ex.setFileAndLine(JUtils.getFileAndLine(nameTerm));              
+             }
+             LOG.info("executable signature is "+JavaTopLevelBlockOwnerModelHelper.getStringSignature(executable));
+             throw ex;    
+          }
+          retval.add(tm);
+      }
+      }catch(Exception ex){
+          throw new AssertException("Can't get throws from "+TermHelper.termToString(throwsNameList),ex);
+      }
+      return retval;
+    }
+     
     
     private static final Logger LOG = Logger.getLogger(JavaTopLevelBlockOwnerModelHelper.class.getName());
 }

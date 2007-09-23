@@ -76,7 +76,13 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     
     public Term getFullNameAsTerm() throws TermWareException
     {
-       return JUtils.createJavaNameWithPackage(this.getPackageModel().getName(),name_);
+       Term prevName; 
+       if (isNested()) {
+           prevName = getEnclosedType().getFullNameAsTerm();
+       }else{
+           prevName = JUtils.createRowJavaName(this.getPackageModel().getName());
+       }
+       return JUtils.appendInnerClassIdentifierToJavaName(prevName,TermUtils.createIdentifier(name_));
     }
     
    public boolean isPrimitiveType()

@@ -59,13 +59,13 @@ public class JavaClassTypeVariableModel extends JavaTypeVariableAbstractModel
     /**
      * TypeParameter(Identifier(name),boundsModelTerms)
      */
-    public Term getModelTerm() throws TermWareException, EntityNotFoundException
-    {        
-        Term idt = TermUtils.createIdentifier(typeVariable_.getName());
-        Term boundsModelTerm=JavaTypeModelHelper.createModelTermList(getBounds());
-        Term typeParameter=TermUtils.createTerm("TypeParameter",idt,boundsModelTerm);
-        return typeParameter;
-    }
+    //public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    //{        
+    //    Term idt = TermUtils.createIdentifier(typeVariable_.getName());
+    //    Term boundsModelTerm=JavaTypeModelHelper.createModelTermList(getBounds());
+    //    Term typeParameter=TermUtils.createTerm("TypeParameter",idt,boundsModelTerm);
+    //    return typeParameter;
+    //}
 
     public  Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap()
     { return Collections.emptyMap(); }

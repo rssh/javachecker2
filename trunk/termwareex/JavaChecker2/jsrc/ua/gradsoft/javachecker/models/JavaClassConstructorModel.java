@@ -29,7 +29,7 @@ import ua.gradsoft.termware.TermWareException;
  *Model for constructor of class
  * @author rssh
  */
-public class JavaClassConstructorModel extends JavaConstructorModel implements JavaClassTopLevelBlockOwnerModel
+public final class JavaClassConstructorModel extends JavaConstructorModel implements JavaClassTopLevelBlockOwnerModel
 {
     
     /** Creates a new instance of JavaClassConstructorModel */
@@ -40,95 +40,37 @@ public class JavaClassConstructorModel extends JavaConstructorModel implements J
     
     public List<JavaTypeVariableAbstractModel> getTypeParameters()
     {  
-        return new ImmutableMappedList<TypeVariable,JavaTypeVariableAbstractModel>(
-           Arrays.asList(constructor_.getTypeParameters()),
-           new Function<TypeVariable,JavaTypeVariableAbstractModel>(){
-            public JavaTypeVariableAbstractModel function(TypeVariable x){
-                return new JavaClassTypeVariableModel(x);
-            }
-        }     
-                );
+        return JavaClassTopLevelBlockOwnerModelHelper.getTypeParameters(this);
     }
     
     public List<JavaTypeModel>  getFormalParametersTypes() throws TermWareException
     {
-        final int paramLength = constructor_.getGenericParameterTypes().length; 
-        return new ImmutableMappedList<Integer,JavaTypeModel>(
-                new IntegerOrderList(paramLength),
-                new Function<Integer,JavaTypeModel>(){
-            public JavaTypeModel function(Integer i) throws TermWareException
-            {
-                return JavaClassTypeModel.createTypeModel(constructor_.getGenericParameterTypes()[i]);             
-            }
-        }
-                );
+       return JavaClassTopLevelBlockOwnerModelHelper.getFormalParametersTypes(this); 
     }
 
     
     public List<JavaFormalParameterModel> getFormalParametersList()throws TermWareException
     {
-      final int paramLength = constructor_.getTypeParameters().length; 
-       return new ImmutableMappedList<Integer,JavaFormalParameterModel>(
-                  new IntegerOrderList(paramLength),
-                  new Function<Integer,JavaFormalParameterModel>(){
-           public JavaFormalParameterModel function(Integer i) throws TermWareException
-           {             
-               return new JavaClassFormalParameterModel(
-                       "fp"+i,
-                       new JavaClassModifiersModel(i==paramLength-1 && constructor_.isVarArgs() ? JavaModifiersModel.VARARGS : 0),
-                       JavaClassTypeModel.createTypeModel(constructor_.getTypeParameters()[i]),
-                       JavaClassConstructorModel.this,
-                       i
-                       );                       
-           }
-       }
-               );
+       return JavaClassTopLevelBlockOwnerModelHelper.getFormalParametersList(this);
     }
-    
     
     public Map<String, JavaFormalParameterModel> getFormalParametersMap() throws TermWareException
     {        
-       return new ImmutableListAsMap<String,JavaFormalParameterModel>(
-           getFormalParametersList(),    
-           new Function<String,Integer>() {
-               public Integer function(String key){
-                   if (key.length()<2) return -1;
-                   return Integer.parseInt(key.substring(2));
-               }
-           },
-           new Function<Integer,String>() {
-               public String function(Integer key){
-                   return "fp"+Integer.toString(key);
-               }
-           }
-           );   
+       return JavaClassTopLevelBlockOwnerModelHelper.getFormalParametersMap(this);
     }
 
+
+    public List<JavaTypeModel>  getThrowsList() throws TermWareException
+    {
+       return JavaClassTopLevelBlockOwnerModelHelper.getThrowsList(this);
+    }
+    
     
     public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
     {
-       return new FunctionMap<String,JavaAnnotationInstanceModel>(
-               new ImmutableMappedCollection<Integer,String>(
-                 new IntegerOrderList(constructor_.getDeclaredAnnotations().length),
-                 new Function<Integer,String>(){
-           public String function(Integer x){              
-                 return constructor_.getDeclaredAnnotations()[x].annotationType().getName();   
-           }           
-                 }),
-               new Function<String,JavaAnnotationInstanceModel>(){
-           public JavaAnnotationInstanceModel function(String s) throws TermWareException
-           {                
-               Annotation annotation = constructor_.getAnnotation(JavaClassTypeModel.forName(s));
-               if (annotation==null) {
-                   return null;
-               }
-               return new JavaClassAnnotationInstanceModel(ElementType.CONSTRUCTOR,
-                                                   annotation,
-                                                   JavaClassConstructorModel.this);
-           }
-       }               
-               );
+       return JavaClassTopLevelBlockOwnerModelHelper.getAnnotationsMap(this);
      }
+    
                   
     
     public String getName()
@@ -162,7 +104,24 @@ public class JavaClassConstructorModel extends JavaConstructorModel implements J
     {
         return constructor_.getGenericParameterTypes();
     }
+
+    public Type[]  getClassThrowsTypes()
+    {
+        return constructor_.getGenericExceptionTypes();
+    }
     
+    public TypeVariable[] getClassTypeParameters()
+    {
+        return constructor_.getTypeParameters();
+    }
+    
+    public Annotation[]  getDeclaredAnnotations()
+    {
+       return constructor_.getDeclaredAnnotations();
+    }
+    
+    public Annotation  getAnnotation(Class annotationClass)
+    { return constructor_.getAnnotation(annotationClass); }
     
     public Annotation[][]  getParameterAnnotations()
     { return constructor_.getParameterAnnotations(); }

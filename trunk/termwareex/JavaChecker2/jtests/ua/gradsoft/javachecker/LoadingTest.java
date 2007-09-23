@@ -14,12 +14,15 @@ import java.util.List;
 import java.util.Map;
 import junit.framework.TestCase;
 import ua.gradsoft.javachecker.models.JavaFormalParameterModel;
-import ua.gradsoft.javachecker.models.JavaTermFormalParameterModel;
 import ua.gradsoft.javachecker.models.JavaMemberVariableModel;
 import ua.gradsoft.javachecker.models.JavaMethodModel;
+import ua.gradsoft.javachecker.models.JavaPackageModel;
 import ua.gradsoft.javachecker.models.JavaResolver;
+import ua.gradsoft.javachecker.models.JavaTypeArgumentBoundTypeModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.javachecker.models.JavaTypeVariableAbstractModel;
+import ua.gradsoft.javachecker.models.TermUtils;
+import ua.gradsoft.termware.Term;
 
 /**
  *How sources are loading.
@@ -151,12 +154,12 @@ public class LoadingTest extends TestCase
      // Term x = ebModel.getModelTerm();
     }
     
-    /**
-     *
+    
+     
     public void testLoadingPPP() throws Exception
     {
       JavaCheckerFacade.init();
-      JavaCheckerFacade.addInputDirectory("testpackages/testdata5");
+      JavaCheckerFacade.addInputDirectory("testpackages/testdata5",true);
       JavaTypeModel ppModel = JavaResolver.resolveTypeModelFromPackage("PP","x.y");
       assertEquals("PP.getName()==PP","PP",ppModel.getName());
       
@@ -169,14 +172,40 @@ public class LoadingTest extends TestCase
       assertTrue("dupT name is dupP",pppDupT.getName().equals("dupT"));
       
       JavaTypeModel pppDupTFptModel=pppDupT.getFormalParametersTypes().get(0);
-      assertTrue("PPP<Pair<Number,Integer>>.dupT argument bound",pppDupTFptModel instanceof JavaArgumentBoundTypeModel);
+      assertTrue("PPP<Pair<Number,Integer>>.dupT argument bound",pppDupTFptModel instanceof JavaTypeArgumentBoundTypeModel);
 
       //System.out.println("pppDupT.getName()="+pppDupTFptModel.getName());
       JavaTypeModel pppDupTResultModel=pppDupT.getResultType();
       assertEquals("PPP.dupT() result type","Pair<Pair<Number,Integer>,Pair<Number,Integer>>",pppDupTResultModel.getName());
       
     }
-      **/  
+      
+    public void testPrintPPPNames() throws Exception
+    {
+      JavaCheckerFacade.init();
+      JavaCheckerFacade.addInputDirectory("testpackages/testdata5",true);
+      JavaTypeModel ppModel = JavaResolver.resolveTypeModelFromPackage("PP","x.y");
+      assertEquals("PP.getFullName()==x.y.PP","x.y.PP",ppModel.getFullName());
+      
+      JavaPackageModel xym = ppModel.getPackageModel();
+      
+      String xyName = xym.getName();
+      Term t = JUtils.createRowJavaName(xyName);
+      Term tl = t.getSubtermAt(0);
+      assertTrue(tl.getSubtermAt(0).getName().equals("Identifier"));
+      assertEquals(tl.getSubtermAt(0).getSubtermAt(0).getString(),"x");
+      
+      Term id = ppModel.getShortNameAsTerm();
+      tl = TermUtils.addTermToList(tl,id);
+      assertTrue(tl.getSubtermAt(0).getName().equals("Identifier"));
+      assertEquals(tl.getSubtermAt(0).getSubtermAt(0).getString(),"x");
+      
+      
+      t = ppModel.getFullNameAsTerm();
+      tl = t.getSubtermAt(0);
+      assertTrue(tl.getSubtermAt(0).getName().equals("Identifier"));
+      assertEquals(tl.getSubtermAt(0).getSubtermAt(0).getString(),"x");
+    }
     
     
 }

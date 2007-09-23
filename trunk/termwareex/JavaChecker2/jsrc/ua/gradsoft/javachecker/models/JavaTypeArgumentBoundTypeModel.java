@@ -137,7 +137,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         }else{
             retval=t.termClone();
             Term l=retval.getSubtermAt(0);
-            TermUtils.addTermToList(l,getTypeArguments());
+            TermUtils.appendTermToList(l,getTypeArguments());
         }
         return retval;
     }
@@ -164,7 +164,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         }else{
             retval=t.termClone();
             Term l=retval.getSubtermAt(0);
-            l=TermUtils.addTermToList(l,fTATerm);
+            l=TermUtils.appendTermToList(l,fTATerm);
             retval.setSubtermAt(0,l);
         }
         return retval;

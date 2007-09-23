@@ -39,19 +39,7 @@ public class JavaTypeArgumentBoundTypeVariableModel extends JavaTypeVariableAbst
     { return origin_.getModifiersModel(); }
     
     public List<JavaTypeModel> getBounds()
-    { return bounds_; }
-    
-    
-    /**
-     * TypeParameter(originModelTerm,boundsModelTerms)
-     */
-    public Term getModelTerm() throws TermWareException, EntityNotFoundException
-    {
-        Term originModelTerm=origin_.getModelTerm();
-        Term boundsModelTerm=JavaTypeModelHelper.createModelTermList(bounds_);
-        Term typeParameter=TermUtils.createTerm("TypeParameter",originModelTerm,boundsModelTerm);
-        return typeParameter;
-    }
+    { return bounds_; }       
     
     private JavaTypeVariableAbstractModel origin_;
     private List<JavaTypeModel> bounds_;

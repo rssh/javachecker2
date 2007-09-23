@@ -1153,9 +1153,9 @@ public class JavaResolver {
     public static JavaMethodModel resolveMethod(String methodName,List<JavaTypeModel> argumentTypes, JavaTypeArgumentsSubstitution substitution,JavaTypeModel where) throws EntityNotFoundException, TermWareException {
         boolean printDetails=false;
         
-       // if (methodName.equals("addAll")) {
-       //      printDetails=true;
-       // }
+      //  if (methodName.equals("println")) {
+      //      printDetails=true;
+      // }
         
         if (printDetails) {
             StringBuilder sb=new StringBuilder();

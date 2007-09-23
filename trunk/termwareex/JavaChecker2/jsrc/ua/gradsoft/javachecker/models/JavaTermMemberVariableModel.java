@@ -59,13 +59,16 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
     
     public JavaTypeModel  getType() throws TermWareException, EntityNotFoundException
     { 
-      try {  
-        return JavaResolver.resolveTypeToModel(type_,owner_); 
-      }catch(EntityNotFoundException ex){
+      if (resolvedType_==null) {  
+        try {  
+          resolvedType_=JavaResolver.resolveTypeToModel(type_,owner_); 
+        }catch(EntityNotFoundException ex){
           //TODO: log
           ex.setFileAndLine(JUtils.getFileAndLine(variableDeclarator_));
           throw ex;
+        }
       }
+      return resolvedType_;
     }
         
     public JavaTermModifiersModel  getModifiers()
@@ -79,6 +82,7 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
     public Term getVariableDeclaratorTerm()
     { return variableDeclarator_; }
     
+    
     public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
     { return modifiersModel_.getAnnotationsMap(); }
     
@@ -90,7 +94,7 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
      *return intializer expression, if one defined; otherwise - null
      */
     public JavaTermExpressionModel getInitializerExpression() throws TermWareException, EntityNotFoundException
-    {
+    {        
       if (variableDeclarator_.getArity()>1)  {
           return JavaTermExpressionModel.create(variableDeclarator_.getSubtermAt(1),null,owner_);
       }else{
@@ -110,7 +114,7 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
         Term identifierTerm = variableDeclarator_.getSubtermAt(0).getSubtermAt(0);
         Term initializer = TermUtils.createNil();
         if (variableDeclarator_.getArity()>1) {
-            initializer = variableDeclarator_.getSubtermAt(1);
+            initializer = getInitializerExpression().getModelTerm();
         }               
         Term tthis = TermUtils.createJTerm(this);
         return TermUtils.createTerm("MemberVariableModel",modifiersModelTerm,typeRef,identifierTerm,initializer,tthis);
@@ -120,7 +124,10 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
     
     private String  name_;
     private Term    type_=null;
+    private JavaTypeModel resolvedType_=null;
     private Term    variableDeclarator_=null;
+   // private JavaExpressionModel initializerExpression_=null;
+    
     private JavaTypeModel owner_=null;
     private JavaTermModifiersModel  modifiersModel_;
     

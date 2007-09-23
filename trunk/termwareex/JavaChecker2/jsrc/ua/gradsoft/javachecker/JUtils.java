@@ -174,20 +174,40 @@ public final class JUtils {
         return retval;
     }
 
-    public static Term createJavaNameWithPackage(String packageName, String name) throws TermWareException
+    public static Term createRowJavaName(String fullName) throws TermWareException
     {
-        String[] packageNameComponents = packageName.split("\\.");
-        String[] classNameComponents = name.split("$");
-        Term[] ncs = new Term[packageNameComponents.length+classNameComponents.length];
+        String[] nameComponents = fullName.split("\\.");
+        Term[] ncs = new Term[nameComponents.length];
         int i;
-        for(i=0; i< packageNameComponents.length; ++i) {
-            ncs[i]=TermUtils.createIdentifier(packageNameComponents[i]);
-        }
-        for(i=0; i<classNameComponents.length; ++i) {
-            ncs[packageNameComponents.length+i]=TermUtils.createIdentifier(classNameComponents[i]);
+        for(i=0; i< nameComponents.length; ++i) {
+            ncs[i]=TermUtils.createIdentifier(nameComponents[i]);
         }
         return TermUtils.createTerm("Name",TermUtils.createList(ncs));
     }
+
+    /**
+     * append inner class to name.
+     *@param shortName - short name of inner class as identifier.
+     *@param enclosedName - name of enclosed class.
+     */
+    public static Term appendInnerClassIdentifierToJavaName(Term enclosedName, Term shortName) throws TermWareException
+    {
+      Term retval=null;  
+      if (enclosedName.getName().equals("Identifier")) {
+         Term l = TermUtils.createTerm("cons",shortName,TermUtils.createNil());
+         l=TermUtils.createTerm("cons",enclosedName,l);
+         retval=TermUtils.createTerm("Name",l);
+      }else if (enclosedName.getName().equals("Name")||enclosedName.getName().equals("ClassOrInterfaceType")) {
+         Term l = enclosedName.getSubtermAt(0);
+         l=TermUtils.appendTermToList(l,shortName);
+         retval = TermUtils.createTerm(enclosedName.getName(),l);
+      }else{
+          throw new AssertException("Invalid name of type:"+TermHelper.termToString(enclosedName));
+      }
+      return retval;
+    }
+
+    
     
     /**
      * search java_identifier term in current subterm.

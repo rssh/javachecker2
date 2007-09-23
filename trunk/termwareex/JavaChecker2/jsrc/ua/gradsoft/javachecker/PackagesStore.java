@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.models.JavaPackageModel;
 import ua.gradsoft.javachecker.util.JarClassLoader;
+import ua.gradsoft.termware.TermWareRuntimeException;
 
 /**
  *Store for packages 
@@ -73,19 +74,32 @@ public class PackagesStore
       return sourceDirsToProcess_;  
     }
     
-    public  void  setJars(List<String> jars) throws ConfigException
+    public  void  setJars(List<String> jars) 
     {
       jars_=jars;  
-      jars_.add(Main.getHome()+File.separator+"JavaChecker2Annotations.jar");
-      try {
-          classLoader_=new JarClassLoader(jars.toArray(new String[0]));
-      }catch(MalformedURLException ex){
-          throw new ConfigException(ex.getMessage(),ex);
-      }
+      classLoader_=null;
+    }
+
+    public void addJar(String jar)
+    {
+       if (jars_==null) {
+           jars_=new ArrayList<String>();
+       } 
+       jars_.add(jar);
+       classLoader_=null;
     }
     
     public  ClassLoader getJarsClassLoader()
     {
+        if (classLoader_==null) {
+            jars_.add(Main.getHome()+File.separator+"JavaChecker2Annotations.jar");
+            try {
+               classLoader_=new JarClassLoader(jars_.toArray(new String[0]));
+            }catch(MalformedURLException ex){
+                // impossible.
+                throw new TermWareRuntimeException(ex);
+            }
+        }
         return classLoader_;
     }
     

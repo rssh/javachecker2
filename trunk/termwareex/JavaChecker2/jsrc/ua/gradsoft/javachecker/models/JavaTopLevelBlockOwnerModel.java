@@ -40,8 +40,16 @@ public interface JavaTopLevelBlockOwnerModel extends AttributedEntity
      */
     public  List<JavaFormalParameterModel> getFormalParametersList() throws TermWareException, EntityNotFoundException;
     
+    /**
+     * get Map of formal parameters.
+     */
     public Map<String, JavaFormalParameterModel>  getFormalParametersMap() throws TermWareException, EntityNotFoundException;
 
+    /**
+     * get List of throwed types in trows specification.
+     */
+    public List<JavaTypeModel> getThrowsList() throws TermWareException, EntityNotFoundException;
+    
     
     /**
      * return true if storing of block model is supported, otherwise false.

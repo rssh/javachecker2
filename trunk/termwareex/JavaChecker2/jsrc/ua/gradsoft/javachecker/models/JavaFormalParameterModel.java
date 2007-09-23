@@ -40,14 +40,31 @@ public abstract class JavaFormalParameterModel implements JavaVariableModel
       return getTopLevelBlockOwner().getTypeModel();  
     }
   
+    
         
     public abstract Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap();
-
+        
     
     /**
      *@return index of this formal parameters in call, started from 0
      */
     public abstract int getIndex();
+    
+    
+    /**
+     * FormalParameterModel(Modifiers,TypeRef(),Identifier,ctx)
+     */
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+        JavaTypeModel type=getType();
+        Term modifiersTerm = getModifiers().getModelTerm();
+        Term typeRef=TermUtils.createTerm("TypeRef",type.getFullNameAsTerm(),TermUtils.createJTerm(type));
+        Term identifier=TermUtils.createIdentifier(getName());
+        JavaPlaceContext ctx = JavaPlaceContextFactory.createNewTopLevelBlockOwnerContext(getTopLevelBlockOwner());
+        Term tctx = TermUtils.createJTerm(ctx);
+        Term retval = TermUtils.createTerm("FormalParameterModel",modifiersTerm,typeRef,identifier,tctx);
+        return retval;
+    }
     
     
     public Term getAttribute(String name) throws TermWareException

@@ -8,20 +8,13 @@
 
 package ua.gradsoft.javachecker.models;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import ua.gradsoft.javachecker.EntityNotFoundException;
-import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermFactory;
-import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.TermWareException;
-import ua.gradsoft.termware.exceptions.AssertException;
+import ua.gradsoft.termware.TermWareSymbols;
 
 /**
  *Various utilities for work with terms.
@@ -102,16 +95,24 @@ public class TermUtils {
       return getTermFactory().createBoolean(b);  
     }
     
-    public static final Term addTermToList(Term list, Term object) throws TermWareException
+    public static final Term appendTermToList(Term list, Term object) throws TermWareException
     {
       if (list.isNil()) {
           return getTermFactory().createTerm("cons",object,list);
-      }else{        
-          while(!list.getSubtermAt(1).isNil()) {
+      }else{      
+        // Term svList = list;
+        // while(!list.getSubtermAt(1).isNil()) {
+        //      list=list.getSubtermAt(1);
+        // }
+        // list.setSubtermAt(1,getTermFactory().createTerm("cons",object,getTermFactory().createNil()));                      
+        // return svList;         
+          Term nl = TermUtils.createNil();
+          while(!list.isNil()) {
+              nl = TermUtils.createTerm("cons",list.getSubtermAt(0),nl);
               list=list.getSubtermAt(1);
           }
-          list.setSubtermAt(1,getTermFactory().createTerm("cons",object,getTermFactory().createNil()));                      
-          return list;
+          nl = TermUtils.createTerm("cons",object,nl);
+          return TermUtils.reverseListTerm(nl);
       }
     }
     
@@ -121,14 +122,63 @@ public class TermUtils {
     }
 
      /**
-      *TODO: change type names in bounds to type-ref
+      * TypeParameters(cons(TypeVariableModel,cons(TypeRef2,...,NIL)...))
+      *[may be todo: insert origin name in typeref]
       */
-     public static Term buildTypeParametersModelTerm(List<JavaTypeVariableAbstractModel> tvams, Term tpt)
+     public static Term buildTypeParametersModelTerm(List<JavaTypeVariableAbstractModel> tvams, Term tpt) throws TermWareException, EntityNotFoundException
      {
-       return tpt;  
+       Term retval = TermUtils.createNil();
+       for(JavaTypeVariableAbstractModel tv: tvams) {
+           Term tvm = tv.getModelTerm();
+           retval = TermUtils.createTerm("cons",tvm,retval);
+       }
+       retval = TermUtils.reverseListTerm(retval);
+       if (!retval.isNil()) {
+          retval = TermUtils.createTerm("TypeParameters",retval);
+       }
+       return retval;  
      }
 
+     
 
+     /**
+      * FormalParameters([FormalParameterModel(..)..])
+      */
+     public static Term buildFormalParametersModelTerm(List<JavaFormalParameterModel> fpms,Term origin) throws TermWareException, EntityNotFoundException
+     {
+       Term retval = TermUtils.createNil();
+       for(JavaFormalParameterModel fpm: fpms) {
+           Term m = fpm.getModelTerm();
+           retval = TermUtils.createTerm("cons",m,retval);
+       }
+       retval=TermUtils.reverseListTerm(retval);
+       retval=TermUtils.createTerm("FormalParameters",retval);
+       return retval;
+     }
+     
+     public static Term buildThrowsNameListModelTerm(List<JavaTypeModel> throwsNameList, Term origin) throws TermWareException
+     {
+         Term retval = TermUtils.createNil();
+         Term ct = TermUtils.createNil();
+         if (!origin.isNil()) {
+             ct=origin.getSubtermAt(0);
+         }
+         for(JavaTypeModel tm: throwsNameList)
+         {
+           Term tname = null; 
+           if (ct.getNameIndex().equals(TermWareSymbols.CONS_INDEX)) {
+               tname = ct.getSubtermAt(0);
+               ct=ct.getSubtermAt(1);
+           }else{
+               tname = tm.getFullNameAsTerm();
+           } 
+           Term jterm = TermUtils.createJTerm(tm);
+           Term refTerm = TermUtils.createTerm("TypeRef",tname,jterm);
+           retval=TermUtils.createTerm("cons",refTerm,retval);
+         }
+         retval = TermUtils.reverseListTerm(retval);
+         return retval;
+     }
      
     public static Term reverseListTerm(Term t) throws TermWareException
     {

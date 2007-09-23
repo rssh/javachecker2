@@ -53,6 +53,8 @@ public class JavaTypeArgumentBoundConstructorModel extends JavaConstructorModel 
     public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap() throws TermWareException
     { return origin_.getAnnotationsMap(); }
 
+    public List<JavaTypeModel>  getThrowsList() throws TermWareException, EntityNotFoundException
+    { return getSubstitution().substitute(origin_.getThrowsList()); }
     
     
     public boolean isSupportBlockModel()

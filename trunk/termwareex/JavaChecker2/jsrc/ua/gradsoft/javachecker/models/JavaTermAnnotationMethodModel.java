@@ -76,6 +76,9 @@ public class JavaTermAnnotationMethodModel extends JavaMethodModel
     public Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap()
     { return modifiersModel_.getAnnotationsMap(); }
     
+    public List<JavaTypeModel>  getThrowsList()
+    { return Collections.emptyList(); }
+    
     public boolean isSupportBlockModel()
     { return false; }
     

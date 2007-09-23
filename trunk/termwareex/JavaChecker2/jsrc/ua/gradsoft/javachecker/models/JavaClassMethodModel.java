@@ -60,12 +60,7 @@ public class JavaClassMethodModel extends JavaMethodModel implements JavaClassTo
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters()
     {
-        List<JavaTypeVariableAbstractModel> retval = new LinkedList<JavaTypeVariableAbstractModel>();
-        TypeVariable<?> typeVariables[] = method_.getTypeParameters();
-        for(int i=0; i<typeVariables.length; ++i) {
-            retval.add(new JavaClassTypeVariableModel(typeVariables[i]));
-        }
-        return retval;
+       return JavaClassTopLevelBlockOwnerModelHelper.getTypeParameters(this); 
     }
     
     public JavaTypeModel  getResultType() throws TermWareException
@@ -76,18 +71,7 @@ public class JavaClassMethodModel extends JavaMethodModel implements JavaClassTo
     
     public List<JavaTypeModel>  getFormalParametersTypes() throws TermWareException
     {
-      return new ImmutableMappedList<JavaFormalParameterModel,JavaTypeModel>(
-              getFormalParametersList(),
-              new Function<JavaFormalParameterModel,JavaTypeModel>() {
-          public JavaTypeModel function(JavaFormalParameterModel x) throws TermWareException {              
-              try{
-                return x.getType();              
-              }catch(EntityNotFoundException ex){
-                  throw new AssertException(ex.getMessage(),ex);
-              }
-          }
-      }
-              );
+      return JavaClassTopLevelBlockOwnerModelHelper.getFormalParametersTypes(this);
     }
     
     public boolean isVarArgs()
@@ -98,89 +82,33 @@ public class JavaClassMethodModel extends JavaMethodModel implements JavaClassTo
     public boolean isSynthetic()
     { return method_.isSynthetic(); }
     
+    public TypeVariable[] getClassTypeParameters()
+    { return method_.getTypeParameters(); }
+    
     public Type[] getClassFormalParameterTypes()
     { return method_.getGenericParameterTypes(); }
+    
+    public Type[]  getClassThrowsTypes()
+    { return method_.getGenericExceptionTypes(); }
     
             
     public List<JavaFormalParameterModel> getFormalParametersList()throws TermWareException
     {
-        boolean debug=false;
-//        if (method_.getName().equals("createTerm")) {
-//            debug=true;
-//        }
-        if (debug) {
-            LOG.info("getFormalParametersList for "+method_.getName());
-        }
-        Type[] parameterTypes=method_.getGenericParameterTypes();
-        List<JavaFormalParameterModel> retval = new ArrayList<JavaFormalParameterModel>(parameterTypes.length);
-        for(int i=0; i<parameterTypes.length; ++i) {
-            String name="fp"+i;
-            JavaTypeModel c = JavaClassTypeModel.createTypeModel(parameterTypes[i]);
-            int parameterModifiers=0;
-            if (i==parameterTypes.length-1) {
-                if (method_.isVarArgs()) {                    
-                    parameterModifiers |= JavaTermModifiersModel.VARARGS;
-                  // we does not need create array type here -- it is as array in parameterTypes. 
-                  //  c=new JavaArrayTypeModel(c,null);
-                    if (debug) {
-                        LOG.info("varargs for "+i+", nowc="+c.getName());
-                    }
-                }else{
-                    if (debug) {
-                        LOG.info("not varargs, c="+c.getName());
-                    }
-                }
-            }
-            retval.add(new JavaClassFormalParameterModel(name,new JavaClassModifiersModel(parameterModifiers),c,this,i));
-        }
-        return retval;
+       return JavaClassTopLevelBlockOwnerModelHelper.getFormalParametersList(this); 
     }
     
     
     public Map<String, JavaFormalParameterModel> getFormalParametersMap() throws TermWareException
     {
-        boolean debug=false;
-   //     if (method_.getName().equals("createTerm")) {
-   //         debug=true;
-   //     }
-        if (debug) {
-            LOG.info("getFormalParametersList for "+method_.getName());
-        }        
-       Map<String,JavaFormalParameterModel> retval = new TreeMap<String,JavaFormalParameterModel>(); 
-       Type[] parameterTypes=method_.getGenericParameterTypes();
-       for(int i=0; i<parameterTypes.length; ++i){
-           String name="fp"+i;
-           JavaTypeModel c = JavaClassTypeModel.createTypeModel(parameterTypes[i]);
-           int parameterModifiers=0;
-           if (i==parameterTypes.length-1) {
-               if (method_.isVarArgs()) {
-                   parameterModifiers |= JavaTermModifiersModel.VARARGS;
-                   // we does not need create array type here -- it is as array in parameterTypes. 
-                   //c=new JavaArrayTypeModel(c,null);
-                    if (debug) {
-                        LOG.info("varargs for "+i+", nowc="+c.getName());
-                    }                   
-               }else{
-                    if (debug) {
-                        LOG.info("not varargs, c="+c.getName());
-                    }                   
-               }
-           }
-           retval.put(name,new JavaClassFormalParameterModel(name,new JavaClassModifiersModel(parameterModifiers),c,this,i));
-       }
-       return retval;
+        return JavaClassTopLevelBlockOwnerModelHelper.getFormalParametersMap(this);
     }
+    
+    public List<JavaTypeModel>  getThrowsList() throws TermWareException
+    { return JavaClassTopLevelBlockOwnerModelHelper.getThrowsList(this); }
  
     public Map<String, JavaAnnotationInstanceModel> getAnnotationsMap()
     {
-        TreeMap<String,JavaAnnotationInstanceModel> retval = new TreeMap<String,JavaAnnotationInstanceModel>();
-        Annotation[] cas = method_.getAnnotations();
-        for(int i=0; i<cas.length; ++i) {
-            String name = cas[i].annotationType().getSimpleName();
-            JavaAnnotationInstanceModel an = new JavaClassAnnotationInstanceModel(ElementType.METHOD,cas[i],this);
-            retval.put(name,an);
-        }
-        return retval;
+      return JavaClassTopLevelBlockOwnerModelHelper.getAnnotationsMap(this);  
     }
     
      /**
@@ -223,8 +151,17 @@ public class JavaClassMethodModel extends JavaMethodModel implements JavaClassTo
     public JavaTopLevelBlockModel  getTopLevelBlockModel() throws NotSupportedException
     { throw new NotSupportedException(); }
 
+    public Annotation[]  getDeclaredAnnotations()
+    { return method_.getDeclaredAnnotations(); }
+    
+    public Annotation  getAnnotation(Class annotationClass)
+    {
+      return method_.getAnnotation(annotationClass);  
+    }
+    
     public  Annotation[][] getParameterAnnotations()
     { return method_.getParameterAnnotations(); }
+    
     
     private Method   method_;
     

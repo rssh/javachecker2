@@ -62,6 +62,12 @@ public class JavaTermConstructorModel extends JavaConstructorModel implements Ja
         return JavaTopLevelBlockOwnerModelHelper.buildFormalParametersMap(formalParametersList,this);
     }
     
+    public List<JavaTypeModel> getThrowsList() throws TermWareException, EntityNotFoundException
+    {
+       return JavaTopLevelBlockOwnerModelHelper.buildThrowsList(t_.getSubtermAt(THROWS_NAMELIST_TERM_INDEX),this);
+    }
+    
+    
     public  boolean isSupportBlockModel()
     { return true; }
     
@@ -91,8 +97,8 @@ public class JavaTermConstructorModel extends JavaConstructorModel implements Ja
       Term modifiersModelTerm = modifiers_.getModelTerm();  
       Term typeParametersModelTerm = TermUtils.buildTypeParametersModelTerm(getTypeParameters(),t_.getSubtermAt(TYPE_PARAMETERS_TERM_INDEX));
       Term identifierTerm = t_.getSubtermAt(IDENTIFIER_TERM_INDEX);
-      Term formalParametersTerm = t_.getSubtermAt(FORMAL_PARAMETERS_TERM_INDEX);
-      Term throwsNameList = t_.getSubtermAt(THROWS_NAMELIST_TERM_INDEX);
+      Term formalParametersTerm = TermUtils.buildFormalParametersModelTerm(getFormalParametersList(),t_.getSubtermAt(FORMAL_PARAMETERS_TERM_INDEX));
+      Term throwsNameList = TermUtils.buildThrowsNameListModelTerm(getThrowsList(),t_.getSubtermAt(THROWS_NAMELIST_TERM_INDEX));
       Term blockModelTerm = blockModel_.getModelTerm();
       JavaPlaceContext context = JavaPlaceContextFactory.createNewConstructorContext(this);
       Term tcontext = TermUtils.createJTerm(context);

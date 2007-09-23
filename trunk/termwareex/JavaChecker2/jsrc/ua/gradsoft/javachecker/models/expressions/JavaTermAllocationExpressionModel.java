@@ -50,7 +50,7 @@ public class JavaTermAllocationExpressionModel extends JavaTermExpressionModel
            getArrayDimsAndInits(arrayDimsAndInitsOrArgumentsTerm,st,enclosedType);
        }           
        if (t.getArity() > 3 && !t.getSubtermAt(3).isNil()) {           
-           JavaTermAnonimousTypeModel tm = new JavaTermAnonimousTypeModel(st,t);         
+           JavaTermAnonimousTypeModel tm = new JavaTermAnonimousTypeModel(st,t,enclosedType);         
            resolvedType_=tm;
            // tm added to parent in constructor. 
            

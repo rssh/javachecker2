@@ -102,17 +102,17 @@ public class JavaTermTypeVariableModel extends JavaTypeVariableAbstractModel
      * TypeVariableModel(name,bounds)
      *where bounds are lists of typeref
      */
-    public  Term getModelTerm() throws TermWareException
-    {
-        Term idTerm = TermUtils.createIdentifier(name_);
-        Term boundsList = TermUtils.createNil();
-        for(JavaTypeModel tm: getBounds()) {
-            Term typeRef = TermUtils.createTerm("TypeRef",tm.getShortNameAsTerm(),TermUtils.createJTerm(tm));
-            boundsList = TermUtils.createTerm("cons",typeRef,boundsList);
-        }
-        boundsList = TermUtils.reverseListTerm(boundsList);
-        return TermUtils.createTerm("TypeVariableModel",idTerm,boundsList);
-    }
+//    public  Term getModelTerm() throws TermWareException
+//    {
+//        Term idTerm = TermUtils.createIdentifier(name_);
+//        Term boundsList = TermUtils.createNil();
+//        for(JavaTypeModel tm: getBounds()) {
+//            Term typeRef = TermUtils.createTerm("TypeRef",tm.getShortNameAsTerm(),TermUtils.createJTerm(tm));
+//            boundsList = TermUtils.createTerm("cons",typeRef,boundsList);
+//        }
+//        boundsList = TermUtils.reverseListTerm(boundsList);
+//        return TermUtils.createTerm("TypeVariableModel",idTerm,boundsList);
+//    }
      
      
     private String name_;

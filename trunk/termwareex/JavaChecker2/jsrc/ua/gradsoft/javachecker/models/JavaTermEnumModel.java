@@ -252,7 +252,10 @@ public final class ValuesMethodModel extends JavaMethodModel
     
     public Map<String, JavaFormalParameterModel>  getFormalParametersMap() 
     { return Collections.emptyMap(); }
-            
+    
+    public List<JavaTypeModel>  getThrowsList()
+    { return Collections.emptyList(); }
+    
     public boolean canCheck()
     { return false; }
     
@@ -338,6 +341,9 @@ public final class ValueOfMethodModel extends JavaMethodModel
     
     public Map<String, JavaFormalParameterModel>  getFormalParametersMap() 
     { return Collections.<String,JavaFormalParameterModel>singletonMap(parameter_.getName(),parameter_); }
+    
+    public List<JavaTypeModel>  getThrowsList()
+    { return Collections.emptyList(); }
     
     public Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap()
     { return Collections.emptyMap(); }

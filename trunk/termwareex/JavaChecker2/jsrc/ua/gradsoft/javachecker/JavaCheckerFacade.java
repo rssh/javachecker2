@@ -40,6 +40,14 @@ public class JavaCheckerFacade {
     }
     
     /**
+     *add include jar
+     */
+    public static void addIncludeJar(String includeJar)
+    {
+      main_.getFacts().getPackagesStore().addJar(includeJar);  
+    }
+    
+    /**
      *add properties directory
      */
     public static void addPropertiesDirectory(String inputDirectory)

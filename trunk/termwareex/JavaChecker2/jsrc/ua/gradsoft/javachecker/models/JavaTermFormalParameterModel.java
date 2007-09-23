@@ -67,6 +67,8 @@ public class JavaTermFormalParameterModel extends JavaFormalParameterModel
     public int getIndex()
     { return index_; }
     
+    
+    
     private JavaTermModifiersModel  modifiers_;
     private String name_;
     private JavaTypeModel   typeModel_;

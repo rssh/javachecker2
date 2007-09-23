@@ -1,7 +1,7 @@
 /*
  * JavaTypeVariableAbstractModel.java
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006, 2007 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -13,6 +13,7 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
@@ -220,6 +221,24 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
       swr.close();
       return sw.toString();
     }
+    
+    
+    /**
+     * TypeVariableModel(name,bounds)
+     *where bounds are lists of typeref
+     */
+    public  Term getModelTerm() throws TermWareException, EntityNotFoundException
+    {
+        Term idTerm = TermUtils.createIdentifier(getName());
+        Term boundsList = TermUtils.createNil();
+        for(JavaTypeModel tm: getBounds()) {
+            Term typeRef = TermUtils.createTerm("TypeRef",tm.getShortNameAsTerm(),TermUtils.createJTerm(tm));
+            boundsList = TermUtils.createTerm("cons",typeRef,boundsList);
+        }
+        boundsList = TermUtils.reverseListTerm(boundsList);
+        return TermUtils.createTerm("TypeVariableModel",idTerm,boundsList);
+    }
+    
     
     /**
      *@return false

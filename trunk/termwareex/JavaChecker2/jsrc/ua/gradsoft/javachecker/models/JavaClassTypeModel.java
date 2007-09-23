@@ -51,9 +51,10 @@ public class JavaClassTypeModel extends JavaTypeModel
     }
     
     public String getName()
-    {       
-       return theClass_.getSimpleName(); 
+    {
+      return theClass_.getSimpleName();  
     }
+    
     
     /**
      *all classes from reflection are already erased
@@ -74,7 +75,7 @@ public class JavaClassTypeModel extends JavaTypeModel
   
     public Term getFullNameAsTerm() throws TermWareException
     {
-        return JUtils.createJavaNameWithPackage(theClass_.getPackage().getName(),theClass_.getSimpleName());
+        return JUtils.createRowJavaName(getFullName());
     }
   
    
