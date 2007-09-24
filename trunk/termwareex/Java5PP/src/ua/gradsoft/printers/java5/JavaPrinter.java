@@ -1422,7 +1422,7 @@ public class JavaPrinter extends AbstractPrinter {
             out_.print("(");
         }
         if (t.getArity()>1) {
-          Term t1=t.getSubtermAt(0);
+          Term t1=t.getSubtermAt(1);
           String op=null;
           if (t1.isAtom()) {
             if (t1.getName().equals("increment")) {
@@ -1432,13 +1432,13 @@ public class JavaPrinter extends AbstractPrinter {
             }else{
                 throw new AssertException("invalid postfix expession atom:"+TermHelper.termToString(t1));
             }
-         }else if(t1.isString()) {
+          }else if(t1.isString()) {
               op=t1.getString();
-         }else{
-            throw new AssertException("Invalid postfix expression:"+TermHelper.termToString(t));  
-         }
-         writeTerm(t.getSubtermAt(1),level,ExpressionPriorities.POSTFIX_EXPRESSION_PRIORITY); 
-         out_.print(op);
+          }else{
+            throw new AssertException("Invalid postfix expression:"+TermHelper.termToString(t)+", t1 type ="+t1.getPrimaryType1()+", t1="+TermHelper.termToString(t1));  
+          }
+          writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.POSTFIX_EXPRESSION_PRIORITY); 
+          out_.print(op);
         }else{
            writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.POSTFIX_EXPRESSION_PRIORITY); 
         }
@@ -1741,8 +1741,8 @@ public class JavaPrinter extends AbstractPrinter {
     }
     
     public void writeArrayDims(Term t, int level) throws TermWareException
-    {      
-      writeList(t.getSubtermAt(0),"",level);   
+    {         
+        writeList(t.getSubtermAt(0),"",level);   
     }
     
     public void writeArrayDim(Term t, int level) throws TermWareException
@@ -1854,13 +1854,17 @@ public class JavaPrinter extends AbstractPrinter {
     
     private void writeList(Term t, String separator, int level, int topPriority) throws TermWareException {        
         //System.err.println("writeList:"+TermHelper.termToString(t));
+        Term sv = t;      
         while(!t.isNil()) {
+            if (t.getArity()!=2) {
+                throw new AssertException("InvalidList:"+TermHelper.termToString(sv));
+            }
             writeTerm(t.getSubtermAt(0),level,topPriority);
             t=t.getSubtermAt(1);
             if (!t.isNil()) {
                 out_.print(separator);
             }
-        }
+        }       
     }
     
     
