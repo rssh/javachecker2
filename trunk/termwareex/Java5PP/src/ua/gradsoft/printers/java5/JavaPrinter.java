@@ -75,7 +75,7 @@ public class JavaPrinter extends AbstractPrinter {
         }else if(t.getName().equals("ReferenceType")){
             writeReferenceType(t,level);
         }else if(t.getName().equals("ClassOrInterfaceType")){
-            writeClassOrInterfaceType(t,level);
+            writeClassOrInterfaceType(t,level);            
         }else if(t.getName().equals("Identifier")){
             writeIdentifier(t,level);
         }else if(t.getName().equals("CompilationUnit")) {
@@ -114,6 +114,10 @@ public class JavaPrinter extends AbstractPrinter {
             writeClassOrInterfaceBody(t,level);
         }else if(t.getName().equals("ClassOrInterfaceBodyDeclaration")){
             writeClassOrInterfaceBodyDeclaration(t,level);
+        }else if(t.getName().equals("AnnotationTypeDeclaration")){
+            writeAnnotationTypeDeclaration(t,level);
+        }else if(t.getName().equals("AnnotationTypeBody")){
+            writeAnnotationTypeBody(t,level);
         }else if(t.getName().equals("Initializer")){
             writeInitializer(t,level);
         }else if(t.getName().equals("ConstructorDeclaration")){
@@ -298,12 +302,16 @@ public class JavaPrinter extends AbstractPrinter {
             writeThis(t,level);
         }else if (t.getName().equals("Super")) {
             writeSuper(t,level);
+        }else if (t.getName().equals("SuperPrefix")){
+            writeSuperPrefix(t,level);
         }else if (t.getName().equals("ClassLiteral")){
             writeClassLiteral(t,level);
         }else if (t.getName().equals("ArrayIndex")){
             writeArrayIndex(t,level);
         }else if (t.getName().equals("ThisPrefix")){
             writeThisPrefix(t,level);
+        }else if (t.getName().equals("AnnotationTypeMemberDeclaration")){
+            writeAnnotationTypeMemberDeclaration(t,level);
         }else{
             // yet not implemented or not java.
             t.print(out_);
@@ -662,6 +670,42 @@ public class JavaPrinter extends AbstractPrinter {
         writeTerm(t.getSubtermAt(2),level);
     }
     
+    public void writeAnnotationTypeDeclaration(Term t, int level) throws TermWareException
+    {
+        out_.print("@interface ");
+        writeTerm(t.getSubtermAt(0),level);
+        writeTerm(t.getSubtermAt(1),level);
+    }
+    
+    public void writeAnnotationTypeMemberDeclaration(Term t, int level) throws TermWareException
+    {
+        Term modifiers = t.getSubtermAt(0);
+        writeTerm(modifiers,level);
+        out_.print(" ");
+        Term type = t.getSubtermAt(1);
+        writeTerm(type,level);
+        out_.print(" ");
+        Term name = t.getSubtermAt(2);
+        writeTerm(name,level);
+        out_.print("() ");
+        if (t.getArity()>3) {
+            Term dft = t.getSubtermAt(3);
+            if (!dft.isNil()) {
+                if (dft.getName().equals("DefaultValue")) {
+                    Term tv = dft.getSubtermAt(0);
+                    if (!tv.isNil()) {
+                        out_.print("default ");
+                    }
+                    writeTerm(tv,level);
+                }else{
+                    writeTerm(dft,level);
+                }
+            }
+        }
+        out_.print(";");
+        writeNextLine(level);
+    }
+    
     public void writeExtendsList(Term t,int level) throws TermWareException {
         if (t.isNil() || t.getSubtermAt(0).isNil())  {
             return;
@@ -695,6 +739,21 @@ public class JavaPrinter extends AbstractPrinter {
         writeNextLine(level);
         out_.print("}");
         writeNextLine(level);
+    }
+    
+    public void writeAnnotationTypeBody(Term t, int level) throws TermWareException
+    {
+        out_.print("{");
+        writeNextLine(level+1);
+        Term l = t.getSubtermAt(0);
+        while(!l.isNil()) {
+            writeTerm(l.getSubtermAt(0),level+1);
+            writeNextLine(level+1);
+            l=l.getSubtermAt(1);
+        }
+        writeNextLine(level);
+        out_.print("}");
+        writeNextLine(level);                    
     }
     
     public void writeClassOrInterfaceBodyDeclaration(Term t,int level) throws TermWareException {
@@ -1076,8 +1135,10 @@ public class JavaPrinter extends AbstractPrinter {
     public void writeContinueStatement(Term t, int level) throws TermWareException {
         out_.print("continue");
         if (t.getArity()>0) {
-            out_.print(' ');
-            writeTerm(t.getSubtermAt(0),level);
+            if (!t.getSubtermAt(0).isNil()) {
+              out_.print(' ');
+              writeTerm(t.getSubtermAt(0),level);
+            }
         }
         out_.print(";");
     }
@@ -1686,10 +1747,13 @@ public class JavaPrinter extends AbstractPrinter {
           writeIdent(level+1);
           writeTerm(t.getSubtermAt(4),level+1);
       }
-      if (!t.getSubtermAt(5).isNil()) {
+      if (!t.getSubtermAt(5).isNil()) {          
           out_.println();
           writeIdent(level+1);
           Term ct=t.getSubtermAt(5);
+          if (ct.getName().equals("Block")) {
+              ct=ct.getSubtermAt(0);
+          }
           while(!ct.isNil()) {
             Term st=ct.getSubtermAt(0);
             writeTerm(st,level+1); 
@@ -1818,6 +1882,12 @@ public class JavaPrinter extends AbstractPrinter {
       out_.print("super.");
       writeTerm(t.getSubtermAt(0),level,ExpressionPriorities.POSTFIX_EXPRESSION_PRIORITY);
     }
+
+    public void writeSuperPrefix(Term t, int level) throws TermWareException
+    {
+      out_.print("super");    
+    }
+    
     
     public void writeClassLiteral(Term t, int level) throws TermWareException
     {

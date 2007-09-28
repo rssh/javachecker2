@@ -24,6 +24,7 @@ public class JPPTestSuite extends TestSuite
         this.addTestSuite(ASTTransformTest.class);
         this.addTestSuite(PrinterTest.class);
         this.addTestSuite(ExprTest.class);
+        this.addTestSuite(ParseHelperTest.class);
         //this.addTestSuite(JavaSrcTest.class);
     }
     

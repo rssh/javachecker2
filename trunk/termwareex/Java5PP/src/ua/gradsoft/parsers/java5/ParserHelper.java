@@ -22,14 +22,13 @@ public class ParserHelper {
     
     public static char decodeCharLiteral(String s) throws TermWareException
     {
+      if (s.length()==0)  {
+          throw new AssertException("ParserHelper.decodeCharLiteral(\"\") called");
+      }
       String r = decodeStringOrCharLiteral(s,'\'',"character");
-      if (r.length()==0) {
-          // ?
-          return '\0';
-      }else{
-          return s.charAt(0);
-      }   
+      return r.charAt(0);      
     }
+
     
     
     static String decodeStringOrCharLiteral(String s, char quote, String kind) throws TermWareException
