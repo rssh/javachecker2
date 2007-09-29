@@ -79,7 +79,11 @@ public class Main {
         JavaCheckerFacade.addInputDirectory(configuration_.getInputDir(),true);
         for(String includeDir: configuration_.getIncludeDirs()) {
             JavaCheckerFacade.addInputDirectory(includeDir,false);
+        }        
+        for(String includeJar: configuration_.getIncludeJars()) {
+            JavaCheckerFacade.addIncludeJar(includeJar);
         }
+        
         
             
         try {
@@ -89,6 +93,7 @@ public class Main {
 //            jpeSystem_.addRule("JPE(CompilationUnit$[$x:$y])->CompilationUnit$[JPE($x),JPE($y)]");
 //            jpeSystem_.addRule("JPE(NIL)->NIL");
             jpeSystem_=TermWare.getInstance().getOrCreateDomain("JPE").resolveSystem(configuration_.getTransformationName());
+            idSystem_=TermWare.getInstance().getOrCreateDomain("JPE").resolveSystem("ID");
             IFacts facts = jpeSystem_.getFacts();
             if (facts instanceof JPEFacts) {
                 ((JPEFacts)facts).setConfiguration(configuration_);
@@ -115,12 +120,22 @@ public class Main {
             try {
               for(JavaTypeModel tm: typeModels) {
                Term modelTerm = tm.getModelTerm();               
-               Term argTerm = TermWare.getInstance().getTermFactory().createTerm(configuration_.getTransformationName(),modelTerm);
-               System.err.println("start JPE reduce for "+tm.getFullName()); 
-               Term resultTerm = jpeSystem_.reduce(argTerm);
+               String transformation = configuration_.getTransformationName();
+               TermSystem ts = jpeSystem_;
+               if (configuration_.isDisabledClass(tm.getErasedFullName())) {
+                   transformation = "ID";
+                   ts = idSystem_;
+               }
+               Term argTerm = TermWare.getInstance().getTermFactory().createTerm(transformation,modelTerm);
+               if (CompileTimeConstants.DEBUG) {
+                      System.err.println("start "+transformation+" reduce for "+tm.getFullName()); 
+               }
+               Term resultTerm = ts.reduce(argTerm);
                results.add(resultTerm);               
-               System.out.println("out model:");
-               resultTerm.println(System.out);
+               if (CompileTimeConstants.DEBUG) {
+                      System.out.println("out model:");
+                      resultTerm.println(System.out);
+               }                                
               }
             }catch(InvalidJavaTermException ex){
                 throw new JPEProcessingException("Error during processing "+ex.getFileAndLine().toString(),ex);
@@ -130,11 +145,15 @@ public class Main {
                 throw new JPEProcessingException("Error during processing "+ex.getFileAndLine().toString(),ex);
             }
             if (typeModels.size()>0) {
-              try {                 
-                System.err.println("create compilation unit.");  
+              try {            
+                if (CompileTimeConstants.DEBUG)  {
+                    System.err.println("create compilation unit.");  
+                }
                 Term outCuTerm = createOutCompilationUnitTerm(results,typeModels);
-                System.out.println("outCuTerm:");
-                outCuTerm.println(System.out);
+                if (CompileTimeConstants.DEBUG) {
+                   System.err.println("outCuTerm:");
+                   outCuTerm.println(System.err);
+                }
                 printCompilationUnit(outCuTerm, typeModels.get(0).getFullName());
               }catch(TermWareException ex){
                   throw new JPEProcessingException("Error during processing",ex);
@@ -172,7 +191,9 @@ public class Main {
     }
     
     private void collectFile(String packageDir, String sourceDir, File f) throws JPEProcessingException {
-        System.out.println("collect file:"+f.getAbsolutePath());
+        if (CompileTimeConstants.DEBUG) {
+          System.out.println("collect file:"+f.getAbsolutePath());
+        }
         Reader reader = null;
         try {
             reader = new FileReader(f);
@@ -215,71 +236,6 @@ public class Main {
             jpeFacts_.getUnitsToProcess().add(ref);
                     
         }
-        /*
-        TermSystem jpeSystem=getJPESystem();
-        Term transformedSource=null;
-        try {
-            Term startSource=startTransformer_.transform(source);
-            System.err.println("startSource="+TermHelper.termToString(startSource));
-            transformedSource=jpeSystem.reduce(startSource);
-            System.err.println("transformedSource="+TermHelper.termToString(transformedSource));
-        }catch(TermWareException ex){
-            throw new JPEProcessingException("exception during transforming file "+f.getAbsolutePath(),ex);
-        }
-        if (!transformedSource.getName().equals("CompilationUnit")) {
-            transformedSource.println(System.err);
-            throw new JPEProcessingException("transformed source is not compilation unit.");
-        }
-        if (transformedSource.getArity()!=0) {
-            if (configuration_.isDump()) {
-                transformedSource.println(System.out);
-            }
-            String packageName = "";
-            try {
-                packageName=JUtils.getCompilationUnitPackageName(transformedSource);
-            }catch(TermWareException ex){
-                throw new JPEProcessingException("exception during getting package name for results for "+f.getAbsolutePath(),ex);
-            }
-            String firstClassName = null;
-            try {
-                firstClassName = JUtils.getFirstTypeDefinitionName(transformedSource);
-            }catch(TermWareException ex){
-                throw new JPEProcessingException("exception during getting type declaration name for results for "+f.getAbsolutePath(),ex);
-            }catch(EntityNotFoundException ex){
-                // file without type declaration, i. e. empty.
-                // just do nothing.
-                return;
-            }
-            String sTransformed = null;
-            try {
-                sTransformed=TermHelper.termToPrettyString(transformedSource,"Java",TermWare.getInstance().getTermFactory().createNIL());
-            }catch(TermWareException ex){
-                transformedSource.println(System.err);
-                throw new JPEProcessingException("exception during printing resuts for "+f.getAbsolutePath(),ex);
-            }
-            FileWriter writer = null;
-            String destinationPackageDir=JUtils.createDirectoryNameFromPackageName(destinationDir,packageName);
-            File destinationDirFile = new File(destinationPackageDir);
-            if (!destinationDirFile.exists()) {
-                destinationDirFile.mkdirs();
-            }
-            String outputFname=destinationPackageDir+File.separator+JUtils.createSourceFileNameFromClassName(firstClassName);
-            try {
-                writer=new FileWriter(outputFname);
-                writer.append(sTransformed);
-            }catch(IOException ex){
-                throw new JPEProcessingException("exception during  "+f.getAbsolutePath(),ex);
-            }finally{
-                if (writer!=null){
-                    try {
-                        writer.close();
-                    }catch(IOException ex){
-                        System.err.println("exception during closing file "+outputFname);
-                    }
-                }
-            }
-        }
-         */
     }
     
     /**
@@ -351,11 +307,12 @@ public class Main {
             }catch(EntityNotFoundException ex){
                 // file without type declaration, i. e. empty.
                 // just do nothing.
-                if (true) {                    
+                if (false) {                    
                   ex.printStackTrace();  
                   throw new JPEProcessingException("exception during getting type declaration name for results for "+typeName,ex);
+                }else{
+                  return;
                 }
-                return;
             }            
             FileWriter writer = null;
             String destinationPackageDir=JUtils.createDirectoryNameFromPackageName(configuration_.getOutputDir(),packageName);
@@ -393,6 +350,7 @@ public class Main {
     
    
     private TermSystem    jpeSystem_=null;
+    private TermSystem    idSystem_=null;
     private TermSystem    modelToJavaSystem_=null;
     private Configuration configuration_=new Configuration();
     private JPEFacts      jpeFacts_;

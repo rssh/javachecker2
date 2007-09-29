@@ -18,6 +18,7 @@ import junit.framework.TestCase;
 import ua.gradsoft.termware.IParser;
 import ua.gradsoft.termware.IParserFactory;
 import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermSystem;
 import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.exceptions.AssertException;
 
@@ -162,10 +163,33 @@ public class ParsePrintParseTest extends TestCase
         configuration.setCreateOutputDir(true);
         Main main = new Main();
         main.init(configuration);
+        TermSystem ts = TermWare.getInstance().getDomain("M2J").resolveSystem("M2J");
+        //ts.setLoggingMode(true);
+        //ts.setLoggedEntity("All");
         main.run();
         int nReadedFiles = checkAllSourcesAreParsed("output/jpe-example7-1");
         assertTrue("all files are read",nReadedFiles>0);        
     }
+
+    public void testExample8_JPE() throws Exception
+    {
+        Configuration configuration = new Configuration();
+        configuration.setJPEHome(".");
+        configuration.setInputDir("testdata/example8");
+        configuration.setOutputDir("output/jpe-example8");
+        configuration.getCompileTimeProperties().put("q1","1");
+        configuration.setTransformationName("JPE");
+        configuration.setCreateOutputDir(true);
+        Main main = new Main();
+        main.init(configuration);
+        //TermSystem ts = TermWare.getInstance().getDomain("M2J").resolveSystem("M2J");
+        //ts.setLoggingMode(true);
+        //ts.setLoggedEntity("All");
+        main.run();
+        int nReadedFiles = checkAllSourcesAreParsed("output/jpe-example8");
+        assertTrue("all files are read",nReadedFiles>0);        
+    }
+    
     
     
     private int checkAllSourcesAreParsed(String fname) throws Exception

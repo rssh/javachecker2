@@ -11,9 +11,11 @@ package ua.gradsoft.jpe;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *Class which store JPE Configuration.
@@ -22,6 +24,7 @@ public class Configuration implements Serializable {
     
     public void init(String[] args) throws JPEConfigurationException
     {
+        int nPairs=0;
         String hashFileName=null;
         for(int i=0;i<args.length; ++i) {
             if (args[i].equals("--input-dir")) {
@@ -35,7 +38,13 @@ public class Configuration implements Serializable {
                     throw new JPEConfigurationException("option --input-dir must have argument");
                 }
                 includeDirs_.add(args[i+1]);
-                ++i;                
+                ++i;      
+            }else if(args[i].equals("--include-jar")) {
+                if (i==args.length-1) {
+                    throw new JPEConfigurationException("option --input-jar must have argument");
+                }
+                includeJars_.add(args[i+1]);
+                ++i;
             }else if(args[i].equals("--output-dir")) {
                 if (i==args.length-1) {
                     throw new JPEConfigurationException("option --output-dir must have argument");
@@ -66,6 +75,12 @@ public class Configuration implements Serializable {
                 }
                 transformationName_=args[i+1];
                 ++i;           
+            }else if(args[i].equals("--disable-class")) {
+                if (i==args.length-1) {
+                    throw new JPEConfigurationException("option --disable-class must have argument");
+                }                
+                disabledClasses_.add(args[i+1]);
+                ++i;
             }else if(args[i].equals("--dump")){
                 dump_=true;
             }else if(args[i].equals("--value-pair")){
@@ -74,7 +89,17 @@ public class Configuration implements Serializable {
                 }                                                
                 String key=args[++i];
                 String value=args[++i];
-                compileTimeProperties_.put(key,value);
+                ++nPairs;
+                if (CompileTimeConstants.DEMO) {
+                    if (nPairs > CompileTimeConstants.DEMO_MAX_CONFIG_VALUES) {
+                        System.err.println("Warning: Demo version supports only "+CompileTimeConstants.DEMO+" value pairs");
+                        System.err.println("So ("+key+","+value+") is ignored");                        
+                    }else{
+                        compileTimeProperties_.put(key,value);
+                    }
+                }else{
+                   compileTimeProperties_.put(key,value);
+                }
             }else if(args[i].equals("--create-output-dir")){
                 createOutputDir_=true;
             }else{
@@ -141,6 +166,21 @@ public class Configuration implements Serializable {
         transformationName_=transformationName; 
     }
     
+    public Set<String>  getDisabledClasses()
+    {
+        return disabledClasses_;
+    }
+    
+    public boolean isDisabledClass(String classname)
+    {
+        return disabledClasses_.contains(classname);
+    }
+    
+    public void addDisabledClass(String classname)
+    {
+        disabledClasses_.add(classname);
+    }
+    
     public boolean isDump()
     {
         return dump_;
@@ -170,11 +210,29 @@ public class Configuration implements Serializable {
     {
         return includeDirs_;
     }
+        
     
     public void  setIncludeDirs(List<String> includeDirs)
     {
         includeDirs_=includeDirs;
     }
+    
+    public void addIncludeJar(String includeJar)
+    {
+        includeJars_.add(includeJar);
+    }
+    
+    public List<String>  getIncludeJars()
+    {
+        return includeJars_;
+    }
+        
+    
+    public void  setIncludeJars(List<String> includeJars)
+    {
+        includeJars_=includeJars;
+    }
+    
     
     public Map<String,String>  getCompileTimeProperties()
     {
@@ -186,9 +244,11 @@ public class Configuration implements Serializable {
     private String inputDir_=null;
     private String outputDir_=null;
     private List<String>  includeDirs_=new LinkedList<String>();
-    private String compileTimeClass_=null;
+    private List<String>  includeJars_=new LinkedList<String>();
+    private String compileTimeClass_="CompileTimeConstants";
     private String jpeHome_=null;
-    private String transformationName_="JPE";
+    private String transformationName_="JPE";  
     private HashMap<String,String> compileTimeProperties_=new HashMap<String,String>();
+    private HashSet<String> disabledClasses_ = new HashSet<String>();
     
 }
