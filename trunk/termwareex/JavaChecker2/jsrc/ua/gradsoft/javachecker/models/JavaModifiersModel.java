@@ -9,6 +9,7 @@
 
 package ua.gradsoft.javachecker.models;
 
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -94,9 +95,6 @@ public abstract class JavaModifiersModel
     public boolean isVolatile()
     { return (getIntValue() & VOLATILE)!=0; }
     
-     public  Term getModelTerm() throws TermWareException
-     {
-         return TermUtils.createTerm("Modifiers",TermUtils.createInt(getIntValue()));
-     }
+     public abstract Term getModelTerm() throws TermWareException, EntityNotFoundException;
     
 }

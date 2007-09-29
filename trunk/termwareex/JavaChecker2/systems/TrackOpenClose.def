@@ -37,6 +37,8 @@ system("TrackOpenClose",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.Prox
      CheckFunctions(MemberVariableModel($modifiers, $typeRef, $name, $initializer,$model),$classCtx) -> true,
 
      CheckBlock($x) -> CheckBlock($x,[]),
+     CheckBlock(Block($x)) -> CheckBlock($x),
+     CheckBlock(Block($x),$y) -> CheckBlock($x,$y),
 
 
      CheckBlock([$x:$y],$state) -> CheckReturn($state,CheckBlock($y,CheckStatement($x,$state))), 

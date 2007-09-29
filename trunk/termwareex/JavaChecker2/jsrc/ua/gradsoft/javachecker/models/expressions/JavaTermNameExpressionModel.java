@@ -107,8 +107,9 @@ public class JavaTermNameExpressionModel extends JavaTermExpressionModel {
     private void lazyInitProxy() throws TermWareException, EntityNotFoundException {        
         Term list=t_.getSubtermAt(0);
 
-        boolean debug=false;
         
+        boolean debug=false;
+        /*
         Term dbgCurr=list;
         String n1=null;
         String n2=null;
@@ -133,6 +134,7 @@ public class JavaTermNameExpressionModel extends JavaTermExpressionModel {
                 System.out.println("our!!");
             }
         }
+         */
         
         
         // sink, is this one.

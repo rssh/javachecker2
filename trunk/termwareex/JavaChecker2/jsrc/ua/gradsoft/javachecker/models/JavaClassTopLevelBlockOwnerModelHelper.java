@@ -70,7 +70,8 @@ public class JavaClassTopLevelBlockOwnerModelHelper {
            {             
                return new JavaClassFormalParameterModel(
                        "fp"+i,
-                       new JavaClassModifiersModel(i==paramLength-1 && lexecutable.isVarArgs() ? JavaModifiersModel.VARARGS : 0),
+                       lexecutable.getParameterAnnotations()[i],
+                       (i==paramLength-1 && lexecutable.isVarArgs() ? JavaModifiersModel.VARARGS : 0),
                        JavaClassTypeModel.createTypeModel(lexecutable.getClassFormalParameterTypes()[i]),
                        lexecutable,
                        i
@@ -87,7 +88,8 @@ public class JavaClassTopLevelBlockOwnerModelHelper {
           for(int i=0; i<types.length; ++i) {
             retval.add(new JavaClassFormalParameterModel(
                        "fp"+i,
-                       new JavaClassModifiersModel(i==types.length-1 && executable.isVarArgs() ? JavaModifiersModel.VARARGS : 0),
+                       executable.getParameterAnnotations()[i],
+                       (i==types.length-1 && executable.isVarArgs() ? JavaModifiersModel.VARARGS : 0),
                        JavaClassTypeModel.createTypeModel(types[i]),
                        executable,
                        i
@@ -115,6 +117,18 @@ public class JavaClassTopLevelBlockOwnerModelHelper {
                }
            }
            );   
+    }
+
+    public static List<JavaAnnotationInstanceModel> getFormalParameterAnnotationsList(final JavaClassTopLevelBlockOwnerModel executable, final int i, final JavaFormalParameterModel fpi)
+    {
+        return new ImmutableMappedList<Integer,JavaAnnotationInstanceModel>(
+                new IntegerOrderList(executable.getParameterAnnotations()[i].length),
+                new Function<Integer,JavaAnnotationInstanceModel>(){
+            public JavaAnnotationInstanceModel function(final Integer k){
+                return new JavaClassAnnotationInstanceModel(ElementType.PARAMETER,executable.getParameterAnnotations()[i][k],fpi);
+            }
+        }
+                );
     }
 
 

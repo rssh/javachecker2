@@ -69,7 +69,8 @@ public class JavaTermStaticFieldExpressionModel extends JavaTermExpressionModel
     {
       Term typeTerm = t_.getSubtermAt(0);
       JavaPlaceContext ctx = this.createPlaceContext();
-      JavaTypeModel tm = JavaResolver.resolveTypeTerm(typeTerm,ctx);
+     // JavaTypeModel tm = JavaResolver.resolveTypeTerm(typeTerm,ctx);
+      JavaTypeModel tm = memberVariable_.getOwnerType();
       Term typeRef = TermUtils.createTerm("TypeRef",typeTerm,TermUtils.createJTerm(tm));
       Term identifier = t_.getSubtermAt(1);
       Term mv = TermUtils.createJTerm(memberVariable_);
@@ -80,6 +81,6 @@ public class JavaTermStaticFieldExpressionModel extends JavaTermExpressionModel
     
     public JavaMemberVariableModel  getFieldModel()
     { return memberVariable_; }
-    
+     
     private JavaMemberVariableModel memberVariable_;
 }

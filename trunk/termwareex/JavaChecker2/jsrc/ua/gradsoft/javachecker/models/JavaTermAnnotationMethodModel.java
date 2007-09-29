@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
@@ -58,6 +59,7 @@ public class JavaTermAnnotationMethodModel extends JavaMethodModel
         try {  
           resolvedReturnType_=JavaResolver.resolveTypeToModel(typeTerm_,getTypeModel());
         }catch(EntityNotFoundException ex){
+            ex.setFileAndLine(JUtils.getFileAndLine(typeTerm_));    
             throw new InvalidJavaTermException(ex.getMessage(),typeTerm_,ex);
         }
       }
@@ -89,21 +91,21 @@ public class JavaTermAnnotationMethodModel extends JavaMethodModel
     { return false; }
     
     /**
-     * AnnotationFieldModel(modifiers,name,type,defaultValue, context)
+     * AnnotationMethodModel(modifiers,name,type,defaultValue, context)
      */
-    public Term getModelTerm() throws TermWareException
+    public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
         
-       Term modifiersTerm = TermUtils.createTerm("Modifiers",TermUtils.createInt(modifiersModel_.getIntValue()));
+       Term modifiersTerm = modifiersModel_.getModelTerm(); 
        Term nameTerm = identifierTerm_;
-       JavaTypeModel tm = getTypeModel();
+       JavaTypeModel tm = this.getResultType();
        Term ttm = TermUtils.createJTerm(tm);
-       Term typeTerm = TermUtils.createTerm("TypeRef",typeTerm_,ttm);
+       Term typeRef = TermUtils.createTerm("TypeRef",typeTerm_,ttm);
        Term defaultValue = defaultValueTerm_;
        JavaPlaceContext ctx = JavaPlaceContextFactory.createNewTypeContext(getTypeModel());
        Term tctx = TermUtils.createJTerm(ctx);
        Term retval = TermUtils.createTerm("AnnotationMethodModel", modifiersTerm, nameTerm,
-                                           typeTerm,defaultValue, tctx);
+                                           typeRef,defaultValue, tctx);
        return retval;
     }
     

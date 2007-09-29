@@ -12,10 +12,12 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.util.Function;
 import ua.gradsoft.javachecker.util.FunctionMap;
 import ua.gradsoft.javachecker.util.ImmutableMappedCollection;
+import ua.gradsoft.javachecker.util.ImmutableMappedList;
 import ua.gradsoft.javachecker.util.IntegerOrderList;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
@@ -39,7 +41,7 @@ public class JavaClassFieldModel extends JavaMemberVariableModel {
     
     public JavaModifiersModel getModifiers() {
         int jmodifiers=field_.getModifiers();
-        return new JavaClassModifiersModel(JavaClassTypeModel.translateModifiers(jmodifiers));
+        return new JavaClassModifiersModel(getAnnotationsList(),JavaClassTypeModel.translateModifiers(jmodifiers));
     }
     
     public JavaTypeModel getOwnerType() {
@@ -73,6 +75,18 @@ public class JavaClassFieldModel extends JavaMemberVariableModel {
             
         }
         );
+    }
+    
+    public List<JavaAnnotationInstanceModel> getAnnotationsList()
+    {
+        return new ImmutableMappedList<Integer,JavaAnnotationInstanceModel>(
+                new IntegerOrderList(field_.getDeclaredAnnotations().length),
+                new Function<Integer,JavaAnnotationInstanceModel>(){
+            public JavaAnnotationInstanceModel function(Integer x) {
+                return new JavaClassAnnotationInstanceModel(ElementType.FIELD, field_.getDeclaredAnnotations()[x],this);
+            }
+        }
+                );
     }
     
     public boolean isSupportInitializerExpression()

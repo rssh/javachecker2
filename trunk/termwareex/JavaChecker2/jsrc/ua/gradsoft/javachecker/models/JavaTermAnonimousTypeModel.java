@@ -11,6 +11,7 @@ package ua.gradsoft.javachecker.models;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
+import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
@@ -166,7 +167,12 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
     public List<JavaTypeModel> getSuperInterfaces() throws TermWareException
     {
         if (!supersAreInitialized_) {
+          try{  
             lazyInitSupers();
+          }catch(EntityNotFoundException ex){
+              ex.setFileAndLine(JUtils.getFileAndLine(t_));
+              throw new AssertException(ex.getMessage(),ex);
+          }
             supersAreInitialized_=true;
         }
         return super.getSuperInterfaces();
@@ -177,15 +183,17 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
      *to prevent recursive loading of the same class, when anonimpus class extends
      *own public enclosing class. 
      */
-    private void lazyInitSupers() throws TermWareException
+    private void lazyInitSupers() throws TermWareException, EntityNotFoundException
     {
       Term extendsOrImplements = t_.getSubtermAt(CLASS_OR_INTERFACE_TERM_INDEX);        
       if (extendsOrImplements.getName().equals("ClassOrInterfaceType")||extendsOrImplements.getName().equals("Identifier")) {                    
           JavaTypeModel superTypeModel=null;
-          try{
+          if (statement_!=null) {            
              superTypeModel=JavaResolver.resolveTypeToModel(extendsOrImplements,statement_);
-          }catch(EntityNotFoundException ex){
-              superTypeModel=JavaUnknownTypeModel.INSTANCE;
+          }else if (getEnclosedType()!=null) {
+             superTypeModel=JavaResolver.resolveTypeToModel(extendsOrImplements,getEnclosedType()); 
+          } else {
+              throw new InvalidJavaTermException("Anonimous type definition outside statement or type",t_);
           }
           Term ta=t_.getSubtermAt(TYPE_ARGUMENTS_TERM_INDEX);
           if (!ta.isNil()) {

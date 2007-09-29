@@ -32,11 +32,13 @@ public class JavaTermModifiersModel extends JavaModifiersModel
     public JavaTermModifiersModel(int modifiers)
     {
         modifiers_=modifiers;
+        annotationsList_=new LinkedList<JavaAnnotationInstanceModel>();
     }
             
     public JavaTermModifiersModel()
     {
         modifiers_=0;
+        annotationsList_=new LinkedList<JavaAnnotationInstanceModel>();          
     }
     
     public JavaTermModifiersModel(Term modifiers, ElementType ownerType, Object owner) throws TermWareException
@@ -119,6 +121,23 @@ public class JavaTermModifiersModel extends JavaModifiersModel
          annotationsList_.put(name,annotation);
      }
      */
+     
+     /**
+      * Modifiers(AnnotationsList, int)
+      */
+     public Term getModelTerm() throws TermWareException, EntityNotFoundException
+     {
+       Term anl = TermUtils.createNil();
+       List<JavaAnnotationInstanceModel> annotationsList = getAnnotationsList();
+       for(JavaAnnotationInstanceModel anim: annotationsList) {
+           Term ct = anim.getModelTerm();
+           anl=TermUtils.createTerm("cons",ct,anl);           
+       }
+       anl=TermUtils.reverseListTerm(anl);
+       Term iv = TermUtils.createInt(getIntValue());
+       return TermUtils.createTerm("Modifiers",iv,anl);       
+     }
+     
      
     private int modifiers_;
     private List <JavaAnnotationInstanceModel> annotationsList_;

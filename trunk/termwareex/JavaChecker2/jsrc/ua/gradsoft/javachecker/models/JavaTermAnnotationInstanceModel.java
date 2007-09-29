@@ -125,7 +125,7 @@ public class JavaTermAnnotationInstanceModel extends JavaAnnotationInstanceModel
         for(Map.Entry<String,JavaExpressionModel> e:values_.entrySet()) {
             Term name = TermUtils.createIdentifier(e.getKey());
             Term value = e.getValue().getModelTerm();
-            Term pair = TermUtils.createTerm("pair",name,value);
+            Term pair = TermUtils.createTerm("MemberValuePair",name,value);
             l=TermUtils.createTerm("cons",pair,l);
         }
         l=TermUtils.reverseListTerm(l);

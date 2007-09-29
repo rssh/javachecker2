@@ -5,13 +5,16 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import ua.gradsoft.javachecker.util.CachedMap;
 import ua.gradsoft.javachecker.util.Function;
 import ua.gradsoft.javachecker.util.FunctionMap;
 import ua.gradsoft.javachecker.util.ImmutableMappedCollection;
+import ua.gradsoft.javachecker.util.ImmutableMappedList;
 import ua.gradsoft.javachecker.util.IntegerOrderList;
 
 /**
@@ -24,16 +27,18 @@ public class JavaClassFormalParameterModel extends JavaFormalParameterModel
     /** Creates a new instance of JavaClassFormalParameterModel */
     public JavaClassFormalParameterModel(
             String name,
-            JavaModifiersModel modifiers,   
+            Annotation[] annotations,
+            int          modifiers,            
             JavaTypeModel type,
             JavaClassTopLevelBlockOwnerModel owner,
             int index
             ) {
-        name_=name;
-        modifiers_=modifiers;
+        name_=name;       
+        annotations_=annotations;
         type_=type;
         owner_=owner;
         index_=index;
+        modifiers_=new JavaClassModifiersModel(getAnnotationsList(),modifiers);
     }
     
     public JavaModifiersModel  getModifiers()
@@ -79,6 +84,22 @@ public class JavaClassFormalParameterModel extends JavaFormalParameterModel
               );            
     }
     
+    
+    public List<JavaAnnotationInstanceModel> getAnnotationsList()
+    {
+        return new ImmutableMappedList<Integer,JavaAnnotationInstanceModel>(
+                new IntegerOrderList(annotations_.length),
+                new Function<Integer,JavaAnnotationInstanceModel>(){
+            public JavaAnnotationInstanceModel function(Integer i)
+            {
+                return new JavaClassAnnotationInstanceModel(ElementType.PARAMETER,annotations_[i],JavaClassFormalParameterModel.this);
+            }
+        }
+                );                           
+    }
+
+    
+    
     public int getIndex()
     { return index_; }
     
@@ -88,6 +109,7 @@ public class JavaClassFormalParameterModel extends JavaFormalParameterModel
     private JavaModifiersModel modifiers_; 
     private JavaTypeModel      type_;
     private JavaClassTopLevelBlockOwnerModel owner_;
+    private Annotation[]  annotations_;
     int     index_;
     
 }

@@ -60,7 +60,7 @@ public abstract class JavaFormalParameterModel implements JavaVariableModel
         Term modifiersTerm = getModifiers().getModelTerm();
         Term typeRef=TermUtils.createTerm("TypeRef",type.getFullNameAsTerm(),TermUtils.createJTerm(type));
         Term identifier=TermUtils.createIdentifier(getName());
-        JavaPlaceContext ctx = JavaPlaceContextFactory.createNewTopLevelBlockOwnerContext(getTopLevelBlockOwner());
+        JavaPlaceContext ctx = JavaPlaceContextFactory.createNewTopLevelBlockOwnerContext(getTopLevelBlockOwner());        
         Term tctx = TermUtils.createJTerm(ctx);
         Term retval = TermUtils.createTerm("FormalParameterModel",modifiersTerm,typeRef,identifier,tctx);
         return retval;

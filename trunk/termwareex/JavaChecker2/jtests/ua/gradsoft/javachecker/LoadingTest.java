@@ -196,7 +196,7 @@ public class LoadingTest extends TestCase
       assertEquals(tl.getSubtermAt(0).getSubtermAt(0).getString(),"x");
       
       Term id = ppModel.getShortNameAsTerm();
-      tl = TermUtils.addTermToList(tl,id);
+      tl = TermUtils.appendTermToList(tl,id);
       assertTrue(tl.getSubtermAt(0).getName().equals("Identifier"));
       assertEquals(tl.getSubtermAt(0).getSubtermAt(0).getString(),"x");
       

@@ -9,10 +9,14 @@
 package ua.gradsoft.javachecker.models;
 
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *Model of enum constant
@@ -50,7 +54,25 @@ public class JavaTermEnumConstantModel extends JavaEnumConstantModel
     
     public JavaTypeModel getOwnerType()
     { return owner_; }
-        
+
+    public List<JavaTermExpressionModel>  getArgumentModels() throws TermWareException
+    {          
+      if (arguments_==null) {
+          Term at = argumentsTerm_;
+          if (!at.isNil()) {
+              at = at.getSubtermAt(0);
+          }
+            arguments_=new LinkedList<JavaTermExpressionModel>();
+            while(!at.isNil()) {
+              Term argterm = at.getSubtermAt(0);
+              at = at.getSubtermAt(1);
+              JavaTermExpressionModel expr = JavaTermExpressionModel.create(argterm,null,owner_);
+              arguments_.add(expr);
+            }
+      }  
+      
+      return arguments_;
+    }
     
     public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
     { return Collections.emptyMap(); }
@@ -60,8 +82,15 @@ public class JavaTermEnumConstantModel extends JavaEnumConstantModel
      */
     public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
+       Term argumentsModelTerm = TermUtils.createNil();
+       for(JavaTermExpressionModel expr: getArgumentModels()) {
+           Term argm = expr.getModelTerm();
+           argumentsModelTerm = TermUtils.createTerm("cons",argm,argumentsModelTerm);
+       }
+       argumentsModelTerm = TermUtils.reverseListTerm(argumentsModelTerm);
        Term subtypeModelTerm = (subtype_==null) ? TermUtils.createNil() : subtype_.getModelTerm();
-       return TermUtils.createTerm("EnumConstantModel",identifierTerm_,argumentsTerm_,subtypeModelTerm);
+       
+       return TermUtils.createTerm("EnumConstantModel",identifierTerm_,argumentsModelTerm,subtypeModelTerm);
     }
         
     public Term getIdentifierTerm()
@@ -77,6 +106,7 @@ public class JavaTermEnumConstantModel extends JavaEnumConstantModel
     private String               name_;
     private Term                 identifierTerm_;
     private Term                 argumentsTerm_;
+    private List<JavaTermExpressionModel>  arguments_=null;
     private JavaTermEnumModel    owner_;
     private JavaTermEnumAnonimousTypeModel subtype_=null;
     

@@ -49,7 +49,7 @@ public class JavaTermTopLevelBlockModel implements JavaTopLevelBlockModel
     }
        
     /**
-     * cons(StatementModel,....)
+     * Block( cons(StatementModel,....) )
      */
     public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
@@ -58,7 +58,9 @@ public class JavaTermTopLevelBlockModel implements JavaTopLevelBlockModel
             Term statementModelTerm = ts.getModelTerm();
             retval=TermUtils.createTerm("cons",statementModelTerm,retval);
         }
-        return TermUtils.reverseListTerm(retval);
+        retval = TermUtils.reverseListTerm(retval);
+        retval = TermUtils.createTerm("Block",retval);
+        return retval;
     }
    
     

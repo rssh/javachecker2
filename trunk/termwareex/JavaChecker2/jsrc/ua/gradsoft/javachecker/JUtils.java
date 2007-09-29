@@ -65,7 +65,7 @@ public final class JUtils {
               }else if(ct.getName().equals("AnnotationTypeDeclaration")){
                   retval=ct.getSubtermAt(0).getSubtermAt(0).getString();
               }else{
-                  throw new AssertException("Invalid contest of type declaration");
+                  throw new AssertException("Invalid contest of type declaration:"+TermHelper.termToString(ct));
               }
           }
           if (retval!=null) {

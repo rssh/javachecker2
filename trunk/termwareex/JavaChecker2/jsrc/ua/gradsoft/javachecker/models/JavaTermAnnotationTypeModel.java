@@ -93,16 +93,17 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
     { return t_; }
     
     /**
-     * AnnotationTypeDeclarationModel(name,[...],context)
+     * AnnotationTypeDeclarationModel(modifiers,name,[...],context)
      *where AnnotationTypeBodyModel is list,
      */
     public Term getModelTerm() throws TermWareException, EntityNotFoundException
     {
+        Term modifiersTerm = getModifiersModel().getModelTerm();
         Term nameTerm=t_.getSubtermAt(0);
         Term typeBodyModel=getMemberModelsList();
         JavaPlaceContext context = JavaPlaceContextFactory.createNewTypeContext(this);
         Term tcontext = TermUtils.createJTerm(context);
-        return TermUtils.createTerm("AnnotationTypeModel",nameTerm,typeBodyModel,tcontext);
+        return TermUtils.createTerm("AnnotationTypeModel",modifiersTerm,nameTerm,typeBodyModel,tcontext);
     }
     
        
