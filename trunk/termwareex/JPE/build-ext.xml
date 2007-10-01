@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="JPE-ext" default="default" basedir=".">
+    <description>Extensions to JPE project</description>
+
+    <!--TODO: move properties to file.  -->
+    <property name="jpehome" value="." />
+   
+    <taskdef name="jpe" classname="ua.gradsoft.jpe.ant.JPETask">
+      <classpath>
+        <pathelement location="${jpehome}/lib/JPE.jar" />
+        <pathelement location="${jpehome}/lib/TermWare2.jar" />
+        <pathelement location="${jpehome}/lib/JavaChecker2.jar" />
+        <pathelement location="${jpehome}/lib/JavaChecker2Annotations.jar" />
+        <pathelement location="${jpehome}/lib/TermWareJPP.jar" />
+      </classpath>
+    </taskdef>
+
+    <target name="build-demo-sources">
+      <jpe jpehome="${jpehome}"
+           input="src"
+           output="output/jpe-demo" 
+           createOutputDir="true"
+           >
+        <includejars>
+          <pathelement location="${jpehome}/lib/TermWare2.jar" />
+          <pathelement location="${jpehome}/lib/JavaChecker2.jar" />
+          <pathelement location="${jpehome}/lib/JavaChecker2Annotations.jar" />
+          <pathelement location="${jpehome}/lib/TermWareJPP.jar" />
+          <pathelement location="${jpehome}/lib/ant.jar" />
+        </includejars>
+        <ctconstant name="DEMO" value="true" />
+      </jpe>
+    </target>
+
+    <target name="compile-demo-sources" depends="build-demo-sources">
+     <javac srcdir="output/jpe-demo" includes="**/*.java" debug="true" >
+      <classpath>
+        <pathelement location="${jpehome}/lib/TermWare2.jar" />
+        <pathelement location="${jpehome}/lib/JavaChecker2.jar" />
+        <pathelement location="${jpehome}/lib/JavaChecker2Annotations.jar" />
+        <pathelement location="${jpehome}/lib/TermWareJPP.jar" />
+        <pathelement location="${jpehome}/lib/ant.jar" />
+      </classpath>
+     </javac>
+     <jar basedir="output/jpe-demo" includes="**/*.class"
+          destfile="lib/JPEDemo.jar"
+          index="true">
+      <manifest> 
+       <attribute name="Build-By" value="${user-name}" />
+       <attribute name="Main-Class" value="ua.gradsoft.jpe.Main" />
+      </manifest> 
+     </jar>
+    </target>
+
+    <target name="termware-sources">
+      <jpe jpehome="${jpehome}"
+           input="../../TermWare.2/jsrc-core"
+           output="output/jpe-termware" 
+           createOutputDir="true"
+           >
+        <ctconstant name="AAA" value="true" />
+        <disable  classname="ua.gradsoft.termware.parsers.terms.TermReader" />
+      </jpe>
+    </target>
+    <target name="compile-termware" depends="termware-sources">
+     <javac srcdir="output/jpe-termware/" includes="**/*.java" debug="true" />
+    </target>
+
+</project>
