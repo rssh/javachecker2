@@ -20,5 +20,9 @@ public interface JavaTypeModelProcessor
     public void configure(JavaFacts facts) throws ConfigException, TermWareException;
     
     public void process(JavaTermTypeAbstractModel typeModel,JavaFacts facts) throws TermWareException, EntityNotFoundException;
+
+    public boolean hasSecondPass();
+    
+    public void processSecondPass(JavaTermTypeAbstractModel typeModel,JavaFacts facts) throws TermWareException, EntityNotFoundException;    
     
 }

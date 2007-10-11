@@ -29,6 +29,7 @@ import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *This class incapsulate set of Checkers.
@@ -144,6 +145,17 @@ public class Checkers {
     
     public void checkTypes(String fname, JavaCompilationUnitModel cu) throws ProcessingException
     {
+      checkTypes(fname,cu,1);  
+    }
+
+    public void checkTypes2(String fname, JavaCompilationUnitModel cu) throws ProcessingException
+    {
+      checkTypes(fname,cu,2);  
+    }
+    
+    
+    public void checkTypes(String fname, JavaCompilationUnitModel cu, int pass) throws ProcessingException
+    {
                 
         // for all types all type checkers.
         for(JavaTypeModel tm: cu.getTypeModels()) {
@@ -158,8 +170,11 @@ public class Checkers {
                 if (! (checker0 instanceof AbstractTypeChecker)) {
                     continue;
                 }
-                AbstractTypeChecker checker = (AbstractTypeChecker)checker0;
-                //boolean enabled=checker.isEnabled();                                         
+                AbstractTypeChecker checker = (AbstractTypeChecker)checker0;               
+                //boolean enabled=checker.isEnabled();       
+                if (pass==2 && !checker.hasSecondPass()) {
+                    continue;
+                }
                 boolean enabled=facts_.isCheckEnabled(e.getKey());
                 if (ttm!=null) {
                     CheckerComment checkerComment = ttm.getCheckerComment();
@@ -191,7 +206,17 @@ public class Checkers {
                 }
                 if (enabled && ttm!=null) {  
                   try {  
-                    checker.run(ttm,astTermHolder,modelTermHolder);
+                    switch(pass){
+                        case 1:
+                            checker.run(ttm,astTermHolder,modelTermHolder);
+                            break;
+                        case 2:
+                            checker.runSecondPass(ttm,astTermHolder,modelTermHolder);
+                            break;
+                        default:
+                            throw new AssertException("pass must be 1 or 2");
+                            
+                    }                                            
                   }catch(Throwable ex){                                            
                       Main.getExceptionHandler().handle(checker.getName(),fname,ex,JUtils.getSourceCodeLocation(ex));
                   }

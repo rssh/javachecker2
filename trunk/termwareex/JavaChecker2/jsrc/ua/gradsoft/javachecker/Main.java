@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.InvalidPreferencesFormatException;
@@ -54,8 +55,9 @@ public class Main
        help();
        return;
    }
+   List<AnalyzedUnitRef> processedUnits = new LinkedList<AnalyzedUnitRef>();
    try {
-     app.process();
+     app.process(processedUnits);
    }catch(ProcessingException ex){
       System.err.println(ex.getMessage());
       if (debug_) {
@@ -64,13 +66,19 @@ public class Main
    }
  }
  
- 
- 
+ /**
+  * process without collecting processed units.
+  */
  public void process() throws ProcessingException
+ {
+    process(new LinkedList<AnalyzedUnitRef>()); 
+ }
+ 
+ public void process(List<AnalyzedUnitRef> processedUnits) throws ProcessingException
  {      
    
    try {
-     readAndCheckSources();
+     readAndCheckSources(processedUnits);
    }catch(TermWareException ex){
        if (debug_) {
          ex.printStackTrace();
@@ -83,6 +91,20 @@ public class Main
        throw new ProcessingException("Error during reading sources:"+ex.getMessage(),ex);
    }
 
+   try {
+     for(AnalyzedUnitRef unitRef: processedUnits) {
+       String fname = unitRef.getDirectory()+File.separator+unitRef.getResource();             
+       JavaUnitModel unit = unitRef.getJavaUnitModel();
+       if (unit instanceof JavaCompilationUnitModel) {
+         checkers_.checkTypes2(fname,(JavaCompilationUnitModel)unit);
+       }else{
+           throw new ProcessingException("Bad unit model for "+fname+", must be JavaCompilationUnitModel");                   
+       }
+     }
+   }catch(TermWareException ex){
+       throw new ProcessingException(ex.getMessage(),ex);
+   }
+   
    try {
       report();
    }catch(AssertException ex){
@@ -311,7 +333,7 @@ public class Main
    System.err.println("example of preferences file can be found in 'etc' subdirectory of distribution.");
  }
  
- private void readAndCheckSources() throws ConfigException, TermWareException
+ private void readAndCheckSources(List<AnalyzedUnitRef> processedUnits) throws ConfigException, TermWareException
  {
      if (getFacts().getPackagesStore().getSourceDirs().isEmpty()) {
          throw new ConfigException("no directories to read");
@@ -324,7 +346,7 @@ public class Main
          if (!f.isDirectory()) {
              throw new ConfigException(dirName + " is not a directory");
          }
-         readAndCheckSources(dirName,"",f);
+         readAndCheckSources(dirName,"",f,processedUnits);
      }
  }
  
@@ -334,21 +356,22 @@ public class Main
   *@param sourceDir  -- one from source dirs, which we read now.
   *@param relativeDir -- package structure under sourcedir. entries are separated by '.'
   *@param File d -- current file or directory. 
+  *@param processedUnits -- list, where checked units will be collected.
   */
- private void readAndCheckSources(String sourceDir, String packageDir, File d) throws TermWareException
+ private void readAndCheckSources(String sourceDir, String packageDir, File d, List<AnalyzedUnitRef> processedUnits) throws TermWareException
  {
      File[] files=d.listFiles();
      for(int i=0; i<files.length; ++i) {   
          if (files[i].isDirectory()) {
              String nextPackageDir = (packageDir.length()==0 ? files[i].getName() : packageDir+"."+files[i].getName());           
-             readAndCheckSources(sourceDir, nextPackageDir, files[i]);
+             readAndCheckSources(sourceDir, nextPackageDir, files[i],processedUnits);
          }else if(files[i].getName().endsWith(".java")) {
-             readAndCheckSourceFile(sourceDir, packageDir, files[i]);
+             readAndCheckSourceFile(sourceDir, packageDir, files[i],processedUnits);
          }
      }
  }
  
- private void readAndCheckSourceFile(String sourceDir, String packageDirName, File f) throws TermWareException
+ private void readAndCheckSourceFile(String sourceDir, String packageDirName, File f, List<AnalyzedUnitRef> processedUnits) throws TermWareException
  {
      if (!qOption_ && showFiles_) {
        System.out.println("reading file "+f.getAbsolutePath());
@@ -391,6 +414,9 @@ public class Main
        }catch(TermWareException ex){
            System.err.print("error during reading sources");
            ex.printStackTrace();
+       }
+       if (processedUnits!=null) {
+          processedUnits.add(ref);
        }
        
        try {

@@ -9,6 +9,10 @@
 
 package ua.gradsoft.javachecker;
 
+import java.util.LinkedList;
+import java.util.List;
+import ua.gradsoft.javachecker.models.AnalyzedUnitRef;
+
 /**
  *Facade java class, to invoke JavaChecker from other programs.
  * @author Ruslan Shevchenko
@@ -80,10 +84,25 @@ public class JavaCheckerFacade {
       return main_.getHome();
     }    
 
+    
+    
+    public static String  getTmpDir()
+    {
+        return main_.getTmpDir();
+    }
+    
+    
     public static void process() throws ProcessingException
     {
-        main_.process();
+        List<AnalyzedUnitRef> unitRefs = new LinkedList<AnalyzedUnitRef>();
+        main_.process(unitRefs);
     }
+
+    public static void process(List<AnalyzedUnitRef> unitRefs) throws ProcessingException
+    {
+        main_.process(unitRefs);
+    }
+    
     
     public static void processOneFile(String fullClassName) throws ProcessingException 
     {

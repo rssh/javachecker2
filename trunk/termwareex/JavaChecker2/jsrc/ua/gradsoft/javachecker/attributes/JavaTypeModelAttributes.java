@@ -451,11 +451,15 @@ public class JavaTypeModelAttributes {
             }
         }
         Map<String,List<JavaMethodModel>> methodModels = null;
-        try {
+        if (tm.hasMethodModels()) {
+          try {
             methodModels=tm.getMethodModels();
-        }catch(NotSupportedException ex){
+          }catch(NotSupportedException ex){
             LOG.log(Level.WARNING,"getMethodModels is unsupported in class "+tm.getFullName());
             methodModels=Collections.emptyMap();
+          }
+        }else{
+           methodModels=Collections.emptyMap(); 
         }
         for(Map.Entry<String,List<JavaMethodModel>> e:methodModels.entrySet()) {
             for(JavaMethodModel m: e.getValue()) {
@@ -488,17 +492,19 @@ public class JavaTypeModelAttributes {
                 }
             }
         }
-        try {
+        if (tm.hasMemberVariableModels()) {
+          try{  
             Map<String,JavaMemberVariableModel> fieldModels = tm.getMemberVariableModels();
             for(JavaMemberVariableModel v: fieldModels.values()) {
                 JavaAnnotationInstanceModel ann = v.getAnnotationsMap().get("ua.gradsoft.javachecker.annotations.FieldCheckerProperties");
                 if (ann==null) continue;
                 AttributesData nd = data.getOrCreateChild(v.getName());
                 fillSourceValueExpression(nd,ann.getElement("value"));
-            }
-        }catch(NotSupportedException ex){
-            LOG.log(Level.WARNING,"error durign getting member variables annotations",ex);
-        }
+            } 
+          }catch(NotSupportedException ex){
+              LOG.log(Level.WARNING,"getMemberVariables is unsupported for "+tm.getFullName(),ex);
+          }
+        }        
     }
     
     private void fillSourceValueExpression(AttributesData data, JavaExpressionModel expr) throws TermWareException, EntityNotFoundException {

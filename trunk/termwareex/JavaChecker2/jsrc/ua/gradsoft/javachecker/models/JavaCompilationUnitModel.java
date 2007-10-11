@@ -223,6 +223,7 @@ public class JavaCompilationUnitModel extends JavaUnitModel
     public List<JavaTypeModel>  getTypeModels()
     { return typeModels_; }
     
+    
     public  void addTypeModel(JavaTypeModel typeModel)
     {
       typeModels_.add(typeModel);

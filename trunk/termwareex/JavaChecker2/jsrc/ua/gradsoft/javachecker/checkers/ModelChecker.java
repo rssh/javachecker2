@@ -46,6 +46,8 @@ public class ModelChecker extends AbstractTypeChecker {
         /* do nothing */
     }
     
+    
+    
     public void run(JavaTermTypeAbstractModel tm, Holder<Term> astTermHolder, Holder<Term> modelTermHolder) throws TermWareException {
         Term modelTerm = modelTermHolder.getValue();
         if (modelTerm==null) {
@@ -76,6 +78,14 @@ public class ModelChecker extends AbstractTypeChecker {
             ret.println(System.out);
         }
     }
+    
+    public boolean hasSecondPass()
+    { return false; }
+    
+    public void runSecondPass(JavaTermTypeAbstractModel tm, Holder<Term> astTermHolder, Holder<Term> modelTermHolder) throws TermWareException {
+        throw new AssertException("Model checkers must have not second pass");
+    }
+    
     
     private TermSystem termSystem_;
 }

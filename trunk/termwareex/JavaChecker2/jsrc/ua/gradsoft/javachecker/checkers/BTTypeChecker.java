@@ -17,6 +17,7 @@ import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermSystem;
 import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *
@@ -41,6 +42,9 @@ public class BTTypeChecker extends AbstractTypeChecker {
         /* do nothing yet */
     }
     
+    public boolean hasSecondPass()
+    { return false; }
+    
     public  void run(JavaTermTypeAbstractModel tm, Holder<Term> astTermHolder, Holder<Term> modelTermHolder) throws TermWareException {
         if (astTermHolder.getValue()==null) {            
             if (!tm.hasASTTerm()) {
@@ -51,6 +55,12 @@ public class BTTypeChecker extends AbstractTypeChecker {
         Term  toReduce = TermUtils.createTerm(getName(),astTermHolder.getValue().termClone());
         termSystem_.reduce(toReduce);
     }
+
+    public  void runSecondPass(JavaTermTypeAbstractModel tm, Holder<Term> astTermHolder, Holder<Term> modelTermHolder) throws TermWareException {
+       throw new AssertException("Second pass is not enabled in BTChecker");        
+    }
+    
+    
     
     private TermSystem  termSystem_;
 }

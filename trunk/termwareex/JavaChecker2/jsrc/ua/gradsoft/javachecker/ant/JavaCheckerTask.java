@@ -2,7 +2,7 @@
  * JavaCheckerTask.java
  *
  * Created 07/04/2004, 4:11
- * $Id: JavaCheckerTask.java,v 1.7 2007-09-23 17:58:02 rssh Exp $
+ * $Id: JavaCheckerTask.java,v 1.8 2007-10-11 15:27:01 rssh Exp $
  */
 
 package ua.gradsoft.javachecker.ant;
@@ -29,6 +29,7 @@ import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.ProcessingException;
 import ua.gradsoft.javachecker.ReportFormat;
 import ua.gradsoft.javachecker.annotations.CheckerDisable;
+import ua.gradsoft.javachecker.models.AnalyzedUnitRef;
 import ua.gradsoft.termware.TermWareRuntimeException;
 
 /**
@@ -258,7 +259,8 @@ public class JavaCheckerTask extends Task {
       main.getFacts().getPackagesStore().setJars(includeJars_);
       
       try {
-          main.process();
+          List<AnalyzedUnitRef> unitRefs = new LinkedList<AnalyzedUnitRef>();
+          main.process(unitRefs);
       }catch(ProcessingException ex){
           ex.printStackTrace();
           throw new BuildException(ex.getMessage(),ex);

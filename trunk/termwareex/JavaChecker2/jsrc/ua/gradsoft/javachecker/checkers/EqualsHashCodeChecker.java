@@ -22,7 +22,7 @@ import ua.gradsoft.termware.exceptions.AssertException;
  *Check, that if method overload eqals, than hash-code must be implemented and vice-verse.
  * @author RSSH
  */
-public class EqualsHashCodeChecker implements JavaTypeModelProcessor
+public class EqualsHashCodeChecker extends JavaTypeModelOnePassProcessor
 {
 
     public void configure(JavaFacts facts) throws ConfigException, TermWareException {

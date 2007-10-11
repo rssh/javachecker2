@@ -119,6 +119,11 @@ public class JavaPackageModel {
     JavaFacts getFacts()
     { return owner_; }
     
+    
+    public boolean isLoaded(String name)
+    {
+        return typeModelRefs_.get(name)!=null;      
+    }
 
     public JavaTypeModel findTypeModel(String name) throws TermWareException, EntityNotFoundException
     {

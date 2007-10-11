@@ -96,6 +96,14 @@ public class AnalyzedUnitRef {
       return retval;
     }
     
+    
+    
+    public String  getDirectory()
+    { return directory_; }
+    
+    public String  getResource()
+    { return resource_; }
+    
     private AnalyzedUnitType unitType_;
     private String           directory_;
     private String           resource_;

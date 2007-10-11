@@ -27,7 +27,11 @@ public abstract class AbstractTypeChecker extends AbstractChecker
        super(name,category,description,enabled); 
     }
     
+    public abstract boolean  hasSecondPass();
+    
     public abstract void run(JavaTermTypeAbstractModel tm, Holder<Term> astTerm, Holder<Term> modelTerm) throws TermWareException;
+    
+    public abstract void runSecondPass(JavaTermTypeAbstractModel tm, Holder<Term> astTerm, Holder<Term> modelTerm) throws TermWareException;
     
     
 }

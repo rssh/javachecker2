@@ -67,6 +67,8 @@ public class ClassChecker extends AbstractTypeChecker
       }
     }
     
+    
+    
     public void run(JavaTermTypeAbstractModel tm, Holder<Term> astTermHolder, Holder<Term> modelTermHolder) throws TermWareException
     {
       try {  
@@ -75,6 +77,20 @@ public class ClassChecker extends AbstractTypeChecker
           throw new AssertException(ex.getMessage()+" at "+ex.getFileAndLine().getFname()+","+ex.getFileAndLine().getLine(),ex);
       }
     }
+    
+    public boolean hasSecondPass()
+    { return instance_.hasSecondPass(); }
+    
+    public void runSecondPass(JavaTermTypeAbstractModel tm, Holder<Term> astTermHolder, Holder<Term> modelTermHolder) throws TermWareException
+    {
+      try {  
+        instance_.processSecondPass(tm,Main.getFacts());
+      }catch(EntityNotFoundException ex){
+          throw new AssertException(ex.getMessage()+" at "+ex.getFileAndLine().getFname()+","+ex.getFileAndLine().getLine(),ex);
+      }
+    }
+  
+    
     
     private JavaTypeModelProcessor instance_;
 }

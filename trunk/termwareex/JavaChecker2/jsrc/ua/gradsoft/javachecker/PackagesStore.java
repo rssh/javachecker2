@@ -103,6 +103,21 @@ public class PackagesStore
         return classLoader_;
     }
     
+    /**
+     *Clear PackageStore along with information abour source/include directories
+     *and include jars.
+     */
+    public void clear()
+    {  packageModels_.clear(); 
+       sourceDirsToProcess_.clear();
+       allSourceDirs_.clear();
+       jars_.clear();
+       classLoader_=null;
+    }
+    
+    
+    
+    
     private JavaFacts   owner_;
     private HashMap<String, JavaPackageModel> packageModels_;    
     

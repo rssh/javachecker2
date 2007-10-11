@@ -476,14 +476,21 @@ public class JavaResolver {
         //now try to find in statement
         if (where.isLocal()||where.isAnonimous()) {
             JavaStatementModel st = where.getEnclosedStatement();
-            JavaTypeModel enclosedType = st.getTopLevelBlockModel().getOwnerModel().getTypeModel();
-            List<JavaTypeVariableAbstractModel> enclosedTypeVariables=st.getTopLevelBlockModel().getOwnerModel().getTypeParameters();
-            Iterable<JavaTypeModel> enclosedLocalTypes = new LocalTypesIterable(st);
-
-            try {
+            if (st!=null) {
+              JavaTypeModel enclosedType = st.getTopLevelBlockModel().getOwnerModel().getTypeModel();
+              List<JavaTypeVariableAbstractModel> enclosedTypeVariables=st.getTopLevelBlockModel().getOwnerModel().getTypeParameters();
+              Iterable<JavaTypeModel> enclosedLocalTypes = new LocalTypesIterable(st);
+              try {
                 return resolveTypeModelByName(name,enclosedType,enclosedTypeVariables,enclosedLocalTypes);
-            }catch(EntityNotFoundException ex){
+              }catch(EntityNotFoundException ex){
                 ; // impossible ?
+              }
+            }else{
+                //this is possible
+                //  (inside anonimpus class in field declaration)
+                //if (where.getASTTerm()!=null) {              
+                //  LOG.log(Level.WARNING,"impossible local or anonimous type but enclosed statement is null at "+JUtils.getFileAndLine(where.getASTTerm()));
+                //}
             }
         }
         

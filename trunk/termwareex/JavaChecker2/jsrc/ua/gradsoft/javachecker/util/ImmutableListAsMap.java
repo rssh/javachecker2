@@ -176,9 +176,10 @@ public class ImmutableListAsMap<K,V> implements Map<K,V>
             return i<list_.size(); }
         
         public Entry<K,V> next() {
-            try {
+            try {            
+                Entry<K,V> retval = new SimpleImmutableEntry<K,V>(keyFunction_.function(i),list_.get(i));
                 ++i;
-                return new SimpleImmutableEntry<K,V>(keyFunction_.function(i),list_.get(i));
+                return retval;
             }catch(TermWareException ex){
                 throw new TermWareRuntimeException(ex);
             }

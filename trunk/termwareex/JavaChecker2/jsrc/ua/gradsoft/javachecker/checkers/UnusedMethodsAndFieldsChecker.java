@@ -42,10 +42,10 @@ import ua.gradsoft.termware.TermWareException;
 import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
- *TODO: implement
+ *Mark unused names and fields.
  * @author rssh
  */
-public class UnusedMethodsAndFieldsChecker implements JavaTypeModelProcessor
+public class UnusedMethodsAndFieldsChecker extends JavaTypeModelOnePassProcessor
 {
   
    public void configure(JavaFacts facts)
@@ -215,6 +215,7 @@ public class UnusedMethodsAndFieldsChecker implements JavaTypeModelProcessor
                        if (!isMethodOfSerializable(tmm)) {                                                  
                          facts.violationDiscovered("UnusedLocally","unused private method:"+mm.getName(),t);
                        }
+                       mm.setAttribute("LocallyUnused",TermUtils.createBoolean(true));
                    }                     
                  }
                }

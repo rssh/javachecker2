@@ -31,10 +31,10 @@ import ua.gradsoft.termware.TermWareException;
 import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
- *
+ *Check name patterns.
  * @author RSSH
  */
-public class NamePatternsChecker implements JavaTypeModelProcessor {
+public class NamePatternsChecker extends JavaTypeModelOnePassProcessor {
     
     
     public void process(JavaTermTypeAbstractModel typeModel, JavaFacts facts) throws TermWareException {
