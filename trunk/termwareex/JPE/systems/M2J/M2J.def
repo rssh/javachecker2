@@ -16,8 +16,12 @@ domain(M2J,
                                  $implementsList,
                                  $body,
                                  $context) 
-                         -> 
-                            TypeDeclaration($modifiers,
+            [ isNotReachable($context.getTypeModel()) 
+                       ] -> BLANK
+                        !-> 
+                            TypeDeclaration(
+                                   FinalIfDevirtualization($modifiers,
+                                              $context.getTypeModel()),
                                 ClassOrInterfaceDeclaration($type,
                                    $name,
                                    $typeParameters,
@@ -31,7 +35,9 @@ domain(M2J,
                      $implements,
                      $constants,
                      $members,$ctx)
-                               ->
+            [ isNotReachable($context.getTypeModel()) 
+                       ] -> BLANK
+                        !->
                                  TypeDeclaration($modifiers,
                                       EnumDeclaration( 
                                          $identifier,
@@ -43,7 +49,8 @@ domain(M2J,
            APPEND($x,[]) -> $x,
 
            AnnotationTypeModel($modifiers,$name,$body,$ctx)
-                              ->
+            [ isNotReachable($context.getTypeModel()) ] -> BLANK
+                              !->
                                 TypeDeclaration($modifiers,
                                   AnnotationTypeDeclaration(
                                      $name,
@@ -56,7 +63,8 @@ domain(M2J,
                                $name,
                                $initializer,
                                $model)   
-                                        ->
+              [ isNotReachableField($model) ] -> BLANK
+                                        !->
                                    ClassOrInterfaceBodyDeclaration(
                                      $modifiers,
                                      FieldDeclaration(R($typeRef),
@@ -75,6 +83,8 @@ domain(M2J,
                        $blockModel,
                        $context)
             [ $context.getTopLeveBlockOwnerModel().isSynthetic() ] -> BLANK
+           |
+            [ false && isNotReachableMethod($context.getTopLeveBlockOwnerModel()) ] -> BLANK
                                   !->
                                    ClassOrInterfaceBodyDeclaration(
                                      $modifiers,
@@ -230,7 +240,7 @@ domain(M2J,
                       -> WhileStatement($expr,$child),
 
            AllocationExpressionModel($type,$args,$ctx) ->
-                             AllocationExpressionModel($type,$args,NIL,$ctx),
+                             AllocationExpressionModel($type,$args,TypeBody($type),$ctx),
 
            AllocationExpressionModel($type,$args,$tbody,$ctx) 
              [ isReferenceType($type) ] 
@@ -396,6 +406,20 @@ domain(M2J,
                  [ isVarArgsIntModifier($n) ] -> true
                                              !-> false,
 
+           FinalIfDevirtualization(Modifiers($x,$annotations),$tm)
+              -> Modifiers(SetFinalizeBitIfPossible($x,$tm),$annotations),
+
+           SetFinalizeBitIfPossible($x,$tm)
+              [ isCanBeFinalForDevirtualization($tm) ] 
+                       -> $z [ [ addFinalBitfield($x,$z) ]  ]
+                      !-> $x,
+           
+           TypeBody(TypeRef($tname,$type)) 
+                    [ $type.isAnonimous() ] -> TypeBody($type.getModelTerm())
+                                           !-> NIL,
+
+           TypeBody(AnonimousClassModel($name,$super,$members,$ctx))
+                     -> $members,
 
            QQQ -> ALL
          ),
