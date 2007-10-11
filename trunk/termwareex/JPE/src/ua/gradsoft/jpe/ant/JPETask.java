@@ -10,6 +10,8 @@ package ua.gradsoft.jpe.ant;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -61,7 +63,21 @@ public class JPETask extends Task {
     public void addConfiguredIncludejars(Path path) {
         configuration_.getIncludeJars().addAll(Arrays.asList(path.list()));
     }
+    
+    public void setCtclass(String ctclass)
+    {
+        configuration_.setCompileTimeClassname(ctclass);
+    }
        
+    public void setDebugLevel(int debugLevel)
+    {
+        configuration_.setDebugLevel(debugLevel);
+    }
+    
+    public void setSilent(boolean silent)
+    {
+        configuration_.setSilent(silent);
+    }
     
     public static class NVPair {
         private String name_;
@@ -122,6 +138,69 @@ public class JPETask extends Task {
         configuration_.addDisabledClass(value.getClassname());
     }
     
+    
+    public static class ClassnamepatternHolder
+    {
+         private String classnamepattern_;
+         
+        public String getClassnamepattern()
+        { return classnamepattern_; }
+        public void setClassnamepattern(String classnamepattern)
+        { classnamepattern_=classnamepattern; }
+         
+    }
+    
+    public static class DevirtualizationHolder
+    {
+        public void setEnabled(boolean enabled)
+        { enabled_=enabled; }
+        
+        public boolean isEnabled()
+        { return enabled_; }
+        
+        public void addConfiguredExcept(ClassnamepatternHolder except)
+        { excepts_.add(except.getClassnamepattern()); }
+        
+        public List<String> getExcepts()
+        { return excepts_; }
+        
+        private boolean       enabled_=false;
+        private LinkedList<String>  excepts_=new LinkedList<String>();
+    }
+    
+    public void addConfiguredDevirtualization(DevirtualizationHolder holder)
+    {
+       configuration_.setDevirtualizationEnabled(holder.isEnabled());
+       configuration_.getNonFinalClassPatterns().addAll(holder.getExcepts());
+    }
+    
+    public static class EliminateUnreachableHolder
+    {
+     
+        public void setEnabled(boolean enabled)
+        { enabled_=enabled; }
+        
+        public boolean getEnabled()
+        { return enabled_; }
+        
+        public void addConfiguredReachable(ClassnamepatternHolder reachable)
+        {
+            reachables_.add(reachable.getClassnamepattern());
+        }
+        
+        public List<String> getReachables()
+        { return reachables_; }
+        
+        private boolean enabled_;
+        private LinkedList<String> reachables_ = new LinkedList<String>();
+        
+    }
+    
+    public void addConfiguredEliminateUnreachable(EliminateUnreachableHolder holder)
+    {
+        configuration_.setUnreachableCodeEliminationEnabled(holder.getEnabled());
+        configuration_.getReachableClassPatterns().addAll(holder.getReachables());
+    }
     
     public void execute() throws BuildException {
         if (failOnError_) {
@@ -201,6 +280,15 @@ public class JPETask extends Task {
             cmd.createArgument().setValue("--create-output-dir");
         }
         
+        if (configuration_.getDebugLevel() > 0) {
+            cmd.createArgument().setValue("--debug-level");
+            cmd.createArgument().setValue(Integer.toString(configuration_.getDebugLevel()));
+        }
+        
+        if (configuration_.isSilent()) {
+            cmd.createArgument().setValue("--silent");
+        }
+        
         Path classpath=cmd.createClasspath(getProject());
         classpath.createPathElement().setPath(configuration_.getJPEHome()+File.separator+"lib"+File.separator+"TermWare2.jar");
         classpath.createPathElement().setPath(configuration_.getJPEHome()+File.separator+"lib"+File.separator+"JavaChecker2.jar");
@@ -210,6 +298,22 @@ public class JPETask extends Task {
             classpath.createPathElement().setPath(configuration_.getJPEHome()+File.separator+"dist"+File.separator+"JPE.jar");
         }else{
             classpath.createPathElement().setPath(configuration_.getJPEHome()+File.separator+"lib"+File.separator+"JPE.jar");
+        }
+        
+        if (configuration_.isDevirtualizationEnabled()) {
+            cmd.createArgument().setValue("--enable-devirtualization");
+            for(String s: configuration_.getNonFinalClassPatterns()) {
+                cmd.createArgument().setValue("--devirtualization-except");
+                cmd.createArgument().setValue(s);
+            }
+        }
+        
+        if (configuration_.isUnreachableCodeEliminationEnabled()) {
+            cmd.createArgument().setValue("--eliminate-unreachable");
+            for(String s: configuration_.getReachableClassPatterns()) {
+                cmd.createArgument().setValue("--reachable");
+                cmd.createArgument().setValue(s);
+            }
         }
         
         cmd.setClassname("ua.gradsoft.jpe.Main");

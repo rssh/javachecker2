@@ -29,6 +29,12 @@
           <pathelement location="${jpehome}/lib/ant.jar" />
         </includejars>
         <ctconstant name="DEMO" value="true" />
+        <ctconstant name="DEBUG" value="false" />
+        <devirtualization enabled="true" />
+        <eliminateUnreachable enabled="true" >
+           <reachable classnamepattern="ua.gradsoft.jpe.Main"/>
+           <reachable classnamepattern="ua.gradsoft.jpe.ant.JPETask"/>
+        </eliminateUnreachable>
       </jpe>
     </target>
 
@@ -52,16 +58,29 @@
      </jar>
     </target>
 
+
+
     <target name="termware-sources">
       <jpe jpehome="${jpehome}"
            input="../../TermWare.2/jsrc-core"
            output="output/jpe-termware" 
            createOutputDir="true"
+           debugLevel="5"
            >
         <ctconstant name="AAA" value="true" />
         <disable  classname="ua.gradsoft.termware.parsers.terms.TermReader" />
+        <disable  classname="ua.gradsoft.termware.parsers.terms.TermReaderTokenManager" />
+        <devirtualization enabled="true" />
+        <eliminateUnreachable enabled="true" >
+           <reachable classnamepattern="ua.gradsoft.termware.Main"/>
+           <reachable classnamepattern="ua.gradsoft.termware.TermWare"/>
+           <reachable classnamepattern="ua.gradsoft.termware.DefaultFacts"/>
+           <reachable classnamepattern="ua.gradsoft.termware.parsers.*"/>
+           <reachable classnamepattern="ua.gradsoft.termware.printers.*"/>
+        </eliminateUnreachable>
       </jpe>
     </target>
+
     <target name="compile-termware" depends="termware-sources">
      <javac srcdir="output/jpe-termware/" includes="**/*.java" debug="true" />
     </target>

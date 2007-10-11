@@ -30,10 +30,11 @@ import ua.gradsoft.javachecker.models.AnalyzedUnitType;
 import ua.gradsoft.javachecker.models.InvalidJavaTermException;
 import ua.gradsoft.javachecker.models.JavaCompilationUnitModel;
 import ua.gradsoft.javachecker.models.JavaPackageModel;
+import ua.gradsoft.javachecker.models.JavaTermTypeAbstractModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.javachecker.models.JavaUnitModel;
+import ua.gradsoft.jpe.optimizations.MarkNumberOfChildsInSuper;
 import ua.gradsoft.termware.IEnv;
-import ua.gradsoft.termware.IFacts;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermSystem;
@@ -79,88 +80,127 @@ public class Main {
         JavaCheckerFacade.addInputDirectory(configuration_.getInputDir(),true);
         for(String includeDir: configuration_.getIncludeDirs()) {
             JavaCheckerFacade.addInputDirectory(includeDir,false);
-        }        
+        }
         for(String includeJar: configuration_.getIncludeJars()) {
             JavaCheckerFacade.addIncludeJar(includeJar);
         }
         
         
-            
+        
         try {
-//            IFacts facts = new JPEFacts(env,configuration_);
-//            ITermRewritingStrategy strategy=new FirstTopStrategy();
-//            jpeSystem_=new TermSystem(strategy,facts,TermWare.getInstance());
-//            jpeSystem_.addRule("JPE(CompilationUnit$[$x:$y])->CompilationUnit$[JPE($x),JPE($y)]");
-//            jpeSystem_.addRule("JPE(NIL)->NIL");
-            jpeSystem_=TermWare.getInstance().getOrCreateDomain("JPE").resolveSystem(configuration_.getTransformationName());
-            idSystem_=TermWare.getInstance().getOrCreateDomain("JPE").resolveSystem("ID");
-            IFacts facts = jpeSystem_.getFacts();
-            if (facts instanceof JPEFacts) {
-                ((JPEFacts)facts).setConfiguration(configuration_);
-                jpeFacts_=((JPEFacts)facts);
-            }
+            jpeTransformation_=new JPEPass(configuration_,this);
             modelToJavaSystem_=TermWare.getInstance().getOrCreateDomain("M2J").resolveSystem("M2J");
+            modelToJavaSystem_.setFacts(jpeFacts_);
         }catch(TermWareException ex){
             ex.printStackTrace();
             throw new JPEConfigurationException("exception during init",ex);
         }
     }
     
+    
     public void run() throws JPEConfigurationException, JPEProcessingException {
-        collectCompilationUnits(configuration_.getInputDir());
-        for(AnalyzedUnitRef unitRef: jpeFacts_.getUnitsToProcess()) {               
-            JavaUnitModel jm = null;
-            try {
-              jm=unitRef.getJavaUnitModel();
-            }catch(TermWareException ex){
-                throw new JPEProcessingException("can't get model for "+unitRef.toString(),ex);
-            }
-            List<Term> results = new LinkedList<Term>();
-            List<JavaTypeModel> typeModels = jm.getTypeModels();           
-            try {
-              for(JavaTypeModel tm: typeModels) {
-               Term modelTerm = tm.getModelTerm();               
-               String transformation = configuration_.getTransformationName();
-               TermSystem ts = jpeSystem_;
-               if (configuration_.isDisabledClass(tm.getErasedFullName())) {
-                   transformation = "ID";
-                   ts = idSystem_;
-               }
-               Term argTerm = TermWare.getInstance().getTermFactory().createTerm(transformation,modelTerm);
-               if (CompileTimeConstants.DEBUG) {
-                      System.err.println("start "+transformation+" reduce for "+tm.getFullName()); 
-               }
-               Term resultTerm = ts.reduce(argTerm);
-               results.add(resultTerm);               
-               if (CompileTimeConstants.DEBUG) {
-                      System.out.println("out model:");
-                      resultTerm.println(System.out);
-               }                                
-              }
-            }catch(InvalidJavaTermException ex){
-                throw new JPEProcessingException("Error during processing "+ex.getFileAndLine().toString(),ex);
-            }catch(TermWareException ex){
-                throw new JPEProcessingException("Error during processing ",ex);
-            }catch(EntityNotFoundException ex){
-                throw new JPEProcessingException("Error during processing "+ex.getFileAndLine().toString(),ex);
-            }
-            if (typeModels.size()>0) {
-              try {            
-                if (CompileTimeConstants.DEBUG)  {
-                    System.err.println("create compilation unit.");  
-                }
-                Term outCuTerm = createOutCompilationUnitTerm(results,typeModels);
-                if (CompileTimeConstants.DEBUG) {
-                   System.err.println("outCuTerm:");
-                   outCuTerm.println(System.err);
-                }
-                printCompilationUnit(outCuTerm, typeModels.get(0).getFullName());
-              }catch(TermWareException ex){
-                  throw new JPEProcessingException("Error during processing",ex);
-              }                            
-            }
+        
+        boolean twoPasses = configuration_.isUnreachableCodeEliminationEnabled();
+        
+        String firstOutputDir;
+        if (twoPasses) {
+            firstOutputDir = JavaCheckerFacade.getTmpDir()+File.separator+"jpe";
+        }else{
+            firstOutputDir = configuration_.getOutputDir();
         }
         
+        run(1,jpeTransformation_,configuration_.getInputDir(),firstOutputDir);
+        
+        
+        if (twoPasses) {
+            
+            // now reinit JavaChecker
+            jpeFacts_.getUnitsToProcess().clear();
+            JavaCheckerFacade.getPackagesStore().clear();
+            JavaCheckerFacade.addInputDirectory(configuration_.getInputDir(),true);
+            for(String includeDir: configuration_.getIncludeDirs()) {
+                JavaCheckerFacade.addInputDirectory(includeDir,false);
+            }
+            for(String includeJar: configuration_.getIncludeJars()) {
+                JavaCheckerFacade.addIncludeJar(includeJar);
+            }
+            
+            run(2,SecondCollectPass.INSTANCE,firstOutputDir,null);
+            
+            run(3,ReachabilityAnalysisPass.INSTANCE,null,null);
+            jpeFacts_.afterReachabilityAnalysis();
+            run(4,DevirtualizationAnalysisPass.INSTANCE,null,null);
+            jpeFacts_.afterDevirtualizationAnalysis();
+            run(5,OutputPass.INSTANCE,null,configuration_.getOutputDir());
+            removeDirectory(firstOutputDir);
+        }
+        
+        
+    }
+    
+    
+    private void run(int nPass, Pass pass, String inputDir, String outputDir) throws JPEConfigurationException, JPEProcessingException {
+        if (CompileTimeConstants.DEBUG && configuration_.getDebugLevel() >= DebugLevels.SHOW_PASSES) {
+            System.out.println("run nPass="+nPass+", "+pass.getClass().getName());
+        }
+        if (pass.isReadInput()) {
+            collectCompilationUnits(inputDir);
+        }
+        if (pass.isWalk() || pass.isWriteOutput()) {
+            for(AnalyzedUnitRef unitRef: jpeFacts_.getUnitsToProcess()) {
+                if (configuration_.getDebugLevel() >= DebugLevels.SHOW_FILES) {
+                    System.out.println("analyzing:"+unitRef.getDirectory()+File.separator+unitRef.getResource());
+                }
+                JavaUnitModel jm = null;
+                try {
+                    jm=unitRef.getJavaUnitModel();
+                }catch(TermWareException ex){
+                    throw new JPEProcessingException("can't get model for "+unitRef.toString()+" in pass "+pass,ex);
+                }
+                List<Term> results = new LinkedList<Term>();
+                List<JavaTypeModel> typeModels = jm.getTypeModels();
+                try{
+                    if (pass.isWalk()) {
+                        for(JavaTypeModel tm: typeModels) {
+                            Term resultTerm = pass.transform(tm,jpeFacts_,configuration_);
+                            if (pass.isWriteOutput()) {
+                                if (!CompileTimeConstants.DEMO && (configuration_.getDebugLevel() >= DebugLevels.SHOW_DUMS ||  configuration_.isDump())) {
+                                    System.err.println("after analyzing:");
+                                    resultTerm.println(System.err);
+                                }
+                                results.add(resultTerm);
+                            }
+                        }
+                    }else{
+                        if (pass.isWriteOutput()) {
+                            for(JavaTypeModel tm: typeModels) {
+                                results.add(tm.getModelTerm());
+                            }
+                        }
+                    }
+                }catch(InvalidJavaTermException ex){
+                    throw new JPEProcessingException("Error during processing "+ex.getFileAndLine().toString(),ex);
+                }catch(TermWareException ex){
+                    throw new JPEProcessingException("Error during processing ",ex);
+                }catch(EntityNotFoundException ex){
+                    throw new JPEProcessingException("Error during processing "+ex.getFileAndLine().toString(),ex);
+                }
+                if (pass.isWriteOutput() && typeModels.size()>0) {
+                    try {
+                        Term outCuTerm = createOutCompilationUnitTerm(results,typeModels);
+                        if (CompileTimeConstants.DEBUG && (configuration_.isDump() || configuration_.getDebugLevel() >= DebugLevels.SHOW_DUMS)) {
+                            System.err.println("outCuTerm:");
+                            outCuTerm.println(System.err);
+                        }
+                        printCompilationUnit(outCuTerm, typeModels.get(0).getFullName(), outputDir);
+                    }catch(TermWareException ex){
+                        throw new JPEProcessingException("Error during processing",ex);
+                    }
+                }
+            }
+        }else{
+            // nothing.
+        }
     }
     
     private void collectCompilationUnits(String inputDir) throws JPEConfigurationException, JPEProcessingException {
@@ -192,7 +232,7 @@ public class Main {
     
     private void collectFile(String packageDir, String sourceDir, File f) throws JPEProcessingException {
         if (CompileTimeConstants.DEBUG) {
-          System.out.println("collect file:"+f.getAbsolutePath());
+            System.out.println("collect file:"+f.getAbsolutePath());
         }
         Reader reader = null;
         try {
@@ -213,7 +253,7 @@ public class Main {
         }else{
             String packageSrcName;
             try {
-               packageSrcName = JUtils.getCompilationUnitPackageName(source);
+                packageSrcName = JUtils.getCompilationUnitPackageName(source);
             }catch(TermWareException ex){
                 throw new JPEProcessingException("Can't get package name for "+f.getAbsolutePath(),ex);
             }
@@ -226,7 +266,7 @@ public class Main {
             }catch(InvalidJavaTermException ex){
                 FileAndLine fl = ex.getFileAndLine();
                 System.err.print("error during reading sources at " +fl.toString());
-                throw new JPEProcessingException("error during reading sources at "+fl.toString(),ex);             
+                throw new JPEProcessingException("error during reading sources at "+fl.toString(),ex);
             }catch(TermWareException ex){
                 System.err.print("error during reading sources");
                 throw new JPEProcessingException("error during reading sources",ex);
@@ -234,38 +274,59 @@ public class Main {
             
             
             jpeFacts_.getUnitsToProcess().add(ref);
-                    
+            
+            if (!CompileTimeConstants.DEMO && (configuration_.getDebugLevel() >= DebugLevels.SHOW_DUMS ||  configuration_.isDump())) {
+                try{
+                    for(JavaTypeModel tm: cu.getTypeModels()) {
+                        Term modelTerm = tm.getModelTerm();
+                        System.err.println("readed model:");
+                        modelTerm.println(System.err);
+                    }                                        
+                }catch(TermWareException ex){
+                    System.err.print("error during printing readed sources");
+                    throw new JPEProcessingException("error during printing sources",ex);
+                }catch(EntityNotFoundException ex){
+                    throw new JPEProcessingException("error during printing sources",ex);
+                }
+            }
+            
         }
     }
+    
+    
+    private void processTypeModel(JavaTermTypeAbstractModel tm) throws TermWareException {
+        if (configuration_.isDevirtualizationEnabled()) {
+            MarkNumberOfChildsInSuper.process(tm);
+        }
+    }
+    
     
     /**
      * create packages and import declarations.
      *@param types -- list of Model terms of types
      */
-    private Term createOutCompilationUnitTerm(List<Term> models, List<JavaTypeModel> types) throws TermWareException
-    {
-      if (types.size()>0) {  
-        List<Term> importDeclarations = createImportDeclarations(models);
-        List<Term> jtypes = modelToJava(models);
-        Term packageTerm = JPEUtils.createPackageTerm(types.get(0));
-        ArrayList<Term> cul0 = new ArrayList<Term>();
-        cul0.add(packageTerm);
-        cul0.addAll(importDeclarations);
-        cul0.addAll(jtypes);
-        //Term cul = TermWare.getInstance().getTermFactory().createList(cul0);
-        Term[] cul = cul0.toArray(new Term[0]);
-        Term cu = TermWare.getInstance().getTermFactory().createTerm("CompilationUnit",cul);
-        return cu;
-      }else{
-          return TermWare.getInstance().getTermFactory().createNil();
-      }
+    private Term createOutCompilationUnitTerm(List<Term> models, List<JavaTypeModel> types) throws TermWareException {
+        if (types.size()>0) {
+            List<Term> importDeclarations = createImportDeclarations(models);
+            List<Term> jtypes = modelToJava(models);
+            Term packageTerm = JPEUtils.createPackageTerm(types.get(0));
+            ArrayList<Term> cul0 = new ArrayList<Term>();
+            cul0.add(packageTerm);
+            cul0.addAll(importDeclarations);
+            cul0.addAll(jtypes);
+            //Term cul = TermWare.getInstance().getTermFactory().createList(cul0);
+            Term[] cul = cul0.toArray(new Term[0]);
+            Term cu = TermWare.getInstance().getTermFactory().createTerm("CompilationUnit",cul);
+            return cu;
+        }else{
+            return TermWare.getInstance().getTermFactory().createNil();
+        }
     }
     
     /**
      *TODO: implement
      */
-    private List<Term> createImportDeclarations(List<Term> types)
-    {
+    private List<Term> createImportDeclarations(List<Term> types) {
         return Collections.emptyList();
     }
     
@@ -273,84 +334,95 @@ public class Main {
      *@param input -- list of model terms (already transformed)
      *@returns -- list of appropriative java terms.
      */
-    private List<Term> modelToJava(List<Term> models) throws TermWareException
-    {
+    private List<Term> modelToJava(List<Term> models) throws TermWareException {
         List<Term> rl = new LinkedList<Term>();
-        for(Term m: models) {            
+        for(Term m: models) {
             Term rj = modelToJavaSystem_.reduce(m);
             rl.add(rj);
         }
         return rl;
     }
     
-    private void printCompilationUnit(Term cu, String typeName) throws JPEProcessingException
-    {
-            String sTransformed = null;
-            try {
-                sTransformed=TermHelper.termToPrettyString(cu,"Java",TermWare.getInstance().getTermFactory().createNIL());
-            }catch(TermWareException ex){
-                cu.println(System.err);
-                throw new JPEProcessingException("exception during printing resuts for "+ typeName,ex);
-            }
-            String packageName = "";
-            try {
-                packageName=JUtils.getCompilationUnitPackageName(cu);
-            }catch(TermWareException ex){
+    private void printCompilationUnit(Term cu, String typeName, String outputDir) throws JPEProcessingException {
+        String sTransformed = null;
+        try {
+            sTransformed=TermHelper.termToPrettyString(cu,"Java",TermWare.getInstance().getTermFactory().createNIL());
+        }catch(TermWareException ex){
+            cu.println(System.err);
+            throw new JPEProcessingException("exception during printing resuts for "+ typeName,ex);
+        }
+        String packageName = "";
+        try {
+            packageName=JUtils.getCompilationUnitPackageName(cu);
+        }catch(TermWareException ex){
+            ex.printStackTrace();
+            throw new JPEProcessingException("exception during getting package name for results for "+typeName,ex);
+        }
+        String firstClassName = null;
+        try {
+            firstClassName = JUtils.getFirstTypeDefinitionName(cu);
+        }catch(TermWareException ex){
+            throw new JPEProcessingException("exception during getting type declaration name for results for "+typeName,ex);
+        }catch(EntityNotFoundException ex){
+            // file without type declaration, i. e. empty.
+            // just do nothing.
+            if (false) {
                 ex.printStackTrace();
-                throw new JPEProcessingException("exception during getting package name for results for "+typeName,ex);
-            }          
-            String firstClassName = null;
-            try {
-                firstClassName = JUtils.getFirstTypeDefinitionName(cu);
-            }catch(TermWareException ex){
                 throw new JPEProcessingException("exception during getting type declaration name for results for "+typeName,ex);
-            }catch(EntityNotFoundException ex){
-                // file without type declaration, i. e. empty.
-                // just do nothing.
-                if (false) {                    
-                  ex.printStackTrace();  
-                  throw new JPEProcessingException("exception during getting type declaration name for results for "+typeName,ex);
-                }else{
-                  return;
-                }
-            }            
-            FileWriter writer = null;
-            String destinationPackageDir=JUtils.createDirectoryNameFromPackageName(configuration_.getOutputDir(),packageName);
-            File destinationDirFile = new File(destinationPackageDir);
-            if (!destinationDirFile.exists()) {
-                destinationDirFile.mkdirs();
+            }else{
+                return;
             }
-            String outputFname=destinationPackageDir+File.separator+JUtils.createSourceFileNameFromClassName(firstClassName);
-            try {
-                writer=new FileWriter(outputFname);
-                writer.append(sTransformed);
-            }catch(IOException ex){
-                throw new JPEProcessingException("exception during processing "+typeName,ex);
-            }finally{
-                if (writer!=null){
-                    try {
-                        writer.close();
-                    }catch(IOException ex){
-                        System.err.println("exception during closing file "+outputFname);
-                    }
+        }
+        FileWriter writer = null;
+        String destinationPackageDir=JUtils.createDirectoryNameFromPackageName(outputDir,packageName);
+        File destinationDirFile = new File(destinationPackageDir);
+        if (!destinationDirFile.exists()) {
+            destinationDirFile.mkdirs();
+        }
+        String outputFname=destinationPackageDir+File.separator+JUtils.createSourceFileNameFromClassName(firstClassName);
+        try {
+            writer=new FileWriter(outputFname);
+            writer.append(sTransformed);
+        }catch(IOException ex){
+            throw new JPEProcessingException("exception during processing "+typeName,ex);
+        }finally{
+            if (writer!=null){
+                try {
+                    writer.close();
+                }catch(IOException ex){
+                    System.err.println("exception during closing file "+outputFname);
                 }
             }
-            
+        }
+        
         
     }
     
-    private TermSystem     getJPESystem() {
-        return jpeSystem_; }
+    private void removeDirectory(String dirname) {
+        removeFileOrDirectory(new File(dirname));
+    }
     
-    private TermSystem     getModelToJavaSystem()
+    private void removeFileOrDirectory(File f)
     {
-       return modelToJavaSystem_; 
+      if (f.isDirectory())  {
+         File[] childs = f.listFiles();
+         for(int i=0; i<childs.length; ++i){
+             removeFileOrDirectory(childs[i]);
+         }
+      }
+      f.delete();
+    }
+    
+    void setJPEFacts(JPEFacts facts) {
+        jpeFacts_=facts;
+    }
+    
+    private TermSystem     getModelToJavaSystem() {
+        return modelToJavaSystem_;
     }
     
     
-   
-    private TermSystem    jpeSystem_=null;
-    private TermSystem    idSystem_=null;
+    private JPEPass jpeTransformation_=null;
     private TermSystem    modelToJavaSystem_=null;
     private Configuration configuration_=new Configuration();
     private JPEFacts      jpeFacts_;

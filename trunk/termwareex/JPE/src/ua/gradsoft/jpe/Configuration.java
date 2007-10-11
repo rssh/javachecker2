@@ -83,6 +83,18 @@ public class Configuration implements Serializable {
                 ++i;
             }else if(args[i].equals("--dump")){
                 dump_=true;
+            }else if(args[i].equals("--silent")){
+                isSilent_=true;
+            }else if(args[i].equals("--debug-level")){
+                if (i==args.length-1) {
+                    throw new JPEConfigurationException("option --debug-level must have argument");
+                }                
+                try {
+                  debugLevel_=Integer.parseInt(args[i+1]);
+                }catch(NumberFormatException ex){
+                    throw new JPEConfigurationException("option --debug-level must have integer argument",ex);
+                }
+                ++i;                
             }else if(args[i].equals("--value-pair")){
                 if (i>=args.length-2) {
                     throw new JPEConfigurationException("option --value-pair must have two arguments");
@@ -102,6 +114,22 @@ public class Configuration implements Serializable {
                 }
             }else if(args[i].equals("--create-output-dir")){
                 createOutputDir_=true;
+            }else if(args[i].equals("--devirtualization-enable")){
+                setDevirtualizationEnabled(true);            
+            }else if(args[i].equals("--devirtualizarion-except")){
+                if (i==args.length-1) {
+                    throw new JPEConfigurationException("option --devirtualization-except must have argument");
+                }                                
+                addNonFinalClassPattern(args[i+1]);
+                ++i;
+            }else if(args[i].equals("--eliminate-unreachable")){
+                unreachableCodeEliminationEnabled_=true;
+            }else if(args[i].equals("--reachable")){
+                if (i==args.length-1) {
+                    throw new JPEConfigurationException("option --reachable must have argument");
+                }                                
+                addReachableClassPattern(args[i+1]);
+                ++i;                
             }else{
                 throw new JPEConfigurationException("Unknown option:"+args[i]);
             }
@@ -233,13 +261,79 @@ public class Configuration implements Serializable {
         includeJars_=includeJars;
     }
     
+    public String getCompileTimeClassname()
+    {
+        return compileTimeClass_;
+    }
+    
+    public void setCompileTimeClassname(String classname)
+    {
+        compileTimeClass_=classname;
+    }
     
     public Map<String,String>  getCompileTimeProperties()
     {
        return compileTimeProperties_; 
     }
     
+    public boolean isDevirtualizationEnabled()
+    { return devirtualizationEnabled_; }
+    
+    public void  setDevirtualizationEnabled(boolean value)
+    {
+        devirtualizationEnabled_=value;
+    }
+    
+    public void addNonFinalClassPattern(String classpattern)
+    {
+        nonFinalClassPatterns_.add(classpattern);
+    }
+    
+    public List<String>  getNonFinalClassPatterns()
+    {
+        return nonFinalClassPatterns_;
+    }
+    
+    public boolean isUnreachableCodeEliminationEnabled()
+    {
+        return unreachableCodeEliminationEnabled_;
+    }
+    
+    public void setUnreachableCodeEliminationEnabled(boolean value)
+    {
+        unreachableCodeEliminationEnabled_ = value;
+    }
+    
+    public void addReachableClassPattern(String classpattern)
+    {
+        reachableClassPatterns_.add(classpattern);
+    }
+    
+    public List<String>  getReachableClassPatterns()
+    {
+        return reachableClassPatterns_;
+    }
+    
+    public int getDebugLevel()
+    {
+        return debugLevel_;
+    }
+    
+    public void setDebugLevel(int debugLevel)
+    { 
+        debugLevel_=debugLevel;
+    }
+    
+    public boolean isSilent()
+    { return isSilent_; }
+    
+    public void setSilent(boolean isSilent)
+    { isSilent_=isSilent; }
+    
+    
+    private boolean isSilent_=false;
     private boolean dump_=false;
+    private int     debugLevel_=0;
     private boolean createOutputDir_=false;    
     private String inputDir_=null;
     private String outputDir_=null;
@@ -250,5 +344,12 @@ public class Configuration implements Serializable {
     private String transformationName_="JPE";  
     private HashMap<String,String> compileTimeProperties_=new HashMap<String,String>();
     private HashSet<String> disabledClasses_ = new HashSet<String>();
+    
+    // optimizations data.
+    private boolean      devirtualizationEnabled_ = false;
+    private List<String> nonFinalClassPatterns_ = new LinkedList<String>();
+    
+    private boolean      unreachableCodeEliminationEnabled_ = false;
+    private List<String> reachableClassPatterns_ = new LinkedList<String>();
     
 }
