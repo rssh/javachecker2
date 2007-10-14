@@ -47,6 +47,8 @@ public class JPEFacts extends DefaultFacts
     {
       configuration_=configuration;  
       unitsToProcess_ = new LinkedList<AnalyzedUnitRef>();
+      isAfterReachabilityAnalysis_=false;
+      isAfterDevirtualizationAnalysis_=false;      
     }    
     
     //

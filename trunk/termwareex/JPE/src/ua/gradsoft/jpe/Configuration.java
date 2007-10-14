@@ -116,6 +116,8 @@ public class Configuration implements Serializable {
                 createOutputDir_=true;
             }else if(args[i].equals("--devirtualization-enable")){
                 setDevirtualizationEnabled(true);            
+            }else if(args[i].equals("--enable-devirtualization")){
+                setDevirtualizationEnabled(true);            
             }else if(args[i].equals("--devirtualizarion-except")){
                 if (i==args.length-1) {
                     throw new JPEConfigurationException("option --devirtualization-except must have argument");
@@ -143,10 +145,9 @@ public class Configuration implements Serializable {
         if (outputDir_==null) {
             throw new JPEConfigurationException("option --output-dir is mandatory");            
         }
-        if (jpeHome_==null) {
-            throw new JPEConfigurationException("option --jpe-home is mandatory");            
-        }
-
+        //if (jpeHome_==null) {
+        //    throw new JPEConfigurationException("option --jpe-home is mandatory");            
+        //}
     }
     
     private void readHashFile(String hashFileName) throws JPEConfigurationException

@@ -71,12 +71,16 @@ public class Main {
         configuration_=configuration;
         IEnv env=new SystemEnv();
         TermWare.getInstance().setEnv(env);
-        JavaCheckerFacade.setHome(configuration_.getJPEHome());
+        if (configuration_.getJPEHome()!=null) {
+           JavaCheckerFacade.setHome(configuration_.getJPEHome());    
+        }
+        JavaCheckerFacade.setHomeRequired(false);
+        JavaCheckerFacade.setMandatoryCheckersLoading(false);
         try {
             JavaCheckerFacade.init();
         }catch(ConfigException ex){
             throw new JPEConfigurationException(ex.getMessage(),ex);
-        }
+        }         
         JavaCheckerFacade.addInputDirectory(configuration_.getInputDir(),true);
         for(String includeDir: configuration_.getIncludeDirs()) {
             JavaCheckerFacade.addInputDirectory(includeDir,false);
@@ -100,7 +104,17 @@ public class Main {
     
     public void run() throws JPEConfigurationException, JPEProcessingException {
         
-        boolean twoPasses = configuration_.isUnreachableCodeEliminationEnabled();
+        if (CompileTimeConstants.DEMO || ! configuration_.isSilent()) {
+            if (CompileTimeConstants.DEMO) {
+                System.out.println("JPE version "+CompileTimeConstants.VERSION+" (demo)");                
+            }else{
+                System.out.println("JPE version "+CompileTimeConstants.VERSION);
+            }
+            System.out.println("(C) Grad-Soft Ltd, 2007");
+            System.out.println("http://www.gradsoft.ua");            
+        }
+        
+        boolean twoPasses = configuration_.isUnreachableCodeEliminationEnabled()||configuration_.isDevirtualizationEnabled();
         
         String firstOutputDir;
         if (twoPasses) {
@@ -140,7 +154,7 @@ public class Main {
     
     
     private void run(int nPass, Pass pass, String inputDir, String outputDir) throws JPEConfigurationException, JPEProcessingException {
-        if (CompileTimeConstants.DEBUG && configuration_.getDebugLevel() >= DebugLevels.SHOW_PASSES) {
+        if (configuration_.getDebugLevel() >= DebugLevels.SHOW_PASSES) {
             System.out.println("run nPass="+nPass+", "+pass.getClass().getName());
         }
         if (pass.isReadInput()) {
@@ -148,7 +162,7 @@ public class Main {
         }
         if (pass.isWalk() || pass.isWriteOutput()) {
             for(AnalyzedUnitRef unitRef: jpeFacts_.getUnitsToProcess()) {
-                if (configuration_.getDebugLevel() >= DebugLevels.SHOW_FILES) {
+                if (!configuration_.isSilent() && configuration_.getDebugLevel() >= DebugLevels.SHOW_FILES) {
                     System.out.println("analyzing:"+unitRef.getDirectory()+File.separator+unitRef.getResource());
                 }
                 JavaUnitModel jm = null;
@@ -231,7 +245,7 @@ public class Main {
     }
     
     private void collectFile(String packageDir, String sourceDir, File f) throws JPEProcessingException {
-        if (CompileTimeConstants.DEBUG) {
+        if (CompileTimeConstants.DEBUG && configuration_.getDebugLevel() >= DebugLevels.SHOW_FILES) {
             System.out.println("collect file:"+f.getAbsolutePath());
         }
         Reader reader = null;

@@ -84,7 +84,7 @@ domain(M2J,
                        $context)
             [ $context.getTopLeveBlockOwnerModel().isSynthetic() ] -> BLANK
            |
-            [ false && isNotReachableMethod($context.getTopLeveBlockOwnerModel()) ] -> BLANK
+            [ isNotReachableMethod($context.getTopLeveBlockOwnerModel()) ] -> BLANK
                                   !->
                                    ClassOrInterfaceBodyDeclaration(
                                      $modifiers,

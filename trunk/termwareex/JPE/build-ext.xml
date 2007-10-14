@@ -30,6 +30,8 @@
         </includejars>
         <ctconstant name="DEMO" value="true" />
         <ctconstant name="DEBUG" value="false" />
+        <ctconstant name="IN_IDE" value="false" />
+        <ctconstant name="VERSION" value="1.0" />
         <devirtualization enabled="true" />
         <eliminateUnreachable enabled="true" >
            <reachable classnamepattern="ua.gradsoft.jpe.Main"/>
@@ -48,9 +50,9 @@
         <pathelement location="${jpehome}/lib/ant.jar" />
       </classpath>
      </javac>
-     <jar basedir="output/jpe-demo" includes="**/*.class"
-          destfile="lib/JPEDemo.jar"
-          index="true">
+     <jar destfile="lib/JPEDemo.jar" index="true" >
+      <fileset dir="output/jpe-demo" includes="**/*.class"/>
+      <fileset dir="systems" includes="**/*.def"/>
       <manifest> 
        <attribute name="Build-By" value="${user-name}" />
        <attribute name="Main-Class" value="ua.gradsoft.jpe.Main" />
@@ -58,7 +60,73 @@
      </jar>
     </target>
 
+    <target name="build-nd-sources">
+      <jpe jpehome="${jpehome}"
+           input="src"
+           output="output/jpe-nd" 
+           createOutputDir="true"
+           >
+        <includejars>
+          <pathelement location="${jpehome}/lib/TermWare2.jar" />
+          <pathelement location="${jpehome}/lib/JavaChecker2.jar" />
+          <pathelement location="${jpehome}/lib/JavaChecker2Annotations.jar" />
+          <pathelement location="${jpehome}/lib/TermWareJPP.jar" />
+          <pathelement location="${jpehome}/lib/ant.jar" />
+        </includejars>
+        <ctconstant name="DEMO" value="false" />
+        <ctconstant name="DEBUG" value="false" />
+        <ctconstant name="IN_IDE" value="false" />
+        <ctconstant name="VERSION" value="1.0" />
+        <devirtualization enabled="true" />
+        <eliminateUnreachable enabled="true" >
+           <reachable classnamepattern="ua.gradsoft.jpe.Main"/>
+           <reachable classnamepattern="ua.gradsoft.jpe.ant.JPETask"/>
+        </eliminateUnreachable>
+      </jpe>
+    </target>
 
+    <target name="compile-nd-sources" depends="build-nd-sources">
+     <javac srcdir="output/jpe-nd" includes="**/*.java" debug="true" >
+      <classpath>
+        <pathelement location="${jpehome}/lib/TermWare2.jar" />
+        <pathelement location="${jpehome}/lib/JavaChecker2.jar" />
+        <pathelement location="${jpehome}/lib/JavaChecker2Annotations.jar" />
+        <pathelement location="${jpehome}/lib/TermWareJPP.jar" />
+        <pathelement location="${jpehome}/lib/ant.jar" />
+      </classpath>
+     </javac>
+     <jar  destfile="lib/JPEND.jar" index="true">
+      <fileset dir="output/jpe-nd" includes="**/*.class"/>
+      <fileset dir="systems" includes="**/*.def"/>
+      <manifest> 
+       <attribute name="Build-By" value="${user-name}" />
+       <attribute name="Main-Class" value="ua.gradsoft.jpe.Main" />
+      </manifest> 
+     </jar>
+    </target>
+
+    <target name="build-production-distributive" depends="compile-nd-sources">
+      <copy file="lib/JPEND.jar" 
+            tofile="final-distributives/prod/lib/JPE.jar" 
+            overwrite="true"
+            />
+      <copy file="lib/TermWare2.jar" todir="final-distributives/prod/lib"
+            overwrite="true"
+      />
+      <copy file="lib/TermWareJPP.jar" todir="final-distributives/prod/lib"
+            overwrite="true"
+      />
+      <copy file="lib/JavaChecker2.jar" todir="final-distributives/prod/lib"
+            overwrite="true"
+      />
+      <copy file="lib/JavaChecker2Annotations.jar" 
+            todir="final-distributives/prod/lib"
+            overwrite="true"
+      />
+      <copy todir="final-distributives/prod/demo">
+        <fileset dir="demo" excludes="CVS/*,**/CVS" />
+      </copy>
+    </target>
 
     <target name="termware-sources">
       <jpe jpehome="${jpehome}"

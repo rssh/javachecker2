@@ -28,6 +28,7 @@ import ua.gradsoft.jpe.Configuration;
 import ua.gradsoft.jpe.JPEConfigurationException;
 import ua.gradsoft.jpe.JPEProcessingException;
 import ua.gradsoft.jpe.Main;
+import ua.gradsoft.termware.TermWare;
 
 /**
  *Task for call JPE from ant scripts.
@@ -235,7 +236,18 @@ public class JPETask extends Task {
     
     public void executeInprocess() throws BuildException {
         Main main = new Main();
-        try {
+        try {            
+          if (!CompileTimeConstants.IN_IDE) {
+            try{  
+              TermWare.getInstance().setTermLoaderClassName(JPETermLoader.class.getName());              
+            }catch(ClassNotFoundException ex){
+                throw new BuildException(ex);
+            }catch(InstantiationException ex){
+                throw new BuildException(ex);
+            }catch(IllegalAccessException ex){
+                throw new BuildException(ex);
+            }
+          }  
           main.init(configuration_);
           main.run();
         }catch(JPEConfigurationException ex){
@@ -258,9 +270,12 @@ public class JPETask extends Task {
         }
         cmd.createArgument().setValue("--output-dir");
         cmd.createArgument().setValue(configuration_.getOutputDir());
+        
         // --input-file skip
-        cmd.createArgument().setValue("--jpehome");
-        cmd.createArgument().setValue(configuration_.getJPEHome());
+        if (configuration_.getJPEHome()!=null) {
+          cmd.createArgument().setValue("--jpehome");
+          cmd.createArgument().setValue(configuration_.getJPEHome());
+        }
         
         cmd.createArgument().setValue("--transformation");
         cmd.createArgument().setValue(configuration_.getTransformationName());
@@ -294,7 +309,7 @@ public class JPETask extends Task {
         classpath.createPathElement().setPath(configuration_.getJPEHome()+File.separator+"lib"+File.separator+"JavaChecker2.jar");
         classpath.createPathElement().setPath(configuration_.getJPEHome()+File.separator+"lib"+File.separator+"JavaChecker2Annotations.jar");
         classpath.createPathElement().setPath(configuration_.getJPEHome()+File.separator+"lib"+File.separator+"TermWareJPP.jar");
-        if (CompileTimeConstants.inIDE)       {
+        if (CompileTimeConstants.IN_IDE)       {
             classpath.createPathElement().setPath(configuration_.getJPEHome()+File.separator+"dist"+File.separator+"JPE.jar");
         }else{
             classpath.createPathElement().setPath(configuration_.getJPEHome()+File.separator+"lib"+File.separator+"JPE.jar");
@@ -317,6 +332,15 @@ public class JPETask extends Task {
         }
         
         cmd.setClassname("ua.gradsoft.jpe.Main");
+        
+        
+       // System.out.print("args=");
+       // String[] args=cmd.getCommandline();
+       // for(String arg:args) {
+       //     System.out.print(arg);
+       //     System.out.print(' ');
+       // }
+       // System.out.println();
         
         ExecuteWatchdog watchdog = null; // TODO: add timeout and rral watchdog.
         Execute execute = new Execute(new LogStreamHandler(this,Project.MSG_INFO,Project.MSG_WARN),watchdog);
