@@ -73,7 +73,7 @@ public class JavaCheckerFacade {
      */
     public static void setHome(String home)
     {
-      main_.setHome(home);  
+      Main.setHome(home);     
     }
     
     /**
@@ -81,16 +81,27 @@ public class JavaCheckerFacade {
      */
     public static String getHome()
     {
-      return main_.getHome();
+      return Main.getHome();
     }    
 
+    public static boolean isHomeRequired()
+    { return Main.isHomeRequired(); }
     
+    public static void setHomeRequired(boolean value)
+    {
+        Main.setHomeRequired(value);
+    }
     
     public static String  getTmpDir()
     {
         return main_.getTmpDir();
     }
     
+    public static boolean isMandatoryCheckersLoading()
+    { return main_.isMandatoryCheckersLoading(); }
+    
+    public static void setMandatoryCheckersLoading(boolean value)
+    { main_.setMandatoryCheckersLoading(value); }
     
     public static void process() throws ProcessingException
     {

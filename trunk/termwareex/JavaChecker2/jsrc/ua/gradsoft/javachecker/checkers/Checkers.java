@@ -47,7 +47,13 @@ public class Checkers {
         try {
              loadBuildinCheckers();
             
-            String checkersFname=getEtcDirectory()+File.separator+"checkers.def";            
+            String checkersFname=getEtcDirectory()+File.separator+"checkers.def";       
+            if (!Main.isMandatoryCheckersLoading()) {
+                File checkersFile = new File(checkersFname);
+                if (!checkersFile.exists()) {
+                    return;
+                }                
+            }
             Term checkers=TermWare.getInstance().load(checkersFname);
             if (!checkers.getName().equals("Checkers")) {
                 throw new ConfigException("context of file "+checkersFname+" must be Checkers term");
@@ -282,7 +288,8 @@ public class Checkers {
     }
     
     private String getEtcDirectory() {
-        return Main.getHome()+File.separator+"etc";
+        String home=Main.getHome();
+        return home!=null ? home+File.separator+"etc" : "./etc" ;
     }
     
     

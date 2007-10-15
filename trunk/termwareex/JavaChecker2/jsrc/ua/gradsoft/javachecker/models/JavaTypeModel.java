@@ -348,10 +348,12 @@ public abstract class JavaTypeModel implements AttributedEntity
    */
   public JavaTypeModelAttributes getAttributes()
   {
-      if (attributes_==null) {
+     synchronized(this) { 
+       if (attributes_==null) {
           attributes_=new JavaTypeModelAttributes(this);
-      }
-      return attributes_;
+       }
+       return attributes_;
+     }
   }
   
   

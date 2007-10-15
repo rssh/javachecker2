@@ -133,8 +133,10 @@ public class Main
      home_=System.getProperty("javachecker.home");
      if (home_==null) {
        home_=System.getenv("JAVACHECKER_HOME");
-       if (home_==null) {           
-           throw new ConfigException("JAVACHECKER_HOME  is not set");
+       if (home_==null) {  
+           if (isHomeRequired_) {
+             throw new ConfigException("JAVACHECKER_HOME  is not set");
+           }
        }
      }
    }
@@ -568,6 +570,16 @@ public class Main
  public static void  setHome(String home)
  { home_=home; }
  
+ public static boolean isHomeRequired()
+ {
+   return isHomeRequired_;
+ }
+ 
+ public static void setHomeRequired(boolean homeRequired)
+ {
+     isHomeRequired_=homeRequired;
+ }
+ 
  public static int  getNProcessedFiles()
  { 
    return nProcessedFiles_;
@@ -599,6 +611,17 @@ public class Main
  {
    return exceptionHandler_;  
  }
+ 
+ public static boolean isMandatoryCheckersLoading()
+ {
+     return isMandatoryCheckersLoading_;
+ }
+ 
+ public static void setMandatoryCheckersLoading(boolean mandatoryCheckersLoading)
+ {
+     isMandatoryCheckersLoading_=mandatoryCheckersLoading;
+ }
+ 
  
  public  static void setExceptionHandler(JavaCheckerExceptionHandler exceptionHandler)
  {
@@ -685,10 +708,12 @@ public class Main
  
  private static String              outputFname_=null;
  private static String              home_=null;
+ private static boolean             isHomeRequired_=true;
  
  private static JavaFacts    facts_ = null;
  //private static TermSystem   mainSystem_ = null;
  private static Checkers      checkers_ = null;
+ private static boolean       isMandatoryCheckersLoading_=true;
  private static JavaCheckerExceptionHandler exceptionHandler_=new DefaultExceptionHandler();
  
  private static boolean      inShutdown_ = false;
