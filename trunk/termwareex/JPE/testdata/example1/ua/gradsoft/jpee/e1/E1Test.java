@@ -1,8 +1,6 @@
 /*
  * E1Test.java
  *
- * Created on понеділок, 8, січня 2007, 5:37
- *
  * Copyright (c) 2006 GradSoft  Ukraine
  * All Rights Reserved
  */

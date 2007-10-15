@@ -56,7 +56,7 @@ public class JPEPass implements Pass
                    ts = idSystem_;
                }
                Term argTerm = TermWare.getInstance().getTermFactory().createTerm(transformation,modelTerm);
-               if (CompileTimeConstants.DEBUG) {
+               if (CompileTimeConstants.DEBUG && configuration.getDebugLevel() >= DebugLevels.SHOW_WALK) {
                       System.err.println("start "+transformation+" reduce for "+tm.getFullName()); 
                }
                Term resultTerm = ts.reduce(argTerm);

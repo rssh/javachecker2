@@ -162,7 +162,7 @@ public class Main {
         }
         if (pass.isWalk() || pass.isWriteOutput()) {
             for(AnalyzedUnitRef unitRef: jpeFacts_.getUnitsToProcess()) {
-                if (!configuration_.isSilent() && configuration_.getDebugLevel() >= DebugLevels.SHOW_FILES) {
+                if (!configuration_.isSilent() && configuration_.getDebugLevel() >= DebugLevels.SHOW_FILES ) {
                     System.out.println("analyzing:"+unitRef.getDirectory()+File.separator+unitRef.getResource());
                 }
                 JavaUnitModel jm = null;
@@ -245,7 +245,7 @@ public class Main {
     }
     
     private void collectFile(String packageDir, String sourceDir, File f) throws JPEProcessingException {
-        if (CompileTimeConstants.DEBUG && configuration_.getDebugLevel() >= DebugLevels.SHOW_FILES) {
+        if (configuration_.getDebugLevel() >= DebugLevels.SHOW_FILES) {
             System.out.println("collect file:"+f.getAbsolutePath());
         }
         Reader reader = null;

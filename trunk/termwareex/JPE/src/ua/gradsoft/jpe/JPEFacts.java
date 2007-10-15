@@ -75,7 +75,7 @@ public class JPEFacts extends DefaultFacts
               JavaMemberVariableModel mv = (JavaMemberVariableModel)v;
               JavaTypeModel tm = mv.getOwnerType();
               String tmName = tm.getFullName();
-              if (tmName.endsWith("CompileTimeConstants")) {                
+              if (tmName.endsWith(configuration_.getCompileTimeClassname())) {                
                   String value = configuration_.getCompileTimeProperties().get(mv.getName());
                   if (value!=null) {      
                      StringReader reader = new StringReader(value);
@@ -167,7 +167,7 @@ public class JPEFacts extends DefaultFacts
       //      System.out.println("configration_==null");
       //  }
         if (configuration_.isDevirtualizationEnabled() && isAfterDevirtualizationAnalysis() ) {     
-         if (CompileTimeConstants.DEBUG && configuration_.getDebugLevel() >= DebugLevels.SHOW_WALK)  {
+         if (configuration_.getDebugLevel() >= DebugLevels.SHOW_WALK)  {
              System.out.println("check for possible final: "+tm.getFullName());
          }                                    
          if (tm.isClass()) {
@@ -184,7 +184,7 @@ public class JPEFacts extends DefaultFacts
             }    
             return true;
           }else{
-              if (CompileTimeConstants.DEBUG && configuration_.getDebugLevel()>= DebugLevels.SHOW_WALK) {
+              if (configuration_.getDebugLevel()>= DebugLevels.SHOW_WALK) {
                   System.out.println("Number of childs:"+x.getInt());
               }
           }

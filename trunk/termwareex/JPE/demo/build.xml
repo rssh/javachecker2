@@ -16,7 +16,7 @@
     </taskdef>
 
     <target name="build-example1-t">
-      <jpe 
+      <jpe jpehome="${jpehome}"
            input="input/example1"
            output="output/example1-t" 
            createOutputDir="true"
@@ -27,16 +27,14 @@
         <eliminateUnreachable enabled="true" >
            <reachable classnamepattern="x.X1"/>
         </eliminateUnreachable>
-        <jvmarg value="-verbose" />
       </jpe>
     </target>
 
     <target name="build-example1-f">
-      <jpe 
+      <jpe jpehome="${jpehome}"
            input="input/example1"
            output="output/example1-f" 
            createOutputDir="true"
-           fork="true"
            >
         <ctconstant name="DEBUG" value="false" />
         <devirtualization enabled="true" />
