@@ -556,7 +556,7 @@ public class JavaTypeModelAttributes {
             String fname = JUtils.createSourceFileNameFromClassName(owner_.getName(),".jcswp");
             String fullLoadName = tmpDir+File.separator+packageName+"_"+fname;          
             // now change <, >, ' ' on codes.
-            fullLoadName=fullLoadName.replace("<","_lt_").replace(">","_gt_").replace(" ","_20_");
+            fullLoadName=fullLoadName.replace("<","_lt_").replace(">","_gt_").replace(" ","_20_").replace("?","_Q_");
             return fullLoadName;
     }
     
