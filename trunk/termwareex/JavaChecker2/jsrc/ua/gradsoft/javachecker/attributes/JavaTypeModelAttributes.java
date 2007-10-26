@@ -266,11 +266,7 @@ public class JavaTypeModelAttributes {
                     throw new AssertException("isNested is true, but getEnclosedType is not supported in "+owner_.getFullName());
                 }
             }else{
-                String tmpDir = Main.getTmpDir();
-                String packageName = owner_.getPackageModel().getName();
-                //String dirName=JUtils.createDirectoryNameFromPackageName(Main.getTmpDir(),owner_.getPackageModel().getName());
-                String fname = JUtils.createSourceFileNameFromClassName(owner_.getName(),".jcswp");
-                String fullLoadName = tmpDir+File.separator+packageName+"_"+fname;
+                String fullLoadName = createAttributesFileName();
                 File f = new File(fullLoadName);
                 if (f.exists()) {
                     ObjectInputStream oi = null;
@@ -332,11 +328,7 @@ public class JavaTypeModelAttributes {
                 return;
             }
             
-            String tmpDir = Main.getTmpDir();
-            String packageName=owner_.getPackageModel().getName();
-            //String dirName=JUtils.createDirectoryNameFromPackageName(Main.getTmpDir(),owner_.getPackageModel().getName());
-            String fname = JUtils.createSourceFileNameFromClassName(owner_.getName(),".jcswp");
-            String fullLoadName = tmpDir+File.separator+packageName+"_"+fname;          
+            String fullLoadName = createAttributesFileName();
             File f = new File(fullLoadName);
                         
             if (!f.exists()) {
@@ -556,7 +548,17 @@ public class JavaTypeModelAttributes {
         }
     }
     
-    
+    private String createAttributesFileName()
+    {
+            String tmpDir = Main.getTmpDir();
+            String packageName=owner_.getPackageModel().getName();
+            //String dirName=JUtils.createDirectoryNameFromPackageName(Main.getTmpDir(),owner_.getPackageModel().getName());
+            String fname = JUtils.createSourceFileNameFromClassName(owner_.getName(),".jcswp");
+            String fullLoadName = tmpDir+File.separator+packageName+"_"+fname;          
+            // now change <, >, ' ' on codes.
+            fullLoadName=fullLoadName.replace("<","_lt_").replace(">","_gt_").replace(" ","_20_");
+            return fullLoadName;
+    }
     
     private JavaTypeModel        owner_;
     private AttributesData       data_;
