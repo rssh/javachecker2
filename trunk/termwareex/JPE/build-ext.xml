@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="JPE-ext" default="default" basedir=".">
     <description>Extensions to JPE project</description>
+  
+    <property file="build.properties" />
 
-    <!--TODO: move properties to file.  -->
-    <property name="jpehome" value="." />
-    <property name="version" value="1.0" />
    
+
     <taskdef name="jpe" classname="ua.gradsoft.jpe.ant.JPETask">
       <classpath>
         <pathelement location="${jpehome}/lib/JPE.jar" />
@@ -184,5 +184,17 @@
     </target>
 
     <target name="default" depends="build-production-distributive,build-demo-distributive" />
+
+    <taskdef name="odt2html" classname="ua.gradsoft.odt2html.Odt2HtmlAntTask">
+     <classpath>         
+       <pathelement location="${odt2htmlhome}/ODT2HTML.jar"/>     
+     </classpath>
+    </taskdef>
+
+    <target name="UserGuide.html">      
+      <odt2html input="doc/UserGuide.odt"  output="doc/UserGuide.html" /> 
+    </target>
+
+
 
 </project>
