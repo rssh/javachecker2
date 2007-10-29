@@ -47,6 +47,7 @@ public class Java5SrcTest extends TestCase {
         }catch(Exception ex){
             ex.printStackTrace();
             disabled_=true;
+            javaSrcHome_=null;
         }
         //disabled_=true;
         disabledLong_=true;
@@ -116,8 +117,9 @@ public class Java5SrcTest extends TestCase {
     }
     
     
-    public void testComSunSourceUtilTreePath() throws Exception {
-        if(javaSrcHome_==null) {
+    public void testComSunSourceUtilTreePath() throws Exception {        
+        checkJavaSrcHomeExists();
+        if(disabled_|| javaSrcHome_==null) {
             return;
         }
         JavaCheckerFacade.init();
@@ -128,7 +130,8 @@ public class Java5SrcTest extends TestCase {
     
 
     public void testJavaUtilConcurrentDelayQueue() throws Exception {
-        if(javaSrcHome_==null) {
+        checkJavaSrcHomeExists();
+        if(disabled_||javaSrcHome_==null) {
             return;
         }
         JavaCheckerFacade.init();
@@ -139,7 +142,8 @@ public class Java5SrcTest extends TestCase {
     
     public void testJavaxImageioImageIO() throws Exception
     {
-        if(javaSrcHome_==null) {
+        checkJavaSrcHomeExists();
+        if(disabled_||javaSrcHome_==null) {
             return;
         }
         JavaCheckerFacade.init();
@@ -150,7 +154,8 @@ public class Java5SrcTest extends TestCase {
     
     public void testJavaxXmlBindContextFinder() throws Exception
     {
-        if(javaSrcHome_==null) {
+        checkJavaSrcHomeExists();
+        if(disabled_||javaSrcHome_==null) {
             return;
         }
         JavaCheckerFacade.init();
@@ -162,7 +167,8 @@ public class Java5SrcTest extends TestCase {
 
     public void testJavaxSecurityAuthSubject() throws Exception
     {
-        if(javaSrcHome_==null) {
+        checkJavaSrcHomeExists();
+        if(disabled_||javaSrcHome_==null) {
             return;
         }
         JavaCheckerFacade.init();
@@ -173,7 +179,8 @@ public class Java5SrcTest extends TestCase {
     
     public void testJavaxManagementRemoteRmiRmiConnectionImpl() throws Exception
     {
-        if(javaSrcHome_==null) {
+        checkJavaSrcHomeExists();
+        if(disabled_||javaSrcHome_==null) {
             return;
         }
         JavaCheckerFacade.init();
@@ -184,6 +191,7 @@ public class Java5SrcTest extends TestCase {
     
     public void testComSunCorbaSeImplLoggingORBUtilSystemException() throws Exception
     {
+        checkJavaSrcHomeExists();
         if(javaSrcHome_==null) {
             return;
         }
@@ -361,6 +369,20 @@ public class Java5SrcTest extends TestCase {
         }
     }
     
+    private void checkJavaSrcHomeExists()
+    {
+      if (!existsJavaSrcHomeChecked_) {
+          if (javaSrcHome_!=null) {
+              File dir = new File(javaSrcHome_);
+              existsJavaSrcHome_ = dir.exists();
+              if (!existsJavaSrcHome_) {
+                  disabled_=true;
+                  javaSrcHome_=null;
+              }
+          }
+          existsJavaSrcHomeChecked_ = true;
+      }
+    }
     
     static boolean disabled_;
     
@@ -368,7 +390,9 @@ public class Java5SrcTest extends TestCase {
      * disabled long tests, which check all
      */
     static boolean disabledLong_;
-    static String  javaSrcHome_ ="/usr/java/jdk1.6.0_01/src";
+    static String  javaSrcHome_ = "/usr/java/jdk1.6.0_01/src";
+    static boolean existsJavaSrcHome_ = true;
+    static boolean existsJavaSrcHomeChecked_ = false;
     
     static boolean qOption_=false;
     static boolean dump_=false;    

@@ -127,13 +127,23 @@ public class JavaPackageModel {
 
     public JavaTypeModel findTypeModel(String name) throws TermWareException, EntityNotFoundException
     {
-     // System.err.println("call of packageModel ("+this.getName()+") findTypeModel for "+name);  
+      boolean debug=false;
+      //DEBUG
+      //if (name.equals("TreePath")) {
+      //    debug=true;
+      //}
+    
+      if (debug) {
+        System.err.println("call of packageModel ("+this.getName()+") findTypeModel for "+name);  
+      }        
       JavaTypeModel retval=null;  
 
       // 1. try to get from hash.
       JavaTypeModelRef ref = typeModelRefs_.get(name);      
       if (ref!=null) {
-          //System.err.println("foundRef, ref.getTypeModel.getName()="+ref.getTypeModel().getName());
+          if (debug) {
+             System.err.println("foundRef, ref.getTypeModel.getName()="+ref.getTypeModel().getName());
+          }
           retval=ref.getTypeModel();
           return retval;
       }
@@ -149,7 +159,11 @@ public class JavaPackageModel {
           String resource = JUtils.createSourceFileNameFromClassName(name);
           String fname=directory+File.separator+resource;
           
-          File f = new File(fname);
+          if (debug) {
+              System.err.println("search in "+fname);
+          }
+          
+          File f = new File(fname);          
           if (f.exists()) {
               Term t=JUtils.readSourceFile(f);
               JavaCompilationUnitModel cu = new JavaCompilationUnitModel(fname);
@@ -169,6 +183,10 @@ public class JavaPackageModel {
               // other (non-public ? classed).
               // near impossible.
               
+          }else{
+              if (debug) {
+                  System.err.println("File "+fname+" does not exists");
+              }
           } 
       }     
 
@@ -188,6 +206,9 @@ public class JavaPackageModel {
                  }
              }                                  
           }catch(ClassNotFoundException ex){
+              if (debug) {
+                  System.err.println("Not found in JarsClassLoader");
+              }
               ;
           }
           if (retval!=null) {
@@ -213,6 +234,9 @@ public class JavaPackageModel {
         }        
         return retval;
       }catch(ClassNotFoundException ex){
+              if (debug) {
+                  System.err.println("Not found in SystemClassLoader");
+              }          
           // do nothing. if not found, than let it be not found.
           ;
       }

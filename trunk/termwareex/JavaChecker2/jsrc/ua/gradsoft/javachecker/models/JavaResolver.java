@@ -826,12 +826,26 @@ public class JavaResolver {
     
     
     public static JavaTypeModel resolveTypeModelFromPackage(String classShortName,String packageName) throws EntityNotFoundException, TermWareException {
-        //LOG.info("resolveTypeModelFromPackage:"+classShortName+","+packageName);
+        boolean debug=false;
+        //DEBUG!!
+        //if (classShortName.equals("TreePath")) {
+        //    debug=true;
+        //}
+        if (debug) {
+           LOG.info("resolveTypeModelFromPackage:"+classShortName+","+packageName);
+        }
         JavaPackageModel packageModel = resolvePackage(packageName);
-        return packageModel.findTypeModel(classShortName);
+        if (debug) {
+            LOG.info("packageModel found.");
+        }
+        JavaTypeModel retval = packageModel.findTypeModel(classShortName);
+        if (debug) {
+            LOG.info("type model found.");
+        }
+        return retval;
     }
     
-    public static JavaTypeModel  resolveTypeModelByFullClassName(String name) throws EntityNotFoundException, TermWareException {
+    public static JavaTypeModel  resolveTypeModelByFullClassName(String name) throws EntityNotFoundException, TermWareException {        
        // LOG.info("resolveTypeModelByFullClassName:"+name);
         int lastDotIndex=name.lastIndexOf('.');
         if (lastDotIndex!=-1) {
