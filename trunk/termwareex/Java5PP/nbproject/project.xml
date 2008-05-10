@@ -68,13 +68,13 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
             <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">lib/TermWare2.jar</classpath>
+                <classpath mode="compile">lib/TermWare-2.3.0.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
             <compilation-unit>
                 <package-root>test</package-root>
                 <unit-tests/>
-                <classpath mode="compile">lib/TermWare2.jar;lib/junit.jar;lib/TermWareJPP.jar</classpath>
+                <classpath mode="compile">lib/junit-3.8.jar:lib/TermWare-2.3.0.jar:output/TermWareJPP-1.1.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>

@@ -1,7 +1,7 @@
 /*
  * JavaPrinter.java
  *
- * Copyright (c) 2004-2005 GradSoft  Ukraine
+ * Copyright (c) 2004-2008 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -33,6 +33,11 @@ public class JavaPrinter extends AbstractPrinter {
     
     public void writeTerm(Term t) throws TermWareException {
         writeTerm(t,0);
+    }
+    
+    public void flush()
+    {
+      out_.flush();  
     }
     
     public void writeTerm(Term t, int level) throws TermWareException {

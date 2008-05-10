@@ -3,13 +3,16 @@
 <project name="TermWareJava5PP" default="build" basedir=".">
 
 
+ <property file="build.properties" />
+
+
  <!-- set here location of JavaCC [version 4.0] -->
- <property name="javacchome" location="/usr/share/java/" />
+ <condition property="javacc.int.home" value="${javacchome}"
+     else="lib" >
+   <isset property="javacchome" />
+ </condition>
 
 
-  <!-- set here debug property -->
- 
- <property name="debug" value="true" /> 
   
  <!-- task definitions -->
  
@@ -23,8 +26,8 @@
  </target>
 
 
- <target name="build-java5-jj">
-     <java classpath="${javacchome}/javacc.jar"
+ <target name="build-java5-jj" depends="retrieve-javacc" >
+     <java classpath="${javacc.int.home}/javacc-${javacc.version}.jar"
            classname="org.javacc.jjtree.Main"
            fork="true"
            dir="src/ua/gradsoft/parsers/java5/jjt"
@@ -33,8 +36,13 @@
      </java>
  </target>
 
+ <target name="retrieve-javacc">
+  <ant antfile="build-ivy.xml" target="retrieve-for-build" dir="${basedir}" />
+ </target>
+
+
  <target name="build-java5-jv" depends="build-java5-jj">
-     <java classpath="${javacchome}/javacc.jar"
+     <java classpath="${javacc.int.home}/javacc-${javacc.version}.jar"
            classname="org.javacc.parser.Main"
            fork="true"
            dir="src/ua/gradsoft/parsers/java5/jjt"
@@ -44,20 +52,27 @@
  </target>
  
 
- <target name="build-java5-classes" depends="build-java5-jv">
+ <target name="build-java5-classes" depends="build-java5-jv,retrieve-for-build">
   <javac srcdir="src" includes="**/*.java" debug="${debug}" >
     <classpath>
       <pathelement location="src"/>
-      <pathelement location="lib/TermWare2.jar"/>
+      <pathelement location="lib/TermWare-${termware.version}.jar"/>
       <pathelement location="${java.class.path}/"/>      
     </classpath>
   </javac>
  </target>
  
+ <target name="retrieve-for-build">
+  <ant antfile="build-ivy.xml" target="retrieve-for-build" dir="${basedir}" />
+ </target>
+
+ <target name="retrieve-for-test">
+  <ant antfile="build-ivy.xml" target="retrieve-for-test" dir="${basedir}" />
+ </target>
 
  <target name="build-lib"  depends="build-java5-classes">
    <jar basedir="src" includes="**/*.class,**/*.dtd" 
-       destfile="lib/TermWareJPP.jar" 
+       destfile="output/TermWareJPP-${version}.jar" 
        index="true">
   <include name="build"/>
   <manifest>
@@ -67,23 +82,23 @@
    <attribute name="Specification-Version" value="1.0" />
    <attribute name="Implementation-Vendor-Id" value="ua.gradsoft" />
    <attribute name="Implementation-Vendor" value="GradSoft Ltd" />
-   <attribute name="Implementation-Version" value="1.0" />
+   <attribute name="Implementation-Version" value="${version}" />
   </manifest>
   </jar>
  </target>
 
-  <target name="build-test" depends="build-lib">
+  <target name="build-test" depends="build-lib,retrieve-for-test">
   <javac srcdir="test" includes="**/*.java" debug="${debug}" >
     <classpath>
       <pathelement location="test"/>
-      <pathelement location="lib/TermWare2.jar"/>
-      <pathelement location="lib/junit.jar"/>
-      <pathelement location="lib/TermWareJPP.jar"/>
+      <pathelement location="lib/TermWare-${termware.version}.jar"/>
+      <pathelement location="lib/junit-${junit.version}.jar"/>
+      <pathelement location="output/TermWareJPP-${version}.jar"/>
       <pathelement location="${java.class.path}/"/>      
     </classpath>
   </javac>     
   <jar basedir="test" includes="**/*.class,**/*.dtd" 
-       destfile="lib/TermWareJPPTests.jar" 
+       destfile="output/TermWareJPPTests-${version}.jar" 
        index="true"/>
  </target>
 
@@ -95,10 +110,10 @@
         fork="true" failonerror="true" >
       <classpath>
       <pathelement location="jtests"/>
-      <pathelement location="lib/TermWare2.jar"/>
-      <pathelement location="lib/TermWareJPP.jar"/>
-      <pathelement location="lib/junit.jar"/>
-      <pathelement location="lib/TermWareJPPTests.jar"/>
+      <pathelement location="lib/TermWare-${termware.version}.jar"/>
+      <pathelement location="output/TermWareJPP-${version}.jar"/>
+      <pathelement location="lib/junit-${junit.version}.jar"/>
+      <pathelement location="output/TermWareJPPTests-${version}.jar"/>
       <pathelement location="${java.class.path}/"/>      
     </classpath>
     <sysproperty key="termware.path" value="systems" />
@@ -108,8 +123,49 @@
  
  <target name="api-docs">
   <javadoc sourcepath="src" destdir="doc/api"
-           packagenames="ua.gradsoft.termware,ua.gradsoft.termware.*"
+           packagenames="ua.gradsoft.parsers.java5,ua.gradsoft.printers.java5"
+  >
+   <classpath>
+      <pathelement location="lib/TermWare-${termware.version}.jar"/>
+      <pathelement location="${java.class.path}/"/>      
+   </classpath>
+  </javadoc>
+ </target>
+
+ <target name="docs" depends="api-docs">
+ </target>
+
+ <target name="source-distributive" depends="build,docs">
+  <mkdir dir="output/TermWareJPP-src-${version}" />
+  <copy todir="output/TermWareJPP-src-${version}" >
+   <fileset dir="." >
+    <include name="**/*.xml" />
+    <include name="**/*.java" />
+    <include name="**/*.properties" />
+    <include name="src/*" />
+    <include name="lib/*" />
+    <include name="docs/**/*" />
+    <exclude name="output/*.jar" />
+    <exclude name="output/*.tar.gz" />
+    <exclude name="output/TermWareJPP*/*" />
+    <include name="output/README" />
+    <exclude name="nbproject/private/*" />
+    <exclude name="**/*.class" />
+   </fileset>
+  </copy>
+  <tar basedir="output"
+       destfile="output/TermWareJPP-src-${version}.tar"
+       defaultexcludes="yes"
+       includes="TermWareJPP-src-${version}/**/*" />
+  <gzip src="output/TermWareJPP-src-${version}.tar" 
+        destfile="output/TermWareJPP-src-${version}.tar.gz" 
   />
+  <delete file="output/TermWareJPP-src-${version}.tar" />
+  <delete dir="output/TermWareJPP-src-${version}" />
+ </target>
+
+ <target name="publish" depends="source-distributive">
+  <ant antfile="build-ivy.xml" target="publish" dir="${basedir}" />
  </target>
 
 </project>
