@@ -4,8 +4,33 @@
 
 
  <!-- set here location of ant (see ant.apache.org ) -->
- <property name="anthome" location="c:/local/java/ant" />
+ <property file="build.properties" />
 
+ <import file="build-ivy.xml" />
+
+ <path id="std.build.path">
+    <pathelement location="jsrc"/>
+    <pathelement location="jsrc-ann"/>
+    <pathelement location="lib/TermWare-${termware.version}.jar"/>
+    <pathelement location="lib/TermWareJPP-${termwarejpp.version}.jar"/>
+    <pathelement location="${java.class.path}/"/>      
+ </path>
+
+ <path id="std.run.path">
+   <pathelement location="lib/JavaChecker-${version}.jar" />
+   <pathelement location="lib/JavaChecker2Annotations-${version}.jar" />
+   <path refid="std.build.path" />
+ </path>
+
+ <path id="test.build.path">
+   <pathelement location="lib/junit-${junit.version}.jar" />
+   <path refid="std.run.path" />
+ </path>
+
+ <path id="test.run.path">
+   <pathelement location="jtests" />
+   <path refid="test.build.path" />
+ </path>
 
  <!-- targets -->
 
@@ -18,7 +43,7 @@
  </target>
 
  
- <target name="build-classes">
+ <target name="build-classes" depends="retrieve-for-build">
    <javac srcdir="jsrc-ann" includes="**/*.java" debug="true">
        <classpath>
           <pathelement location="jsrc-ann"/>
@@ -27,16 +52,10 @@
    </javac>
   <javac srcdir="jsrc" includes="**/*.java" debug="true">
     <!--<compilerarg value="-Xlint:unchecked" />  -->
-    <classpath>
-      <pathelement location="jsrc"/>
-      <pathelement location="jsrc-ann"/>
-      <pathelement location="lib/TermWare2.jar"/>
-      <pathelement location="lib/TermWareJPP.jar"/>
-      <pathelement location="${java.class.path}/"/>      
-    </classpath>
+    <classpath refid="std.build.path" />
   </javac>
   <jar basedir="jsrc" includes="**/*.class" 
-       destfile="lib/JavaChecker2.jar" 
+       destfile="lib/JavaChecker-${version}.jar" 
        index="true">
       <include name="build"/>
       <manifest>
@@ -45,7 +64,7 @@
       </manifest>
   </jar>
   <jar basedir="jsrc-ann" includes="**/*.class" 
-       destfile="lib/JavaChecker2Annotations.jar" 
+       destfile="lib/JavaChecker2Annotations-${version}.jar" 
        index="true">
   <include name="build"/>
   <manifest>
@@ -56,16 +75,9 @@
      
  </target>
 
- <target name="build-test-classes"  depends="build-classes">
+ <target name="build-test-classes"  depends="build-classes,retrieve-for-test">
      <javac srcdir="jtests" includes="ua/**/*.java" debug="true" >
-         <classpath>
-             <pathelement location="lib/JavaChecker2.jar" />
-             <pathelement location="lib/JavaChecker2Annotations.jar" />
-             <pathelement location="lib/TermWare2.jar" />
-             <pathelement location="lib/TermWareJPP.jar" />
-             <pathelement location="lib/junit.jar" />
-             <pathelement location="${java.class.path}/"/>      
-         </classpath>
+         <classpath refid="test.build.path" />
      </javac>
  </target>
 
@@ -81,15 +93,7 @@
          <jvmarg value="-Dcom.sun.management.jmxremote.port=22223"/>
          <jvmarg value="-Dcom.sun.management.jmxremote.ssl=false"/>
 -->
-         <classpath>
-             <pathelement location="jtests" />
-             <pathelement location="lib/JavaChecker2.jar" />
-             <pathelement location="lib/JavaChecker2Annotations.jar" />
-             <pathelement location="lib/TermWare2.jar" />
-             <pathelement location="lib/TermWareJPP.jar" />
-             <pathelement location="lib/junit.jar" />
-             <pathelement location="${java.class.path}/"/>                
-         </classpath>
+         <classpath refid="test.run.path" />
          <formatter type="xml" usefile="false" />
          <batchtest  >
              <fileset dir="jtests"  >
@@ -109,15 +113,7 @@
             <jvmarg value="-Djava.compiler=none"/>
             <jvmarg value="-Xrunjdwp:transport=dt_socket,address=22222,server=y"/>
             <jvmarg value="-Djavachecker.home=."/>
-         <classpath>
-             <pathelement location="jtests" />
-             <pathelement location="lib/JavaChecker2.jar" />
-             <pathelement location="lib/JavaChecker2Annotations.jar" />
-             <pathelement location="lib/TermWare2.jar" />
-             <pathelement location="lib/TermWareJPP.jar" />
-             <pathelement location="lib/junit.jar" />
-             <pathelement location="${java.class.path}/"/>                   
-         </classpath>
+         <classpath refid="test.run.path" />
          <formatter type="xml" usefile="false" />
          <batchtest  >
              <fileset dir="jtests"  >
@@ -132,15 +128,7 @@
             <jvmarg value="-Xmx512M"/>
             <jvmarg value="-agentpath:/opt/netbeans-5.5/profiler1/lib/deployed/jdk15/linux/libprofilerinterface.so=/opt/netbeans-5.5/profiler1/lib,5140"/>
             <jvmarg value="-Djavachecker.home=."/>
-         <classpath>
-             <pathelement location="jtests" />
-             <pathelement location="lib/JavaChecker2.jar" />
-             <pathelement location="lib/JavaChecker2Annotations.jar" />
-             <pathelement location="lib/TermWare2.jar" />
-             <pathelement location="lib/TermWareJPP.jar" />
-             <pathelement location="lib/junit.jar" />
-             <pathelement location="${java.class.path}/"/>                   
-         </classpath>
+         <classpath refid="test.run.path" />
          <formatter type="xml" usefile="false" />
          <batchtest  >
              <fileset dir="jtests"  >
@@ -154,14 +142,7 @@
 
  <target name="declareJavaChecker"  depends="build-classes">
     <taskdef name="JavaChecker"  classname="ua.gradsoft.javachecker.ant.JavaCheckerTask">
-     <classpath>
-      <pathelement location="jsrc"/>
-      <pathelement location="lib/TermWare2.jar"/>
-      <pathelement location="lib/JavaChecker2.jar"/>
-      <pathelement location="lib/JavaChecker2Annotations.jar" />
-      <pathelement location="lib/TermWareJPP.jar"/>
-      <pathelement location="${java.class.path}/"/>      
-     </classpath>
+     <classpath refid="std.run.path" />
     </taskdef>    
  </target>
 
