@@ -6,7 +6,7 @@
  You need set properties in build.properties file 
 -->
 
- <property file="build.properties"  />
+ <import file="build.xml" />
 
  <!-- external tasks -->
 
@@ -15,31 +15,19 @@
 
  <!-- targets -->
 
- <target name="clean">
-  <ant antfile="build.xml" target="clean" />
- </target>
 
- <target name="docs">
-  <ant antfile="build.xml" target="docs" />
- </target>
-
- <target name="build">
-  <ant antfile="build.xml" target="build" />
- </target>
-
-
- <target name="binary_installation" depends="build,docs,cpTermWare">
+ <target name="binary_installation" depends="build,docs">
   <izpack input="installer/binary_installation.xml"
-          output="installer/JavaCheckerBinaryInstaller-2.2.3.jar"
+          output="installer/JavaCheckerBinaryInstaller-${version}.jar"
           installerType="standard"
           basedir="installer"
           IzPackDir="${izpackhome}"
   />
  </target>
 
- <target name="source_installation" depends="build,docs,cpTermWare">
+ <target name="source_installation" depends="build,docs">
   <izpack input="installer/source_installation.xml"
-          output="installer/JavaCheckerSourceInstaller-2.2.3.jar"
+          output="installer/JavaCheckerSourceInstaller-${version}.jar"
           installerType="standard"
           basedir="installer"
           IzPackDir="${izpackhome}"
@@ -117,5 +105,6 @@
  <copy todir="${javanet.cvs.dir}" overwrite="true" file="build.properties" /> 
 </target>
 
+ <target name="publish" depends="build,clean,installation,publish.only" />
 
 </project>

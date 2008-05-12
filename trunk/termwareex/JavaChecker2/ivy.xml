@@ -9,6 +9,7 @@
  </configurations>
  <publications>
     <artifact name="JavaChecker" type="jar" conf="jar" />
+    <artifact name="JavaChecker2Annotations" type="jar" conf="jar" />
     <artifact name="JabaCheckerSourceInstaller" type="installation" ext="jar" 
               conf="installation" />
     <artifact name="JabaCheckerBinaryInstaller" type="installation" ext="jar" 

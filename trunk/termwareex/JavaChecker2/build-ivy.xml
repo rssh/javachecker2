@@ -68,10 +68,12 @@
  </target>
 
  <target name="publish.only" depends="resolve-ivy" >
+   <copy file="lib/JavaChecker-${version}.jar" todir="installer" />
+   <copy file="lib/JavaChecker2Annotations-${version}.jar" todir="installer" />
    <ivy:publish resolver="publish.gradsoft.ua" 
                 pubrevision="${version}"
                 overwrite="true"
-                artifactspattern="output/[artifact]-[revision].[ext]" />
+                artifactspattern="installer/[artifact]-[revision].[ext]" />
  </target>
 
 

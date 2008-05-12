@@ -8,7 +8,7 @@
 <installation version="1.0">
  <info>
   <appname>JavaChecker</appname>
-  <appversion>2.2.3</appversion>
+  <appversion>2.3.0</appversion>
   <url>http://www.gradsoft.ua</url>
   <authors>
    <author name="Ruslan Shevchenko" email="Ruslan@Shevchenko.Kiev.UA" />
@@ -16,7 +16,11 @@
   </authors>
  </info>
  <guiprefs height="480" resizable="yes" width="640"/>
- <variables/>
+ <variables>
+   <variable name="javachecker_version" value="2.3.0" />
+   <variable name="termware_version" value="2.3.0" />
+   <variable name="termwarejpp_version" value="1.1" />
+ </variables>
  <locale>
    <langpack iso3="eng" />
  </locale>
@@ -40,10 +44,10 @@
   <executable targetfile="$INSTALL_PATH/bin/JavaChecker.sh" stage="newer" keep="true" os="unix"/>
   <parsable targetfile="$INSTALL_PATH/bin/JavaChecker.bat" os="windows"/>
   <executable targetfile="$INSTALL_PATH/bin/JavaChecker.bat" stage="newer" keep="true" os="windows"/>
-  <file src="../lib/JavaChecker2.jar" targetdir="$INSTALL_PATH/lib" />
-  <file src="../lib/JavaChecker2Annotations.jar" targetdir="$INSTALL_PATH/lib" />
-  <file src="../lib/TermWare2.jar"  targetdir="$INSTALL_PATH/lib" />
-  <file src="../lib/TermWareJPP.jar"  targetdir="$INSTALL_PATH/lib" />
+  <file src="../lib/JavaChecker-2.3.0.jar" targetdir="$INSTALL_PATH/lib" />
+  <file src="../lib/JavaChecker2Annotations-2.3.0.jar" targetdir="$INSTALL_PATH/lib" />
+  <file src="../lib/TermWare-2.3.0.jar"  targetdir="$INSTALL_PATH/lib" />
+  <file src="../lib/TermWareJPP-1.1.jar"  targetdir="$INSTALL_PATH/lib" />
   <file src="../build.xml"  targetdir="$INSTALL_PATH" />
   <file src="../build-ext.xml"  targetdir="$INSTALL_PATH" />
   <file src="../build.properties"  targetdir="$INSTALL_PATH" />
