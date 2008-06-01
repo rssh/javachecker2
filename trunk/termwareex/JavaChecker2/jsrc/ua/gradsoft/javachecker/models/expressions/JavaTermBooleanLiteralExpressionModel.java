@@ -67,6 +67,11 @@ public class JavaTermBooleanLiteralExpressionModel  extends JavaTermExpressionMo
     
     public String getString()
     { return t_.getSubtermAt(0).getString(); }
+    
+    public boolean getBoolean()
+    {
+        return getString().equals("true");
+    }
                         
     
 }

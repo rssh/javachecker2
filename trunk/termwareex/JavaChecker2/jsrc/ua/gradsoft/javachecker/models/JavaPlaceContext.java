@@ -94,6 +94,21 @@ public class JavaPlaceContext {
     {
       return statementModel_;  
     }
+
+    /**
+     * return term statement model, in which we situated or null 
+     *if we outside statement or statement model is not term
+     */
+    public JavaTermStatementModel getTermStatementModel()
+    {
+      if (statementModel_!=null) {
+          if (statementModel_ instanceof JavaTermStatementModel) {
+              return (JavaTermStatementModel)statementModel_;
+          }
+      }
+      return null;
+    }
+    
     
     void setStatementModel(JavaStatementModel statementModel)
     {

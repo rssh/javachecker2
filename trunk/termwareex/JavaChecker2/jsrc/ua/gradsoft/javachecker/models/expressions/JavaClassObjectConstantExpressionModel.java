@@ -13,9 +13,9 @@ import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaPlaceContext;
 import ua.gradsoft.javachecker.models.JavaPlaceContextFactory;
 import ua.gradsoft.javachecker.models.JavaStatementModel;
-import ua.gradsoft.javachecker.models.JavaTraceContext;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.javachecker.models.TermUtils;
+import ua.gradsoft.javachecker.trace.JavaTraceContext;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 

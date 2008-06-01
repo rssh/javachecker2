@@ -42,6 +42,7 @@ public class JavaTermAndExpressionModel extends JavaTermExpressionModel
       subExpressions_.add(JavaTermExpressionModel.create(snd,st,enclosedType));
     }
     
+    
     public JavaExpressionKind  getKind()
     {
       return JavaExpressionKind.AND; 
