@@ -30,7 +30,13 @@ import ua.gradsoft.termware.TermWareException;
 public class JavaTermFieldExpressionModel extends JavaTermExpressionModel
 {
     
-    /** Creates a new instance of JavaTermFieldExpressionModel */
+    /** Creates a new instance of JavaTermFieldExpressionModel
+     *
+     * @param t - term, must be Field(expr-term,identifier)
+     * @param st
+     * @param enclosedType
+     * @throws ua.gradsoft.termware.TermWareException
+     */
     public JavaTermFieldExpressionModel(Term t, JavaTermStatementModel st, JavaTypeModel enclosedType) throws TermWareException
     {
       super(t,st,enclosedType);  

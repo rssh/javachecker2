@@ -13,6 +13,10 @@ import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.models.expressions.JavaTermBooleanLiteralExpressionModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermCharacterLiteralExpressionModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermFloatingPointLiteralExpressionModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermIntegerLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 
 /**
@@ -20,21 +24,45 @@ import ua.gradsoft.termware.Term;
  * @author Ruslan Shevchenko
  */
 public class JavaPrimitiveTypeModel extends JavaTypeModel {
-    
-    public final static JavaPrimitiveTypeModel BOOLEAN = new JavaPrimitiveTypeModel("boolean");
-    public final static JavaPrimitiveTypeModel CHAR = new JavaPrimitiveTypeModel("char");
-    public final static JavaPrimitiveTypeModel BYTE = new JavaPrimitiveTypeModel("byte");
-    public final static JavaPrimitiveTypeModel SHORT = new JavaPrimitiveTypeModel("short");
-    public final static JavaPrimitiveTypeModel INT = new JavaPrimitiveTypeModel("int");
-    public final static JavaPrimitiveTypeModel LONG = new JavaPrimitiveTypeModel("long");
-    public final static JavaPrimitiveTypeModel FLOAT = new JavaPrimitiveTypeModel("float");
-    public final static JavaPrimitiveTypeModel DOUBLE = new JavaPrimitiveTypeModel("double");
-    public final static JavaPrimitiveTypeModel VOID = new JavaPrimitiveTypeModel("void");
+
+
+    public final static JavaPrimitiveTypeModel BOOLEAN = new JavaPrimitiveTypeModel("boolean",
+                                                               JavaTermBooleanLiteralExpressionModel.getFalseExpression()
+                                                                                   );
+    public final static JavaPrimitiveTypeModel CHAR = new JavaPrimitiveTypeModel("char",
+                                                               JavaTermCharacterLiteralExpressionModel.getZero()
+                                                                                   );
+    public final static JavaPrimitiveTypeModel BYTE = new JavaPrimitiveTypeModel("byte",
+                                                               JavaTermIntegerLiteralExpressionModel.getZero()
+                                                                                   );
+    public final static JavaPrimitiveTypeModel SHORT = new JavaPrimitiveTypeModel("short",
+                                                               JavaTermIntegerLiteralExpressionModel.getZero()
+                                                                                   );
+
+    public final static JavaPrimitiveTypeModel INT = new JavaPrimitiveTypeModel("int",
+                                                               JavaTermIntegerLiteralExpressionModel.getZero()
+                                                                                   );
+
+    public final static JavaPrimitiveTypeModel LONG = new JavaPrimitiveTypeModel("long",
+                                                JavaTermIntegerLiteralExpressionModel.getZeroL()
+                                                                                   );
+
+    public final static JavaPrimitiveTypeModel FLOAT = new JavaPrimitiveTypeModel("float",
+                                                       JavaTermFloatingPointLiteralExpressionModel.getZeroFloat()
+                                                                                   );
+
+    public final static JavaPrimitiveTypeModel DOUBLE = new JavaPrimitiveTypeModel("double",
+                                                       JavaTermFloatingPointLiteralExpressionModel.getZeroDouble()
+                                                                                   );
+
+    public final static JavaPrimitiveTypeModel VOID = new JavaPrimitiveTypeModel("void",null);
+
     
     /** Creates a new instance of JavaPrimitiveTypeModel */
-    private JavaPrimitiveTypeModel(String name) {
+    private JavaPrimitiveTypeModel(String name,JavaExpressionModel defaultInit) {
         super(Main.getFacts().getPackagesStore().findOrAddPackage("java.lang"));
         name_=name;
+        defaultInitExpression_=defaultInit;
     }
     
     public String getName() {
@@ -182,8 +210,12 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
     {
         return TermUtils.createAtom(name_);
     }
-    
+
+    public JavaExpressionModel getDefaultInitializerExpression()
+    { return defaultInitExpression_; }
+
+
     private String name_;
-        
+    private JavaExpressionModel defaultInitExpression_;
 
 }

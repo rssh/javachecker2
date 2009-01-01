@@ -66,11 +66,6 @@ public class TraceConditionsAndSet implements TraceCondition
         throw new AssertException("Not implemented");                
     }
 
-    public ConditionalJavaTraceSet eliminateORs(ConditionalJavaTraceSet traceContexts) throws TermWareException
-    {
-        throw new AssertException("Not implemented");                        
-    }
-    
    
     
     List<TraceCondition>  traceConditions_;

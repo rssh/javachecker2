@@ -15,8 +15,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import ua.gradsoft.javachecker.EntityNotFoundException;
-import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
@@ -73,6 +73,13 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     {
          throw new NotSupportedException();
     }    
+
+    public JavaTermExpressionModel getDefaultInitializerExpression() throws TermWareException
+    {
+      Term nlTerm = TermUtils.createTerm("NullLiteral");
+      return new JavaTermNullLiteralExpressionModel(nlTerm,null,this);
+    }
+
     
     /**
      * EnumModel(modifiers,identifier,superInterfaces, enumConstantsList,membersList,context)
@@ -368,7 +375,8 @@ public final class ValueOfMethodModel extends JavaMethodModel
     
     public boolean isSynthetic()
     { return true; }
-    
+
+
     /**
      * MethodModel(modifiers,typeParameters,ResultType,name,formalParameters,throws,block,context)
      */
@@ -397,7 +405,9 @@ public final class ValueOfMethodModel extends JavaMethodModel
       Term retval = TermUtils.createTerm("MethodModel",mt,tpt,rt,identifier,fp,tht,blockModelTerm,tctx);
       return retval;
     }    
-    
+
+
+
     private JavaTermFormalParameterModel parameter_;
     
     

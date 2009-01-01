@@ -12,7 +12,6 @@ package ua.gradsoft.javachecker.models.expressions;
 import java.util.Collections;
 import java.util.List;
 import ua.gradsoft.javachecker.EntityNotFoundException;
-import ua.gradsoft.javachecker.models.JavaExpressionHelper;
 import ua.gradsoft.javachecker.models.JavaExpressionKind;
 import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaLiteralModel;
@@ -20,9 +19,10 @@ import ua.gradsoft.javachecker.models.JavaPrimitiveTypeModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
-import ua.gradsoft.termware.exceptions.AssertException;
+import ua.gradsoft.termware.TermWareRuntimeException;
 
 /**
  *IntegerLiteral
@@ -48,8 +48,11 @@ public class JavaTermIntegerLiteralExpressionModel extends JavaTermExpressionMod
       Term ct = t_.getSubtermAt(0);
       if (ct.isLong()) {
           retval = ct.getLong();
+      }else if (ct.isInt()) {
+          retval = ct.getInt();
       }else {
-          retval = ct.getString();
+          String s = ct.getString();
+          retval = Integer.parseInt(s);
       }
       return retval;
     }
@@ -93,8 +96,42 @@ public class JavaTermIntegerLiteralExpressionModel extends JavaTermExpressionMod
             return Integer.toString(t_.getSubtermAt(0).getInt());
         }
     }
-    
-    
+
+    public static JavaTermIntegerLiteralExpressionModel  getZero()
+    {
+      if (zero_==null) {
+        try {
+         zero_ = new JavaTermIntegerLiteralExpressionModel(
+                TermUtils.createTerm("IntegerLiteral",TermUtils.createInt(0)),
+                null, null
+              );
+        }catch(TermWareException ex){
+            throw new TermWareRuntimeException(ex);
+        }
+      }
+      return zero_;
+    }
+
+    public static JavaTermIntegerLiteralExpressionModel  getZeroL()
+    {
+      if (zerol_==null) {
+        try {
+         zerol_ = new JavaTermIntegerLiteralExpressionModel(
+                TermUtils.createTerm("IntegerLiteral",TermUtils.createLong(0)),
+                null, null
+              );
+        }catch(TermWareException ex){
+            throw new TermWareRuntimeException(ex);
+        }
+      }
+      return zerol_;
+    }
+
+
+
+    private static JavaTermIntegerLiteralExpressionModel zero_;
+    private static JavaTermIntegerLiteralExpressionModel zerol_;
+
                 
     
 }

@@ -10,8 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
-import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
@@ -211,7 +211,11 @@ public  class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
        return TermUtils.createTerm("ClassOrInterfaceModel",modifiers,classOrInterface,nameTerm,typeParametersTerm,extendsListModel,implementsListModel,classOrInterfaceBody,tctx);
     }
     
-    
+    public JavaTermExpressionModel getDefaultInitializerExpression() throws TermWareException
+    {
+      Term nlTerm = TermUtils.createTerm("NullLiteral");
+      return new JavaTermNullLiteralExpressionModel(nlTerm,null,this);
+    }
       
     
     private boolean isInterface_=false;

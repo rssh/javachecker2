@@ -20,9 +20,11 @@ import ua.gradsoft.javachecker.models.JavaPrimitiveTypeModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.TermWareRuntimeException;
 import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
@@ -100,7 +102,39 @@ public class JavaTermFloatingPointLiteralExpressionModel extends JavaTermExpress
           return TermHelper.termToString(ct);
       }
     }
-                
-    
+
+    public static JavaExpressionModel getZeroFloat()
+    {
+      if (zeroFloat_==null) {
+         try {
+             zeroFloat_ = new JavaTermFloatingPointLiteralExpressionModel(
+                       TermUtils.createTerm("FloatingPointLiteral",TermUtils.createFloat((float)0.0)),
+                       null,null
+                     );
+         } catch (TermWareException ex){
+             throw new TermWareRuntimeException(ex);
+         }
+      }
+      return zeroFloat_;
+    }
+
+    public static JavaExpressionModel getZeroDouble()
+    {
+      if (zeroDouble_==null) {
+         try {
+             zeroDouble_ = new JavaTermFloatingPointLiteralExpressionModel(
+                       TermUtils.createTerm("FloatingPointLiteral",TermUtils.createDouble(0.0)),
+                       null,null
+                     );
+         } catch (TermWareException ex){
+             throw new TermWareRuntimeException(ex);
+         }
+      }
+      return zeroDouble_;
+    }
+
+
+    private static JavaExpressionModel zeroFloat_=null;
+    private static JavaExpressionModel zeroDouble_=null;
     
 }

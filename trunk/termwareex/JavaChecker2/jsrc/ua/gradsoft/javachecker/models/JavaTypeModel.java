@@ -320,7 +320,13 @@ public abstract class JavaTypeModel implements AttributedEntity
    * TypeModel( Model-of-ASTTree, PlaceContext )
    */
   public  abstract Term  getModelTerm() throws TermWareException, EntityNotFoundException;
-  
+
+  /**  
+   * @return default initializer erxpression, if entity is not initialized. (i.e. null for complex types, and so on)
+   * @throws ua.gradsoft.termware.TermWareException
+   * @throws ua.gradsoft.javachecker.EntityNotFoundException
+   */
+  public abstract JavaExpressionModel  getDefaultInitializerExpression() throws TermWareException, EntityNotFoundException;
   
   public AttributesData getAttributesData() throws TermWareException
   {

@@ -13,6 +13,7 @@ import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
@@ -243,7 +244,14 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
         Term tctx=TermUtils.createJTerm(ctx);
         return TermUtils.createTerm("AnonimousClassModel",idTerm,superTerm,membersList,tctx);
     }
-    
+
+
+
+    @Override
+    public JavaExpressionModel getDefaultInitializerExpression() throws TermWareException, EntityNotFoundException {
+        return JavaTermNullLiteralExpressionModel.getNull();
+    }
+
     private int     anonimousIndexInParent_;        
     private boolean supersAreInitialized_=false;
     

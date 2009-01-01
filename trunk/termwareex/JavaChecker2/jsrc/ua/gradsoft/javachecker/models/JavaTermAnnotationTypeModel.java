@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
@@ -110,6 +111,13 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
     public boolean hasTypeParameters()
     { return false; }
 
+
+    @Override
+    public JavaExpressionModel getDefaultInitializerExpression() throws TermWareException, EntityNotFoundException {
+        return JavaTermNullLiteralExpressionModel.getNull();
+    }
+
+
     private void fillModels(Term annotationTypeBody) throws TermWareException
     {      
       Term l = annotationTypeBody.getSubtermAt(0);
@@ -166,7 +174,9 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
     }
     
     private JavaAnnotationDefaultInstanceModel  annotationDefaultInstanceModel_=null;
-    
+
+
+
     public static final int NAME_TERM_INDEX=0;
     public static final int BODY_TERM_INDEX=1;
     

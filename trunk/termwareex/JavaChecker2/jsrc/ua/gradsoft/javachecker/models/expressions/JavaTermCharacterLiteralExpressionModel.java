@@ -19,9 +19,11 @@ import ua.gradsoft.javachecker.models.JavaPrimitiveTypeModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.parsers.java5.ParserHelper;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.TermWareRuntimeException;
 
 /**
  *CharacterLiteral
@@ -70,9 +72,25 @@ public class JavaTermCharacterLiteralExpressionModel extends JavaTermExpressionM
     
     public boolean isConstantExpression()
     { return true; }
-    
+
+    public static JavaTermCharacterLiteralExpressionModel getZero()
+    {
+      if (zero_==null){
+         try {
+             zero_ = new JavaTermCharacterLiteralExpressionModel(
+                       TermUtils.createTerm("CharacterLiteral",
+                                            TermUtils.createChar('\u0000')),
+                       null,null
+                     );
+         }catch(TermWareException ex){
+             throw new TermWareRuntimeException(ex);
+         }
+
+      }
+      return zero_;
+    }
               
       
-    
+    private static JavaTermCharacterLiteralExpressionModel zero_;
     
 }

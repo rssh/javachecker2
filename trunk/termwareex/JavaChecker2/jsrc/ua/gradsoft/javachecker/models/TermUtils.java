@@ -36,6 +36,17 @@ public class TermUtils {
     {
       return getTermFactory().createInt(x);
     }
+
+    public static final Term createLong(long x)
+    {
+      return getTermFactory().createLong(x);
+    }
+
+
+    public static final Term createDouble(double x)
+    {
+        return getTermFactory().createDouble(x);
+    }
     
     public static final Term createAtom(String name)
     {
@@ -52,7 +63,8 @@ public class TermUtils {
       Term[] z=new Term[0];  
       return getTermFactory().createComplexTerm(name,z);
     }
-    
+
+
     
     public static final Term createTerm(String name, Term t1) throws TermWareException
     {
@@ -95,6 +107,17 @@ public class TermUtils {
       return getTermFactory().createBoolean(b);  
     }
     
+    public static final Term createChar(char ch)
+    {
+        return getTermFactory().createChar(ch);
+    }
+
+    public static final Term createFloat(float x)
+    {
+        return getTermFactory().createFloat(x);
+    }
+
+
     public static final Term appendTermToList(Term list, Term object) throws TermWareException
     {
       if (list.isNil()) {

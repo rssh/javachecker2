@@ -19,8 +19,10 @@ import ua.gradsoft.javachecker.models.JavaNullTypeModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.TermWareRuntimeException;
 
 /**
  *NullLiteral
@@ -73,5 +75,20 @@ public class JavaTermNullLiteralExpressionModel extends JavaTermExpressionModel 
     public String getString()
     { return "null"; }
                 
-        
+
+    public static JavaTermNullLiteralExpressionModel  getNull()
+    {
+      if (null_==null) {
+          try {
+              null_ = new JavaTermNullLiteralExpressionModel(
+                        TermUtils.createTerm("NullLiteral"), null, null
+                      );
+          }catch(TermWareException ex){
+              throw new TermWareRuntimeException(ex);
+          }
+      }
+      return null;    
+    }
+
+    private static JavaTermNullLiteralExpressionModel null_=null;
 }

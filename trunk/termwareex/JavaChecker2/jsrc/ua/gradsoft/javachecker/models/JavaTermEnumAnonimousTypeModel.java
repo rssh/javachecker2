@@ -12,6 +12,7 @@ package ua.gradsoft.javachecker.models;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
@@ -89,7 +90,13 @@ public class JavaTermEnumAnonimousTypeModel extends JavaTermTypeAbstractModel
         Term tctx=TermUtils.createJTerm(ctx);
         return TermUtils.createTerm("EnumAnonimousTypeModel",identifierName,membersListModel,tctx);
     }
-    
+
+
+    @Override
+    public JavaExpressionModel getDefaultInitializerExpression() throws TermWareException, EntityNotFoundException {
+        return JavaTermNullLiteralExpressionModel.getNull();
+    }
+
     private void fillModels(Term t) throws TermWareException
     {
      Term membersList = t.getSubtermAt(0);

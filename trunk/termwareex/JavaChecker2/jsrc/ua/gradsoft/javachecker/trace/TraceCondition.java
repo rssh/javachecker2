@@ -37,19 +37,6 @@ public interface TraceCondition {
      * @throws ua.gradsoft.termware.TermWareException
      */
     void forse(JavaTraceContext traceContext) throws TermWareException, ImpossibleForsingOfTraceCondition;
-
-    /**     
-     * eliminate OR-s in condition in given trace set 
-     * (and may be add new traces to check, instead)
-     *<pre>
-     *  el(OR(x,y),ctx) ->  traceset({(x,ctx),(y,ctx)})
-     *  el(NOT(x),ctx) -> el(x.invert(),ctx)
-     *  el(AND(x,y),ctx) -> traceset({(xi,ctxi) in el(x,ctx),{yi,ctxyi} in el(y,ctx) 
-     *                                     : (AND(xi,yi),ctxxi and ctxyi) })
-     *</pre> 
-     */
-    ConditionalJavaTraceSet eliminateORs(ConditionalJavaTraceSet traceContexts) throws TermWareException;
     
-    
-    
+        
 }

@@ -14,6 +14,7 @@ import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
@@ -326,7 +327,14 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
         Term retval = TermUtils.createTerm("WildCardBoundsModel",kt,typeRef);
         return retval;
     }
-    
+
+    @Override
+    public JavaExpressionModel getDefaultInitializerExpression() throws TermWareException, EntityNotFoundException {
+        return JavaTermNullLiteralExpressionModel.getNull();
+    }
+
+
+
     private JavaWildcardBoundsKind      kind_;
     private JavaTypeModel boundTypeModel_=null;
         

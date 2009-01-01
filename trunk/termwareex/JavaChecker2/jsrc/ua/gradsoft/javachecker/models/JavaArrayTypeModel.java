@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -136,7 +137,13 @@ public class JavaArrayTypeModel extends JavaTypeModel {
     public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException {
         throw new NotSupportedException();
     }
-    
+
+    public JavaTermExpressionModel getDefaultInitializerExpression() throws TermWareException
+    {
+      Term nlTerm = TermUtils.createTerm("NullLiteral");
+      return new JavaTermNullLiteralExpressionModel(nlTerm,null,this);
+    }
+
     
     
     public boolean isNested() {

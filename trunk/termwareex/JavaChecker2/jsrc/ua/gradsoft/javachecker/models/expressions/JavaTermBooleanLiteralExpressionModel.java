@@ -19,8 +19,10 @@ import ua.gradsoft.javachecker.models.JavaPrimitiveTypeModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
+import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.TermWareRuntimeException;
 
 /**
  *BooleanLiteral
@@ -72,6 +74,39 @@ public class JavaTermBooleanLiteralExpressionModel  extends JavaTermExpressionMo
     {
         return getString().equals("true");
     }
-                        
-    
+
+    public static JavaExpressionModel getFalseExpression()
+    {
+      if (falseExpressionModel_==null) {
+        try {
+          falseExpressionModel_ = new JavaTermBooleanLiteralExpressionModel(
+                    TermUtils.createTerm("BooleanLiteral",TermUtils.createString("false")),
+                    null,null
+                  );
+        }catch(TermWareException e){
+            throw new TermWareRuntimeException(e);
+        }
+      }
+      return falseExpressionModel_;
+    }
+
+    public static JavaExpressionModel getTrueExpression()
+    {
+      if (trueExpressionModel_==null) {
+        try {
+          trueExpressionModel_ = new JavaTermBooleanLiteralExpressionModel(
+                    TermUtils.createTerm("BooleanLiteral",TermUtils.createString("true")),
+                    null,null
+                  );
+        }catch(TermWareException e){
+            throw new TermWareRuntimeException(e);
+        }
+      }
+      return trueExpressionModel_;
+    }
+
+
+
+    private static JavaExpressionModel falseExpressionModel_;
+    private static JavaExpressionModel trueExpressionModel_;
 }

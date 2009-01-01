@@ -382,7 +382,12 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
     {
         return origin_.getAnnotationsMap();
     }
-   
+
+    public JavaExpressionModel getDefaultInitializerExpression() throws TermWareException, EntityNotFoundException
+    {
+        return origin_.getDefaultInitializerExpression();
+    }
+
     
     public JavaTypeModel resolveTypeParameter(String name) throws EntityNotFoundException, TermWareException 
     {

@@ -14,8 +14,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import ua.gradsoft.javachecker.EntityNotFoundException;
-import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
 /**
@@ -69,7 +67,9 @@ public class JavaClassTypeVariableModel extends JavaTypeVariableAbstractModel
 
     public  Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap()
     { return Collections.emptyMap(); }
-    
+
+
+
     private TypeVariable<?> typeVariable_;
     
 }

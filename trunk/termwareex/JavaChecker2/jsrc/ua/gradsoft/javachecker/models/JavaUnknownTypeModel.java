@@ -10,8 +10,10 @@ package ua.gradsoft.javachecker.models;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.TermWareException;
@@ -208,7 +210,13 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     {
          throw new NotSupportedException();
     }
-    
+
+
+
+    @Override
+    public JavaExpressionModel getDefaultInitializerExpression() throws TermWareException, EntityNotFoundException {
+        return JavaTermNullLiteralExpressionModel.getNull();
+    }
     
     public boolean hasTypeParameters()
     { return false; }

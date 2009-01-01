@@ -16,6 +16,7 @@ import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
 
@@ -71,7 +72,13 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     {
          throw new NotSupportedException();
     }
-    
+
+    public JavaTermExpressionModel getDefaultInitializerExpression() throws TermWareException
+    {
+      Term nlTerm = TermUtils.createTerm("NullLiteral");
+      return new JavaTermNullLiteralExpressionModel(nlTerm,null,this);
+    }
+
     
     public boolean isPrimitiveType()
     { return false; }

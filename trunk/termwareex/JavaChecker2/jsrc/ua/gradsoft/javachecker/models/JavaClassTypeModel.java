@@ -31,6 +31,11 @@ import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.models.expressions.JavaTermBooleanLiteralExpressionModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermCharacterLiteralExpressionModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermFloatingPointLiteralExpressionModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermIntegerLiteralExpressionModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.TermWareException;
@@ -431,7 +436,42 @@ public class JavaClassTypeModel extends JavaTypeModel
   {
       return TermUtils.createTerm("ClassTypeModel",TermUtils.createJTerm(JavaPlaceContextFactory.createNewTypeContext(this)));
   }
-  
+
+  public JavaExpressionModel getDefaultInitializerExpression() throws TermWareException
+  {
+      if (!theClass_.isPrimitive()) {
+         Term nlTerm = TermUtils.createTerm("NullLiteral");
+         return new JavaTermNullLiteralExpressionModel(nlTerm,null,this);
+      }else if (theClass_.equals(char.class)) {
+         Term sTerm = TermUtils.createString("\u0000");
+         Term chTerm = TermUtils.createTerm("CharacterLiteral",sTerm);
+         return new JavaTermCharacterLiteralExpressionModel(chTerm,null,this);
+      }else if (theClass_.equals(short.class)
+               ||
+                theClass_.equals(int.class)
+              ) {
+         Term sTerm = TermUtils.createInt(0);
+         Term iTerm = TermUtils.createTerm("IntegerLiteral", sTerm);
+         return new JavaTermIntegerLiteralExpressionModel(iTerm,null,this);
+      }else if (theClass_.equals(long.class)) {
+          Term sTerm = TermUtils.createLong(0);
+          Term iTerm = TermUtils.createTerm("IntegerLiteral", sTerm);
+          return new JavaTermIntegerLiteralExpressionModel(iTerm,null,this);
+      }else if (theClass_.equals(boolean.class)) {
+          Term bTerm = TermUtils.createBoolean(false);
+          Term blTerm = TermUtils.createTerm("BooleanLiteral",bTerm);
+          return new JavaTermBooleanLiteralExpressionModel(blTerm,null,this);
+      }else if (theClass_.equals(float.class)||theClass_.equals(double.class)) {
+          Term floatTerm = TermUtils.createDouble(0.0);
+          Term flTerm = TermUtils.createTerm("FloatingPointLiteral",floatTerm);
+          return new JavaTermFloatingPointLiteralExpressionModel(flTerm,null,this);
+      }else{
+          throw new AssertException("Unknown promitive type:"+theClass_.getName());
+      }
+
+  }
+
+
   static public JavaTypeModel createTypeModel(Type type) throws TermWareException
   {
     if (type instanceof GenericArrayType) {

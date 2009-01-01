@@ -61,12 +61,7 @@ public class TrueTraceCondition implements TraceCondition
     {
        return new FalseTraceCondition(statement_,enclosedType_); 
     }
-        
-    public ConditionalJavaTraceSet eliminateORs(ConditionalJavaTraceSet traces)
-    {
-      return traces;  
-    }
-    
+            
     
     private JavaTermStatementModel statement_;
     private JavaTypeModel          enclosedType_;
