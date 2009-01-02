@@ -1,0 +1,2386 @@
+
+/*
+ * Copyright © 2002 Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
+ * California 95054, U.S.A. All rights reserved.  Sun Microsystems, Inc. has
+ * intellectual property rights relating to technology embodied in the product
+ * that is described in this document. In particular, and without limitation,
+ * these intellectual property rights may include one or more of the U.S.
+ * patents listed at http://www.sun.com/patents and one or more additional
+ * patents or pending patent applications in the U.S. and in other countries.
+ * U.S. Government Rights - CommercIial software. Government users are subject
+ * to the Sun Microsystems, Inc. standard license agreement and applicable
+ * provisions of the FAR and its supplements.  Use is subject to license terms.
+ * Sun,  Sun Microsystems,  the Sun logo and  Java are trademarks or registered
+ * trademarks of Sun Microsystems, Inc. in the U.S. and other countries.  This
+ * product is covered and controlled by U.S. Export Control laws and may be
+ * subject to the export or import laws in other countries.  Nuclear, missile,
+ * chemical biological weapons or nuclear maritime end uses or end users,
+ * whether direct or indirect, are strictly prohibited.  Export or reexport
+ * to countries subject to U.S. embargo or to entities identified on U.S.
+ * export exclusion lists, including, but not limited to, the denied persons
+ * and specially designated nationals lists is strictly prohibited.
+ *
+ * adoption to TermWare:
+ * Copyright (C) 2004-2007  GradSoft, Ukraine
+ */
+
+options {
+  JAVA_UNICODE_ESCAPE = true;
+  STATIC = false;
+  BUILD_NODE_FILES = false;
+  NODE_EXTENDS = "JavaNode";
+//  DEBUG_PARSER = true;
+//  NODE_SCOPE_HOOK = true;
+//  MULTI = true;
+}
+
+PARSER_BEGIN(JJTJavaParser)
+
+package ua.gradsoft.parsers.java5.jjt;
+
+import java.io.*;
+import ua.gradsoft.termware.*;
+import ua.gradsoft.parsers.java5.JavaNode;
+import ua.gradsoft.parsers.java5.ParserHelper;
+
+/**
+ * Grammar to parse Java version 1.5
+ * @author Sreenivasa Viswanadha - Simplified and enhanced for 1.5
+ * @author Ruslan Shevchenko     - Fixed few bugs, imported to TermWare framework.
+ */
+public class JJTJavaParser
+{
+
+   public  String getInFname()
+     { return inFname; }
+
+   public  void   setInFname(String inFname)
+     { this.inFname=inFname; }
+  
+   private  String inFname="unknown";
+
+
+   public JJTJavaParser(String fileName)
+   {
+      this(System.in);
+      try { ReInit(new FileInputStream(new File(fileName))); }
+      catch(Exception e) { e.printStackTrace(); }
+   }
+
+   public SimpleNode getRootNode()
+   {
+     return (SimpleNode)jjtree.rootNode();
+   }
+
+  public static void main(String args[]) {
+    JJTJavaParser parser;
+    if (args.length == 0) {
+      System.out.println("JJT Java Parser Version 1.1:  Reading from standard input . . .");
+      parser = new JJTJavaParser(System.in);
+    } else if (args.length == 1) {
+      System.out.println("JJT Java Parser Version 1.1:  Reading from file " + args[0] + " . . .");
+      try {
+        parser = new JJTJavaParser(new java.io.FileInputStream(args[0]));
+      } catch (java.io.FileNotFoundException e) {
+        System.out.println("JJT Java Parser Version 1.1:  File " + args[0] + " not found.");
+        return;
+      }
+    } else {
+      System.out.println("JJT Java Parser Version 1.1:  Usage is one of:");
+      System.out.println("         java JJTJavaParser < inputfile");
+      System.out.println("OR");
+      System.out.println("         java JJTJavaParser inputfile");
+      return;
+    }
+    try {
+      parser.CompilationUnit();
+      System.out.println("JJT Java Parser Version 1.1:  Java program parsed successfully.");
+    } catch (ParseException e) {
+      System.out.println(e.getMessage());
+      System.out.println("JJT Java Parser Version 1.1:  Encountered errors during parse.");
+    }
+  }
+
+
+    private final String getSpecialToken(Token tk)
+    {
+      String s="";
+      while(tk.specialToken != null) {
+         s=tk.specialToken.image+s;
+         tk=tk.specialToken;
+      }
+      return s;
+    }
+
+    private final void setComment(JavaNode node, Token tk) 
+    {
+     if (tk!=null) {
+         if (tk.specialToken!=null) {
+           String comment=getSpecialToken(tk);                
+           node.setAttribute("original_comment",comment);
+         }
+     }
+    }
+
+
+  Term cons(Term x1,Term x2) 
+  {
+   try {
+    return TermWare.getInstance().getTermFactory().createTerm("cons",x1,x2);
+   }catch(TermWareException ex){
+     throw new TermWareRuntimeException(ex);
+   }
+  }
+
+  Term createAtom(String name)
+  {
+   return TermWare.getInstance().getTermFactory().createAtom(name);
+  }
+
+  Term createNil()
+  {
+   return TermWare.getInstance().getTermFactory().createNil();
+  }
+
+  Term createInt(int x)
+  {
+   return TermWare.getInstance().getTermFactory().createInt(x);
+  }
+
+  Term createChar(char x)
+  {
+   return TermWare.getInstance().getTermFactory().createChar(x);
+  }
+
+
+
+  Term createString(String x)
+  {
+   return TermWare.getInstance().getTermFactory().createString(x);
+  }
+
+  Term createIntegerOrLong(String x) throws ParseException
+  {
+   try {
+     Term retval=null;
+     if (x.endsWith("L")||x.endsWith("l")) {
+         try {
+           retval=TermWare.getInstance().getTermFactory().createLong(Long.decode(x.substring(0, x.length()-1)));
+         }catch(NumberFormatException ex){
+           // it can be just too big, becouse literals can be unsigned, while decode does not handle unsogned,
+           //  bigger then MAX
+           // Here we will handle one case, which exists in JDK sources. (java/lang/Long.java)
+           if (x.length()>2) {
+             char last=x.charAt(x.length()-2);
+             long l = Long.decode(x.substring(0,x.length()-2));
+             char x0 = x.charAt(0);
+             char x1 = x.charAt(1);
+             if (x0=='0') {
+               if (x1=='x'||x1=='X') {
+                 // hex
+                 int l1=Character.digit(last,16);
+                 l=((l<<8)+l1);
+               }else{
+                 // oct
+                 int l1=Character.digit(last,8);
+                 l=((l<<4)+l1);
+               }
+             }
+             retval=TermWare.getInstance().getTermFactory().createLong(l);
+           }else{
+             throw ex;
+           }
+         }
+     }else{            
+         long l = Long.decode(x);
+         retval=TermWare.getInstance().getTermFactory().createInt((int)l);
+     }
+     return retval;
+   }catch(NumberFormatException ex){
+      throw new ParseException("Can't read IntegerLiteral "+ex.getMessage()+"(s="+x+") "+" in file "+inFname);
+   }
+  }
+
+  Term createDoubleOrFloat(String x)
+  {
+   Term retval=null;
+   if (x.endsWith("F")||x.endsWith("f")) {
+      retval=TermWare.getInstance().getTermFactory().createFloat(Float.valueOf(x.substring(0, x.length()-1)));
+   }else{
+      retval=TermWare.getInstance().getTermFactory().createDouble(Double.valueOf(x));
+   }
+   return retval;
+  }
+
+  Term createBoolean(boolean x)
+  {
+   return TermWare.getInstance().getTermFactory().createBoolean(x);
+  }
+
+  Term createTerm(String name,Term x) throws TermWareException
+  {
+   return TermWare.getInstance().getTermFactory().createTerm(name,x);
+  }
+
+  Term createTerm(String name,Term x1, Term x2) throws TermWareException
+  {
+   return TermWare.getInstance().getTermFactory().createTerm(name,x1,x2);
+  }
+
+}
+
+PARSER_END(JJTJavaParser)
+
+/* WHITE SPACE */
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+/* COMMENTS */
+
+MORE :
+{
+  "//" : IN_SINGLE_LINE_COMMENT
+|
+  <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
+|
+  "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT
+}
+
+<IN_FORMAL_COMMENT>
+SPECIAL_TOKEN :
+{
+  <FORMAL_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_MULTI_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_SINGLE_LINE_COMMENT,IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+/* RESERVED WORDS AND LITERALS */
+
+TOKEN :
+{
+  < ABSTRACT: "abstract" >
+| < ASSERT: "assert" >
+| < BOOLEAN: "boolean" >
+| < BREAK: "break" >
+| < BYTE: "byte" >
+| < CASE: "case" >
+| < CATCH: "catch" >
+| < CHAR: "char" >
+| < CLASS: "class" >
+| < CONST: "const" >
+| < CONTINUE: "continue" >
+| < _DEFAULT: "default" >
+| < DO: "do" >
+| < DOUBLE: "double" >
+| < ELSE: "else" >
+| < ENUM: "enum" >
+| < EXTENDS: "extends" >
+| < FALSE: "false" >
+| < FINAL: "final" >
+| < FINALLY: "finally" >
+| < FLOAT: "float" >
+| < FOR: "for" >
+| < GOTO: "goto" >
+| < IF: "if" >
+| < IMPLEMENTS: "implements" >
+| < IMPORT: "import" >
+| < INSTANCEOF: "instanceof" >
+| < INT: "int" >
+| < INTERFACE: "interface" >
+| < LONG: "long" >
+| < NATIVE: "native" >
+| < NEW: "new" >
+| < NULL: "null" >
+| < PACKAGE: "package">
+| < PRIVATE: "private" >
+| < PROTECTED: "protected" >
+| < PUBLIC: "public" >
+| < RETURN: "return" >
+| < SHORT: "short" >
+| < STATIC: "static" >
+| < STRICTFP: "strictfp" >
+| < SUPER: "super" >
+| < SWITCH: "switch" >
+| < SYNCHRONIZED: "synchronized" >
+| < THIS: "this" >
+| < THROW: "throw" >
+| < THROWS: "throws" >
+| < TRANSIENT: "transient" >
+| < TRUE: "true" >
+| < TRY: "try" >
+| < VOID: "void" >
+| < VOLATILE: "volatile" >
+| < WHILE: "while" >
+}
+
+/* LITERALS */
+
+TOKEN :
+{
+  < INTEGER_LITERAL:
+        <DECIMAL_LITERAL> (["l","L"])?
+      | <HEX_LITERAL> (["l","L"])?
+      | <OCTAL_LITERAL> (["l","L"])?
+  >
+|
+  < #DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* >
+|
+  < #HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ >
+|
+  < #OCTAL_LITERAL: "0" (["0"-"7"])* >
+|
+  < FLOATING_POINT_LITERAL:
+      <HEX_LITERAL> "." (["0"-"9","a"-"f","A"-"F"])* (<EXPONENT>)? (["f","F","d","D"])?
+      | (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])?
+      | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])?
+      | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
+      | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]
+  >
+|
+  < #EXPONENT: ["e","E"] (["p","P"])? (["+","-"])? (["0"-"9"])+ 
+              | ["p","P"] (["+","-"])? (["0"-"9"])+ >
+|
+  < CHARACTER_LITERAL:
+      "'"
+      (   (~["'","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )
+      "'"
+  >
+|
+  < STRING_LITERAL:
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "\""
+  >
+}
+
+/* IDENTIFIERS */
+
+TOKEN :
+{
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+|
+  < #LETTER:
+      [
+       "\u0024",
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff",
+       "\u0100"-"\u1fff",
+       "\u3040"-"\u318f",
+       "\u3300"-"\u337f",
+       "\u3400"-"\u3d2d",
+       "\u4e00"-"\u9fff",
+       "\uf900"-"\ufaff"
+      ]
+  >
+|
+  < #DIGIT:
+      [
+       "\u0030"-"\u0039",
+       "\u0660"-"\u0669",
+       "\u06f0"-"\u06f9",
+       "\u0966"-"\u096f",
+       "\u09e6"-"\u09ef",
+       "\u0a66"-"\u0a6f",
+       "\u0ae6"-"\u0aef",
+       "\u0b66"-"\u0b6f",
+       "\u0be7"-"\u0bef",
+       "\u0c66"-"\u0c6f",
+       "\u0ce6"-"\u0cef",
+       "\u0d66"-"\u0d6f",
+       "\u0e50"-"\u0e59",
+       "\u0ed0"-"\u0ed9",
+       "\u1040"-"\u1049"
+      ]
+  >
+}
+
+/* SEPARATORS */
+
+TOKEN :
+{
+  < LPAREN: "(" >
+| < RPAREN: ")" >
+| < LBRACE: "{" >
+| < RBRACE: "}" >
+| < LBRACKET: "[" >
+| < RBRACKET: "]" >
+| < SEMICOLON: ";" >
+| < COMMA: "," >
+| < DOT: "." >
+| < AT: "@" >
+}
+
+/* OPERATORS */
+
+TOKEN :
+{
+  < ASSIGN: "=" >
+| < LT: "<" >
+| < BANG: "!" >
+| < TILDE: "~" >
+| < HOOK: "?" >
+| < COLON: ":" >
+| < EQ: "==" >
+| < LE: "<=" >
+| < GE: ">=" >
+| < NE: "!=" >
+| < SC_OR: "||" >
+| < SC_AND: "&&" >
+| < INCR: "++" >
+| < DECR: "--" >
+| < PLUS: "+" >
+| < MINUS: "-" >
+| < STAR: "*" >
+| < SLASH: "/" >
+| < BIT_AND: "&" >
+| < BIT_OR: "|" >
+| < XOR: "^" >
+| < REM: "%" >
+| < LSHIFT: "<<" >
+| < PLUSASSIGN: "+=" >
+| < MINUSASSIGN: "-=" >
+| < STARASSIGN: "*=" >
+| < SLASHASSIGN: "/=" >
+| < ANDASSIGN: "&=" >
+| < ORASSIGN: "|=" >
+| < XORASSIGN: "^=" >
+| < REMASSIGN: "%=" >
+| < LSHIFTASSIGN: "<<=" >
+| < RSIGNEDSHIFTASSIGN: ">>=" >
+| < RUNSIGNEDSHIFTASSIGN: ">>>=" >
+| < ELLIPSIS: "..." >
+}
+
+/* >'s need special attention due to generics syntax. */
+TOKEN :
+{
+  < RUNSIGNEDSHIFT: ">>>" >
+  {
+     matchedToken.kind = GT;
+     ((Token.GTToken)matchedToken).realKind = RUNSIGNEDSHIFT;
+     input_stream.backup(2);
+  }
+| < RSIGNEDSHIFT: ">>" >
+  {
+     matchedToken.kind = GT;
+     ((Token.GTToken)matchedToken).realKind = RSIGNEDSHIFT;
+     input_stream.backup(1);
+  }
+| < GT: ">" >
+}
+
+/* JavaChecker placeholders in rules.  */
+TOKEN:
+{
+  < TYPE_DECLARATION_PLACEHOLDER: "%%TYPE_DECLARATION" >
+  |
+  < BLOCK_PLACEHOLDER: "%%BLOCK" >
+  |
+  < EXPRESSION_PLACEHOLDER: "%%EXPRESSION" >
+  |
+  < IDENTIFIER_PLACEHOLDER: "%%IDENTIFIER"  >
+}
+
+/*****************************************
+ * THE JAVA LANGUAGE GRAMMAR STARTS HERE *
+ *****************************************/
+
+/*
+ * Program structuring syntax follows.
+ */
+
+void CompilationUnit() :
+{
+ Term commentAttributeTerm=null;
+ SimpleNode packageDeclarationTerm=null;
+}
+{
+  [ packageDeclarationTerm=PackageDeclaration() ]
+  ( ImportDeclaration() )*
+  ( TypeDeclaration() )*
+  <EOF>
+  {
+    if (packageDeclarationTerm==null) {
+       //TODO: packageDeclarationTerm=createTerm("PackageDeclaration","default");
+    }else{
+       commentAttributeTerm=packageDeclarationTerm.getAttribute("comment");
+       jjtThis.setAttribute("comment",commentAttributeTerm);
+    }
+  }
+}
+
+SimpleNode PackageDeclaration() :
+{
+ Token tk;
+}
+{
+  tk="package" Name() ";"
+    {
+     if (tk.specialToken != null) {
+        String comment=getSpecialToken(tk);
+        jjtThis.setAttribute("comment",comment);
+        jjtThis.setAttribute("original_comment",comment);
+     } 
+     return jjtThis; 
+    }
+}
+
+void ImportDeclaration() :
+{
+  Token tkSTATIC=null;
+  Token tkASTERISC=null;
+  Token tkImport=null;
+}
+{
+  tkImport="import" [ tkSTATIC="static" ] Name() [ "." tkASTERISC="*" ] ";"
+  {
+   Term modifiers = createNil();
+   if (tkSTATIC!=null) {
+      modifiers=cons(createAtom("static"),modifiers);
+   }
+   if (tkASTERISC!=null) {
+      modifiers=cons(createAtom("all"),modifiers);
+   }
+   jjtThis.addTerm(modifiers,0);
+   setComment(jjtThis,tkImport);
+  }
+}
+
+
+/*
+ * Modifiers. We match all modifiers in a single rule to reduce the chances of
+ * syntax errors for simple modifier mistakes. It will also enable us to give
+ * better error messages.
+ */
+
+SimpleNode Modifiers():
+{ 
+ Token   tk=null;
+ String   comment=null;
+ String   original_comment=null;
+ SimpleNode annotationNode=null;
+ int modifiers=0;
+}
+{
+ (
+  LOOKAHEAD(2)
+  (
+   tk="public" { modifiers |= ModifierSet.PUBLIC; }   
+  |
+   tk="static" { modifiers |= ModifierSet.STATIC; }
+  |
+   tk="protected" { modifiers |= ModifierSet.PROTECTED; }
+  |
+   tk="private" { modifiers |= ModifierSet.PRIVATE; }
+  |
+   tk="final" { modifiers |= ModifierSet.FINAL; }
+  |
+   tk="abstract" { modifiers |= ModifierSet.ABSTRACT; }
+  |
+   tk="synchronized" { modifiers |= ModifierSet.SYNCHRONIZED;  }
+  |
+   tk="native" { modifiers |= ModifierSet.NATIVE; }
+  |
+   tk="transient" { modifiers |= ModifierSet.TRANSIENT; }
+  |
+   tk="volatile" { modifiers |= ModifierSet.VOLATILE; }
+  |
+   tk="strictfp" { modifiers |= ModifierSet.STRICTFP; }
+  |
+   annotationNode=Annotation()
+  )   
+    {
+      if (comment==null) {
+         if (tk!=null) {             
+             if (tk.specialToken!=null) {
+                comment=getSpecialToken(tk);                
+                original_comment=comment;
+             }else{
+                // nothing.
+             }
+         }else if(annotationNode!=null) {
+             Term commentTerm=annotationNode.getAttribute("comment");
+             if (!commentTerm.isNil()) {
+                comment=commentTerm.getString();
+             }
+         }        
+      }
+    }
+ )*
+ {
+    jjtThis.addTerm(createInt(modifiers),0);
+    if (comment!=null) {
+      jjtThis.setAttribute("comment",comment);
+      if (original_comment!=null) {
+         jjtThis.setAttribute("original_comment",comment);
+      }
+    }
+    return jjtThis;
+ }
+}
+
+/*
+ * Declaration syntax follows.
+ */
+void TypeDeclaration():
+{
+   SimpleNode modifiers;
+}
+{
+  ";"
+|
+  modifiers = Modifiers()
+  (
+     ClassOrInterfaceDeclaration()
+   |
+     EnumDeclaration(modifiers.getSubtermAt(0).getInt())
+   |
+     AnnotationTypeDeclaration(modifiers.getSubtermAt(0).getInt())
+   |
+     <TYPE_DECLARATION_PLACEHOLDER> "(" Identifier() ")"
+  )
+  { 
+     jjtThis.setAttribute("comment",modifiers.getAttribute("comment")); 
+     //System.out.print("we receive from modifiers next comment:");
+     //modifiers.getAttribute("comment").println(System.out);
+     //System.out.print("for node:");
+     //jjtThis.println(System.out); 
+     //System.out.print("jjtThis now must have attribute:");    
+     //jjtThis.getAttribute("comment").println(System.out);     
+  }
+}
+
+
+void ClassOrInterfaceDeclaration():
+{
+   boolean isInterface = false;
+   SimpleNode typeParameters = null;
+   Token tk = null;
+}
+{
+  ( tk="class" | tk="interface" { isInterface = true; } )
+  Identifier()
+  [ typeParameters=TypeParameters() ]
+  [ ExtendsList(isInterface) ]
+  [ ImplementsList(isInterface) ]
+  ClassOrInterfaceBody(isInterface)
+  {
+    if (isInterface) {
+       jjtThis.addTerm(TermWare.getInstance().getTermFactory().createAtom("interface"),0);
+    }else{
+       jjtThis.addTerm(TermWare.getInstance().getTermFactory().createAtom("class"),0);
+    }
+    if (tk!=null) {
+     if (tk.specialToken!=null) {
+       String comment=getSpecialToken(tk);                
+       jjtThis.setAttribute("original_comment",comment);
+     }
+    }
+  }
+}
+
+void ExtendsList(boolean isInterface):
+{
+   boolean extendsMoreThanOne = false;
+   Token tk=null;
+}
+{
+   tk="extends" ClassOrInterfaceType()
+   ( "," ClassOrInterfaceType() { extendsMoreThanOne = true; } )*
+   {
+      setComment(jjtThis,tk);
+      if (extendsMoreThanOne && !isInterface)
+         throw new ParseException("A class cannot extend more than one other class");
+   }
+}
+
+void ImplementsList(boolean isInterface):
+{
+ Token tk;
+}
+{
+   tk="implements" ClassOrInterfaceType()
+   ( "," ClassOrInterfaceType() )*
+   {
+      setComment(jjtThis,tk);
+      if (isInterface)
+         throw new ParseException("An interface cannot implement other interfaces");
+   }
+}
+
+void EnumDeclaration(int modifiers):
+{
+ Token tk;
+}
+{
+  tk="enum" Identifier()
+  [ ImplementsList(false) ]
+  EnumBody() 
+  {
+   setComment(jjtThis,tk);
+  }
+}
+
+void EnumBody():
+{
+ Token tk;
+}
+{
+   tk="{"
+   EnumConstant() (LOOKAHEAD(2) "," EnumConstant() )*  [ "," ]
+   [ ";" ( ClassOrInterfaceBodyDeclaration(false) )* ]
+   "}"
+   {
+    setComment(jjtThis,tk);
+   }                  	
+}
+
+void EnumConstant():
+{
+ boolean hasArguments=false;
+ boolean hasBody=false;
+}
+{
+  Identifier() [ Arguments() {hasArguments=true;} ] [ ClassOrInterfaceBody(false) {hasBody=true;} ]
+  {
+   if (hasBody) {
+     if (!hasArguments) {
+        jjtThis.addTerm(TermWare.getInstance().getTermFactory().createNil(),1);       
+     }
+   }
+  }
+}
+
+SimpleNode TypeParameters():
+{
+ Token tk;
+}
+{
+   tk="<" TypeParameter() ( "," TypeParameter() )* ">"
+   {
+    setComment(jjtThis,tk); 
+    return jjtThis; 
+   }
+}
+
+void TypeParameter():
+{
+  SimpleNode typeBound;
+}
+{
+   Identifier() [ TypeBound() ]
+}
+
+void TypeBound():
+{
+ Token tk;
+}
+{
+   tk="extends" ClassOrInterfaceType() ( "&" ClassOrInterfaceType() )*
+   {
+    setComment(jjtThis,tk); 
+   }                  	
+}
+
+void ClassOrInterfaceBody(boolean isInterface):
+{
+ Token tk=null;
+}
+{
+  tk="{" ( ClassOrInterfaceBodyDeclaration(isInterface) )* "}"
+   {
+    setComment(jjtThis,tk); 
+   }                  	
+}
+
+void ClassOrInterfaceBodyDeclaration(boolean isInterface):
+{
+   boolean isNestedInterface = false;
+   SimpleNode modifiers;
+}
+{
+  LOOKAHEAD(2)
+  Initializer()
+  {
+     if (isInterface)
+        throw new ParseException("An interface cannot have initializers");
+  }
+ |
+  modifiers = Modifiers() 
+  (
+      ClassOrInterfaceDeclaration()
+    |
+      EnumDeclaration(modifiers.getSubtermAt(0).getInt())
+    |
+      LOOKAHEAD( [ TypeParameters() ] Identifier() "(" )
+      ConstructorDeclaration()
+    |
+      LOOKAHEAD( Type() Identifier() ( "[" "]" )* ( "," | "=" | ";" ) )
+      FieldDeclaration(modifiers.getSubtermAt(0).getInt())
+    |
+      MethodDeclaration(modifiers.getSubtermAt(0).getInt())
+  )
+    { 
+       Term ct=TermHelper.getAttribute(modifiers,"comment");
+       if (!ct.isNil()) {
+          jjtThis.setAttribute("comment",ct); 
+       }
+     }
+|
+  ";"
+}
+
+void FieldDeclaration(int modifiers):
+{}
+{
+  // Modifiers are already matched in the caller
+  Type() VariableDeclarator() ( "," VariableDeclarator() )* ";"
+}
+
+void VariableDeclarator():
+{}
+{
+  VariableDeclaratorId() [ "=" VariableInitializer() ]
+}
+
+void VariableDeclaratorId():
+{
+ int nArraysId=0;
+}
+{
+  Identifier() ( "[" "]" { ++nArraysId; } )*
+   { jjtThis.addTerm(createInt(nArraysId),1); }
+}
+
+/*
+void VariableDeclaratorIdArray():
+{}
+{
+ "[" "]"
+}
+*/
+
+void VariableInitializer():
+{}
+{
+  ArrayInitializer()
+|
+  Expression()
+}
+
+void ArrayInitializer():
+{
+ Token tk=null;
+}
+{
+  tk="{" [ VariableInitializer() ( LOOKAHEAD(2) "," VariableInitializer() )* ] [ "," ] "}"
+  {
+   if (tk.specialToken!=null) {
+     String comment=getSpecialToken(tk);
+     jjtThis.setAttribute("original_coment",comment);
+   }
+  }
+}
+
+void MethodDeclaration(int modifiers):
+{
+ SimpleNode typeParameters=null;
+ SimpleNode nameList=null;
+ SimpleNode block=null;
+}
+{
+  // Modifiers already matched in the caller!
+  [ typeParameters=TypeParameters() ]
+  ResultType()
+  MethodDeclarator() [ "throws" nameList=NameList() ]
+  ( block=Block() | ";" )
+  {
+   if (typeParameters==null) {
+     jjtThis.addTerm(createNil(),0);
+   }   
+   if (nameList==null) {
+     jjtThis.addTerm(createNil(),3);
+   }   
+   if (block==null) {
+     jjtThis.addTerm(createNil(),4);
+   }
+  }
+}
+
+void MethodDeclarator():
+{
+ int referenceLevel=0;
+}
+{
+  Identifier() FormalParameters() ( "[" "]" { ++referenceLevel; } )*
+   { 
+     if (referenceLevel>0) {
+       jjtThis.addTerm(createInt(referenceLevel),0);
+     }
+   }
+}
+
+void FormalParameters():
+{}
+{
+  "(" [ FormalParameter() ( "," FormalParameter() )* ] ")"
+}
+
+void FormalParameter():
+{
+ int modifiers=0;
+}
+{
+  Modifiers() Type() [ "..." {modifiers|=ModifierSet.VARARGS;} ] VariableDeclaratorId()
+  {
+    if (modifiers!=0) {
+      int tmodifiers = jjtThis.getSubtermAt(0).getSubtermAt(0).getInt();
+      tmodifiers|=modifiers; 
+      jjtThis.getSubtermAt(0).setSubtermAt(0,createInt(tmodifiers));
+    }
+  }
+}
+
+
+void ConstructorDeclaration():
+{
+ boolean    hasTP=false;
+ boolean    hasThrows=false;
+ boolean    hasECI=false;
+ boolean    hasBlock=false;
+}
+{
+  [ TypeParameters() {hasTP=true;} ]
+  // Modifiers matched in the caller
+  Identifier() FormalParameters() [ "throws" NameList() {hasThrows=true;}]
+  "{"
+    [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() {hasECI=true;} ]
+    ( BlockStatement() {hasBlock=true;} )*
+  "}"
+  {
+   if (!hasTP) {
+     jjtThis.addTerm(createNil(),0);
+   }
+   if (!hasThrows) {
+     jjtThis.addTerm(createNil(),3);
+   }
+   if (!hasECI) {
+     jjtThis.addTerm(createNil(),4);
+   }
+   if (!hasBlock) {
+     jjtThis.addTerm(createNil(),5);
+   }
+  }
+}
+
+void ExplicitConstructorInvocation():
+{}
+{
+  LOOKAHEAD("this" Arguments() ";")
+  /* "this" Arguments() ";" */
+  ExplicitThisConstructorInvocation()
+|
+ /*  [ LOOKAHEAD(2) PrimaryExpression() "." ] "super" Arguments() ";" */
+  LOOKAHEAD( [ PrimaryExpression() "." ] "super" Arguments() )
+  ExplicitSuperConstructorInvocation()
+}
+
+void ExplicitThisConstructorInvocation():
+{
+ Token tk=null;
+}
+{
+ tk="this" Arguments() ";"
+ {
+  if (tk.specialToken!=null) {
+    String comment=getSpecialToken(tk);
+    jjtThis.setAttribute("original_comment",comment);
+  }
+ }
+}
+
+void ExplicitSuperConstructorInvocation():
+{
+}
+{
+ [ LOOKAHEAD(2) PrimaryExpression() "." ] "super" Arguments() ";"
+}
+
+
+void Initializer():
+{
+  int modifiers=0;
+  Token tk=null;
+}
+{
+  [ tk="static" { modifiers|=ModifierSet.STATIC; } ] Block() 
+    { 
+     if (tk!=null) {
+      if (tk.specialToken!=null) {
+        String comment=getSpecialToken(tk);
+        jjtThis.setAttribute("original_comment",comment);
+      }
+     }
+     jjtThis.addTerm(createTerm("Modifiers",createInt(modifiers)),0); 
+    }
+}
+
+
+/*
+ * Type, name and expression syntax follows.
+ */
+
+void Type():
+{}
+{
+   LOOKAHEAD(2) ReferenceType()
+ |
+   PrimitiveType()
+}
+
+void ReferenceType():
+{
+ int referenceLevel=0;
+}
+{
+  (
+   PrimitiveType() ( LOOKAHEAD(2) "[" "]" {++referenceLevel;} )+
+  |
+   ( ClassOrInterfaceType() ) ( LOOKAHEAD(2) "[" "]" {++referenceLevel;} )*
+  )
+   {  jjtThis.addTerm(TermWare.getInstance().getTermFactory().createInt(referenceLevel),0);  }
+}
+
+void ClassOrInterfaceType():
+{}
+{
+  Identifier() [ LOOKAHEAD(2) TypeArguments() ]
+  ( LOOKAHEAD(2) "." Identifier() [ LOOKAHEAD(2) TypeArguments() ] )*
+}
+
+void TypeArguments():
+{
+ Token tk=null;
+}
+{
+   tk="<" TypeArgument() ( "," TypeArgument() )* ">"
+   { setComment(jjtThis,tk); }
+}
+
+void TypeArgument():
+{}
+{
+   ReferenceType()
+ |
+   "?" [ WildcardBounds() ]
+}
+
+void WildcardBounds():
+{}
+{
+   "extends" ReferenceType() { jjtThis.addTerm(createAtom("extends"),0); }
+ |
+   "super" ReferenceType()  { jjtThis.addTerm(createAtom("super"),0); }
+}
+
+
+void PrimitiveType():
+{
+ Token tk;
+}
+{
+(
+  tk="boolean"   { jjtThis.addTerm(createAtom("boolean"),0); }
+|
+  tk="char"      { jjtThis.addTerm(createAtom("char"),0); }
+|
+  tk="byte"      { jjtThis.addTerm(createAtom("byte"),0); }
+|
+  tk="short"     { jjtThis.addTerm(createAtom("short"),0); }
+|
+  tk="int"       { jjtThis.addTerm(createAtom("int"),0); }
+|
+  tk="long"      { jjtThis.addTerm(createAtom("long"),0); }
+|
+  tk="float"     { jjtThis.addTerm(createAtom("float"),0); }
+|
+  tk="double"    { jjtThis.addTerm(createAtom("double"),0); }
+)
+   {
+    setComment(jjtThis,tk);
+   }                  	
+}
+
+void ResultType():
+{
+ Token tk;
+}
+{
+  tk="void" { 
+    jjtThis.addTerm(createAtom("void"),0); 
+      if (tk.specialToken!=null) {
+        String comment=getSpecialToken(tk);                
+        jjtThis.setAttribute("original_comment",comment);
+      }
+   }
+|
+  Type()
+}
+
+void Name():
+/*
+ * A lookahead of 2 is required below since "Name" can be followed
+ * by a ".*" when used in the context of an "ImportDeclaration".
+ */
+{}
+{
+  Identifier()
+  ( LOOKAHEAD(2) "." Identifier()
+  )*
+}
+
+SimpleNode NameList():
+{}
+{
+  Name() ( "," Name() )*
+   { return jjtThis; }
+}
+
+
+/*
+ * Expression syntax follows.
+ */
+
+void Expression():
+/*
+ * This expansion has been written this way instead of:
+ *   Assignment() | ConditionalExpression()
+ * for performance reasons.
+ * However, it is a weakening of the grammar for it allows the LHS of
+ * assignments to be any conditional expression whereas it can only be
+ * a primary expression.  Consider adding a semantic predicate to work
+ * around this.
+ */
+{  
+}
+{
+  ConditionalExpression()
+  [
+    LOOKAHEAD(2)
+    AssignmentOperator() Expression()
+  ]
+  |
+  <EXPRESSION_PLACEHOLDER> "(" Identifier() ")"
+}
+
+void AssignmentOperator():
+{
+}
+{
+  "="   { jjtThis.addTerm(createString("="),0); }
+  | "*=" { jjtThis.addTerm(createString("*="),0); }
+  | "/=" { jjtThis.addTerm(createString("/="),0); }
+  | "%=" { jjtThis.addTerm(createString("%="),0); }
+  | "+=" { jjtThis.addTerm(createString("+="),0); }
+  | "-=" { jjtThis.addTerm(createString("-="),0); }
+  | "<<=" { jjtThis.addTerm(createString("<<="),0); }
+  | ">>=" { jjtThis.addTerm(createString(">>="),0); }
+  | ">>>=" { jjtThis.addTerm(createString(">>>="),0); }
+  | "&="   { jjtThis.addTerm(createString("&="),0); }
+  | "^="   { jjtThis.addTerm(createString("^="),0); }
+  | "|="   { jjtThis.addTerm(createString("|="),0); }
+}
+
+void ConditionalExpression():
+{}
+{
+  ConditionalOrExpression() [ "?" Expression() ":" Expression() ]
+}
+
+void ConditionalOrExpression():
+{}
+{
+  ConditionalAndExpression() ( "||" ConditionalAndExpression() )*
+}
+
+void ConditionalAndExpression():
+{}
+{
+  InclusiveOrExpression() ( "&&" InclusiveOrExpression() )*
+}
+
+void InclusiveOrExpression():
+{}
+{
+  ExclusiveOrExpression() ( "|" ExclusiveOrExpression() )*
+}
+
+void ExclusiveOrExpression():
+{}
+{
+  AndExpression() ( "^" AndExpression() )*
+}
+
+void AndExpression():
+{}
+{
+  EqualityExpression() ( "&" EqualityExpression() )*
+}
+
+void EqualityExpression():
+{}
+{
+  InstanceOfExpression() ( EqualityExpressionOperand() )*
+}
+
+void EqualityExpressionOperand():
+{
+ Token tk;
+}
+{
+  ( tk="=="  | tk="!=" ) InstanceOfExpression()
+  { jjtThis.addTerm(createString(tk.image),0); }
+}
+
+void InstanceOfExpression():
+{}
+{
+  RelationalExpression() [ "instanceof" Type() ]
+}
+
+void RelationalExpression():
+{
+}
+{
+  ShiftExpression() ( RelationalExpressionSuffix() )*
+}
+
+
+void RelationalExpressionSuffix():
+{
+ String s=null;  
+}
+{
+ ( "<" {s="<";} | ">" {s=">";} | "<=" {s="<=";} | ">=" {s=">=";} ) ShiftExpression()
+ { jjtThis.addTerm(createString(s),0); }
+}
+
+void ShiftExpression():
+{}
+{
+  AdditiveExpression() ( ShiftExpressionOperand() )*
+}
+
+void ShiftExpressionOperand():
+{
+ String s;
+}
+{
+( "<<" {s="<<";} | RSIGNEDSHIFT() {s=">>";} | RUNSIGNEDSHIFT() {s=">>>";} ) AdditiveExpression()
+ { 
+  if (jjtThis.getArity()==1) {
+     jjtThis.addTerm(createString(s),0); 
+  }else{
+     jjtThis.setSubtermAt(0,createString(s));
+  }
+ }
+}
+
+void AdditiveExpression():
+{
+}
+{
+  MultiplicativeExpression() ( AdditiveOperand()  )*
+}
+
+void AdditiveOperand():
+{
+ Token tkPlus=null;
+ Token tkMinus=null;
+}
+{
+  ( tkPlus="+" | tkMinus="-" ) MultiplicativeExpression()
+  { if (tkPlus!=null) {
+      jjtThis.addTerm(createString("+"),0);
+    }else if (tkMinus!=null) {
+      jjtThis.addTerm(createString("-"),0);
+    }
+  }
+}
+
+void MultiplicativeExpression():
+{
+}
+{
+  UnaryExpression() ( MultiplicativeOperand() )*
+}
+
+void MultiplicativeOperand():
+{
+ String s=null;
+}
+{
+ ( "*" {s="*";} | "/" {s="/";} | "%" {s="%";} ) UnaryExpression()
+ { jjtThis.addTerm(createString(s),0); }
+}
+
+
+void UnaryExpression():
+{
+ Token tkp=null;
+ Token tkm=null;
+}
+{
+  ( tkp="+" | tkm="-" ) UnaryExpression()
+  {
+    if (tkp!=null) {
+      jjtThis.addTerm(createString("+"),0);
+      setComment(jjtThis,tkp);
+    }else if(tkm!=null) {
+      jjtThis.addTerm(createString("-"),0);
+      setComment(jjtThis,tkm);
+    }
+  }
+|
+  PreIncrementExpression()
+|
+  PreDecrementExpression()
+|
+  UnaryExpressionNotPlusMinus()
+}
+
+void PreIncrementExpression():
+{
+ Token tk=null;
+}
+{
+  tk="++" PrimaryExpression()
+  { setComment(jjtThis,tk); }
+}
+
+void PreDecrementExpression():
+{
+ Token tk=null;
+}
+{
+  tk="--" PrimaryExpression()
+  { setComment(jjtThis,tk); }
+}
+
+void UnaryExpressionNotPlusMinus():
+{
+  Token tkInverse=null;
+  Token tkNot=null;
+}
+{
+  ( tkInverse="~" | tkNot="!" ) UnaryExpression()
+    {  
+      if (tkInverse!=null) {
+          jjtThis.addTerm(createString("~"),0);
+          setComment(jjtThis,tkInverse);
+      }else if(tkNot!=null) {
+          jjtThis.addTerm(createString("!"),0);
+          setComment(jjtThis,tkNot);
+      }
+    }
+|
+  LOOKAHEAD( CastLookahead() )
+  CastExpression()
+|
+  PostfixExpression()
+}
+
+// This production is to determine lookahead only.  The LOOKAHEAD specifications
+// below are not used, but they are there just to indicate that we know about
+// this.
+void CastLookahead():
+{}
+{
+  LOOKAHEAD(2)
+  "(" PrimitiveType()
+|
+  LOOKAHEAD("(" Type() "[")
+  "(" Type() "[" "]"
+|
+  "(" Type() ")" ( "~" | "!" | "(" | Identifier() | "this" | "super" | "new" | Literal() )
+}
+
+void PostfixExpression():
+{
+ Token tki=null;
+Token tkd=null;
+}
+{
+  PrimaryExpression() [ tki="++" | tkd="--" ]
+  { if (tki!=null) {
+      jjtThis.addTerm(createString("++"),1);
+    }else if(tkd!=null){
+      jjtThis.addTerm(createString("--"),1);
+    }
+  }
+}
+
+void CastExpression():
+{
+ Token tk=null;
+}
+{
+(
+  LOOKAHEAD("(" PrimitiveType())
+  tk="(" Type() ")" UnaryExpression()
+|
+  tk="(" Type() ")" UnaryExpressionNotPlusMinus()
+)
+{
+ if (tk!=null) {
+  if (tk.specialToken!=null) {
+    String comment = getSpecialToken(tk);
+    jjtThis.setAttribute("original_comment",comment);
+  }
+ }
+}
+}
+
+/*
+void PrimaryExpression():
+{}
+{    
+  PrimaryPrefix() ( LOOKAHEAD(2) PrimarySuffix() )*
+}
+
+*/
+
+
+
+void PrimaryExpression():
+{
+ Token tk=null;
+ boolean hasThis=false;
+}
+{
+(
+  Literal()  
+|
+  tk="this"  { hasThis=true; } 
+|
+  SuperPrefix()
+|
+  tk="(" Expression() ")" 
+|
+  AllocationExpression()
+|
+  LOOKAHEAD( ResultType() "." "class" )
+  ClassLiteral()
+|
+  IdentifierOrFunctionCall() 
+)
+ [LOOKAHEAD(2) PrimarySuffix() ]
+  { 
+    if (hasThis) {
+      jjtThis.addTerm(createAtom("this"),0);
+    }
+    setComment(jjtThis,tk); 
+  }
+}
+
+
+void SuperPrefix() :
+{
+ Token tk;
+}
+{
+  tk="super" 
+  {
+   setComment(jjtThis,tk); 
+  }
+}
+
+void ClassLiteral() :
+{
+}
+{
+ ResultType() "." "class"  
+}
+
+void IdentifierOrFunctionCall() :
+{
+}
+{
+ Identifier() [ Arguments() ]
+}
+
+
+void MethodCall():
+{
+}
+{
+  Identifier() Arguments()
+}
+
+
+void PrimarySuffix():
+{}
+{
+(
+  LOOKAHEAD(2)
+  ThisSelector()  
+|
+  LOOKAHEAD(3)
+  SuperSelector()
+|
+  LOOKAHEAD(2)
+  AllocationSelector()  
+|
+  LOOKAHEAD(3)
+  MemberSelector()     
+|
+  ArrayIndexSelector()  
+) 
+  [LOOKAHEAD(2) PrimarySuffix() ]
+}
+
+void ThisSelector():
+{
+}
+{
+  "." "this"
+}
+
+void SuperSelector():
+{
+}
+{
+ "." "super" [ Arguments() ]
+}
+
+void AllocationSelector():
+{
+}
+{
+ "." AllocationExpression()
+}
+
+
+void MemberSelector():
+{
+ boolean hasTA=false;
+}
+{
+  "." [ TypeArguments() { hasTA=true; } ] Identifier() [ Arguments() ]
+ { if (!hasTA) {
+     jjtThis.addTerm(createNil(),0);
+   }
+ }
+}
+
+
+void ArrayIndexSelector():
+{
+}
+{
+"[" Expression() "]"
+}
+
+
+void Literal():
+{
+}
+{
+  IntegerLiteral()
+|
+  FloatingPointLiteral()
+|
+  CharacterLiteral()
+|
+  StringLiteral()
+|
+  BooleanLiteral()
+|
+  NullLiteral()
+}
+
+void IntegerLiteral():
+{
+  Token tk;
+}
+{
+  tk=<INTEGER_LITERAL>  
+  { 
+   setComment(jjtThis,tk);
+   jjtThis.addTerm(createIntegerOrLong(tk.image),0); 
+  }
+}
+
+
+
+
+void CharacterLiteral():
+{
+  Token tk;
+}
+{
+  tk=<CHARACTER_LITERAL>  
+  { 
+    try {
+      setComment(jjtThis,tk);
+      jjtThis.addTerm(createChar(ParserHelper.decodeCharLiteral(tk.image)),0); 
+    }catch(TermWareException ex){
+      throw new ParseException(ex.getMessage());
+    }
+  }
+}
+
+
+void FloatingPointLiteral():
+{
+  Token tk;
+}
+{
+  tk=<FLOATING_POINT_LITERAL>  
+  { 
+    setComment(jjtThis,tk);
+    jjtThis.addTerm(createDoubleOrFloat(tk.image),0); 
+  }
+}
+
+
+void StringLiteral():
+{
+  Token tk;
+}
+{
+  tk=<STRING_LITERAL>  
+  {
+   try {
+    setComment(jjtThis,tk);
+    jjtThis.addTerm(createString(ParserHelper.decodeStringLiteral(tk.image)),0); 
+   }catch(TermWareException ex){
+      throw new ParseException(ex.getMessage());
+   }
+  }
+}
+
+void BooleanLiteral():
+{
+ Token tk=null;
+}
+{
+(
+  tk="true"   { jjtThis.addTerm(createBoolean(true),0); }
+|
+  tk="false"  { jjtThis.addTerm(createBoolean(false),0); }
+)
+{
+    setComment(jjtThis,tk);
+}
+}
+
+
+void NullLiteral():
+{
+ Token tk;
+}
+{
+  tk="null"
+  {
+    setComment(jjtThis,tk);
+  }
+}
+
+void Arguments():
+{
+ Token tk=null;
+}
+{
+  tk="(" [ ArgumentList() ] ")"
+  {
+    setComment(jjtThis,tk);
+  }
+}
+
+void ArgumentList():
+{}
+{
+  Expression() ( "," Expression() )*
+}
+
+void AllocationExpression():
+{
+ boolean haveTypeArguments=false;
+ boolean haveClassBody=false;
+ Token tk=null;
+}
+{
+(
+  LOOKAHEAD(2)
+  tk="new" PrimitiveType() ArrayDimsAndInits()
+|
+  tk="new" ClassOrInterfaceType() [ TypeArguments() {haveTypeArguments=true;} ]
+    (
+      ArrayDimsAndInits()
+    |
+      Arguments() [ ClassOrInterfaceBody(false) {haveClassBody=true;} ]
+    )
+)
+ {
+   setComment(jjtThis,tk);
+   if (!haveTypeArguments) {
+     jjtThis.addTerm(createNil(),1);
+   }  
+   if (!haveClassBody) {
+     jjtThis.addTerm(createNil(),3);
+   }
+ }
+}
+
+/*
+ * The third LOOKAHEAD specification below is to parse to PrimarySuffix
+ * if there is an expression between the "[...]".
+ */
+/*
+void ArrayDimsAndInits():
+{
+ int nReferences=0;
+}
+{
+ (
+  LOOKAHEAD(2)
+  ( LOOKAHEAD(2) "[" Expression() "]" )+ ( LOOKAHEAD(2) "[" "]" {++nReferences;} )*
+|
+  ( "[" "]" {++nReferences; } )+ ArrayInitializer()
+ )
+  { jjtThis.addTerm(createInt(nReferences),0); }
+}
+*/
+
+void ArrayDimsAndInits():
+{
+}
+{
+  ArrayDims() ( ArrayInitializer() )?
+}
+
+
+void ArrayDims():
+{
+}
+{
+ ( LOOKAHEAD(2)  ArrayDim() )+
+}
+
+
+void ArrayDim():
+{}
+{
+ "[" ( Expression() )? "]"
+}
+
+
+
+/*
+ * Statement syntax follows.
+ */
+
+void Statement():
+{
+}
+{
+  LOOKAHEAD(2)
+  LabeledStatement()  
+|
+  AssertStatement()
+|
+  Block()
+|
+  EmptyStatement()
+|
+  StatementExpressionStatement() 
+|
+  SwitchStatement()
+|
+  IfStatement()
+|
+  WhileStatement()
+|
+  DoStatement()
+|
+  ForStatement()
+|
+  BreakStatement()
+|
+  ContinueStatement()
+|
+  ReturnStatement()
+|
+  ThrowStatement()
+|
+  SynchronizedStatement()
+|
+  TryStatement()
+}
+
+
+void StatementExpressionStatement():
+{
+}
+{
+ StatementExpression() ";"
+}
+
+void AssertStatement():
+{
+ Token tk;
+}
+{
+  tk="assert" Expression() [ ":" Expression() ] ";"
+  {
+   setComment(jjtThis,tk);
+  }
+}
+
+void LabeledStatement():
+{}
+{
+  Identifier() ":" Statement()
+}
+
+SimpleNode Block():
+{
+ Token tk=null;
+}
+{
+ (
+  tk="{" ( BlockStatement() )* "}"
+  |
+   <BLOCK_PLACEHOLDER> "(" Identifier() ")"
+ )
+  { 
+   setComment(jjtThis,tk);
+   return jjtThis; 
+  }
+}
+
+void BlockStatement():
+{}
+{
+  /*LOOKAHEAD([Annotation()] [ "final" ] Type() Identifier())*/
+  LOOKAHEAD(Modifiers() Type() Identifier())
+  LocalVariableDeclaration() ";"
+|
+  Statement()
+|
+  ClassOrInterfaceDeclaration()
+}
+
+void LocalVariableDeclaration():
+{
+ int modifiers=0;
+ Token tkf=null;
+ Term annotation=null;
+}
+{
+/*
+  [annotation=Annotation()] [ tkf="final" { modifiers|=ModifierSet.FINAL; }] Type() VariableDeclarator() ( "," VariableDeclarator() )*
+*/
+  Modifiers() Type() VariableDeclarator() ( "," VariableDeclarator() )*
+  { 
+   setComment(jjtThis,tkf);
+  }
+}
+
+void EmptyStatement():
+{
+ Token tk;
+}
+{
+  tk=";"
+  {
+   setComment(jjtThis,tk);
+  }
+}
+
+void StatementExpression():
+/*
+ * The last expansion of this production accepts more than the legal
+ * Java expansions for StatementExpression.  This expansion does not
+ * use PostfixExpression for performance reasons.
+ */
+{
+ Token tk=null;
+}
+{
+(
+  PreIncrementExpression()
+|
+  PreDecrementExpression()
+|
+  PrimaryExpression()
+  [
+    tk="++"  { jjtThis.addTerm(createString("++"),1); }
+  |
+    tk="--"  { jjtThis.addTerm(createString("--"),1); }
+  |
+    AssignmentOperator() Expression()
+  ]
+)
+{
+   setComment(jjtThis,tk);
+}
+}
+
+void SwitchStatement():
+{
+ Token tk=null;
+}
+{
+  tk="switch" "(" Expression() ")" "{"
+    ( SwitchStatementLabelBlock() )*
+  "}"
+  {
+   setComment(jjtThis,tk);
+  }
+}
+
+
+void SwitchStatementLabelBlock():
+{}
+{
+   SwitchLabel() ( BlockStatement() )* 
+}
+
+
+void SwitchLabel():
+{
+ Token tk=null;
+}
+{
+(
+  tk="case" Expression() ":"
+|
+  tk="default" ":"  { jjtThis.addTerm(createAtom("default"),0); }
+)
+ { setComment(jjtThis,tk); }
+}
+
+void IfStatement():
+/*
+ * The disambiguating algorithm of JavaCC automatically binds dangling
+ * else's to the innermost if statement.  The LOOKAHEAD specification
+ * is to tell JavaCC that we know what we are doing.
+ */
+{
+ Token tk=null;
+}
+{
+  tk="if" "(" Expression() ")" Statement() [ LOOKAHEAD(1) "else" Statement() ]
+  {
+   setComment(jjtThis,tk);
+  }
+}
+
+void WhileStatement():
+{
+ Token tk=null;
+}
+{
+  tk="while" "(" Expression() ")" Statement()
+  {
+   setComment(jjtThis,tk);
+  }
+}
+
+void DoStatement():
+{
+ Token tk=null;
+}
+{
+  tk="do" Statement() "while" "(" Expression() ")" ";"
+  {
+   setComment(jjtThis,tk);
+  }
+}
+
+void ForStatement():
+{
+ Token tk=null;
+}
+{
+  tk="for" "("
+
+  (
+      LOOKAHEAD(["final"] Type() Identifier() ":")
+      ForEachLoopHead()
+    |
+      TraditionalForLoopHead()
+  )
+
+  ")" Statement()
+  {
+   setComment(jjtThis,tk);
+  }
+}
+
+void ForEachLoopHead():
+{}
+{
+ ["final"] Type() Identifier() ":" Expression() 
+}
+
+void TraditionalForLoopHead():
+{
+ boolean hasInit=false;
+ boolean  hasExpression=false;
+ boolean  hasUpdate=false;
+}
+{
+ [ ForInit() {hasInit=true;}] ";" [ Expression() {hasExpression=true;}] ";" [ ForUpdate() {hasUpdate=true;}]
+ {
+   if (hasInit==false) {
+    jjtThis.addTerm(createNil(),0);
+   }
+   if (hasExpression==false) {
+    jjtThis.addTerm(createNil(),1);
+   }
+   if (hasUpdate==false) {
+    jjtThis.addTerm(createNil(),2);
+   }
+ }
+}
+
+
+void ForInit():
+{}
+{
+  LOOKAHEAD( [ "final" ] Type() Identifier() )
+  LocalVariableDeclaration()
+|
+  StatementExpressionList()
+}
+
+void StatementExpressionList():
+{}
+{
+  StatementExpression() ( "," StatementExpression() )*
+}
+
+void ForUpdate():
+{}
+{
+  StatementExpressionList()
+}
+
+void BreakStatement():
+{
+  Token tk=null;
+}
+{
+  tk="break" [ Identifier() ] ";"
+  { setComment(jjtThis,tk); }
+}
+
+void ContinueStatement():
+{
+ Token tk=null;
+}
+{
+  tk="continue" [ Identifier() ] ";"
+  { setComment(jjtThis,tk); }
+}
+
+void ReturnStatement():
+{
+ Token tk=null;
+}
+{
+  tk="return" [ Expression() ] ";"
+  { setComment(jjtThis,tk); }
+}
+
+void ThrowStatement():
+{
+ Token tk=null;
+}
+{
+  tk="throw" Expression() ";"
+  { setComment(jjtThis,tk); }
+}
+
+void SynchronizedStatement():
+{
+ Token tk=null;
+}
+{
+  tk="synchronized" "(" Expression() ")" Block()
+  { setComment(jjtThis,tk); }
+}
+
+void TryStatement():
+/*
+ * Semantic check required here to make sure that at least one
+ * finally/catch is present.
+ */
+{
+ Token tk=null;
+}
+{
+  tk="try" Block()
+  CatchSequence()
+  [ "finally" Block() ]
+  { setComment(jjtThis,tk); }
+}
+
+
+void CatchSequence():
+{}
+{
+ ( Catch() )*
+}
+
+
+void Catch():
+{
+ Token tk=null;
+}
+{
+ tk="catch" "(" FormalParameter() ")" Block()
+  { setComment(jjtThis,tk); }
+}
+
+
+
+/* We use productions to match >>>, >> and > so that we can keep the
+ * type declaration syntax with generics clean
+ */
+
+void RUNSIGNEDSHIFT():
+{}
+{
+  ( LOOKAHEAD({ getToken(1).kind == GT &&
+                ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT} )
+   ">" ">" ">"
+  )
+}
+
+void RSIGNEDSHIFT():
+{}
+{
+  ( LOOKAHEAD({ getToken(1).kind == GT &&
+                ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT} )
+  ">" ">"
+  )
+}
+
+void Annotations():
+{
+}
+{
+  Annotation() ( Annotation() )*
+}
+
+/* Annotation syntax follows. */
+
+SimpleNode Annotation():
+{
+ SimpleNode sn=null;
+}
+{
+  (
+   LOOKAHEAD( "@" Name() "(" ( Identifier() "=" | ")" ))
+   sn=NormalAnnotation()
+ |
+   LOOKAHEAD( "@" Name() "(" )
+   sn=SingleMemberAnnotation()  
+ |
+   sn=MarkerAnnotation()
+  )
+   {
+    if (sn!=null) {
+      jjtThis.setAttribute("comment",sn.getAttribute("comment")); 
+    }
+    return jjtThis; 
+   }
+}
+
+SimpleNode NormalAnnotation():
+{
+ Token tk=null;
+}
+{
+   tk="@" Name() "(" [ MemberValuePairs() ] ")"
+   { if (tk.specialToken!=null) {
+        String comment=getSpecialToken(tk);
+        jjtThis.setAttribute("comment",comment);
+        jjtThis.setAttribute("original_comment",comment);
+     }
+     return jjtThis;
+   }
+}
+
+SimpleNode MarkerAnnotation():
+{
+ Token tk=null;
+}
+{
+  tk="@" Name()
+   { if (tk.specialToken!=null) {
+        String comment=getSpecialToken(tk);
+        jjtThis.setAttribute("comment",comment);
+        jjtThis.setAttribute("original_comment",comment);
+     }
+     return jjtThis;
+   }
+}
+
+SimpleNode SingleMemberAnnotation():
+{
+ Token tk;
+}
+{
+  tk="@" Name() "(" MemberValue() ")"
+   { if (tk.specialToken!=null) {
+        String comment=getSpecialToken(tk);
+        jjtThis.setAttribute("comment",comment);
+        jjtThis.setAttribute("original_comment",comment);
+     }
+     return jjtThis;
+   }
+}
+
+void MemberValuePairs():
+{}
+{
+   MemberValuePair() ( "," MemberValuePair() )*
+}
+
+void MemberValuePair():
+{}
+{
+    Identifier() "=" MemberValue()
+}
+
+void MemberValue():
+{}
+{
+   Annotation()
+ |
+   MemberValueArrayInitializer()
+ |
+   ConditionalExpression()
+}
+
+void  MemberValueArrayInitializer():
+{}
+{
+  "{" ( MemberValue() ( LOOKAHEAD(2) "," MemberValue() )* [ "," ] )? "}"
+}
+
+
+/* Annotation Types. */
+
+void AnnotationTypeDeclaration(int modifiers):
+{
+ Token tk;
+}
+{
+  tk="@" "interface" Identifier() AnnotationTypeBody()
+  { setComment(jjtThis,tk); }
+}
+
+void AnnotationTypeBody():
+{}
+{
+  "{" ( AnnotationTypeMemberDeclaration() )* "}"
+}
+
+void AnnotationTypeMemberDeclaration():
+{
+   SimpleNode modifiers;
+}
+{
+ modifiers = Modifiers()
+ (
+   LOOKAHEAD(Type() Identifier() "(")
+   Type() Identifier() "(" ")" [ DefaultValue() ] ";"
+  |
+   ClassOrInterfaceDeclaration()
+  |
+   EnumDeclaration(modifiers.getSubtermAt(0).getInt())
+  |
+   AnnotationTypeDeclaration(modifiers.getSubtermAt(0).getInt())
+  |
+   FieldDeclaration(modifiers.getSubtermAt(0).getInt())
+ )
+ |
+   ( ";" )
+}
+
+void DefaultValue():
+{
+ Token tk=null;
+}
+{
+  tk="default" MemberValue()
+  { setComment(jjtThis,tk); }
+}
+
+void Identifier():
+{
+  Token tk;
+}
+{
+  tk=<IDENTIFIER>  { 
+    Term identTerm = TermWare.getInstance().getTermFactory().createString(tk.image);
+//    identTerm = TermHelper.setAttribute(identTerm,"line",createInt(tk.beginLine));
+//    identTerm = TermHelper.setAttribute(identTerm,"file",createString(inFname));
+    jjtThis.addTerm( identTerm, 0); 
+    jjtThis.setAttribute("line",createInt(tk.beginLine));
+    jjtThis.setAttribute("file",createString(inFname));
+    if (tk.specialToken!=null) {
+        String comment=getSpecialToken(tk);
+        jjtThis.setAttribute("original_comment",comment);
+    }
+  }
+  |
+  tk=<IDENTIFIER_PLACEHOLDER> "(" Identifier() ")"
+}

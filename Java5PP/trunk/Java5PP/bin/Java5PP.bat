@@ -1,0 +1,1 @@
+java -cp ../lib/TermWareJPP.jar;../lib/TermWare2.jar ua.gradsoft.parsers.java5.JPPMain %1 %2 %3 %4 %5 %6 %7 %8 %9
