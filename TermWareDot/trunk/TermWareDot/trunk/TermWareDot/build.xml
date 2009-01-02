@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<!-- build file for TermWare project -->
+<project name="TermWareDot" default="build" basedir=".">
+
+
+ <!-- set here location of JavaCC [version 4.0] -->
+ <condition property="javacc.int.home" value="${javacchome}"
+     else="lib" >
+   <isset property="javacchome" />
+ </condition>
+
+ <property file="build.properties" />
+
+  <!-- set here debug property -->
+  
+ <import file="build-ivy.xml" />
+ 
+ <!-- targets -->
+
+ <target name="clean">
+  <delete>
+   <fileset dir="src"   includes="**/*.class" />
+   <fileset dir="test"   includes="**/*.class" />
+  </delete>
+ </target>
+
+
+ <target name="build-dot-jj" depends="retrieve-for-build" >
+     <java classpath="${javacc.int.home}/javacc-${javacc.version}.jar"
+           classname="org.javacc.jjtree.Main"
+           fork="true"
+           dir="src/ua/gradsoft/parsers/dot/jjt"
+           >
+           <arg file="src/ua/gradsoft/parsers/dot/jjt/dot.jjt"/>
+     </java>
+ </target>
+
+ <target name="build-dot-jv" depends="build-dot-jj">
+     <java classpath="${javacc.int.home}/javacc-${javacc.version}.jar"
+           classname="org.javacc.parser.Main"
+           fork="true"
+           dir="src/ua/gradsoft/parsers/dot/jjt"
+           >
+           <arg file="src/ua/gradsoft/parsers/dot/jjt/dot.jj"/>
+     </java>
+ </target>
+ 
+
+ <target name="build-dot-classes" depends="build-dot-jv">
+  <javac srcdir="src" includes="**/*.java" debug="${debug}" >
+    <classpath>
+      <pathelement location="src"/>
+      <pathelement location="lib/TermWare-${termware.version}.jar"/>
+      <pathelement location="${java.class.path}/"/>      
+    </classpath>
+  </javac>
+ </target>
+ 
+
+ <target name="build-lib"  depends="build-dot-classes">
+   <jar basedir="src" includes="**/*.class,**/*.dtd" 
+       destfile="output/TermWareDot-${version}.jar" 
+       index="true">
+  <include name="build"/>
+  <manifest>
+   <attribute name="Build-By" value="${user-name}"/>
+   <attribute name="Extension-Name" value="TermWareDot" />
+   <attribute name="Specification-Vendor" value="GradSoft Ltd" />
+   <attribute name="Specification-Version" value="1.0" />
+   <attribute name="Implementation-Vendor-Id" value="ua.gradsoft" />
+   <attribute name="Implementation-Vendor" value="GradSoft Ltd" />
+   <attribute name="Implementation-Version" value="${version}" />
+  </manifest>
+  </jar>
+ </target>
+
+  <target name="build-test" depends="build-lib,retrieve-for-test">
+  <javac srcdir="test" includes="**/*.java" debug="${debug}" >
+    <classpath>
+      <pathelement location="test"/>
+      <pathelement location="lib/TermWare-${termware.version}.jar"/>
+      <pathelement location="lib/junit-${junit.version}.jar"/>
+      <pathelement location="output/TermWareDot-${version}.jar"/>
+      <pathelement location="${java.class.path}/"/>      
+    </classpath>
+  </javac>     
+  <jar basedir="test" includes="**/*.class,**/*.dtd" 
+       destfile="output/TermWareDotTests-${version}.jar" 
+       index="true"/>
+ </target>
+
+ <target name="build" depends="build-lib,build-test">     
+ </target>
+ 
+  <target name="test" depends="build-test" >
+   <java classname="ua.gradsoft.parsers.dot.TestSuite"
+        fork="true" failonerror="true" >
+      <classpath>
+      <pathelement location="jtests"/>
+      <pathelement location="lib/TermWare-${termware.version}.jar"/>
+      <pathelement location="lib/junit-${junit.version}.jar"/>
+      <pathelement location="output/TermWareDot-${version}.jar"/>
+      <pathelement location="output/TermWareDotTests-${version}.jar"/>
+      <pathelement location="${java.class.path}/"/>      
+    </classpath>
+    <sysproperty key="termware.path" value="systems" />
+   </java>
+ </target>
+
+ 
+ <target name="api-docs">
+  <javadoc sourcepath="src" destdir="docs/api" >
+     <package name="ua.gradsoft.parsers.dot" />
+     <package name="ua.gradsoft.parsers.dot.*" />
+     <package name="ua.gradsoft.printers.dot.*" />
+     <classpath>
+       <pathelement location="lib/TermWare-${termware.version}.jar"/>
+     </classpath>
+     <link href="http://www.gradsoft.ua/rus/Products/termware/jdocs/" />
+  </javadoc>
+ </target>
+
+ <target name="docs" depends="api-docs" />
+
+<target name="source-distributive" depends="build,docs">
+  <mkdir dir="output/TermWareDot-src-${version}" />
+  <copy todir="output/TermWareDot-src-${version}" >
+   <fileset dir="." >
+    <include name="**/*.xml" />
+    <include name="**/*.java" />
+    <include name="**/*.properties" />
+    <include name="src/*" />
+    <include name="lib/*" />
+    <include name="docs/**/*" />
+    <exclude name="output/*.jar" />
+    <exclude name="output/*.tar.gz" />
+    <exclude name="output/TermWareDot*/*" />
+    <include name="output/README" />
+    <exclude name="nbproject/private/*" />
+    <exclude name="**/*.class" />
+   </fileset>
+  </copy>
+  <tar basedir="output"
+       destfile="output/TermWareDot-src-${version}.tar"
+       defaultexcludes="yes"
+       includes="TermWareDot-src-${version}/**/*" />
+  <gzip src="output/TermWareDot-src-${version}.tar" 
+        destfile="output/TermWareDot-src-${version}.tar.gz" 
+  />
+  <delete file="output/TermWareDot-src-${version}.tar" />
+  <delete dir="output/TermWareDot-src-${version}" />
+ </target>
+
+
+
+</project>

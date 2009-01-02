@@ -1,0 +1,25 @@
+<ivy-module version="1.0">
+ <info organisation="ua.gradsoft" module="termwaredot" />
+ <configurations>
+  <conf name="jar" description="provide termwaredot jar" />
+  <conf name="build" description="provide termwaredot with build tools" />
+  <conf name="test" extends="jar" description="same with tests" />
+  <conf name="src" extends="test,build" 
+                         description="source distribution" />
+ </configurations>
+ <publications>
+    <artifact name="TermWareDot" type="jar" conf="jar" />
+    <artifact name="TermWareDot-src" type="source-archive" ext="tar.gz" 
+              conf="src" />
+ </publications>
+ <dependencies>
+   <dependency org="ua.gradsoft" name="termware" rev="2.3.0" >
+    <artifact name="TermWare" type="jar"
+              url="http://www.gradsoft.ua/common/termware/TermWare-2.3.0.jar"
+    />
+   </dependency> 
+   <dependency org="junit" name="junit" rev="4.4" />
+   <dependency org="net.java.dev.javacc" name="javacc" rev="4.0" 
+                conf="build->default" />
+ </dependencies>
+</ivy-module>

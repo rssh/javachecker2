@@ -1,0 +1,41 @@
+
+digraph n2s {
+
+     numberToString -> "p($x)";
+
+
+     "p($x)" -> "zero" [ label="0" ];
+     "p($x)" -> "one" [label="1" ];
+     "p($x)" -> "two" [label="2" ];
+     "p($x)" -> "three" [label="4" ];
+     "p($x)" -> p_19_100 [label="x > 19 and x < 100 "]   ;
+
+
+     p_19_100 -> "pd($x)" [label="$x % 10 == 0;"];
+     p_19_100 -> p_19_100_1 [label="$x % 10 != 0;"];
+
+     p_19_100_1 -> "pd($x)" ;
+     p_19_100_1 -> "p($x)"  ;
+     p_19_100_1 -> "l($x)";
+
+     "p($x)" -> "p100-1000" [label="[ $x >=100  && $x < 1000 ]" ];
+
+      "p100-1000" -> "l($x)" [label="tens==0"];
+      "p100-1000" -> "l($x)" [label="" ];
+                      
+
+       sIfNotOne -> "$x" [];
+       sIfNotOne -> "String.concat";
+
+       "pd($x)" -> "twenty" [label="2"];
+       "pd($x)" -> "thirdy" [label="3"];
+       "pd($x)" -> "fourty" [label="4"];
+                                    
+       "l($x)" -> "String.concat";
+       "l($x)" -> "l($x)" [label="[$x]"];
+       "l($x)" -> "$x";
+       "l($x)" -> Empty;
+
+}
+
+  

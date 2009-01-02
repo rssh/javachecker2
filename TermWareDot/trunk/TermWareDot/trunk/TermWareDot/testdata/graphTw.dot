@@ -1,0 +1,26 @@
+
+digraph x {
+
+
+  node [ shape="record"];
+
+  java [label="{java |{<c>condition|<a>action}}" ];
+
+  rule [label="{terms |{<x>input|<y>output}}"];
+
+
+  //rule:y -> java:a;
+  //"Y[a]" -> java:a [label="a"];
+  java:a -> "Y[a]" [label="a"];
+
+  //java:c -> rule:x;
+  java:c -> "X[c]" [label="c"];
+  //rule:x -> rule:y;
+
+  rule:x -> "X[c]" [label="X"] ;
+  rule:y -> "Y[a]" [label="Y"];
+
+
+  "X[c]" -> "Y[a]" [constraint = false];
+
+}
