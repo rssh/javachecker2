@@ -3,7 +3,7 @@
  <configurations>
   <conf name="default" description="provide termwarephp jar" />
   <conf name="build" description="provide termwarephp with build tools" />
-  <conf name="test" extends="jar" description=" with tests" />
+  <conf name="test" extends="default" description=" with tests" />
   <conf name="src" extends="test,build" 
                          description="source distribution" />
   <conf name="src.only" 
@@ -15,7 +15,7 @@
               conf="src,src.only" />
  </publications>
  <dependencies>
-   <dependency org="net.java.dev.javacc" name="javacc" rev="4.2" 
+   <dependency org="net.java.dev.javacc" name="javacc" rev="${javacc.version}" 
                conf="build->default" transitive="false" >
    </dependency>
    <dependency org="org.junit" name="junit" rev="4.5" 

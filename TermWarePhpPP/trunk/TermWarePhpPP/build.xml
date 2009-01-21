@@ -22,6 +22,7 @@
   <delete>
    <fileset dir="src"   includes="**/*.class" />
    <fileset dir="test"   includes="**/*.class" />
+   <fileset dir="output"   includes="**/*.jar" />
   </delete>
  </target>
 
@@ -47,12 +48,12 @@
            fork="true"
            dir="src/ua/gradsoft/parsers/php5/jjt"
            >
-           <arg file="src/ua/gradsoft/parsers/php5/jjt/php5.jj"/>
+           <arg file="src/ua/gradsoft/parsers/php5/jjt/php.jj"/>
      </java>
  </target>
  
 
- <target name="build-php5-classes" depends="build-java5-jv,retrieve-for-build">
+ <target name="build-php5-classes" depends="build-php5-jv,retrieve-for-build">
   <javac srcdir="src" includes="**/*.java" debug="${debug}" >
     <classpath>
       <pathelement location="src"/>
@@ -106,12 +107,20 @@
  </target>
  
   <target name="test" depends="build-test" >
-    <junit>
+    <junit >
      <formatter type="plain" />
-     <batchtest dir="test">
-       <inlude name="**/*Test.java" />
-       <exclude name="**/AllTests.java" />
+     <batchtest>
+      <fileset dir="test" >
+        <include name="**/*Test.java" />
+        <exclude name="**/AllTests.class" />
+      </fileset>
      </batchtest>
+     <classpath>
+      <pathelement location="lib/TermWare-${termware.version}.jar"/>
+      <pathelement location="output/TermWarePhp-${version}.jar"/>
+      <pathelement location="output/TermWarePhpTests-${version}.jar" />
+      <pathelement location="lib/junit-${junit.version}.jar"/>
+     </classpath>
     </junit>
  </target>
 
