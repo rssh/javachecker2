@@ -47,7 +47,7 @@ public class PhpParser implements IParser
     private PHP phpParser_;
     private PhpParserFactory owner_;
 
-    private boolean simplicify_;
+    private boolean simplicify_=true;
     private boolean eof_;
 
 }

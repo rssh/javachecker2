@@ -10,57 +10,93 @@ public interface PHPTreeConstants
   public int JJTSTATEMENT = 3;
   public int JJTTHROWSTATEMENT = 4;
   public int JJTTRYBLOCK = 5;
-  public int JJTENDOFSTATEMENT = 6;
-  public int JJTEMBEDDEDHTML = 7;
-  public int JJTDEFINESTATEMENT = 8;
-  public int JJTLABELEDSTATEMENT = 9;
-  public int JJTEXPRESSIONSTATEMENT = 10;
-  public int JJTCOMPOUNDSTATEMENT = 11;
-  public int JJTSELECTIONSTATEMENT = 12;
-  public int JJTITERATIONSTATEMENT = 13;
-  public int JJTJUMPSTATEMENT = 14;
-  public int JJTPARAMETERLIST = 15;
-  public int JJTPARAMETER = 16;
-  public int JJTCLASSDECLARATION = 17;
-  public int JJTCLASSMEMBERS = 18;
-  public int JJTMEMBERDECLARATION = 19;
-  public int JJTINTERFACEDECLARATION = 20;
-  public int JJTINTERFACEMEMBERS = 21;
-  public int JJTINTERFACEMEMBER = 22;
-  public int JJTINCLUDESTATEMENT = 23;
-  public int JJTECHOSTATEMENT = 24;
-  public int JJTEXPRESSION = 25;
-  public int JJTLOGICALTEXTOREXPRESSION = 26;
-  public int JJTLOGICALTEXTXOREXPRESSION = 27;
-  public int JJTLOGICALTEXTANDEXPRESSION = 28;
-  public int JJTASSIGNMENTEXPRESSION = 29;
-  public int JJTASSIGNMENTOPERATOR = 30;
-  public int JJTCONDITIONALEXPRESSION = 31;
-  public int JJTLOGICAL_OR_EXPRESSION = 32;
-  public int JJTLOGICAL_AND_EXPRESSION = 33;
-  public int JJTBITWISEOREXPRESSION = 34;
-  public int JJTBITWISEXOREXPRESSION = 35;
-  public int JJTBITWISEANDEXPRESSION = 36;
-  public int JJTEQUALITYEXPRESSION = 37;
-  public int JJTRELATIONALEXPRESSION = 38;
-  public int JJTSHIFTEXPRESSION = 39;
-  public int JJTADDITIVEEXPRESSION = 40;
-  public int JJTMULTIPLICATIVEEXPRESSION = 41;
-  public int JJTCASTEXPRESSION = 42;
-  public int JJTUNARYEXPRESSION = 43;
-  public int JJTPREFIXINCDECEXPRESSION = 44;
-  public int JJTPOSTFIXINCDECEXPRESSION = 45;
-  public int JJTINSTANCEOFEXPRESSION = 46;
-  public int JJTPOSTFIXEXPRESSION = 47;
-  public int JJTPRIMARYEXPRESSION = 48;
-  public int JJTARRAY = 49;
-  public int JJTCLASSINSTANTIATION = 50;
-  public int JJTVARIABLE = 51;
-  public int JJTARGUMENTEXPRESSIONLIST = 52;
-  public int JJTCONSTANT = 53;
-  public int JJTSTRING = 54;
-  public int JJTDOUBLESTRINGLITERAL = 55;
-  public int JJTVISIBILITY = 56;
+  public int JJTCATCHBLOCKS = 6;
+  public int JJTCATCHBLOCK = 7;
+  public int JJTENDOFSTATEMENT = 8;
+  public int JJTEMBEDDEDHTML = 9;
+  public int JJTDEFINESTATEMENT = 10;
+  public int JJTLABELEDSTATEMENT = 11;
+  public int JJTGOTOLABELEDSTATEMENT = 12;
+  public int JJTEXPRESSIONSTATEMENT = 13;
+  public int JJTCOMPOUNDSTATEMENT = 14;
+  public int JJTSELECTIONSTATEMENT = 15;
+  public int JJTSELECTIONIFSTATEMENT = 16;
+  public int JJTSELECTIONSWITCHSTATEMENT = 17;
+  public int JJTSELECTIONELSEIFCLAUSES = 18;
+  public int JJTSELECTIONELSEIFCLAUSE = 19;
+  public int JJTITERATIONSTATEMENT = 20;
+  public int JJTWHILESTATEMENT = 21;
+  public int JJTDOSTATEMENT = 22;
+  public int JJTFORSTATEMENT = 23;
+  public int JJTFOREACHSTATEMENT = 24;
+  public int JJTJUMPSTATEMENT = 25;
+  public int JJTCONTINUESTATEMENT = 26;
+  public int JJTBREAKSTATEMENT = 27;
+  public int JJTRETURNSTATEMENT = 28;
+  public int JJTGOTOSTATEMENT = 29;
+  public int JJTPARAMETERLIST = 30;
+  public int JJTPARAMETER = 31;
+  public int JJTCLASSDECLARATION = 32;
+  public int JJTCLASSMEMBERS = 33;
+  public int JJTMEMBERDECLARATION = 34;
+  public int JJTMEMBERFUNCTIONDECLARATION = 35;
+  public int JJTMEMBERCONSTANTDECLARATION = 36;
+  public int JJTMEMBERVARIABLESDECLARATION = 37;
+  public int JJTVARIABLEDECLSEQ = 38;
+  public int JJTVARIABLEDECL = 39;
+  public int JJTMEMBERVARIABLEATTRIBUTES = 40;
+  public int JJTMEMBERGLOBALSDECLARATION = 41;
+  public int JJTVARLIST = 42;
+  public int JJTMEMBERABSTRACTFUNCTIONDECLARATION = 43;
+  public int JJTMEMBERFUNCTIONATTRIBUTES = 44;
+  public int JJTINTERFACEDECLARATION = 45;
+  public int JJTINTERFACEMEMBERS = 46;
+  public int JJTINTERFACEMEMBER = 47;
+  public int JJTINTERFACEMETHODDECLARATION = 48;
+  public int JJTINCLUDESTATEMENT = 49;
+  public int JJTECHOSTATEMENT = 50;
+  public int JJTEXPRESSION = 51;
+  public int JJTLOGICALTEXTOREXPRESSION = 52;
+  public int JJTLOGICALTEXTXOREXPRESSION = 53;
+  public int JJTLOGICALTEXTANDEXPRESSION = 54;
+  public int JJTASSIGNMENTEXPRESSION = 55;
+  public int JJTASSIGNMENTOPERATOR = 56;
+  public int JJTCONDITIONALEXPRESSION = 57;
+  public int JJTLOGICAL_OR_EXPRESSION = 58;
+  public int JJTLOGICAL_AND_EXPRESSION = 59;
+  public int JJTBITWISEOREXPRESSION = 60;
+  public int JJTBITWISEXOREXPRESSION = 61;
+  public int JJTBITWISEANDEXPRESSION = 62;
+  public int JJTEQUALITYEXPRESSION = 63;
+  public int JJTRELATIONALEXPRESSION = 64;
+  public int JJTSHIFTEXPRESSION = 65;
+  public int JJTADDITIVEEXPRESSION = 66;
+  public int JJTMULTIPLICATIVEEXPRESSION = 67;
+  public int JJTCASTEXPRESSION = 68;
+  public int JJTUNARYEXPRESSION = 69;
+  public int JJTPREFIXINCDECEXPRESSION = 70;
+  public int JJTPOSTFIXINCDECEXPRESSION0 = 71;
+  public int JJTINCDECSUFFIX = 72;
+  public int JJTINSTANCEOFEXPRESSION = 73;
+  public int JJTPOSTFIXEXPRESSION = 74;
+  public int JJTPOSTFIXEXPRESSIONMETHODCALLSUFFIX = 75;
+  public int JJTPOSTFIXEXPRESSIONMEMBERSELECTORSUFFIX = 76;
+  public int JJTPOSTFIXEXPRESSIONSCOPERESOLUTIONSUFFIX = 77;
+  public int JJTPOSTFIXEXPRESSIONARRAYINDEXSUFFIX = 78;
+  public int JJTPOSTFIXEXPRESSIONCURLYBRACKETSSUFFIX = 79;
+  public int JJTPRIMARYEXPRESSION = 80;
+  public int JJTINBRACESEXPRESSION = 81;
+  public int JJTARRAY = 82;
+  public int JJTARRAYKEYORVALUE = 83;
+  public int JJTCLASSINSTANTIATION = 84;
+  public int JJTALLOCATIONEXPRESSION = 85;
+  public int JJTCLONEEXPRESSION = 86;
+  public int JJTVARIABLE = 87;
+  public int JJTARGUMENTEXPRESSIONLIST = 88;
+  public int JJTCONSTANT = 89;
+  public int JJTSTRING = 90;
+  public int JJTDOUBLESTRINGLITERAL = 91;
+  public int JJTVISIBILITY = 92;
 
 
   public String[] jjtNodeName = {
@@ -70,23 +106,49 @@ public interface PHPTreeConstants
     "Statement",
     "ThrowStatement",
     "TryBlock",
+    "CatchBlocks",
+    "CatchBlock",
     "EndOfStatement",
     "EmbeddedHtml",
     "DefineStatement",
     "LabeledStatement",
+    "GotoLabeledStatement",
     "ExpressionStatement",
     "CompoundStatement",
     "SelectionStatement",
+    "SelectionIfStatement",
+    "SelectionSwitchStatement",
+    "SelectionElseIfClauses",
+    "SelectionElseIfClause",
     "IterationStatement",
+    "WhileStatement",
+    "DoStatement",
+    "ForStatement",
+    "ForEachStatement",
     "JumpStatement",
+    "ContinueStatement",
+    "BreakStatement",
+    "ReturnStatement",
+    "GotoStatement",
     "ParameterList",
     "Parameter",
     "ClassDeclaration",
     "ClassMembers",
     "MemberDeclaration",
+    "MemberFunctionDeclaration",
+    "MemberConstantDeclaration",
+    "MemberVariablesDeclaration",
+    "VariableDeclSeq",
+    "VariableDecl",
+    "MemberVariableAttributes",
+    "MemberGlobalsDeclaration",
+    "VarList",
+    "MemberAbstractFunctionDeclaration",
+    "MemberFunctionAttributes",
     "InterfaceDeclaration",
     "InterfaceMembers",
     "InterfaceMember",
+    "InterfaceMethodDeclaration",
     "IncludeStatement",
     "EchoStatement",
     "Expression",
@@ -109,12 +171,22 @@ public interface PHPTreeConstants
     "CastExpression",
     "UnaryExpression",
     "PrefixIncDecExpression",
-    "PostfixIncDecExpression",
+    "PostfixIncDecExpression0",
+    "IncDecSuffix",
     "InstanceOfExpression",
     "PostfixExpression",
+    "PostfixExpressionMethodCallSuffix",
+    "PostfixExpressionMemberSelectorSuffix",
+    "PostfixExpressionScopeResolutionSuffix",
+    "PostfixExpressionArrayIndexSuffix",
+    "PostfixExpressionCurlyBracketsSuffix",
     "PrimaryExpression",
+    "InBracesExpression",
     "Array",
+    "ArrayKeyOrValue",
     "ClassInstantiation",
+    "AllocationExpression",
+    "CloneExpression",
     "Variable",
     "ArgumentExpressionList",
     "Constant",

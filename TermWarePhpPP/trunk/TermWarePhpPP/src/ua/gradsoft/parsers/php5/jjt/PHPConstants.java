@@ -82,14 +82,15 @@ public interface PHPConstants {
   int TRY = 94;
   int CATCH = 95;
   int THROW = 96;
-  int VAR_NAME = 97;
-  int LETTER1 = 98;
-  int DIGIT1 = 99;
-  int DOLLAR1 = 100;
-  int VARTYPE = 101;
-  int IDENTIFIER = 102;
-  int LETTER = 103;
-  int DIGIT = 104;
+  int GOTO = 97;
+  int VAR_NAME = 98;
+  int LETTER1 = 99;
+  int DIGIT1 = 100;
+  int DOLLAR1 = 101;
+  int VARTYPE = 102;
+  int IDENTIFIER = 103;
+  int LETTER = 104;
+  int DIGIT = 105;
 
   int HTML_STATE = 0;
   int DEFAULT = 1;
@@ -202,6 +203,7 @@ public interface PHPConstants {
     "\"try\"",
     "\"catch\"",
     "\"throw\"",
+    "\"goto\"",
     "<VAR_NAME>",
     "<LETTER1>",
     "<DIGIT1>",
@@ -216,8 +218,8 @@ public interface PHPConstants {
     "\":\"",
     "\"{\"",
     "\"}\"",
-    "\"=>\"",
     "\"&\"",
+    "\"=>\"",
     "\"=\"",
     "\"@\"",
     "\"+=\"",
