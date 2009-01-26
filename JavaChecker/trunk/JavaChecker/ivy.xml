@@ -10,9 +10,9 @@
  <publications>
     <artifact name="JavaChecker" type="jar" conf="jar" />
     <artifact name="JavaChecker2Annotations" type="jar" conf="jar" />
-    <artifact name="JabaCheckerSourceInstaller" type="installation" ext="jar" 
+    <artifact name="JavaCheckerSourceInstaller" type="installation" ext="jar" 
               conf="installation" />
-    <artifact name="JabaCheckerBinaryInstaller" type="installation" ext="jar" 
+    <artifact name="JavaCheckerBinaryInstaller" type="installation" ext="jar" 
               conf="installation" />
  </publications>
  <dependencies>
@@ -26,12 +26,12 @@
    <dependency org="ua.gradsoft" name="termware" rev="${termware.version}"
                conf="*->*" >
     <artifact name="TermWare" type="jar"
-              url="http://www.gradsoft.ua/common/termware/TermWare-2.3.0.jar"
+              url="http://www.gradsoft.ua/common/termware/TermWare-${termware.version}.jar"
     />
    </dependency>
-   <dependency org="ua.gradsoft" name="termwarejpp" rev="1.1" >
+   <dependency org="ua.gradsoft" name="termwarejpp" rev="${termwarejpp.version}" >
     <artifact name="TermWareJPP" type="jar"
-          url="http://www.gradsoft.ua/common/termwarejpp/TermWareJPP-1.1.jar"
+          url="http://www.gradsoft.ua/common/termwarejpp/TermWareJPP-${termwarejpp.version}.jar"
     />
    </dependency>
  </dependencies>

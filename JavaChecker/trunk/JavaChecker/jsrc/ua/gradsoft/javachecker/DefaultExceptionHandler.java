@@ -13,6 +13,7 @@ import ua.gradsoft.javachecker.annotations.Nullable;
  */
 public class DefaultExceptionHandler implements JavaCheckerExceptionHandler {
 
+    @Override
     public void handle(String checkName, String filename, Throwable ex, @Nullable SourceCodeLocation scl) throws ProcessingException
     {
       System.err.println("Exception "+ex.getMessage()+" during check "+checkName+" during processing "+filename);

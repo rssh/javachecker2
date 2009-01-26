@@ -25,7 +25,7 @@ public interface TraceCondition {
     /**
      * try to eval condition in given context.
      */
-    TraceConditionResult  eval(JavaTraceContext traceContext) throws TermWareException;
+     TraceConditionResult  eval(JavaTraceContext traceContext) throws TermWareException;
     
     /**     
      * forse traceContext to be true.
