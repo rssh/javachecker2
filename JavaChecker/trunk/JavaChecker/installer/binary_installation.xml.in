@@ -9,7 +9,7 @@
 <installation version="1.0">
  <info>
   <appname>JavaChecker</appname>
-  <appversion>2.3.0</appversion>
+  <appversion>@VERSION@</appversion>
   <url>http://www.gradsoft.ua</url>
   <authors>
    <author name="Ruslan Shevchenko" email="Ruslan@Shevchenko.Kiev.UA" />
@@ -18,9 +18,9 @@
  </info>
  <guiprefs height="480" resizable="yes" width="640"/>
  <variables>
-   <variable name="javachecker_version" value="2.3.0" />
-   <variable name="termware_version" value="2.3.0" />
-   <variable name="termwarejpp_version" value="1.1" />
+   <variable name="javachecker_version" value="@VERSION@" />
+   <variable name="termware_version" value="@TERMWARE_VERSION@" />
+   <variable name="termwarejpp_version" value="@TERMWAREJPP_VERSIOB@" />
  </variables>
  <locale>
    <langpack iso3="eng" />
@@ -45,28 +45,19 @@
   <parsable targetfile="$INSTALL_PATH/bin/JavaChecker.bat" os="windows"/>
   <executable targetfile="$INSTALL_PATH/bin/JavaChecker.sh" stage="newer" keep="true" os="unix"/>
   <executable targetfile="$INSTALL_PATH/bin/JavaChecker.bat" stage="newer" keep="true" os="windows"/>
-  <file src="../lib/JavaChecker-2.3.0.jar" targetdir="$INSTALL_PATH/lib" />
-  <file src="../lib/JavaChecker2Annotations-2.3.0.jar" targetdir="$INSTALL_PATH/lib" />
-  <file src="../lib/TermWare-2.3.0.jar"  targetdir="$INSTALL_PATH/lib" />
-  <file src="../lib/TermWareJPP-1.1.jar"  targetdir="$INSTALL_PATH/lib" />
+  <file src="../lib/JavaChecker-@VERSION@.jar" targetdir="$INSTALL_PATH/lib" />
+  <file src="../lib/JavaChecker2Annotations-@VERSION@.jar" targetdir="$INSTALL_PATH/lib" />
+  <file src="../lib/TermWare-@TERMWARE_VERSION@.jar"  targetdir="$INSTALL_PATH/lib" />
+  <file src="../lib/TermWareJPP-@TERMWAREJPP_VERSION@.jar"  targetdir="$INSTALL_PATH/lib" />
   <file src="../etc/prefs1.xml"  targetdir="$INSTALL_PATH/etc" />
   <file src="../etc/checkers.def"  targetdir="$INSTALL_PATH/etc" />
-  <fileset dir="../systems/" targetdir="$INSTALL_PATH/systems" >
-    <exclude name="CVS" />
-    <exclude name="**/CVS" />
-    <exclude name="CVS/*" />
-    <exclude name="**/CVS/*" />
-  </fileset>
-  <fileset dir="../attrs/" targetdir="$INSTALL_PATH/attrs" >
-    <exclude name="CVS" />
-    <exclude name="**/CVS" />
-    <exclude name="CVS/*" />
-    <exclude name="**/CVS/*" />
-  </fileset>
+  <fileset dir="../systems/" targetdir="$INSTALL_PATH/systems" 
+           defaultexcludes="yes" />
+  <fileset dir="../attrs/" targetdir="$INSTALL_PATH/attrs" 
+           defaultexcludes="yes" />
  </pack>
  <pack name="documentation" required="yes">
   <description> JavaChecker users guide </description>
-  <file src="../docs/JavaChecker2Guide.pdf" targetdir="$INSTALL_PATH/docs" />
   <file src="../docs/JavaChecker2Guide.odt" targetdir="$INSTALL_PATH/docs" />
   <file src="../docs/LICENSE.eng" targetdir="$INSTALL_PATH/docs" />
  </pack>

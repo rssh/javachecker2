@@ -17,6 +17,15 @@
 
 
  <target name="binary_installation" depends="build,docs">
+  <copy file="installer/binary_installation.xml.in"
+        tofile="installer/binary_installation.xml"
+        overwrite="true">
+   <filterset>
+    <filter token="VERSION" value="${version}" />
+    <filter token="TERMWARE_VERSION" value="${termware.version}" />
+    <filter token="TERMWAREJPP_VERSION" value="${termwarejpp.version}" />
+   </filterset>
+  </copy>
   <izpack input="installer/binary_installation.xml"
           output="installer/JavaCheckerBinaryInstaller-${version}.jar"
           installerType="standard"
@@ -26,6 +35,15 @@
  </target>
 
  <target name="source_installation" depends="build,docs">
+  <copy file="installer/source_installation.xml.in"
+        tofile="installer/source_installation.xml"
+        overwrite="true">
+   <filterset>
+    <filter token="VERSION" value="${version}" />
+    <filter token="TERMWARE_VERSION" value="${termware.version}" />
+    <filter token="TERMWAREJPP_VERSION" value="${termwarejpp.version}" />
+   </filterset>
+  </copy>
   <izpack input="installer/source_installation.xml"
           output="installer/JavaCheckerSourceInstaller-${version}.jar"
           installerType="standard"

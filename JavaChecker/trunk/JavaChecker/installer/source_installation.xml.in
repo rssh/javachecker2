@@ -1,0 +1,91 @@
+<!--
+    Document   : installer.xml
+    Created on : 07/03/2004, 02:44
+    Author     : Ruslan Shevchenko
+    Description:
+        IzPack install file for TermWare JavaChecker
+-->
+<installation version="1.0">
+ <info>
+  <appname>JavaChecker</appname>
+  <appversion>@VERSION@</appversion>
+  <url>http://www.gradsoft.ua</url>
+  <authors>
+   <author name="Ruslan Shevchenko" email="Ruslan@Shevchenko.Kiev.UA" />
+   <author name="Grad-Soft Ltd" email="info@gradsoft.ua" />
+  </authors>
+ </info>
+ <guiprefs height="480" resizable="yes" width="640"/>
+ <variables>
+   <variable name="javachecker_version" value="@VERSION@" />
+   <variable name="termware_version" value="@TERMWARE_VERSION@" />
+   <variable name="termwarejpp_version" value="@TERMWAREJPP_VERSION@" />
+ </variables>
+ <locale>
+   <langpack iso3="eng" />
+ </locale>
+ <resources>
+   <res id="LicencePanel.licence" src="../docs/LICENSE.eng" />
+ </resources>
+ <panels>
+  <panel classname="HelloPanel"/>
+  <panel classname="LicencePanel"/>
+  <panel classname="TargetPanel"/>
+  <panel classname="PacksPanel"/>
+  <panel classname="InstallPanel"/>
+  <panel classname="FinishPanel"/>
+ </panels>
+<packs>
+ <pack name="JavaChecker sources" required="yes">
+  <description> full javachecker sources </description>
+  <file src="JavaChecker.bat" targetdir="$INSTALL_PATH/bin" />
+  <file src="JavaChecker.sh" targetdir="$INSTALL_PATH/bin" />
+  <parsable targetfile="$INSTALL_PATH/bin/JavaChecker.sh" os="unix"/>
+  <executable targetfile="$INSTALL_PATH/bin/JavaChecker.sh" stage="newer" keep="true" os="unix"/>
+  <parsable targetfile="$INSTALL_PATH/bin/JavaChecker.bat" os="windows"/>
+  <executable targetfile="$INSTALL_PATH/bin/JavaChecker.bat" stage="newer" keep="true" os="windows"/>
+  <file src="../lib/JavaChecker-@VERSION@.jar" targetdir="$INSTALL_PATH/lib" />
+  <file src="../lib/JavaChecker2Annotations-@VERSION@.jar" targetdir="$INSTALL_PATH/lib" />
+  <file src="../lib/TermWare-@TERMWARE_VERSION@.jar"  targetdir="$INSTALL_PATH/lib" />
+  <file src="../lib/TermWareJPP-@TERMWAREJPP_VERSION@.jar"  targetdir="$INSTALL_PATH/lib" />
+  <file src="../build.xml"  targetdir="$INSTALL_PATH" />
+  <file src="../build-ext.xml"  targetdir="$INSTALL_PATH" />
+  <file src="../build.properties"  targetdir="$INSTALL_PATH" />
+  <file src="../build.properties.default"  targetdir="$INSTALL_PATH" />
+  <fileset dir="../systems/" targetdir="$INSTALL_PATH/systems" 
+           defaultexcludes="yes" />
+  <fileset dir="../attrs/" targetdir="$INSTALL_PATH/attrs" 
+           defaultexcludes="yes" />
+  <fileset dir="../etc/" targetdir="$INSTALL_PATH/etc" 
+           defaultexcludes="yes" />
+  <fileset dir="../docs/" targetdir="$INSTALL_PATH/docs" 
+           defaultexcludes="yes" />
+  <fileset dir="../jsrc/" targetdir="$INSTALL_PATH/jsrc" 
+           defaultexcludes="yes" >
+    <exclude name="**/*.class" />
+  </fileset>
+  <fileset dir="../jsrc-ann/" targetdir="$INSTALL_PATH/jsrc-ann" 
+           defaultexcludes="yes" >
+    <exclude name="**/*.class" />
+  </fileset>
+  <fileset dir="../jtests/" targetdir="$INSTALL_PATH/jtests" 
+           defaultexcludes="yes" >
+    <exclude name="**/*.class" />
+  </fileset>
+  <fileset dir="../testpackages/" targetdir="$INSTALL_PATH/testpackages" 
+           defaultexcludes="yes" />
+  <fileset dir="../installer/" targetdir="$INSTALL_PATH/installer" 
+           defaultexcludes="yes" >
+    <exclude name="JavaCheckerBinaryInstaller*.*.jar" />
+    <exclude name="JavaCheckerSourceInstaller*.*.jar" />
+  </fileset>
+ </pack>
+ <pack name="NetBeans project" required="no" >
+   <description> NetBeans project for easy navigation </description>
+   <fileset dir="../nbproject/" targetdir="$INSTALL_PATH/nbproject" 
+           defaultexcludes="yes" >
+    <exclude name="private/*" />
+   </fileset>
+ </pack>
+</packs>
+</installation>

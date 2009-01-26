@@ -8,7 +8,7 @@
 
 <property file="build.properties" />
 
-<property name="ivy.install.version" value="2.0.0-beta2" />
+<property name="ivy.install.version" value="2.0.0" />
 
 <condition property="ivy.int.home" value="${ivy.home}" else="${user.home}/.ivy">
   <isset property="ivy.home" />
@@ -70,7 +70,7 @@
  <target name="publish.only" depends="resolve-ivy" >
    <copy file="lib/JavaChecker-${version}.jar" todir="installer" />
    <copy file="lib/JavaChecker2Annotations-${version}.jar" todir="installer" />
-   <ivy:publish resolver="publish.gradsoft.ua" 
+   <ivy:publish resolver="datacenter.gradsoft.ua" 
                 pubrevision="${version}"
                 overwrite="true"
                 artifactspattern="installer/[artifact]-[revision].[ext]" />
