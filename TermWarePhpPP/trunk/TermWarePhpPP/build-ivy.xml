@@ -68,7 +68,7 @@
  </target>
 
  <target name="publish" depends="resolve-ivy" >
-   <ivy:publish resolver="dataceneter.gradsoft.ua" 
+   <ivy:publish resolver="datacenter.gradsoft.ua" 
                 pubrevision="${version}"
                 overwrite="true"
                 artifactspattern="output/[artifact]-[revision].[ext]" />
