@@ -19,7 +19,9 @@
                conf="build->default" transitive="false" >
    </dependency>
    <dependency org="org.junit" name="junit" rev="4.5" 
-               conf="test->default" />
+               conf="test->default" >
+     <artifact name="junit" type="jar" />
+   </dependency>
    <dependency org="ua.gradsoft" name="termware" rev="2.3.1"
                conf="default->default" >
     <artifact name="TermWare" type="jar"
