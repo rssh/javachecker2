@@ -1,7 +1,7 @@
 /*
  * JavaParser.java
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006 - 2009 GradSoft  Ukraine
  * All Rights Reserved
  */
 
