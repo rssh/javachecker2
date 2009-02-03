@@ -329,21 +329,31 @@ public class PhpPrinter extends AbstractPrinter
       if (!implementsList.isNil()) {
          out_.print(" implements ");
          Term curr=implementsList;
-         while(!curr.isNil()) {
+         if (curr.getArity()==2 && curr.getName().equals("cons")) {
+           while(!curr.isNil()) {
              printIdentifier(curr.getSubtermAt(0),level);
              curr=curr.getSubtermAt(1);
              if (!curr.isNil()) {
                  out_.print(", ");
              }
+           }
+         }else{
+           writeTerm(implementsList,level+1);
          }
       }
       out_.print("{");
       writeNextLine(level);
       Term members = sclassMembers.getSubtermAt(0);
-      while(!members.isNil()) {
-          Term member=members.getSubtermAt(0);
-          members=members.getSubtermAt(1);
-          writeTerm(member,level+1);
+      if (!members.isNil()) {
+        if (members.getArity()==2 && members.getName().equals("cons")) {
+          while(!members.isNil()) {
+            Term member=members.getSubtermAt(0);
+            members=members.getSubtermAt(1);
+            writeTerm(member,level+1);
+          }
+        }else{
+          writeTerm(members,level+1);
+        }
       }
       writeIdent(level);
       out_.print("}");
@@ -470,10 +480,24 @@ public class PhpPrinter extends AbstractPrinter
           }
           Term identifier = varDecl.getSubtermAt(0);
           out_.print(" $");
-          out_.print(identifier.getSubtermAt(0).getString());
+          if (identifier.getArity()==1) {
+            if (identifier.getSubtermAt(0).isString()) {
+              out_.print(identifier.getSubtermAt(0).getString());
+            }else{
+              out_.print("IDENTIFIER(");
+              identifier.print(out_);
+              out_.print(")");
+            }
+          }else{
+            out_.print("IDENTIFIER(");
+            identifier.print(out_);
+            out_.print(")");
+          }
           if (varDecl.getArity()>1) {
+           if (!varDecl.getSubtermAt(1).isNil()) {
               out_.print("=");
               writeTerm(varDecl.getSubtermAt(1),level);
+           }
           }
       }
       writeTerm(t.getSubtermAt(2),level);
@@ -511,8 +535,14 @@ public class PhpPrinter extends AbstractPrinter
 
     public void printIdentifier(Term t, int level)
     {
-      Term s = t.getSubtermAt(0);
-      out_.print(s.getString());
+      if (t.getArity()==1 && t.getName().equals("Identifier")) {
+        Term s = t.getSubtermAt(0);
+        out_.print(s.getString());
+      } else {
+        out_.print("IDENTIFIER(");
+        t.print(out_);
+        out_.print(")");
+      }
     }
 
     public void printDoubleStringLiteral(Term t, int level)
@@ -548,13 +578,19 @@ public class PhpPrinter extends AbstractPrinter
 
     private void printAttributes(Term t, int level)
     {
-        Term list = t.getSubtermAt(0);
-        while(!list.isNil()) {
+        if (t.getArity()==1) {
+          Term list = t.getSubtermAt(0);
+          while(!list.isNil()) {
             writeTerm(list.getSubtermAt(0),level);
             list=list.getSubtermAt(1);
             if (!list.isNil()) {
                 out_.print(", ");
             }
+          }
+        }else{
+          out_.print("ATTRIBUTES(");  
+          t.print(out_);
+          out_.print(")");  
         }
     }
 
