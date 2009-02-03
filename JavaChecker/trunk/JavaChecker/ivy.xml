@@ -29,7 +29,8 @@
               url="http://www.gradsoft.ua/common/termware/TermWare-${termware.version}.jar"
     />
    </dependency>
-   <dependency org="ua.gradsoft" name="termwarejpp" rev="${termwarejpp.version}" >
+   <dependency org="ua.gradsoft" name="termwarejpp" 
+               rev="${termwarejpp.version}" >
     <artifact name="TermWareJPP" type="jar"
           url="http://www.gradsoft.ua/common/termwarejpp/TermWareJPP-${termwarejpp.version}.jar"
     />
