@@ -178,10 +178,16 @@ public class ParsePrintTest
     @Test
     public void testInterfaces4() throws Exception
     {
-        //doParsePrintParse("testdata/ta/language.oop5.interfaces.4.php",false);
-        String s = doParsePrint("testdata/ta/language.oop5.interfaces.4.php",true);
+        doParsePrintParse("testdata/ta/language.oop5.interfaces.4.php",false);
+        //String s = doParsePrint("testdata/ta/language.oop5.interfaces.4.php",true);
     }
 
+    @Test
+    public void testRequireOnce() throws Exception
+    {
+        doParsePrintParse("testdata/ta/requireOnce.php",true);
+        //String s = doParsePrint("testdata/ta/language.oop5.interfaces.4.php",true);
+    }
 
     @Test
     public void testMakeJUnitHappy()
