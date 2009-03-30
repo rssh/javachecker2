@@ -55,12 +55,7 @@ public class JavaTermArrayIndexExpressionModel extends JavaTermExpressionModel
         if (!tm.isArray()) {
             throw new InvalidJavaTermException("first argument od array index is not array",t_.getSubtermAt(0));            
         }
-        try {
-          return tm.getReferencedType();
-        }catch(NotSupportedException ex){
-            // impossible.
-            throw new AssertException("reference type of array is not supportede",ex);
-        }
+        return tm.getReferencedType();
     }
     
     

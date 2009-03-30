@@ -89,9 +89,9 @@ public class JavaTypeModelAttributes {
             JavaTypeModel superOwner = null;
             try {
                 superOwner=owner_.getSuperClass();
-                retval = superOwner.getAttributes().findInheriedTypeAttribute(name);
-            }catch(NotSupportedException ex){
-                /* do nothing */;
+                if (superOwner!=null) {
+                   retval = superOwner.getAttributes().findInheriedTypeAttribute(name);
+                }
             }catch(EntityNotFoundException ex){
                 throw new AssertException("Unable to get superclass",ex);
             }
@@ -101,7 +101,7 @@ public class JavaTypeModelAttributes {
                     return retval;
                 }
             }
-            try {
+           
                 List<JavaTypeModel> superInterfaces = owner_.getSuperInterfaces();
                 for(JavaTypeModel si: superInterfaces) {
                     retval = si.getAttributes().findInheriedTypeAttribute(name);
@@ -111,11 +111,7 @@ public class JavaTypeModelAttributes {
                         }
                     }
                 }
-            }catch(NotSupportedException ex){
-                ;
-            }
         }else if (owner_.isInterface()) {
-            try {
                 List<JavaTypeModel> superInterfaces = owner_.getSuperInterfaces();
                 for(JavaTypeModel si: superInterfaces) {
                     retval = si.getAttributes().findInheriedTypeAttribute(name);
@@ -126,9 +122,6 @@ public class JavaTypeModelAttributes {
                         }
                     }
                 }
-            }catch(NotSupportedException ex){
-                throw new AssertException("Impossible",ex);
-            }
         }
         return retval;
     }
@@ -259,12 +252,8 @@ public class JavaTypeModelAttributes {
     
     private synchronized void load() throws TermWareException {
         if (!isLoaded()) {
-            if (owner_.isNested()) {
-                try {
-                    data_=owner_.getEnclosedType().getAttributesData().getOrCreateChild(owner_.getName());
-                }catch(NotSupportedException ex){
-                    throw new AssertException("isNested is true, but getEnclosedType is not supported in "+owner_.getFullName());
-                }
+            if (owner_.isNested()) {             
+                data_=owner_.getEnclosedType().getAttributesData().getOrCreateChild(owner_.getName());
             }else{
                 String fullLoadName = createAttributesFileName();
                 File f = new File(fullLoadName);
@@ -378,13 +367,8 @@ public class JavaTypeModelAttributes {
     }
     
     private void loadSourceAttributes(JavaTypeModel tm, AttributesData data) throws TermWareException, EntityNotFoundException {
-        JavaAnnotationInstanceModel typeAnnotation = null ;
-        try {
-            typeAnnotation = tm.getAnnotation("ua.gradsoft.javachecker.annotations.TypeCheckerProperties");
-        }catch(NotSupportedException ex){
-            // all is ok
-            ;
-        }
+        JavaAnnotationInstanceModel typeAnnotation = null ;     
+        typeAnnotation = tm.getAnnotation("ua.gradsoft.javachecker.annotations.TypeCheckerProperties");
         if (typeAnnotation!=null) {
             if (typeAnnotation.hasElement("value")) {
                 try {
@@ -395,11 +379,7 @@ public class JavaTypeModelAttributes {
             }
         }
         Map<String,JavaTypeModel> nestedTypeModels=null;
-        try {
-            nestedTypeModels=tm.getNestedTypeModels();
-        }catch(NotSupportedException ex){
-            nestedTypeModels=Collections.emptyMap();
-        }
+        nestedTypeModels=tm.getNestedTypeModels();
         for(Map.Entry<String,JavaTypeModel> ntm: nestedTypeModels.entrySet()) {
             AttributesData next = new AttributesData();
             loadSourceAttributes(ntm.getValue(),next);
@@ -443,13 +423,8 @@ public class JavaTypeModelAttributes {
             }
         }
         Map<String,List<JavaMethodModel>> methodModels = null;
-        if (tm.hasMethodModels()) {
-          try {
+        if (tm.hasMethodModels()) {        
             methodModels=tm.getMethodModels();
-          }catch(NotSupportedException ex){
-            LOG.log(Level.WARNING,"getMethodModels is unsupported in class "+tm.getFullName());
-            methodModels=Collections.emptyMap();
-          }
         }else{
            methodModels=Collections.emptyMap(); 
         }

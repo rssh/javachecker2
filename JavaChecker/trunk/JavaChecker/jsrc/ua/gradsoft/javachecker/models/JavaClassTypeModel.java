@@ -183,7 +183,7 @@ public class JavaClassTypeModel extends JavaTypeModel
   /**
    *return enclosed class
    */
-  public JavaTypeModel  getEnclosedType() throws NotSupportedException, TermWareException
+  public JavaTypeModel  getEnclosedType() throws TermWareException
   {
       Class<?> enclosingClass = theClass_.getEnclosingClass();
       if (enclosingClass==null) {
@@ -196,15 +196,14 @@ public class JavaClassTypeModel extends JavaTypeModel
     
   
   /**
-   *@return referenced type. Works only if isArray()==true, otherwise
-   *throws NotSupportedException
+   *@return referenced type. Works only if isArray()==true, otherwise return null
    */
-  public JavaTypeModel  getReferencedType() throws NotSupportedException, TermWareException
+  public JavaTypeModel  getReferencedType() throws TermWareException
   {
    if (theClass_.isArray()) {      
        return new JavaClassTypeModel(theClass_.getComponentType());
    }else{
-       throw new NotSupportedException();
+       return null;
    }
   }
   
@@ -221,7 +220,7 @@ public class JavaClassTypeModel extends JavaTypeModel
   /**
    * key of return values is name of methods.   
    */
-  public Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException
+  public Map<String, List<JavaMethodModel>>   getMethodModels()
   {
      Map<String, List<JavaMethodModel> > retval = new TreeMap<String, List<JavaMethodModel> >();
      Method[] methods = theClass_.getDeclaredMethods();
@@ -239,8 +238,9 @@ public class JavaClassTypeModel extends JavaTypeModel
      return  retval;
   }
     
-  
-  public List<JavaMethodModel>  findMethodModels(String name) throws EntityNotFoundException, NotSupportedException
+
+  @Override
+  public List<JavaMethodModel>  findMethodModels(String name) throws EntityNotFoundException
   {
     boolean debug=false;  
   
@@ -275,7 +275,7 @@ public class JavaClassTypeModel extends JavaTypeModel
       }
   }
   
-  public Map<String, JavaMemberVariableModel> getMemberVariableModels() throws NotSupportedException
+  public Map<String, JavaMemberVariableModel> getMemberVariableModels()
   {
     Field[] fields=theClass_.getDeclaredFields();
     Map<String,JavaMemberVariableModel> retval = new TreeMap<String,JavaMemberVariableModel>();
@@ -284,20 +284,21 @@ public class JavaClassTypeModel extends JavaTypeModel
     }
     return retval;
   }
-  
-  public JavaMemberVariableModel findMemberVariableModel(String name) throws EntityNotFoundException, NotSupportedException
+
+  @Override
+  public JavaMemberVariableModel findMemberVariableModel(String name) throws EntityNotFoundException
   {
-    try {  
-     return new JavaClassFieldModel(theClass_.getDeclaredField(name),this);
+    try{
+      return new JavaClassFieldModel(theClass_.getDeclaredField(name),this);
     }catch(NoSuchFieldException ex){
       throw new EntityNotFoundException("Field ",name,"in "+this.getFullName());  
     }
   }
   
-  public Map<String,JavaEnumConstantModel>  getEnumConstantModels() throws NotSupportedException
+  public Map<String,JavaEnumConstantModel>  getEnumConstantModels() 
   {
      if (!theClass_.isEnum()) {
-         throw new NotSupportedException();
+         return null;
      }     
      Object[] enumConstants = theClass_.getEnumConstants();
      Map<String,JavaEnumConstantModel> retval = new TreeMap<String,JavaEnumConstantModel>();
@@ -325,11 +326,11 @@ public class JavaClassTypeModel extends JavaTypeModel
      return Collections.emptyList(); 
   }
   
-  public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException, TermWareException, EntityNotFoundException
+  public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws TermWareException, EntityNotFoundException
   {
    if (annotationDefaultInstance_==null) {
       if (!theClass_.isAnnotation()) {
-          throw new NotSupportedException();
+          return null;
       }else{         
           annotationDefaultInstance_= new JavaAnnotationDefaultInstanceModel(this);           
       }
@@ -347,7 +348,7 @@ public class JavaClassTypeModel extends JavaTypeModel
       return true;
   }
   
-  public Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException, TermWareException
+  public Map<String,JavaTypeModel> getNestedTypeModels() throws  TermWareException
   {
       Class[] classes=theClass_.getDeclaredClasses();
       Map<String,JavaTypeModel> retval = new TreeMap<String,JavaTypeModel>();
@@ -386,7 +387,7 @@ public class JavaClassTypeModel extends JavaTypeModel
       return retval;
   }
   
-  
+  @Override
   public boolean hasAnnotation(String annotationName)
   {
       Annotation[] annotations_ = theClass_.getAnnotations();
@@ -399,7 +400,9 @@ public class JavaClassTypeModel extends JavaTypeModel
       return false;
   }
   
-  public JavaAnnotationInstanceModel getAnnotation(String annotationName) throws NotSupportedException
+
+  @Override
+  public JavaAnnotationInstanceModel getAnnotation(String annotationName)
   {
       Annotation[] annotations_ = theClass_.getAnnotations();
       for(int i=0; i<annotations_.length; ++i) {
@@ -409,7 +412,7 @@ public class JavaClassTypeModel extends JavaTypeModel
               return new JavaClassAnnotationInstanceModel(et,annotations_[i],this);
           }
       }
-      throw new NotSupportedException();      
+      return null;
   }
   
   public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap() throws TermWareException

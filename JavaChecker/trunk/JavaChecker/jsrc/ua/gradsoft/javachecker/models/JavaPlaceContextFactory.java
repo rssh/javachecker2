@@ -98,8 +98,9 @@ public class JavaPlaceContextFactory {
             where = prevWhere.findNestedTypeModel(className);
         }catch(EntityNotFoundException ex){
             throw new AssertException("nested type "+className+" is not found in "+prevWhere.getFullName());
-        }catch(NotSupportedException ex){
-            throw new AssertException("search for nested types in "+className+" is unsupported");            
+        }
+        if (where==null) {
+            throw new AssertException("nested type "+className+" is not found in "+prevWhere.getFullName());
         }
         retval.setTypeModel(where);
       }

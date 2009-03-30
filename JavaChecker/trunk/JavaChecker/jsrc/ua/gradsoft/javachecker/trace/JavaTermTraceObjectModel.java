@@ -68,11 +68,7 @@ public class JavaTermTraceObjectModel implements JavaTraceObjectModel
       lazyInitFields();
       JavaMemberVariableModel mv = null;
       JavaTraceObjectModel retval = null;
-      try {
-         mv = getType().getMemberVariableModels().get(name);
-      }catch(NotSupportedException ex){
-          throw new AssertException("member variables are not supported for type "+getType().getName());
-      }
+      mv = getType().getMemberVariableModels().get(name);
       if (mv==null) {
           throw new AssertException("field "+name+" does not exists in "+getType().getName());
       }

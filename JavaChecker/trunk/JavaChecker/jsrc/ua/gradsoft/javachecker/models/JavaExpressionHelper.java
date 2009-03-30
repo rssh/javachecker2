@@ -214,13 +214,13 @@ public class JavaExpressionHelper {
             }
         }else if (expr.getName().equals("Super")) {
             if (context.getTypeModel()!=null) {
-                try {
-                    JavaTypeModel superTypeModel=context.getTypeModel().getSuperClass();
-                    JavaPlaceContext newContext = JavaPlaceContextFactory.createNewTypeContext(superTypeModel);
-                    return resolveExpressionType(expr.getSubtermAt(0),newContext);
-                }catch(NotSupportedException ex){
+                 JavaTypeModel superTypeModel=context.getTypeModel().getSuperClass();
+                 if (superTypeModel==null) {
+                     //TODO: change to InvalidJavaTerm
                     throw new AssertException("'super' is not applicable in context");
-                }
+                 }
+                 JavaPlaceContext newContext = JavaPlaceContextFactory.createNewTypeContext(superTypeModel);
+                 return resolveExpressionType(expr.getSubtermAt(0),newContext);
             }else{
                 throw new AssertException("'super' is not applicable in context");
             }
@@ -302,13 +302,8 @@ public class JavaExpressionHelper {
             JavaTypeModel arrayType = resolveExpressionType(arrayExpression,context);
             if (!arrayType.isArray()) {
                 throw new InvalidJavaTermException("argument of ArrayIndex must be array",expr);
-            }else{
-                try {
-                    return arrayType.getReferencedType();
-                }catch(NotSupportedException ex){
-                    // impossible.
-                    throw new AssertException("isArray but getReferencedType() is not supported in"+arrayType.getFullName());
-                }
+            }else{             
+                return arrayType.getReferencedType();
             }
         }else if (expr.getName().equals("Name")) {
             return resolveNameExpressionType(expr,false,context);

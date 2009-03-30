@@ -8,11 +8,11 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
-import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
@@ -64,6 +64,7 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
         parent.addNestedType(name_,this);
     }
 
+    @Override
     public String getName() {
         return name_;
     }
@@ -76,16 +77,19 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
     public boolean isEnum()
     { return false; }
 
-    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
-        throw new NotSupportedException();
+    /**
+     * @return empty map
+     */
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels() {
+        return Collections.emptyMap();
     }
 
-        /**
-     *throw NotSupportedException
+    /**
+     *@return null
      */    
-    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() 
     {
-         throw new NotSupportedException();
+         return null;
     }
 
     
@@ -164,7 +168,8 @@ public class JavaTermAnonimousTypeModel extends JavaTermTypeAbstractModel
        } 
        return super.getSuperClass();
     }
-    
+
+
     public List<JavaTypeModel> getSuperInterfaces() throws TermWareException
     {
         if (!supersAreInitialized_) {

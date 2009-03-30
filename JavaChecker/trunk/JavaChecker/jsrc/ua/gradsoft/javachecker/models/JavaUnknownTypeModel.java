@@ -1,6 +1,6 @@
 /*
  * JavaUnknownTypeModel.java
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006-2009 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.Main;
-import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWare;
@@ -106,15 +105,18 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
 
     public JavaStatementModel getEnclosedStatement()
     { return null; }
-    
-    public JavaTypeModel  getEnclosedType() throws NotSupportedException
-    { throw new NotSupportedException(); }
+
+    /**
+     * @return null
+     */
+    public JavaTypeModel  getEnclosedType() 
+    { return null; }
     
     /**
-     *throws NotSupportedException
+     *@return null
      */
-    public JavaTypeModel  getReferencedType() throws NotSupportedException
-    { throw new NotSupportedException(); }
+    public JavaTypeModel  getReferencedType() 
+    { return null; }
     
     
     public JavaTypeModel getSuperClass() throws TermWareException
@@ -131,11 +133,11 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     { return false; }
     
     /**
-     * throws NotSupportedException
+     * return empty map.
      */
-    public Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException
+    public Map<String, List<JavaMethodModel>>   getMethodModels() 
     {
-        throw new NotSupportedException();
+       return Collections.<String,List<JavaMethodModel>>emptyMap();
     }
     
     
@@ -150,9 +152,9 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
       return false;  
     }
     
-    public Map<String, JavaMemberVariableModel> getMemberVariableModels() throws NotSupportedException
+    public Map<String, JavaMemberVariableModel> getMemberVariableModels() 
     {
-        throw new NotSupportedException();
+       return Collections.<String,JavaMemberVariableModel>emptyMap();
     }
     
     
@@ -168,7 +170,7 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
      *@return empty map
      */
     public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
-    { return Collections.emptyMap(); }
+    { return Collections.<String,JavaAnnotationInstanceModel>emptyMap(); }
     
     
     
@@ -189,26 +191,26 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     }
 
     /**
-     * throw NotSupportedException
+     *@return empty Map
      */ 
-    public Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException
+    public Map<String,JavaTypeModel> getNestedTypeModels()
     {
-      throw new NotSupportedException();  
+      return Collections.emptyMap();
     }
 
     /**
-     * throw NotSupportedException
+     *@return empty map
      */ 
-    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
-        throw new NotSupportedException();  
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels() {
+        return Collections.emptyMap();
     }
     
     /**
-     *throw NotSupportedException
+     *@return null;
      */    
-    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() 
     {
-         throw new NotSupportedException();
+       return null;
     }
 
 
@@ -229,6 +231,5 @@ public class JavaUnknownTypeModel extends JavaTypeModel {
     static final public JavaUnknownTypeModel INSTANCE = new JavaUnknownTypeModel();
     
     
-
     
 }

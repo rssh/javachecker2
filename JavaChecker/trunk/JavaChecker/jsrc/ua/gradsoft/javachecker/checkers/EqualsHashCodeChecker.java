@@ -51,10 +51,8 @@ public class EqualsHashCodeChecker extends JavaTypeModelOnePassProcessor
     {
         List<JavaMethodModel> eqModels=null;
         try {
-          eqModels = typeModel.findMethodModels("equals");
+            eqModels = typeModel.findMethodModels("equals");
         }catch(EntityNotFoundException ex){
-            return false;
-        }catch(NotSupportedException ex){
             return false;
         }
         for(JavaMethodModel m: eqModels) {
@@ -77,7 +75,8 @@ public class EqualsHashCodeChecker extends JavaTypeModelOnePassProcessor
            hcModels=typeModel.findMethodModels("hashCode");
        }catch(EntityNotFoundException ex){
            return false;
-       }catch(NotSupportedException ex){
+       }
+       if (hcModels==null) {
            return false;
        }
        for(JavaMethodModel m: hcModels) {

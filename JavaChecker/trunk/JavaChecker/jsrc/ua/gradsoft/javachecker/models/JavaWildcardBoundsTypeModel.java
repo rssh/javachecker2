@@ -154,11 +154,11 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
       { return false; }
     
     /**
-     *throw NotSupportedException
+     *@return null
      */    
-    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel()  
     {
-         throw new NotSupportedException();
+        return null;
     }
       
       
@@ -214,16 +214,16 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
       
       
   /**
-   *throws NotSupportedException
+   *@return null
    */
-  public JavaTypeModel  getEnclosedType() throws NotSupportedException, TermWareException
-  { throw new NotSupportedException(); }
+  public JavaTypeModel  getEnclosedType() throws TermWareException
+  { return null; }
   
   /**
-   *throws NotSupportedException
+   *@return null;
    */
-  public JavaTypeModel  getReferencedType() throws NotSupportedException, TermWareException
-{ throw new NotSupportedException(); }          
+  public JavaTypeModel  getReferencedType() throws TermWareException
+  { return null; }
   
 
     
@@ -233,9 +233,9 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
         return false;
     }
     
-     public Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException
+     public Map<String, List<JavaMethodModel>>   getMethodModels() 
      {
-        throw new NotSupportedException(); 
+        return Collections.emptyMap();
      }
         
      public boolean hasMemberVariableModels()
@@ -243,9 +243,9 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
         return false; 
      }
   
-      public Map<String, JavaMemberVariableModel> getMemberVariableModels() throws NotSupportedException
+      public Map<String, JavaMemberVariableModel> getMemberVariableModels() 
       {
-        throw new NotSupportedException(); 
+        return Collections.emptyMap();
       }
       
       public List<JavaConstructorModel>  getConstructorModels()
@@ -254,8 +254,8 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
       public List<JavaInitializerModel> getInitializerModels()
       { return Collections.emptyList(); }
       
-    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
-        throw new NotSupportedException();         
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels() {
+        return null;
     }
       
     
@@ -268,10 +268,11 @@ public class JavaWildcardBoundsTypeModel extends JavaTypeModel {
       {
         return false;
       }
-  
-      public Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException, TermWareException
+
+      @Override
+      public Map<String,JavaTypeModel> getNestedTypeModels() 
       {
-         throw new NotSupportedException();
+         return Collections.emptyMap();
       }
     
     

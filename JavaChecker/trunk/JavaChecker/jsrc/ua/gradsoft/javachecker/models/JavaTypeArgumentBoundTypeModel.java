@@ -204,11 +204,11 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
     public boolean isUnknown() {
         return origin_.isUnknown(); }
     
-    public JavaTypeModel  getEnclosedType() throws NotSupportedException, TermWareException {
+    public JavaTypeModel  getEnclosedType() throws TermWareException {
         return getSubstitution().substitute(origin_.getEnclosedType());
     }
     
-    public JavaTypeModel  getReferencedType() throws NotSupportedException, TermWareException {
+    public JavaTypeModel  getReferencedType() throws TermWareException {
         return getSubstitution().substitute(origin_.getReferencedType());
     }
     
@@ -216,7 +216,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         return origin_.hasMethodModels();
     }        
     
-    public  Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException {
+    public  Map<String, List<JavaMethodModel>>   getMethodModels() {
         if (boundMethodModels_!=null) {
             return boundMethodModels_;
         }
@@ -233,11 +233,12 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         return retval;
     }
     
-    
+    @Override
     public boolean hasMemberVariableModels() {
         return origin_.hasMemberVariableModels(); }
-    
-    public Map<String, JavaMemberVariableModel> getMemberVariableModels() throws NotSupportedException {
+
+    @Override
+    public Map<String, JavaMemberVariableModel> getMemberVariableModels() {
         if (boundMemberVariables_!=null) {
             return boundMemberVariables_;
         }
@@ -271,16 +272,16 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         }    );            
     }
     
-    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels() 
     {
       return origin_.getEnumConstantModels();
     }    
     
     /**
-     *if this is annotation - get DefaultAnnotationInstance, otherwise - throws NotSupportedException.
+     *if this is annotation - get DefaultAnnotationInstance, otherwise - return null
      *In our case emulate behaviour of origin.
      */    
-    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException, TermWareException, EntityNotFoundException 
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws TermWareException, EntityNotFoundException 
     {
          return origin_.getDefaultAnnotationInstanceModel();
     }
@@ -295,7 +296,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         return origin_.hasNestedTypeModels();
     }
     
-    public Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException, TermWareException {
+    public Map<String,JavaTypeModel> getNestedTypeModels() throws TermWareException {
         //System.err.println("getNestedTypeModels for "+this.getName());
         if (boundNestedTypeModels_==null) {
           Map<String,JavaTypeModel> retval = new TreeMap<String,JavaTypeModel>();
@@ -342,7 +343,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
         return resolvedTypeArguments_;
     }
     
-    public JavaTypeModel  getSuperClass() throws TermWareException, NotSupportedException, EntityNotFoundException
+    public JavaTypeModel  getSuperClass() throws TermWareException, EntityNotFoundException
     {
       if (boundSuperClassModel_==null)  {
           boundSuperClassModel_=getSubstitution().substitute(origin_.getSuperClass());
@@ -350,7 +351,7 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
       return boundSuperClassModel_;
     }
     
-    public List<JavaTypeModel> getSuperInterfaces() throws TermWareException, NotSupportedException
+    public List<JavaTypeModel> getSuperInterfaces() throws TermWareException
     {
       if (boundSuperInterfacesModels_==null) {
           boundSuperInterfacesModels_=getSubstitution().substitute(origin_.getSuperInterfaces());
@@ -367,18 +368,21 @@ public class JavaTypeArgumentBoundTypeModel extends JavaTypeModel {
    public JavaStatementModel  getEnclosedStatement()
    { return origin_.getEnclosedStatement(); }
     
-   
+
+   @Override
    public boolean hasAnnotation(String annotationName) throws TermWareException
    {
        return origin_.hasAnnotation(annotationName);
    }
-   
-    public JavaAnnotationInstanceModel getAnnotation(String annotationName) throws NotSupportedException, TermWareException {
+
+   @Override
+    public JavaAnnotationInstanceModel getAnnotation(String annotationName) throws TermWareException {
         return origin_.getAnnotation(annotationName);
     }
 
-   
-    public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap() throws TermWareException
+
+   @Override
+   public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap() throws TermWareException
     {
         return origin_.getAnnotationsMap();
     }

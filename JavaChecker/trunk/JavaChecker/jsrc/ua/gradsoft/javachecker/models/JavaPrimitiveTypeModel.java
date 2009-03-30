@@ -111,7 +111,7 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
     public boolean isWildcardBounds() {
         return false; }
     
-    public JavaTypeModel  getEnclosedType() throws NotSupportedException {
+    public JavaTypeModel  getEnclosedType() {
         return null; }
     
     public boolean isArray() {
@@ -127,18 +127,19 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
     public JavaStatementModel  getEnclosedStatement()
     { return null; }
     
-    public JavaTypeModel  getReferencedType() throws NotSupportedException {
-        throw new NotSupportedException(); }
+    public JavaTypeModel  getReferencedType() {
+        return null;
+    }
     
     
     public boolean hasMethodModels() {
         return false; }
     
     /**
-     * key of return values is name of methods.
+     *@return empty map.
      */
-    public Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException {
-        throw new NotSupportedException();
+    public Map<String, List<JavaMethodModel>>   getMethodModels() {
+        return Collections.emptyMap();
     }
     
     
@@ -146,20 +147,20 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
         return false;
     }
     
-    public Map<String, JavaMemberVariableModel> getMemberVariableModels() throws NotSupportedException {
-        throw new NotSupportedException();
+    public Map<String, JavaMemberVariableModel> getMemberVariableModels() {
+        return Collections.emptyMap();
     }
 
-    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
-        throw new NotSupportedException();
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels() {
+       return Collections.emptyMap();
     }
     
     /**
-     *throw NotSupportedException
+     *@return null
      */    
-    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel()  
     {
-         throw new NotSupportedException();
+        return null;
     }
         
     
@@ -176,14 +177,16 @@ public class JavaPrimitiveTypeModel extends JavaTypeModel {
     public boolean hasNestedTypeModels() {
         return false; }
     
-    public Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException {
-        throw new NotSupportedException(); }
+    public Map<String,JavaTypeModel> getNestedTypeModels() {
+        return Collections.emptyMap();
+    }
     
     public boolean hasTypeParameters() {
         return false; }
     
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() {
-        return Collections.emptyList(); }
+        return Collections.emptyList();
+    }
 
     public JavaTypeModel getSuperClass()
     { return JavaNullTypeModel.INSTANCE; }

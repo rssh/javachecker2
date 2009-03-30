@@ -6,11 +6,11 @@
 
 package ua.gradsoft.javachecker.models;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
-import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
@@ -145,10 +145,10 @@ public  class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
         return false; }
 
     /**
-     *throw NotSupportedException
+     *@return empty map.
      */
-    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
-        throw new NotSupportedException();
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels() {
+        return Collections.emptyMap();
     }
         
     /**
@@ -158,11 +158,11 @@ public  class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
         return false; }
 
     /**
-     *throw NotSupportedException
+     *@return null
      */    
-    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel()  
     {
-         throw new NotSupportedException();
+         return null;
     }
     
     /**

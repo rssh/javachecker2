@@ -115,12 +115,9 @@ public class JavaTermAnnotationMethodModel extends JavaMethodModel
     public JavaExpressionModel getDefaultValue() throws TermWareException, EntityNotFoundException
     {
        if (!defaultValueTerm_.isNil()) { 
-         try {  
-           JavaTypeModel owner = getTypeModel();  
-           return JavaTermExpressionModel.create(defaultValueTerm_.getSubtermAt(0),null,owner,owner.getDefaultAnnotationInstanceModel(),getName()); 
-         }catch(NotSupportedException ex){
-             throw new AssertException("owner of annotation field model does not support getDefaultAnnotationInstanceModel",ex);
-         }
+           JavaTypeModel owner = getTypeModel();
+           JavaAnnotationInstanceModel aim = owner.getDefaultAnnotationInstanceModel();
+           return JavaTermExpressionModel.create(defaultValueTerm_.getSubtermAt(0),null,owner,owner.getDefaultAnnotationInstanceModel(),getName());
        }else{
          return null;  
        }

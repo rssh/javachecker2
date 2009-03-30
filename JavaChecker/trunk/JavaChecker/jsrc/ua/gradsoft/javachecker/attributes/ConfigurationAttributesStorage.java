@@ -323,8 +323,9 @@ public class ConfigurationAttributesStorage {
         }catch(EntityNotFoundException ex){
             ex.setFileAndLine(JUtils.getFileAndLine(dcl));
             throw ex;
-        }catch(NotSupportedException ex){
-            methodModels = Collections.emptyList();
+        }
+        if (methodModels==null) {
+            methodModels=Collections.emptyList();
         }
         
         JavaMethodModel foundMethod=null;

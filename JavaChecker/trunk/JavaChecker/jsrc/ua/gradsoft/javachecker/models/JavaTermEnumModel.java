@@ -67,11 +67,11 @@ public class JavaTermEnumModel extends JavaTermTypeAbstractModel {
     }
     
     /**
-     *throw NotSupportedException
+     *@return null
      */    
-    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel()  
     {
-         throw new NotSupportedException();
+        return null;
     }    
 
     public JavaTermExpressionModel getDefaultInitializerExpression() throws TermWareException

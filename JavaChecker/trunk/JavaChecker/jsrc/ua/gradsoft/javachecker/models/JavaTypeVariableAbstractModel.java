@@ -66,11 +66,11 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     { return false; }
     
     /**
-     *throw NotSupportedException
+     *@return null;
      */    
-    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() 
     {
-         throw new NotSupportedException();
+        return null;
     }
 
     public JavaTermExpressionModel getDefaultInitializerExpression() throws TermWareException
@@ -99,17 +99,16 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     { return true; }
     
     /**
-     * throws NotSupportedException
+     *@return null;
      */
-    public JavaTypeModel  getEnclosedType() throws NotSupportedException
-    { throw new NotSupportedException(); }
+    public JavaTypeModel  getEnclosedType()
+    { return null; }
     
     /**
-     *@return referenced type. Works only if isArray()==true, otherwise
-     *throws NotSupportedException
+     *@return null
      */
-    public JavaTypeModel  getReferencedType() throws NotSupportedException
-    { throw new NotSupportedException(); }
+    public JavaTypeModel  getReferencedType() 
+    { return null; }
     
     
     public JavaTypeModel getSuperClass()
@@ -126,7 +125,7 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     /**
      *@return empty map;
      */
-    public Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException {
+    public Map<String, List<JavaMethodModel>>   getMethodModels() {
         return Collections.emptyMap();
     }
     
@@ -134,14 +133,15 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     public boolean hasMemberVariableModels() {
         return false; }
     
-    public Map<String, JavaMemberVariableModel> getMemberVariableModels() throws NotSupportedException {
-        throw new NotSupportedException(); }
+    public Map<String, JavaMemberVariableModel> getMemberVariableModels() {
+        return Collections.emptyMap();
+    }
 
     /**
-     * throws NotSupportedException
+     *@return empty map
      */
-    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
-        throw new NotSupportedException();
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels() {
+        return Collections.emptyMap();
     }
        
     
@@ -161,8 +161,8 @@ public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     public JavaStatementModel getEnclosedStatement()
     { return null; }
     
-    public Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException, TermWareException {
-        throw new NotSupportedException();
+    public Map<String,JavaTypeModel> getNestedTypeModels() throws TermWareException {
+        return Collections.emptyMap();
     }
     
     

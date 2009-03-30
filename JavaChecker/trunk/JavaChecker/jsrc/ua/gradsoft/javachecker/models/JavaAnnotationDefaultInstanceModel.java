@@ -54,12 +54,8 @@ public class JavaAnnotationDefaultInstanceModel extends JavaAnnotationInstanceMo
     {
         if (elements_==null) {
             elements_=new TreeMap<String,JavaExpressionModel>();            
-            Map<String,List<JavaMethodModel> > methods = null;
-            try {
-               methods=annotationType_.getMethodModels();
-            }catch(NotSupportedException ex){
-                throw new AssertException("annotationType_"+annotationType_.getFullName()+" must support quiering of methods");
-            }
+            Map<String,List<JavaMethodModel> > methods = null;           
+            methods=annotationType_.getMethodModels();
             for(List<JavaMethodModel> lms:methods.values()) {
                 for(JavaMethodModel m: lms) {
                     if (m.hasDefaultValue()) {

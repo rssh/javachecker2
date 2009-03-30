@@ -62,7 +62,6 @@ public class NamePatternsChecker extends JavaTypeModelOnePassProcessor {
                 checkMemberVariableNamePatterns((JavaTermMemberVariableModel)v,facts);
             }
         }
-        try {
             for(List<JavaMethodModel> lm: ttm.getMethodModels().values()) {
                 for(JavaMethodModel m: lm) {
                     if (m instanceof JavaTermMethodModel) {
@@ -74,10 +73,6 @@ public class NamePatternsChecker extends JavaTypeModelOnePassProcessor {
                     }
                 }
             }
-        }catch(NotSupportedException ex){
-            // this means, that target type has not method models. do nothing.
-            ;
-        }
     }
     
     public void configure(JavaFacts facts) throws ConfigException, TermWareException {

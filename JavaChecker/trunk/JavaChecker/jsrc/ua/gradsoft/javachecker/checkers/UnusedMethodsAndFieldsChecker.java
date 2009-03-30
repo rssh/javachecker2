@@ -85,12 +85,7 @@ public class UnusedMethodsAndFieldsChecker extends JavaTypeModelOnePassProcessor
          }
      }
      Collection<List<JavaMethodModel>> mss = Collections.emptyList();
-     try {
-         mss=typeModel.getMethodModels().values();
-     }catch(NotSupportedException ex){
-         /* nothing */
-         ;
-     }
+     mss=typeModel.getMethodModels().values();
      for(List<JavaMethodModel> ms: mss) {
          for(JavaMethodModel m: ms) {
              if (m.isSupportBlockModel()) {
@@ -197,13 +192,8 @@ public class UnusedMethodsAndFieldsChecker extends JavaTypeModelOnePassProcessor
    public void printUnused(JavaTypeModel typeModel, JavaFacts facts) throws TermWareException, EntityNotFoundException
    {
        Collection<List<JavaMethodModel>> mmss = Collections.emptyList();
-       try {
-          mmss = typeModel.getMethodModels().values();
-       }catch(NotSupportedException ex){
-           ;
-       }
-             
-       
+       mmss = typeModel.getMethodModels().values();
+                    
        for(List<JavaMethodModel> mms: mmss) {
            for(JavaMethodModel mm: mms) {
                if (mm.getModifiers().isPrivate()) {                   
@@ -223,11 +213,7 @@ public class UnusedMethodsAndFieldsChecker extends JavaTypeModelOnePassProcessor
        }
        
        Collection<JavaMemberVariableModel> vs = Collections.emptyList();
-       try {
-           vs=typeModel.getMemberVariableModels().values();
-       }catch(NotSupportedException ex){
-           ; /* do nothing */
-       }
+       vs=typeModel.getMemberVariableModels().values();
        
        for(JavaMemberVariableModel v: vs) {
            if (v.getModifiers().isPrivate()) {

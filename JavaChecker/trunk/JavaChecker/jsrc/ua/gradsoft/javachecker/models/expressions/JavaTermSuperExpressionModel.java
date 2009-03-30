@@ -42,11 +42,7 @@ public class JavaTermSuperExpressionModel extends JavaTermExpressionModel
     
     public JavaTypeModel getType() throws TermWareException, EntityNotFoundException
     { 
-      try {
-        return subexpression_.getType().getSuperClass(); 
-      }catch(NotSupportedException ex){
-          throw new InvalidJavaTermException("super call of type without superclassing",t_);
-      }
+      return subexpression_.getType().getSuperClass(); 
     }
     
     public boolean isType()

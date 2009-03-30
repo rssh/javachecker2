@@ -217,11 +217,10 @@ public class JavaResolver {
                 String name=ct.getSubtermAt(0).getString();
                 //TODO: think about typeArguments among classOrInterfaceType ?
                 if (curModel.hasNestedTypeModels()) {
-                    try {
                         curModel=curModel.findNestedTypeModel(name);
-                    }catch(NotSupportedException ex){
-                        throw new AssertException("impossible, hasNestedTypeMopdels but getNestedTypeModels throws NotSupported");
-                    }
+                        if (curModel==null) {
+                            throw new EntityNotFoundException("type",t.getSubtermAt(0).getName(),"");
+                        }
                 }else{
                     if (printDetails) {
                         System.err.println("failed resolveRestOfCalssAndInterfaceType");
@@ -320,8 +319,6 @@ public class JavaResolver {
             }catch(EntityNotFoundException ex){
                 
                 ; /* do nothing */
-            }catch(NotSupportedException ex){
-                ; /* do nothing */
             }
             //System.err.println("failed");
         }
@@ -335,8 +332,6 @@ public class JavaResolver {
                     return enclosed.getEnclosedType().findNestedTypeModel(name);
                 }catch(EntityNotFoundException ex){
                     ; /* do nothing */
-                }catch(NotSupportedException ex){
-                    ; /* do nothing */
                 }
                 // or may be this is type parameter of enclosed ?
                 if (enclosed.hasTypeParameters()) {
@@ -348,12 +343,8 @@ public class JavaResolver {
                 }
                 
                 
-                try {
-                    enclosed=enclosed.getEnclosedType();
-                }catch(NotSupportedException ex){
-                    // impossible, becouse encloused is nested.
-                    throw new AssertException("getEnclosedType is not supported, when type is nested");
-                }
+              
+                enclosed=enclosed.getEnclosedType();
                 
                 // and try to resolve one in enclosed.
                 try {
@@ -370,11 +361,7 @@ public class JavaResolver {
         
         //3. try to find as nested in super-class
         JavaTypeModel superModel = null;
-        try {
-            superModel = where.getSuperClass();
-        }catch(NotSupportedException ex) {
-            ;
-        }
+        superModel = where.getSuperClass();
         if (superModel!=null) {
             
             while(!superModel.isNull()
@@ -387,47 +374,36 @@ public class JavaResolver {
                             LOG.log(Level.INFO,"try to find as nested in "+superModel.getFullName());
                         }
                         JavaTypeModel retval = superModel.findNestedTypeModel(name);
-                        if (printDetails) {
+                        if (retval!=null) {
+                          if (printDetails) {
                             LOG.log(Level.INFO,"found "+retval.getFullName());
+                          }
+                          return retval;
                         }
-                        return retval;
                     }catch(EntityNotFoundException ex){
                         if (printDetails) {
                             LOG.log(Level.INFO,"not here");
                         }
-                        ;
-                    }catch(NotSupportedException ex){
-                        ;
                     }
                 }
-                try {
-                    superModel=superModel.getSuperClass();
-                }catch(NotSupportedException ex){
-                    break;
-                }
+                superModel=superModel.getSuperClass();
+                if (superModel==null) break;
             }
         }
         
         //or in all supers, include super-interfaces
         //System.err.println("!!!check for nested types of interfaces "+name+" in "+where.getName());
         LinkedList<JavaTypeModel> allSupers=new LinkedList<JavaTypeModel>();
-        try {
-            allSupers.addAll(where.getSuperInterfaces());
-        }catch(NotSupportedException ex){
-            ;
-        }       
-        try {
-            superModel = where.getSuperClass();
+        allSupers.addAll(where.getSuperInterfaces());
+        superModel = where.getSuperClass();
+        if (superModel!=null) {
             allSupers.add(superModel);
-        }catch(NotSupportedException ex) {
-            ;
         }
         
         while(!allSupers.isEmpty()) {
             JavaTypeModel curr = allSupers.removeFirst();
             if (curr.hasNestedTypeModels()) {
-                try {
-                    
+                try {                    
                     JavaTypeModel retval = curr.findNestedTypeModel(name);
                     if (printDetails) {
                         LOG.log(Level.INFO,"found "+retval.getFullName()+" in "+where.getName());
@@ -435,40 +411,23 @@ public class JavaResolver {
                     return retval;
                 }catch(EntityNotFoundException ex){
                     ;
-                }catch(NotSupportedException ex){
-                    ;
                 }
                 if (printDetails) {
                     LOG.log(Level.INFO,"failed search of "+name+" as nested in "+curr.getName());
                 }
             }
-            try {
-                allSupers.addAll(curr.getSuperInterfaces());
-            }catch(NotSupportedException ex){
-                ;
-            }
+            allSupers.addAll(curr.getSuperInterfaces());
             
             if (curr.isClass()) {
-                try {
                    superModel = curr.getSuperClass(); 
-                   if (!superModel.isNull()) {
+                   if (superModel!=null && !superModel.isNull()) {
                        allSupers.add(superModel);
-                   }
-                }catch(NotSupportedException ex){
-                    // impossible
-                    ;
-                }
-                
+                   }                
             }
                                                     
             if (curr.isNested()) {
                 // add nested type.
-                try {
-                    allSupers.add(curr.getEnclosedType());
-                }catch(NotSupportedException ex){
-                    // impossible, do nothing.
-                    ;
-                }
+                allSupers.add(curr.getEnclosedType());
             }
         }
         
@@ -592,9 +551,6 @@ public class JavaResolver {
                 }catch(EntityNotFoundException ex){
                     // Hmm, this was method with same name ?
                     ;
-                }catch(NotSupportedException ex){
-                    // near impossible.
-                    ;
                 }
                    
                 
@@ -639,9 +595,6 @@ public class JavaResolver {
                        }catch(EntityNotFoundException ex){
                            /* do nothing */
                            ;
-                       }catch(NotSupportedException ex){
-                           /* strange, but skip */
-                           ; 
                        }
                    }
                 }else{                    
@@ -675,8 +628,6 @@ public class JavaResolver {
                         try {
                             retval = importedType.findNestedTypeModel(name);
                         }catch(EntityNotFoundException ex){
-                            ;
-                        }catch(NotSupportedException ex){
                             ;
                         }
                         if (retval!=null) {
@@ -713,9 +664,6 @@ public class JavaResolver {
                     }catch(EntityNotFoundException ex){
                       //
                         continue;
-                    }catch(NotSupportedException ex){
-                        // impossible.
-                        ;
                     }
                   }
                 }
@@ -856,11 +804,11 @@ public class JavaResolver {
             }catch(EntityNotFoundException ex){
                 // this can be request to nested class.
                 JavaTypeModel enclosingModel = resolveTypeModelByFullClassName(packageName);
-                try {
-                    return enclosingModel.findNestedTypeModel(className);
-                }catch(NotSupportedException ex1){
+                JavaTypeModel retval = enclosingModel.findNestedTypeModel(className);
+                if (retval==null) {
                     throw new EntityNotFoundException("type",name,"");
                 }
+                return retval;
             }
         }else{
             throw new EntityNotFoundException("type",name,"");
@@ -895,35 +843,17 @@ public class JavaResolver {
             }catch(EntityNotFoundException ex){
                 // ignore
                 ;
-            }catch(NotSupportedException ex){
-                // ignore
-                ;
             }
-            try {
                 JavaTypeModel checkedSuperClass = checked.getSuperClass();
                 if (!checkedSuperClass.isNull()) {
                     toCheck.addFirst(checkedSuperClass);
                 }
-            }catch(NotSupportedException ex){
-                //do nothing.
-                ;
-            }
-            try {
                 List<JavaTypeModel> checkedSuperInterfaces = checked.getSuperInterfaces();
                 for(JavaTypeModel si: checkedSuperInterfaces) {
                     toCheck.addFirst(si);
                 }
-            }catch(NotSupportedException ex){
-                //do nothing
-                ;
-            }
             if (checked.isNested()) {
-                try {
-                    toCheck.add(checked.getEnclosedType());
-                }catch(NotSupportedException ex){
-                    /*impossible ignore */
-                    ;
-                }
+                toCheck.add(checked.getEnclosedType());
             }
         }
         if (printDetails) {
@@ -988,10 +918,8 @@ public class JavaResolver {
                     LOG.log(Level.INFO,"is nested but enclosed statement is null");
                 }
             }
-            try {
-                currWhere=currWhere.getEnclosedType();
-            }catch(NotSupportedException ex){
-                // impossible, nested means exists enclosed type;
+            currWhere=currWhere.getEnclosedType();
+            if (currWhere==null) {
                 break;
             }
         }
@@ -1219,12 +1147,6 @@ public class JavaResolver {
                 if (printDetails) {
                     LOG.log(Level.INFO,"not found in "+currWhere.getFullName());
                 }
-            }catch(NotSupportedException ex) {
-                // try to search in primitive type.
-                // impossible, we can ignore one here
-                if (printDetails) {
-                    LOG.log(Level.INFO,"NotSupported in "+currWhere.getFullName());
-                }
             }
             if (candidates!=null) {
                 int nArguments=argumentTypes.size();
@@ -1272,29 +1194,19 @@ public class JavaResolver {
             }
             // if we here, than nothing found here, try supers
             if (!currWhere.isNull() && !(currWhere.isEnum() && currWhere.getFullName().equals("java.lang.Enum"))) {
-                try {        
                     JavaTypeModel currSuper = currWhere.getSuperClass();
                     if (currSuper!=null) {
                        toCheck.add(new Pair<JavaTypeModel,Integer>(currWhere.getSuperClass(),nSupers+1));
                     }else{
                         throw new AssertException("super for "+currWhere.getFullName()+" is null");
                     }
-                }catch(NotSupportedException ex){
-                    // impossible,
-                    ;
-                }
             }
             if(true /*currWhere.isInterface()||currWhere.getModifiers().isAbstract()*/) {
-                try {
                     List<JavaTypeModel> interfaces = currWhere.getSuperInterfaces(); 
                     int nextNSupers=nSupers+1;
                     for(JavaTypeModel si: interfaces) {
                       toCheck.add(new Pair<JavaTypeModel,Integer>(si,nextNSupers));
                     }
-                }catch(NotSupportedException ex){
-                    //  ignore
-                    ;
-                }
             }
             if (currWhere.isTypeVariable()) {
                 JavaTypeVariableAbstractModel tmaWhere = (JavaTypeVariableAbstractModel)currWhere;
@@ -1324,20 +1236,14 @@ public class JavaResolver {
             
             //then may be this is a method of enclosing class ?
             if (currWhere.isNested()) {
-                try {
                     JavaTypeModel enclosed = currWhere.getEnclosedType();
                     if (enclosed!=null) {
                        toCheck.addLast(new Pair<JavaTypeModel,Integer>(enclosed,nSupers));
                     }else{
                         throw new AssertException("class "+currWhere.getFullName()+" is nested, but enclosed class is null");
                     }
-                }catch(NotSupportedException ex){
-                    ;
-                    //impossible, ignore.
-                }
             }
-            
-            
+                        
         }
         
         //see static import
@@ -1367,9 +1273,6 @@ public class JavaResolver {
                     try{
                         ml=importedType.findMethodModels(methodName);
                     }catch(EntityNotFoundException ex){
-                        // invalid model, ignore
-                        ;
-                    }catch(NotSupportedException ex){
                         // invalid model, ignore
                         ;
                     }
@@ -1407,8 +1310,6 @@ public class JavaResolver {
                      ml = importedType.findMethodModels(methodName);
                     }catch(EntityNotFoundException ex){
                         continue;                        
-                    }catch(NotSupportedException ex){
-                        continue;
                     }
                     if (ml!=null) {
                         for(JavaMethodModel m: ml) {
@@ -1609,11 +1510,7 @@ public class JavaResolver {
             retval=true;
         }else if (pattern.isArray()) {
             if (x.isArray()) {
-               try { 
                 retval=match1(pattern.getReferencedType(),x.getReferencedType(),cn,debug);
-               }catch(NotSupportedException ex){
-                   throw new TermWareRuntimeException(ex);
-               }
             }else{
                 retval=false;
             }
@@ -1678,11 +1575,10 @@ public class JavaResolver {
                 x=xit.next();
                 if ((forseVarArgs && p.getModifiers().isVarArgs()) || !match(p.getType(),x,conversions,debug)) {
                     if (p.getModifiers().isVarArgs()) {
-                        try {
-                            varArgPattern=p.getType().getReferencedType();
-                        }catch(NotSupportedException ex){
+                        if (!p.getType().isArray()) {
                             throw new AssertException("VarArgs parameter must be array");
                         }
+                        varArgPattern=p.getType().getReferencedType();
                         inVarArg=true;
                         conversions.setVarArg(true);
                         getNextX=false;
@@ -1703,11 +1599,7 @@ public class JavaResolver {
                     if (!match(varArgPattern,x,conversions,debug)) {
                         if (x.isArray()) {
                             JavaTypeModel x1;
-                            try {
-                                x1=x.getReferencedType();
-                            }catch(NotSupportedException ex){
-                                throw new AssertException("getReferencedType on Array is unsupported");
-                            }
+                            x1=x.getReferencedType();
                             if (match(varArgPattern,x1,conversions,debug)) {
                                 // ... matched with array
                                 inVarArg=false;

@@ -34,11 +34,11 @@ public class JavaTermEnumAnonimousTypeModel extends JavaTermTypeAbstractModel
     }
         
     /**
-     *throw NotSupportedException
+     *@return null
      */    
-    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() 
     {
-         throw new NotSupportedException();
+         return null;
     }
     
     public boolean isClass() {
@@ -75,7 +75,7 @@ public class JavaTermEnumAnonimousTypeModel extends JavaTermTypeAbstractModel
     }        
 
 
-    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels() {
         return getEnclosedType().getEnumConstantModels();
     }
     

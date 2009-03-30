@@ -103,15 +103,16 @@ public final class JavaNullTypeModel extends JavaTypeModel {
     
     public JavaStatementModel  getEnclosedStatement()
     { return null; }
-    
-    public JavaTypeModel  getEnclosedType() throws NotSupportedException
-    { throw new NotSupportedException(); }
+
+
+    public JavaTypeModel  getEnclosedType() 
+    { return null; }
     
     /**
-     *throws NotSupportedException
+     *@return null
      */
-    public JavaTypeModel  getReferencedType() throws NotSupportedException
-    { throw new NotSupportedException(); }
+    public JavaTypeModel  getReferencedType() 
+    { return null; }
     
     
     /**
@@ -121,11 +122,11 @@ public final class JavaNullTypeModel extends JavaTypeModel {
     { return false; }
     
     /**
-     * throws NotSupportedException
+     *@return empty map
      */
-    public Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException
+    public Map<String, List<JavaMethodModel>>   getMethodModels() 
     {
-        throw new NotSupportedException();
+       return Collections.emptyMap();
     }
     
     
@@ -135,9 +136,9 @@ public final class JavaNullTypeModel extends JavaTypeModel {
       return false;  
     }
     
-    public Map<String, JavaMemberVariableModel> getMemberVariableModels() throws NotSupportedException
+    public Map<String, JavaMemberVariableModel> getMemberVariableModels()
     {
-        throw new NotSupportedException();
+       return Collections.emptyMap();
     }
     
     
@@ -148,23 +149,23 @@ public final class JavaNullTypeModel extends JavaTypeModel {
     { return false; }
 
     /**
-     * throw NotSupportedException
+     *@return empty map.
      */ 
-    public Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException
+    public Map<String,JavaTypeModel> getNestedTypeModels() 
     {
-      throw new NotSupportedException();  
+      return Collections.emptyMap();
     }
 
-    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
-        throw new NotSupportedException();  
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels() {
+        return Collections.emptyMap();
     }
     
     /**
-     *throw NotSupportedException
+     *@return null;
      */    
-    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException 
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() 
     {
-         throw new NotSupportedException();
+        return null;
     }
         
     

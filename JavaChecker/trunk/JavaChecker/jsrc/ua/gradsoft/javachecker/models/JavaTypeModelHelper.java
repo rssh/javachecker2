@@ -165,8 +165,6 @@ public class JavaTypeModelHelper {
                             try {
                                 cn.incrementNNarrows();
                                 retval=subtypeOrSame(t.getSuperClass(),s,cn,freeTypeArguments,debug);
-                            }catch(NotSupportedException ex){
-                                retval=false;
                             }catch(EntityNotFoundException ex){
                                 throw new InvalidJavaTermException(ex.getMessage(),ex.getFileAndLine(),ex);
                             }
@@ -196,13 +194,10 @@ public class JavaTypeModelHelper {
                             }
                         }catch(EntityNotFoundException ex){
                             throw new InvalidJavaTermException(ex.getMessage(),ex.getFileAndLine(),ex);
-                        }catch(NotSupportedException ex){
-                            return false;
                         }
                     }
                 }
             }else if (s.isInterface()) {
-                try {
                     // s is interface.
                     List<JavaTypeModel> tds=t.getSuperInterfaces();
                     for(JavaTypeModel td: tds) {
@@ -215,13 +210,7 @@ public class JavaTypeModelHelper {
                             return true;
                         }
                     }
-                }catch(NotSupportedException ex){
-                    if (debug) {
-                        LOG.log(Level.INFO,"subtypeOrSame result "+false);
-                    }
-                    return false;
-                }
-                try {
+                try{
                     cn.incrementNNarrows();
                     JavaTypeModel td = t.getSuperClass();
                     if (td!=null && !td.isNull()) {
@@ -234,8 +223,6 @@ public class JavaTypeModelHelper {
                         }
                         return retval;
                     }
-                }catch(NotSupportedException ex){
-                    retval=false;
                 }catch(EntityNotFoundException ex){
                     throw new InvalidJavaTermException(ex.getMessage(),ex.getFileAndLine(),ex);
                 }
@@ -251,7 +238,6 @@ public class JavaTypeModelHelper {
                 if (samePrimaryName(t,s)) {
                     retval=subtypeOrSameWithSameName(t,s,cn,freeTypeArguments,debug);
                 }else{
-                    try {
                         for(JavaTypeModel td : t.getSuperInterfaces()) {
                             if (subtypeOrSame(td,s,cn,freeTypeArguments,debug)) {
                                 if (debug) {
@@ -263,21 +249,13 @@ public class JavaTypeModelHelper {
                             }
                         }
                         retval=false;
-                    }catch(NotSupportedException ex){
-                        retval=false;
-                    }
                 }
             }else{
                 retval=false;
             }
         }else if(t.isArray()){
             if (s.isArray()) {
-                try {
-                    retval=subtypeOrSame(t.getReferencedType(),s.getReferencedType(),cn,freeTypeArguments,debug);
-                }catch(NotSupportedException ex){
-                    // impossible.
-                    retval=false;
-                }
+                retval=subtypeOrSame(t.getReferencedType(),s.getReferencedType(),cn,freeTypeArguments,debug);
             }else if (s.isClass()) {
                 retval=same(s,JavaResolver.resolveJavaLangObject());
             }else if (s.isInterface()){
@@ -298,21 +276,13 @@ public class JavaTypeModelHelper {
                 JavaTypeModel tEnclosed=null;
                 JavaTypeModel sEnclosed=null;
                 if (t.isNested()) {
-                    try {
-                        tEnclosed=t.getEnclosedType();
-                    }catch(NotSupportedException ex){
-                        throw new AssertException("isNested but getEnclosedType not supported ",ex);
-                    }
+                    tEnclosed=t.getEnclosedType();
                     if (tEnclosed.isEnum()) {
                         tIsEnumConstant=true;
                     }
                 }
                 if (s.isNested()) {
-                    try {
-                        sEnclosed=s.getEnclosedType();
-                    }catch(NotSupportedException ex){
-                        throw new AssertException("isNested but getEnclosedType not supported ",ex);
-                    }
+                    sEnclosed=s.getEnclosedType();
                     if (sEnclosed.isEnum()) {
                         sIsEnumConstant=true;
                     }
@@ -343,7 +313,6 @@ public class JavaTypeModelHelper {
                 if (debug) {
                     LOG.info("s is interface");
                 }
-                try {
                     for(JavaTypeModel td: t.getSuperInterfaces()) {
                         if (subtypeOrSame(td,s,cn,freeTypeArguments,debug)) {
                             retval=true;
@@ -358,9 +327,6 @@ public class JavaTypeModelHelper {
                         }
                     }
                     retval=false;
-                }catch(NotSupportedException ex){
-                    retval=false;
-                }
             }else{
                 if (debug) {
                     LOG.info("s is not Enum, Class or Interface");
@@ -459,11 +425,7 @@ public class JavaTypeModelHelper {
         }else if (x.isInterface()){
             retval = y.isInterface() && sameNames(x,y);
         }else if (x.isArray()) {
-            try {
-                retval = y.isArray() && same(x.getReferencedType(),y.getReferencedType());
-            }catch(NotSupportedException ex){
-                retval = false;
-            }
+            retval = y.isArray() && same(x.getReferencedType(),y.getReferencedType());
         }else if (x.isAnnotationType()) {
             retval = y.isAnnotationType() && sameNames(x,y);
         }else if (x.isEnum()) {
@@ -739,23 +701,13 @@ public class JavaTypeModelHelper {
                        retval=current;
                        break;
                    }else{
-                       try {
-                         List<JavaTypeModel> interfaces = current.getSuperInterfaces();
-                         toCheck.addAll(interfaces);
-                       }catch(NotSupportedException ex){
-                           /* do nothing */
-                           ;
-                       }
+                       List<JavaTypeModel> interfaces = current.getSuperInterfaces();
+                       toCheck.addAll(interfaces);
                        if (!current.isEnum()) {
-                         try {  
                            JavaTypeModel superclass = current.getSuperClass();
-                           if (!superclass.isNull()) {
+                           if (superclass!=null && !superclass.isNull()) {
                               toCheck.addLast(superclass);
                            }
-                         }catch(NotSupportedException ex){
-                             /* do nothing */
-                             ;
-                         }
                        }
                    }                   
                } 
@@ -999,12 +951,7 @@ public class JavaTypeModelHelper {
     public static boolean sameNames(JavaTypeModel x,JavaTypeModel y) throws TermWareException {
         if (x.isNested()) {
             if (y.isNested()) {
-                try {
-                    return sameNames(x.getEnclosedType(),y.getEnclosedType()) && x.getName().equals(y.getName());
-                }catch(NotSupportedException ex){
-                    // impossible ?
-                    throw new AssertException("isNested true, but getEnclosedTypeIsNotSupported",ex);
-                }
+                 return sameNames(x.getEnclosedType(),y.getEnclosedType()) && x.getName().equals(y.getName());
             }else{
                 return false;
             }

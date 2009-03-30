@@ -48,8 +48,6 @@ public abstract class JavaTypeModel implements AttributedEntity
       if (isNested()) {
          try { 
             return getEnclosedType().getFullName()+"."+getName();
-         }catch(NotSupportedException ex){
-             return packageModel_.getName()+"."+getName();
          }catch(TermWareException ex){
              return packageModel_.getName()+".<error>."+getName();
          }
@@ -64,10 +62,12 @@ public abstract class JavaTypeModel implements AttributedEntity
   public String getErasedFullName()
   { 
       if (isNested()) {
-         try { 
-          return getEnclosedType().getErasedFullName()+"."+getErasedName();
-         }catch(NotSupportedException ex){
+         try {
+           if (getEnclosedType()==null) {
              return packageModel_.getName()+"."+getErasedName();
+           }else{
+             return getEnclosedType().getErasedFullName()+"."+getErasedName();
+           }
          }catch(TermWareException ex){
              return packageModel_.getName()+".<error>."+getErasedName();
          }
@@ -84,10 +84,12 @@ public abstract class JavaTypeModel implements AttributedEntity
   public String getCanonicalName()
   {
       if (isNested()) {
-         try { 
-          return getEnclosedType().getFullName()+"$"+getName();
-         }catch(NotSupportedException ex){
+         try{
+           if (getEnclosedType()==null) {
              return packageModel_.getName()+"$"+getName();
+           }else{
+             return getEnclosedType().getFullName()+"$"+getName();
+           }
          }catch(TermWareException ex){
              return packageModel_.getName()+"$<error>$"+getName();
          }
@@ -132,20 +134,20 @@ public abstract class JavaTypeModel implements AttributedEntity
    *get superclass.  
    *does not supported for primitive types, type arguments, wildcard bounds
    */
-  public abstract JavaTypeModel getSuperClass() throws NotSupportedException, TermWareException, EntityNotFoundException;
+  public abstract JavaTypeModel getSuperClass() throws TermWareException, EntityNotFoundException;
 
   /**
    *get all superinterfaces.  
    *does not supported for primitive types, type arguments, wildcard bounds, arrays.
    *@return all direct superinterfaces.
    */
-  public abstract List<JavaTypeModel> getSuperInterfaces() throws NotSupportedException, TermWareException;
+  public abstract List<JavaTypeModel> getSuperInterfaces() throws TermWareException;
   
   
   /**
    *return enclosed class
    */
-  public abstract JavaTypeModel  getEnclosedType() throws NotSupportedException, TermWareException;
+  public abstract JavaTypeModel  getEnclosedType() throws TermWareException;
   
   
   /**
@@ -159,10 +161,11 @@ public abstract class JavaTypeModel implements AttributedEntity
   public abstract boolean isAnonimous();
   
   /**
+   *Nullable
    *@return referenced type. Works only if isArray()==true, otherwise
-   *throws NotSupportedException
+   * return null.
    */
-  public abstract JavaTypeModel  getReferencedType() throws NotSupportedException, TermWareException;
+  public abstract JavaTypeModel  getReferencedType() throws TermWareException;
   
 
   /**
@@ -172,12 +175,12 @@ public abstract class JavaTypeModel implements AttributedEntity
     
   /**
    * key of return values are names of methods.  
-   *When type is unappropriative for methods (example - TypeVariable) throws NotSupportedException 
+   *When type is unappropriative for methods (example - TypeVariable) return empty map
    */
-  public abstract Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException;
+  public abstract Map<String, List<JavaMethodModel>>   getMethodModels();
     
   
-  public List<JavaMethodModel>  findMethodModels(String name) throws EntityNotFoundException, NotSupportedException
+  public List<JavaMethodModel>  findMethodModels(String name) throws EntityNotFoundException
   {
     List<JavaMethodModel> retval=getMethodModels().get(name);
     if (retval==null) {
@@ -190,12 +193,12 @@ public abstract class JavaTypeModel implements AttributedEntity
   
   /***
    * key of return values are names of member variables.
-   *When type is unappropriative for methods - throws NotSupportedException
+   *When type is unappropriative for methods - return empty map
    */
-  public abstract Map<String, JavaMemberVariableModel> getMemberVariableModels() throws NotSupportedException;
+  public abstract Map<String, JavaMemberVariableModel> getMemberVariableModels();
   
   
-  public JavaMemberVariableModel findMemberVariableModel(String name) throws EntityNotFoundException, NotSupportedException
+  public JavaMemberVariableModel findMemberVariableModel(String name) throws EntityNotFoundException
   {
     JavaMemberVariableModel retval=getMemberVariableModels().get(name);
     if (retval==null) {
@@ -217,16 +220,15 @@ public abstract class JavaTypeModel implements AttributedEntity
   
   /***
    * key of return values are names of enum constants.
-   *When type is not enum - throws NotSupportedException 
-   *TODO: change to return empty map ?
+   *When type is not enum - return empty map.
    */  
-  public abstract Map<String,JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException;
+  public abstract Map<String,JavaEnumConstantModel> getEnumConstantModels();
   
   
   /**
-   * if this is annotation, get annotation instance model, otherwise throw NotSupportedException
+   * if this is annotation, get annotation instance model, otherwise return null;
    */
-  public abstract JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException, TermWareException, EntityNotFoundException;
+  public abstract JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws TermWareException, EntityNotFoundException;
   
   
   /**
@@ -243,10 +245,10 @@ public abstract class JavaTypeModel implements AttributedEntity
   /**
    *@return set of nested types.
    */
-  public abstract Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException, TermWareException;
+  public abstract Map<String,JavaTypeModel> getNestedTypeModels() throws TermWareException;
  
   
-  public JavaTypeModel findNestedTypeModel(String name) throws EntityNotFoundException, NotSupportedException, TermWareException
+  public JavaTypeModel findNestedTypeModel(String name) throws EntityNotFoundException,  TermWareException
   {
     JavaTypeModel retval=getNestedTypeModels().get(name);
     if (retval==null) {
@@ -286,14 +288,11 @@ public abstract class JavaTypeModel implements AttributedEntity
   { return getAnnotationsMap().containsKey(annotationTypeName); }
   
   /**
-   *return annottation instance, if one exists. Otherwise - throws NotSupportedException
+   *return annottation instance, if one exists. Otherwise - null.
    */
-  public JavaAnnotationInstanceModel  getAnnotation(String annotationName) throws NotSupportedException, TermWareException
+  public JavaAnnotationInstanceModel  getAnnotation(String annotationName) throws TermWareException
   { 
      JavaAnnotationInstanceModel retval = getAnnotationsMap().get(annotationName);
-     if (retval==null) {
-         throw new NotSupportedException();
-     }
      return retval;
   }
  
@@ -360,10 +359,7 @@ public abstract class JavaTypeModel implements AttributedEntity
        }
        return attributes_;
      }
-  }
-  
-  
-  
+  }     
   
   public  JavaUnitModel  getUnitModel()
   { return unitModel_; }

@@ -39,11 +39,11 @@ public abstract class JavaAnnotationInstanceModel {
       try {  
         if (getAnnotationModel().hasAnnotation("RetentionPolicy")) {
             JavaAnnotationInstanceModel instance;
-            try {
-               instance=getAnnotationModel().getAnnotation("RetentionPolicy");
-            }catch(NotSupportedException ex){
-                throw new AssertException("Impossible",ex);
-            }
+            instance=getAnnotationModel().getAnnotation("RetentionPolicy");
+            if (instance==null) {
+                // impossible.
+                return null;
+            }            
             JavaExpressionModel expr;
             try {
               expr = instance.getElement("value");
@@ -80,7 +80,7 @@ public abstract class JavaAnnotationInstanceModel {
                 throw new AssertException("Invalid annotation expression:"+expr.getKind());
             }
         }else{
-            throw new AssertException("Mandatory annotation RetaintionPolicy is missing");
+            throw new AssertException("Mandatory annotation RetantionPolicy is missing");
         }  
       }catch(EntityNotFoundException ex){
           throw new AssertException(ex.getMessage(),ex);

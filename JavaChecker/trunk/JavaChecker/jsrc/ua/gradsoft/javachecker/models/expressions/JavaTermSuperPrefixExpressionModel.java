@@ -46,11 +46,7 @@ public class JavaTermSuperPrefixExpressionModel extends JavaTermExpressionModel
     
     public JavaTypeModel getType() throws TermWareException, EntityNotFoundException
     {
-      try {  
-        return enclosedType_.getSuperClass();
-      }catch(NotSupportedException ex){
-          throw new AssertException("super is not supported in type "+enclosedType_.getName());
-      }
+      return enclosedType_.getSuperClass();
     }
     
     public List<JavaExpressionModel>  getSubExpressions()

@@ -72,8 +72,8 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
     }
     
   
-    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
-        throw new NotSupportedException();
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels()  {
+        return Collections.emptyMap();
     }
     
     public JavaAnnotationInstanceModel  getDefaultAnnotationInstanceModel() throws TermWareException, EntityNotFoundException

@@ -113,11 +113,7 @@ public class JavaTermSwitchConstantExpressionModel extends JavaTermExpressionMod
               // we must resolve enum constants here.
               JavaTypeModel tm = switchExpr_.getType();
               Map<String,JavaEnumConstantModel> encs = null;
-              try {
-                 encs = tm.getEnumConstantModels();
-              }catch(NotSupportedException ex){
-                   throw new InvalidJavaTermException("Impossible - type "+tm.getFullName()+" must support enum constants",labelTerm);
-              }
+              encs = tm.getEnumConstantModels();
               if (!labelTerm.getName().equals("Identifier")) {
                   throw new InvalidJavaTermException("Identifer required",labelTerm);
               }

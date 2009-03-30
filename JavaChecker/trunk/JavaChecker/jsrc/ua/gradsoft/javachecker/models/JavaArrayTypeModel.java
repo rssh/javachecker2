@@ -89,13 +89,14 @@ public class JavaArrayTypeModel extends JavaTypeModel {
     public boolean isTypeVariable() {
         return false; }
     
-    public  JavaTypeModel  getEnclosedType() throws NotSupportedException {
-        throw new NotSupportedException(); }
+    public  JavaTypeModel  getEnclosedType()  {
+        return null;
+    }
     
     /**
      *@return referenced type.
      */
-    public JavaTypeModel  getReferencedType() throws NotSupportedException {
+    public JavaTypeModel  getReferencedType() {
         return referencedType_;
     }
     
@@ -111,7 +112,7 @@ public class JavaArrayTypeModel extends JavaTypeModel {
     /**
      *@return empty Map
      */
-    public Map<String, List<JavaMethodModel>>   getMethodModels() throws NotSupportedException {
+    public Map<String, List<JavaMethodModel>>   getMethodModels() {
         return Collections.emptyMap(); }
     
     public boolean hasMemberVariableModels() {
@@ -126,16 +127,19 @@ public class JavaArrayTypeModel extends JavaTypeModel {
     
     public List<JavaInitializerModel>  getInitializerModels() {
         return Collections.emptyList(); }
-    
-    public Map<String, JavaEnumConstantModel> getEnumConstantModels() throws NotSupportedException {
-        throw new NotSupportedException();
+
+    /**
+     * @return empty map
+     */
+    public Map<String, JavaEnumConstantModel> getEnumConstantModels() {
+        return Collections.emptyMap();
     }
     
     /**
-     *throw NotSupportedException
+     *@return null
      */
-    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() throws NotSupportedException {
-        throw new NotSupportedException();
+    public JavaAnnotationInstanceModel getDefaultAnnotationInstanceModel() {
+       return null;
     }
 
     public JavaTermExpressionModel getDefaultInitializerExpression() throws TermWareException
@@ -152,8 +156,9 @@ public class JavaArrayTypeModel extends JavaTypeModel {
     public boolean hasNestedTypeModels() {
         return false; }
     
-    public Map<String,JavaTypeModel> getNestedTypeModels() throws NotSupportedException {
-        throw new NotSupportedException(); }
+    public Map<String,JavaTypeModel> getNestedTypeModels() {
+        return Collections.emptyMap();
+    }
     
     public JavaTypeModel  getSuperClass() throws TermWareException {
         return JavaResolver.resolveJavaLangObject();

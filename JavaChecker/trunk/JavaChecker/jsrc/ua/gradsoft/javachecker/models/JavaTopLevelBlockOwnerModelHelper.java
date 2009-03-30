@@ -152,8 +152,6 @@ public class JavaTopLevelBlockOwnerModelHelper {
                     out.print("(error:"+ex.getMessage()+")");
                 }catch(EntityNotFoundException ex){
                     out.print("(error:"+ex.getMessage()+")");
-                }catch(NotSupportedException ex){
-                    out.print("(error:"+ex.getMessage()+")");
                 }
             }
             out.print(")");

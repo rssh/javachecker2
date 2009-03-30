@@ -107,12 +107,8 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     {
       if (disabledChecks_==null) {
           disabledChecks_=new TreeSet<String>();
-          JavaAnnotationInstanceModel am = null;
-          try {
-             am=this.getAnnotation("ua.gradsoft.javachecker.annotations.CheckerDisable");
-          }catch(NotSupportedException ex){
-              am=null; 
-          }
+          JavaAnnotationInstanceModel am = null;         
+          am=this.getAnnotation("ua.gradsoft.javachecker.annotations.CheckerDisable");
           if (am!=null) {
               JavaExpressionModel expr = null;
               try {
@@ -150,7 +146,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
         return true;
     }
     
-    public Map<String, List<JavaMethodModel>> getMethodModels() throws NotSupportedException
+    public Map<String, List<JavaMethodModel>> getMethodModels()
     {
         return methodModels_;
     }
@@ -205,11 +201,11 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
     
     
     /**
-     * throw NotSupportedException
+     *@return null
      */
-    public JavaTypeModel  getReferencedType() throws NotSupportedException
+    public JavaTypeModel  getReferencedType() 
     {
-        throw new NotSupportedException();
+        return null;
     }
     
     public boolean isTypeVariable()

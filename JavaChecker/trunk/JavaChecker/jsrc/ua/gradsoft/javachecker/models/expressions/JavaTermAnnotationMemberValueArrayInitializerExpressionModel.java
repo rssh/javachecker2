@@ -51,13 +51,9 @@ public class JavaTermAnnotationMemberValueArrayInitializerExpressionModel extend
     
     public JavaTypeModel  getType() throws TermWareException, EntityNotFoundException
     {
-      try {  
         JavaTypeModel tm = enclosedAnnotation_.getAnnotationModel();
         JavaMemberVariableModel mv = tm.getMemberVariableModels().get(elementName_);
         return mv.getType();
-      }catch(NotSupportedException ex){
-          throw new InvalidJavaTermException("Incorrect annotation element "+elementName_,t_,ex);
-      }
     }
     
     public List<JavaExpressionModel>  getSubExpressions()
