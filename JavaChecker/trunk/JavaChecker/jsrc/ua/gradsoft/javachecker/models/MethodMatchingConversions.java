@@ -13,13 +13,13 @@ import ua.gradsoft.javachecker.util.Pair;
  *Set of conversions.
  * @author RSSH
  */
-final class MethodMatchingConversions implements Cloneable
+public class MethodMatchingConversions implements Cloneable
 {
     
-    MethodMatchingConversions()
+    public MethodMatchingConversions()
     {}
     
-    MethodMatchingConversions(MethodMatchingConversions x)
+    public MethodMatchingConversions(MethodMatchingConversions x)
     {
         this.nBoxing_=x.nBoxing_;
         this.nNarrows_=x.nNarrows_;
@@ -30,7 +30,7 @@ final class MethodMatchingConversions implements Cloneable
         this.varArg_=x.varArg_;
     }
     
-    void assign(MethodMatchingConversions x)
+    public void assign(MethodMatchingConversions x)
     {
         this.nBoxing_=x.nBoxing_;
         this.nNarrows_=x.nNarrows_;
