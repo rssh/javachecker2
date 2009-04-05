@@ -29,9 +29,10 @@
    <resolver ref="ibiblio" />
    <!--<resolver ref="www.gradsoft.ua" />-->
   </chain>
-  <ssh name="publish.gradsoft.ua" namespace="gradsoft" >
-     <ivy pattern="ssh://outpost.gradsoft.ua/www/gradsoft.com.ua/data/common/[module]/ivy-[artifact]-[revision].xml" />
-     <artifact pattern="ssh://outpost.gradsoft.ua/www/gradsoft.com.ua/data/common/[module]/[artifact]-[revision].[ext]" />
+  <ssh name="publish.gradsoft.ua" namespace="gradsoft" 
+       publishPermissions="0664" >
+     <ivy pattern="ssh://www.gradsoft.ua/www/gradsoft.com.ua/data/common/[module]/ivy-[artifact]-[revision].xml" />
+     <artifact pattern="ssh://www.gradsoft.ua/www/gradsoft.com.ua/data/common/[module]/[artifact]-[revision].[ext]" />
   </ssh>
  </resolvers>
  

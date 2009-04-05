@@ -3,15 +3,13 @@
  *
  * Owner: Ruslan Shevchenko
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006-2009 GradSoft  Ukraine
  * All Rights Reserved
  */
 
 
 package ua.gradsoft.parsers.java5.test;
 
-import java.io.FileReader;
-import java.io.Reader;
 import junit.framework.TestCase;
 import ua.gradsoft.parsers.java5.JPPMain;
 import ua.gradsoft.parsers.java5.JavaParserFactory;

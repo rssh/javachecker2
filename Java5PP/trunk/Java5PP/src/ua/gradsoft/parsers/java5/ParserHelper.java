@@ -23,10 +23,10 @@ public class ParserHelper {
     public static char decodeCharLiteral(String s) throws TermWareException
     {
       if (s.length()==0)  {
-          throw new AssertException("ParserHelper.decodeCharLiteral(\"\") called");
+          throw new AssertException("ParserHelper.decodeCharLiteral(\'\') called");
       }
       String r = decodeStringOrCharLiteral(s,'\'',"character");
-      return r.charAt(0);      
+      return r.charAt(0);
     }
 
     
@@ -108,6 +108,7 @@ public class ParserHelper {
                         }
                         ch = (char)sum;
                         --i;
+                        sb.append(ch);
                     }
                     break;
                     case 'u':
@@ -136,7 +137,8 @@ public class ParserHelper {
                             ch=sarray[i];
                         }
                         ch=(char)sum;
-                        --i;                                                
+                        --i;
+                        sb.append(ch);
                     }
                     break;
                     default:
