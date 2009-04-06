@@ -46,7 +46,7 @@ public class ParserHelper {
                 if (i+1==sarray.length-1) {
                     throw new AssertException("Invalid "+kind+" literal:"+s);
                 }  
-                int ch=sarray[i+1];
+                char ch=sarray[i+1];
                 switch(ch) {
                     case 'n':
                         sb.append('\n');
@@ -236,7 +236,10 @@ public class ParserHelper {
                   sb.append(ch);
                   break;              
               default:
-                  if (Character.isLetterOrDigit(ch)) {
+                  if (ch < 20 && ch >0) {
+                      String oct = ("\\0"+(ch/8))+(ch%8);
+                      sb.append(oct);
+                  } else if (Character.isLetterOrDigit(ch)) {
                       sb.append(ch);
                   }else{
                       String hex = byteToHex( (byte)(ch >>> 8))+byteToHex((byte)(ch & 0xff));
