@@ -160,7 +160,7 @@ public class ParserHelper {
       sb.append(quote);
       char[] sarray = s.toCharArray();
       for(int i=0; i<sarray.length; ++i) {
-          char ch = sarray[i];         
+          char ch = sarray[i];
           switch(sarray[i]) {
               case '\n':
                   sb.append("\\");

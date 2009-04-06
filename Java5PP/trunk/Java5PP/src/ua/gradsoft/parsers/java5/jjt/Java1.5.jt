@@ -1648,7 +1648,14 @@ void IntegerLiteral():
   tk=<INTEGER_LITERAL>  
   { 
    setComment(jjtThis,tk);
-   jjtThis.addTerm(createIntegerOrLong(tk.image),0); 
+   Term literalTerm = createIntegerOrLong(tk.image);
+   Term lineTerm = createInt(tk.beginLine);
+   Term fileTerm = createString(inFname);
+   literalTerm = TermHelper.setAttribute(literalTerm,"file",fileTerm);
+   literalTerm = TermHelper.setAttribute(literalTerm,"line",lineTerm);
+   jjtThis.addTerm(literalTerm,0);
+   jjtThis.setAttribute("line",lineTerm);
+   jjtThis.setAttribute("file",fileTerm);
   }
 }
 
@@ -1664,7 +1671,14 @@ void CharacterLiteral():
   { 
     try {
       setComment(jjtThis,tk);
-      jjtThis.addTerm(createChar(ParserHelper.decodeCharLiteral(tk.image)),0); 
+      Term charTerm = createChar(ParserHelper.decodeCharLiteral(tk.image));
+      Term lineTerm = createInt(tk.beginLine);
+      Term fileTerm = createString(inFname);
+      charTerm = TermHelper.setAttribute(charTerm,"line",lineTerm);
+      charTerm = TermHelper.setAttribute(charTerm,"file",fileTerm);
+      jjtThis.addTerm(charTerm,0);
+      jjtThis.setAttribute("line",lineTerm);
+      jjtThis.setAttribute("file",fileTerm);
     }catch(TermWareException ex){
       throw new ParseException(ex.getMessage());
     }
@@ -1680,7 +1694,9 @@ void FloatingPointLiteral():
   tk=<FLOATING_POINT_LITERAL>  
   { 
     setComment(jjtThis,tk);
-    jjtThis.addTerm(createDoubleOrFloat(tk.image),0); 
+    jjtThis.addTerm(createDoubleOrFloat(tk.image),0);
+    jjtThis.setAttribute("line",createInt(tk.beginLine));
+    jjtThis.setAttribute("file",createString(inFname));
   }
 }
 
@@ -1694,7 +1710,9 @@ void StringLiteral():
   {
    try {
     setComment(jjtThis,tk);
-    jjtThis.addTerm(createString(ParserHelper.decodeStringLiteral(tk.image)),0); 
+    jjtThis.addTerm(createString(ParserHelper.decodeStringLiteral(tk.image)),0);
+    jjtThis.setAttribute("line",createInt(tk.beginLine));
+    jjtThis.setAttribute("file",createString(inFname));
    }catch(TermWareException ex){
       throw new ParseException(ex.getMessage());
    }
@@ -1712,7 +1730,9 @@ void BooleanLiteral():
   tk="false"  { jjtThis.addTerm(createBoolean(false),0); }
 )
 {
-    setComment(jjtThis,tk);
+   setComment(jjtThis,tk);
+   jjtThis.setAttribute("line",createInt(tk.beginLine));
+   jjtThis.setAttribute("file",createString(inFname));
 }
 }
 
@@ -1725,6 +1745,8 @@ void NullLiteral():
   tk="null"
   {
     setComment(jjtThis,tk);
+    jjtThis.setAttribute("line",createInt(tk.beginLine));
+    jjtThis.setAttribute("file",createString(inFname));
   }
 }
 

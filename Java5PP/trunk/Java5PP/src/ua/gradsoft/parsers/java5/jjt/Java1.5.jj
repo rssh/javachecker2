@@ -3918,7 +3918,14 @@ void IntegerLiteral():
 /*@egen*/  
   { 
    setComment(jjtn000,tk);
-   jjtn000.addTerm(createIntegerOrLong(tk.image),0); 
+   Term literalTerm = createIntegerOrLong(tk.image);
+   Term lineTerm = createInt(tk.beginLine);
+   Term fileTerm = createString(inFname);
+   literalTerm = TermHelper.setAttribute(literalTerm,"file",fileTerm);
+   literalTerm = TermHelper.setAttribute(literalTerm,"line",lineTerm);
+   jjtn000.addTerm(literalTerm,0);
+   jjtn000.setAttribute("line",lineTerm);
+   jjtn000.setAttribute("file",fileTerm);
   }/*@bgen(jjtree)*/
   } finally {
     if (jjtc000) {
@@ -3951,7 +3958,14 @@ void CharacterLiteral():
   { 
     try {
       setComment(jjtn000,tk);
-      jjtn000.addTerm(createChar(ParserHelper.decodeCharLiteral(tk.image)),0); 
+      Term charTerm = createChar(ParserHelper.decodeCharLiteral(tk.image));
+      Term lineTerm = createInt(tk.beginLine);
+      Term fileTerm = createString(inFname);
+      charTerm = TermHelper.setAttribute(charTerm,"line",lineTerm);
+      charTerm = TermHelper.setAttribute(charTerm,"file",fileTerm);
+      jjtn000.addTerm(charTerm,0);
+      jjtn000.setAttribute("line",lineTerm);
+      jjtn000.setAttribute("file",fileTerm);
     }catch(TermWareException ex){
       throw new ParseException(ex.getMessage());
     }
@@ -3984,7 +3998,9 @@ void FloatingPointLiteral():
 /*@egen*/  
   { 
     setComment(jjtn000,tk);
-    jjtn000.addTerm(createDoubleOrFloat(tk.image),0); 
+    jjtn000.addTerm(createDoubleOrFloat(tk.image),0);
+    jjtn000.setAttribute("line",createInt(tk.beginLine));
+    jjtn000.setAttribute("file",createString(inFname));
   }/*@bgen(jjtree)*/
   } finally {
     if (jjtc000) {
@@ -4015,7 +4031,9 @@ void StringLiteral():
   {
    try {
     setComment(jjtn000,tk);
-    jjtn000.addTerm(createString(ParserHelper.decodeStringLiteral(tk.image)),0); 
+    jjtn000.addTerm(createString(ParserHelper.decodeStringLiteral(tk.image)),0);
+    jjtn000.setAttribute("line",createInt(tk.beginLine));
+    jjtn000.setAttribute("file",createString(inFname));
    }catch(TermWareException ex){
       throw new ParseException(ex.getMessage());
    }
@@ -4050,7 +4068,9 @@ try {
 }
 /*@egen*/
 {
-    setComment(jjtn000,tk);
+   setComment(jjtn000,tk);
+   jjtn000.setAttribute("line",createInt(tk.beginLine));
+   jjtn000.setAttribute("file",createString(inFname));
 }/*@bgen(jjtree)*/
 } finally {
   if (jjtc000) {
@@ -4080,6 +4100,8 @@ void NullLiteral():
 /*@egen*/
   {
     setComment(jjtn000,tk);
+    jjtn000.setAttribute("line",createInt(tk.beginLine));
+    jjtn000.setAttribute("file",createString(inFname));
   }/*@bgen(jjtree)*/
   } finally {
     if (jjtc000) {
