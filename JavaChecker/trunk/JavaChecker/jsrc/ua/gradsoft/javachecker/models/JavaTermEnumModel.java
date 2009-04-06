@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import ua.gradsoft.javachecker.EntityNotFoundException;
-import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.annotations.Nullable;
 import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
@@ -271,9 +271,11 @@ public final class ValuesMethodModel extends JavaMethodModel
     
     public boolean         isSupportBlockModel()
     { return false; }
-    
-    public JavaTopLevelBlockModel  getTopLevelBlockModel() throws NotSupportedException
-    { throw new NotSupportedException(); }
+
+    @Nullable
+    @Override
+    public JavaTopLevelBlockModel  getTopLevelBlockModel() 
+    { return null; }
     
     public Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap()
     { return Collections.emptyMap(); }
@@ -281,8 +283,8 @@ public final class ValuesMethodModel extends JavaMethodModel
     public boolean hasDefaultValue()
     { return false; }
     
-    public JavaExpressionModel  getDefaultValue() throws NotSupportedException
-    { throw new NotSupportedException(); }
+    public JavaExpressionModel  getDefaultValue()
+    { return null; }
     
     public boolean isSynthetic()
     { return true; }
@@ -364,14 +366,14 @@ public final class ValueOfMethodModel extends JavaMethodModel
     public boolean         isSupportBlockModel()
     { return false; }
     
-    public JavaTopLevelBlockModel  getTopLevelBlockModel() throws NotSupportedException
-    { throw new NotSupportedException(); }
+    public JavaTopLevelBlockModel  getTopLevelBlockModel()
+    { return null; }
     
     public boolean hasDefaultValue()
     { return false; }
     
-    public JavaExpressionModel  getDefaultValue() throws NotSupportedException
-    { throw new NotSupportedException(); }
+    public JavaExpressionModel  getDefaultValue() 
+    { return null; }
     
     public boolean isSynthetic()
     { return true; }

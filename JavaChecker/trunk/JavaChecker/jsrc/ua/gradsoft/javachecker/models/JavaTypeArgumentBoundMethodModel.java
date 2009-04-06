@@ -76,8 +76,12 @@ public class JavaTypeArgumentBoundMethodModel extends JavaMethodModel implements
     public boolean isSupportBlockModel()
     { return origin_.isSupportBlockModel(); }
     
-    public JavaTypeArgumentBoundTopLevelBlockModel getTopLevelBlockModel() throws TermWareException, NotSupportedException {
-        return new JavaTypeArgumentBoundTopLevelBlockModel(this,origin_.getTopLevelBlockModel(),substitution_);
+    public JavaTypeArgumentBoundTopLevelBlockModel getTopLevelBlockModel() throws TermWareException {
+        JavaTopLevelBlockModel bm = origin_.getTopLevelBlockModel();
+        if (bm==null) {
+            return null;
+        }
+        return new JavaTypeArgumentBoundTopLevelBlockModel(this,bm,substitution_);
     }
     
     public JavaTypeArgumentBoundTypeModel getTypeArgumentBoundTypeModel() throws TermWareException
@@ -91,7 +95,7 @@ public class JavaTypeArgumentBoundMethodModel extends JavaMethodModel implements
     public boolean hasDefaultValue()
     { return origin_.hasDefaultValue(); }
     
-    public JavaExpressionModel  getDefaultValue() throws NotSupportedException, TermWareException, EntityNotFoundException
+    public JavaExpressionModel  getDefaultValue() throws TermWareException, EntityNotFoundException
     { return origin_.getDefaultValue(); }
     
     public boolean isSynthetic() throws TermWareException

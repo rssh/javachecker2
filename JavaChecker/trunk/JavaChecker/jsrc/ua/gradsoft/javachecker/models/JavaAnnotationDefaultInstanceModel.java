@@ -40,13 +40,9 @@ public class JavaAnnotationDefaultInstanceModel extends JavaAnnotationInstanceMo
         return getElements().containsKey(name);
     }
     
-    public JavaExpressionModel  getElement(String name) throws NotSupportedException, TermWareException
+    public JavaExpressionModel  getElement(String name) throws TermWareException
     { 
-      JavaExpressionModel retval = getElements().get(name);
-      if (retval==null) {
-          throw new NotSupportedException();
-      }
-      return retval;
+      return getElements().get(name);
     }
     
     
@@ -61,8 +57,6 @@ public class JavaAnnotationDefaultInstanceModel extends JavaAnnotationInstanceMo
                     if (m.hasDefaultValue()) {
                         try {
                           elements_.put(m.getName(),m.getDefaultValue());
-                        }catch(NotSupportedException ex){
-                            throw new AssertException("get default value for method "+m.getName()+" in "+annotationType_.getFullName()+" must be supported");
                         }catch(EntityNotFoundException ex){
                             throw new AssertException("exception during getting annotation default value",ex);
                         }

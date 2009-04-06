@@ -1,7 +1,7 @@
 /*
  * JavaResolver.java
  *
- * Copyright (c) 2006-2007 GradSoft  Ukraine
+ * Copyright (c) 2006-2009 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -21,12 +21,10 @@ import java.util.logging.Logger;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.Main;
-import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.javachecker.util.Pair;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
-import ua.gradsoft.termware.TermWareRuntimeException;
 import ua.gradsoft.termware.exceptions.AssertException;
 
 /**

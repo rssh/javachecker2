@@ -1,12 +1,9 @@
 
 package ua.gradsoft.javachecker.trace;
 
-import ua.gradsoft.javachecker.models.JavaPlaceContext;
-import ua.gradsoft.javachecker.models.JavaStatementModel;
 import ua.gradsoft.javachecker.models.JavaTermExpressionModel;
 import ua.gradsoft.javachecker.models.JavaTermStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
-import ua.gradsoft.javachecker.models.JavaVariableModel;
 import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.javachecker.models.expressions.JavaTermBooleanLiteralExpressionModel;
 import ua.gradsoft.termware.Term;

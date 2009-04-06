@@ -44,8 +44,12 @@ public class JavaTypeArgumentBoundInitializerModel extends JavaInitializerModel 
    public boolean isSupportBlockModel()
     { return origin_.isSupportBlockModel(); }
     
-   public JavaTypeArgumentBoundTopLevelBlockModel getTopLevelBlockModel() throws TermWareException, NotSupportedException {       
-        return new JavaTypeArgumentBoundTopLevelBlockModel(this,origin_.getTopLevelBlockModel(),owner_.getSubstitution());
+   public JavaTypeArgumentBoundTopLevelBlockModel getTopLevelBlockModel() throws TermWareException {
+       JavaTopLevelBlockModel bm = origin_.getTopLevelBlockModel();
+       if (bm==null) {
+           return null;
+       }
+       return new JavaTypeArgumentBoundTopLevelBlockModel(this,bm,owner_.getSubstitution());
    }    
 
         

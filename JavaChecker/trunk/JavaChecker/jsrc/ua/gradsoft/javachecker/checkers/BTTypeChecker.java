@@ -20,7 +20,7 @@ import ua.gradsoft.termware.TermWareException;
 import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
- *
+ *Checker: check by ruleset with bottom-first strategy
  * @author RSSH
  */
 public class BTTypeChecker extends AbstractTypeChecker {
@@ -63,4 +63,5 @@ public class BTTypeChecker extends AbstractTypeChecker {
     
     
     private TermSystem  termSystem_;
+
 }

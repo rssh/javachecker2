@@ -60,7 +60,7 @@ public interface JavaTopLevelBlockOwnerModel extends AttributedEntity
      * return block model, if storing of block model is supported, 
      *otherwise throws NotSupportedException
      */
-    public JavaTopLevelBlockModel  getTopLevelBlockModel() throws TermWareException, NotSupportedException;
+    public JavaTopLevelBlockModel  getTopLevelBlockModel() throws TermWareException;
     
     /**
      * return annotations, associated with model oe costructor

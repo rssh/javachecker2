@@ -1,9 +1,6 @@
 /*
  * JavaTermArrayInitializerExpressionModel.java
- *
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * 
  */
 
 package ua.gradsoft.javachecker.models.expressions;
@@ -82,6 +79,6 @@ public class JavaTermArrayInitializerExpressionModel extends JavaTermExpressionM
       Term retval = TermUtils.createTerm("ArrayInitializerModel",l,ctx);
       return retval;
     }
-    
+
     private List<JavaExpressionModel> subexpressions_;
 }

@@ -138,13 +138,19 @@ public class JavaTermMethodModel extends JavaMethodModel implements JavaTermTopL
     
     public Map<String,JavaAnnotationInstanceModel> getAnnotationsMap()
     { return modifiers_.getAnnotationsMap(); }
-    
+
+    /**
+     * @return false
+     */
     public boolean  hasDefaultValue()
     { return false; }
-    
-    public JavaExpressionModel  getDefaultValue() throws NotSupportedException
+
+    /**
+     * @return null
+     */
+    public JavaExpressionModel  getDefaultValue() 
     {
-       throw new NotSupportedException();
+       return null;
     }
     
     public boolean isSynthetic()

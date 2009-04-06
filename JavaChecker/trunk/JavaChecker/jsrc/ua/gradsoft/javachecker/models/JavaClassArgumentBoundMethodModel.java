@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.NotSupportedException;
+import ua.gradsoft.javachecker.annotations.Nullable;
 import ua.gradsoft.javachecker.util.ImmutableMappedList;
 import ua.gradsoft.javachecker.util.Function;
 import ua.gradsoft.termware.Term;
@@ -108,11 +109,15 @@ public class JavaClassArgumentBoundMethodModel extends JavaMethodModel implement
       return origin_.isSupportBlockModel();  
     }
     
-    public JavaTopLevelBlockModel getTopLevelBlockModel() throws TermWareException, NotSupportedException
+    @Nullable
+    public JavaTopLevelBlockModel getTopLevelBlockModel() throws TermWareException
     {
-      return new JavaTypeArgumentBoundTopLevelBlockModel(this,
-                                                     origin_.getTopLevelBlockModel(),
-                                                     getTypeArgumentBoundTypeModel().getSubstitution()           
+      JavaTopLevelBlockModel bm = origin_.getTopLevelBlockModel();
+      if (bm==null) {
+          return null;
+      }
+      return new JavaTypeArgumentBoundTopLevelBlockModel(this, bm,
+                           getTypeArgumentBoundTypeModel().getSubstitution()           
                                              );
     }
 
@@ -125,10 +130,12 @@ public class JavaClassArgumentBoundMethodModel extends JavaMethodModel implement
 
     /**
      * Argument-bound annotations are illegal.
-     *throw NotSupportedException
+     *@return null
      */    
-    public JavaExpressionModel  getDefaultValue() throws NotSupportedException
-    { throw new NotSupportedException(); }
+    @Override
+    @Nullable
+    public JavaExpressionModel  getDefaultValue() 
+    { return null; }
     
     
     

@@ -13,7 +13,7 @@ import ua.gradsoft.termware.TermWareException;
 public interface JavaTraceObjectModel {
 
     
-    public JavaExpressionModel getExpressionModel();
+    public JavaExpressionModel getExpressionModel()  throws TermWareException, EntityNotFoundException;
     
     public JavaTypeModel getType() throws TermWareException, EntityNotFoundException;
     

@@ -2,7 +2,7 @@
  * JavaClassEnumConstantModel.java
  *
  *
- * Copyright (c) 2006-2007 GradSoft  Ukraine
+ * Copyright (c) 2006-2009 GradSoft  Ukraine
  * All Rights Reserved
  */
 

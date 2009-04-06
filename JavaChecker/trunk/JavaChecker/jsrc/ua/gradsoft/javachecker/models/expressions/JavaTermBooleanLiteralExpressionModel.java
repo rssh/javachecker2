@@ -28,8 +28,16 @@ import ua.gradsoft.termware.TermWareRuntimeException;
  *BooleanLiteral
  * @author Ruslan Shevchenko
  */
-public class JavaTermBooleanLiteralExpressionModel  extends JavaTermExpressionModel implements JavaLiteralModel
+public class JavaTermBooleanLiteralExpressionModel  extends JavaTermExpressionModel implements JavaLiteralModel, JavaObjectConstantExpressionModel
 {
+
+   public JavaTermBooleanLiteralExpressionModel(boolean b,JavaTermStatementModel st,JavaTypeModel enclosedType) throws TermWareException
+    {
+       this(TermUtils.createTerm("BooleanLiteral",
+               (b ? TermUtils.createString("true"): TermUtils.createString("false"))),
+               st,enclosedType);
+    }
+
     
    public JavaTermBooleanLiteralExpressionModel(Term t,JavaTermStatementModel st,JavaTypeModel enclosedType) throws TermWareException
     {
@@ -67,6 +75,11 @@ public class JavaTermBooleanLiteralExpressionModel  extends JavaTermExpressionMo
         return true;
     }
     
+    public Object getConstant()
+    {
+        return new Boolean(getBoolean());
+    }
+
     public String getString()
     { return t_.getSubtermAt(0).getString(); }
     

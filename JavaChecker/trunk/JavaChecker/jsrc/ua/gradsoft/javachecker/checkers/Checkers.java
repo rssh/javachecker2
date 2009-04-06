@@ -6,6 +6,7 @@
 package ua.gradsoft.javachecker.checkers;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Set;
@@ -46,15 +47,49 @@ public class Checkers {
     public void configure() throws ConfigException {               
         try {
              loadBuildinCheckers();
-            
-            String checkersFname=getEtcDirectory()+File.separator+"checkers.def";       
+        } catch (TermWareException ex){
+            throw new ConfigException("Can't load buildin checkers",ex);
+        }
+
+        loadCheckersFromFiles();
+        //}
+    }
+
+    public void loadCheckersFromFiles() throws ConfigException
+    {
+        String dirfname = getEtcDirectory();
+        if (!dirfname.endsWith(File.separator)) {
+            dirfname = dirfname + File.separator;
+        }
+        File dir = new File(dirfname);
+        FilenameFilter nameFilter = new FilenameFilter(){
+            public boolean accept(File dir, String name) {
+                return name.startsWith("checkers") && name.endsWith(".def");
+            }
+        };
+        String[] fnames = dir.list(nameFilter);
+        if (fnames==null) {
+            throw new ConfigException("checkers are not found in dir "+dir.getName());
+        }
+        for(String fname: fnames) {
+            loadCheckersFromFile(dirfname+fname);
+        }
+    }
+
+    public void loadCheckersFromFile(String checkersFname) throws ConfigException
+    {
             if (!Main.isMandatoryCheckersLoading()) {
                 File checkersFile = new File(checkersFname);
                 if (!checkersFile.exists()) {
                     return;
                 }                
             }
-            Term checkers=TermWare.getInstance().load(checkersFname);
+            Term checkers=null;
+            try {
+             checkers = TermWare.getInstance().load(checkersFname);
+            } catch (TermWareException ex){
+                throw new ConfigException("Can't load checkers from file "+checkersFname,ex);
+            }
             if (!checkers.getName().equals("Checkers")) {
                 throw new ConfigException("context of file "+checkersFname+" must be Checkers term");
             }
@@ -97,9 +132,13 @@ public class Checkers {
                         enabledByDefault = tenabledByDefault.getBoolean();
                     }
                     AbstractChecker checker=null;
-                    switch(type) {
+                    try {
+                      switch(type) {
                         case BT_TYPE_RULESET:
                             checker=new BTTypeChecker(name,category,description,rules,enabledByDefault);
+                            break;
+                        case FT_TYPE_RULESET:
+                            checker=new FTTypeChecker(name,category,description,rules,enabledByDefault);
                             break;
                         case BT_COMPILATION_UNIT_RULESET:
                             checker=new BTCompilationUnitChecker(name,category,description,rules,enabledByDefault);
@@ -112,6 +151,9 @@ public class Checkers {
                             break;
                         default:
                             throw new ConfigException("Unknown checker type:"+type);
+                      }
+                    }catch(TermWareException ex){
+                        throw new ConfigException("Can't create checker with name "+name,ex);
                     }
                     checkers_.put(name,checker);                    
                     boolean enabled = facts_.getBooleanConfigValue("Check"+name,enabledByDefault);
@@ -119,15 +161,14 @@ public class Checkers {
                     violations.addType(name,category,description,enabled);                    
                     checker.configure(Main.getFacts());                    
                 }else{
+                  try {
                     throw new ConfigException("define term required instead "+TermHelper.termToPrettyString(ct));
+                  }catch(TermWareException ex){
+                      throw new ConfigException("define term required instead "+ct.getName());
+                  }
                 }
             }
-            
-            // now read local enabled or disabled stuff.
-            // (in future, now leave as is)
-        }catch(TermWareException ex){
-            throw new ConfigException("Can't configure checkers:"+ex.getMessage(),ex);
-        }
+
     }
     
     public void checkCompilationUnitAST(String fname, Term compilationUnitAST) throws ProcessingException

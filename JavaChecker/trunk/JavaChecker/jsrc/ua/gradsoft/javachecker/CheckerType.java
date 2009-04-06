@@ -15,9 +15,15 @@ package ua.gradsoft.javachecker;
 public enum CheckerType {
     
     /**
-     * ruleset over AST, which applied to type.
+     * ruleset over AST, which applied to type with BT strategy
      */
     BT_TYPE_RULESET,
+
+    /**
+     * ruleset over AST, which applied to type with FT strategy
+     */
+    FT_TYPE_RULESET,
+
     
     /**
      * ruleset over AST, which applied to compilation unit.

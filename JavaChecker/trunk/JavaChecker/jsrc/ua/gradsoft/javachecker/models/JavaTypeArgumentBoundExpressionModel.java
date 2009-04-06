@@ -96,7 +96,15 @@ public class JavaTypeArgumentBoundExpressionModel implements JavaExpressionModel
       Term retval = TermUtils.createTerm("TypeArgumentBoundExpressionModel",x,y);
       return retval;
     }
-    
+
+    /**
+     * @return origin_.getTerm
+     */
+    public Term getTerm() throws TermWareException, EntityNotFoundException
+    {
+      return origin_.getTerm();  
+    }
+
     public boolean isConstantExpression() throws TermWareException,EntityNotFoundException
     {
       return origin_.isConstantExpression();  

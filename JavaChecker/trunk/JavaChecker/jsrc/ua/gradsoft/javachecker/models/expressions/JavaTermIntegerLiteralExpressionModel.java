@@ -31,6 +31,17 @@ import ua.gradsoft.termware.TermWareRuntimeException;
 public class JavaTermIntegerLiteralExpressionModel extends JavaTermExpressionModel implements JavaLiteralModel, JavaObjectConstantExpressionModel
 {
     
+   public JavaTermIntegerLiteralExpressionModel(int c, JavaTermStatementModel st, JavaTypeModel enclosedType)  throws TermWareException
+   {
+      this(TermUtils.createTerm("IntegerLiteral",TermUtils.createInt(c)), st, enclosedType);
+   }
+
+   public JavaTermIntegerLiteralExpressionModel(long c, JavaTermStatementModel st, JavaTypeModel enclosedType)  throws TermWareException
+   {
+      this(TermUtils.createTerm("IntegerLiteral",TermUtils.createLong(c)), st, enclosedType);
+   }
+
+
    public JavaTermIntegerLiteralExpressionModel(Term t,JavaTermStatementModel st,JavaTypeModel enclosedType) throws TermWareException
     {
        super(t,st,enclosedType);       

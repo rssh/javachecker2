@@ -46,8 +46,8 @@ public class JavaObjectConstantTraceObjectModel implements JavaTraceObjectModel
         return oce_.getType();
     }
 
-    public boolean hasFields() throws TermWareException {
-        return true;
+    public boolean hasFields() throws TermWareException, EntityNotFoundException {
+        return (!oce_.getType().isPrimitiveType());
     }
 
     public void setField(String name, JavaTraceObjectModel value) throws TermWareException, EntityNotFoundException, EvaluationException {

@@ -27,7 +27,6 @@ domain(openclose,
        ] -> true
         !->  $arguments,
 
-       
 
        ConditionalExpressionModel($c,$x,$y,$ctx) -> $x || $y,
 

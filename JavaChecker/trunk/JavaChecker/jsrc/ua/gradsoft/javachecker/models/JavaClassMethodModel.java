@@ -122,7 +122,7 @@ public class JavaClassMethodModel extends JavaMethodModel implements JavaClassTo
      public boolean         hasDefaultValue()
      { return method_.getDeclaringClass().isAnnotation() && method_.getGenericParameterTypes().length==0; }
 
-     public JavaExpressionModel  getDefaultValue() throws NotSupportedException, TermWareException
+     public JavaExpressionModel  getDefaultValue() throws  TermWareException
      {
         JavaExpressionModel retval=null; 
         Object o = method_.getDefaultValue();
@@ -132,7 +132,7 @@ public class JavaClassMethodModel extends JavaMethodModel implements JavaClassTo
             if (hasDefaultValue()) {
                 retval = new JavaTermNullLiteralExpressionModel(TermUtils.createTerm("NullLiteral",new Term[0]),(JavaTermStatementModel)null,getTypeModel());
             }else{
-                throw new NotSupportedException();   
+                retval = null;
             }            
         }
         return retval;
@@ -148,8 +148,8 @@ public class JavaClassMethodModel extends JavaMethodModel implements JavaClassTo
        return TermUtils.createTerm("ClassMethod",tctx);
     }
      
-    public JavaTopLevelBlockModel  getTopLevelBlockModel() throws NotSupportedException
-    { throw new NotSupportedException(); }
+    public JavaTopLevelBlockModel  getTopLevelBlockModel()
+    { return null; }
 
     public Annotation[]  getDeclaredAnnotations()
     { return method_.getDeclaredAnnotations(); }

@@ -63,25 +63,15 @@ public class UnusedMethodsAndFieldsChecker extends JavaTypeModelOnePassProcessor
      List<JavaInitializerModel> initializers = typeModel.getInitializerModels();
      for(JavaInitializerModel inm: initializers) {
          if (inm.isSupportBlockModel()) {
-             try {
                JavaTopLevelBlockModel block = inm.getTopLevelBlockModel();
                markUsage(block);
-             }catch(NotSupportedException ex){
-                 // impossible ?
-                 break;
-             }             
          }
      }
      List<JavaConstructorModel> constructors = typeModel.getConstructorModels();
      for(JavaConstructorModel cn: constructors) {
          if (cn.isSupportBlockModel()) {
-             try {
                JavaTopLevelBlockModel block = cn.getTopLevelBlockModel();
                markUsage(block);
-             }catch(NotSupportedException ex){
-                 // impossible ?
-                 break;
-             }
          }
      }
      Collection<List<JavaMethodModel>> mss = Collections.emptyList();
@@ -89,14 +79,10 @@ public class UnusedMethodsAndFieldsChecker extends JavaTypeModelOnePassProcessor
      for(List<JavaMethodModel> ms: mss) {
          for(JavaMethodModel m: ms) {
              if (m.isSupportBlockModel()) {
-                 try {
                     JavaTopLevelBlockModel block = m.getTopLevelBlockModel();
                     if (block!=null) {
                       markUsage(block);
                     }
-                 }catch(NotSupportedException ex){
-                     throw new AssertException("isSupportBlockModel is true, but getTopLevelBlockModel is not supported",ex);
-                 }                 
              }
          }
      }

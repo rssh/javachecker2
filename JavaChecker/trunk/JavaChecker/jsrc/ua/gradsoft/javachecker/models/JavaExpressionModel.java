@@ -27,9 +27,22 @@ public interface JavaExpressionModel {
     public List<JavaExpressionModel>  getSubExpressions()  throws TermWareException, EntityNotFoundException;
     
     public JavaTypeModel  getType() throws TermWareException, EntityNotFoundException;
-    
+
+    /**
+     * @return model term
+     * @throws ua.gradsoft.termware.TermWareException
+     * @throws ua.gradsoft.javachecker.EntityNotFoundException
+     */
     public Term  getModelTerm() throws TermWareException, EntityNotFoundException;
     
+    /**     
+     * @return term, suitable for parsing as part of sourcr
+     * @throws ua.gradsoft.termware.TermWareException
+     * @throws ua.gradsoft.javachecker.EntityNotFoundException
+     */
+    public Term  getTerm() throws TermWareException, EntityNotFoundException;
+
+
     /**
      * return true, if expression represents type.
      */

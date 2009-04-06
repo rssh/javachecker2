@@ -4,11 +4,7 @@
 
 
  <!-- set here location of ant (see ant.apache.org ) -->
- <property name="anthome" location="c:/local/java/ant" />
- <property name="jetty.home" location="/home/rssh/packages/jetty-6.1.2rc4" />
- <property name="guice.home" location="/home/rssh/packages/guice" />
- <property name="jdk.home" location="/usr/java/jdk1.6.0_01" />
-
+ <property file="check-external.properties" />
 
  <!-- targets -->
 
@@ -16,10 +12,7 @@
     <taskdef name="JavaChecker"  classname="ua.gradsoft.javachecker.ant.JavaCheckerTask">
      <classpath>
       <pathelement location="jsrc"/>
-      <pathelement location="lib/TermWare2.jar"/>
-      <pathelement location="lib/JavaChecker2.jar"/>
-      <pathelement location="lib/JavaChecker2Annotations.jar"/>
-      <pathelement location="lib/TermWareJPP.jar"/>
+      <fileset dir="lib" includes="*.jar" />
       <pathelement location="${java.class.path}/"/>      
      </classpath>
     </taskdef>    
