@@ -97,7 +97,8 @@
          <formatter type="xml" usefile="false" />
          <batchtest  >
              <fileset dir="jtests"  >
-                 <include name="ua/**/*Test.java"/> 
+                 <!--<include name="ua/**/*Test.java"/> -->
+                 <include name="ua/**/CoinTest.java"/>
                  <!--<include name="ua/**/CloseableTrackingTest.java"/> -->
              </fileset>
          </batchtest>

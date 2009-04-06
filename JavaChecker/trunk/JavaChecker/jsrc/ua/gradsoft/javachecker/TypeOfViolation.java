@@ -29,7 +29,7 @@ public class TypeOfViolation {
     
     public  void readPreferences(JavaFacts facts)
     {
-      enabled_=facts.getBooleanConfigValue("Check"+name_, enabledByDefault_);  
+      enabled_=facts.isCheckEnabled(name_);
     }
     
     public  String getName()

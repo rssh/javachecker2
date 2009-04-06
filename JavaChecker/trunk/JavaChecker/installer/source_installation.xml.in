@@ -52,6 +52,8 @@
   <file src="../build-ext.xml"  targetdir="$INSTALL_PATH" />
   <file src="../build.properties"  targetdir="$INSTALL_PATH" />
   <file src="../build.properties.default"  targetdir="$INSTALL_PATH" />
+  <file src="../build-check-external.xml"  targetdir="$INSTALL_PATH" />
+  <file src="../check-external.properties"  targetdir="$INSTALL_PATH" />
   <fileset dir="../systems/" targetdir="$INSTALL_PATH/systems" 
            defaultexcludes="yes" />
   <fileset dir="../attrs/" targetdir="$INSTALL_PATH/attrs" 

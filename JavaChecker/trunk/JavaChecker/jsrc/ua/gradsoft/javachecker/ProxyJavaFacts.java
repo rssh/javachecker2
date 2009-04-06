@@ -30,7 +30,14 @@ public class ProxyJavaFacts extends DefaultFacts
     {
         return Main.getFacts().violationDiscovered(name, message, partOfCode);
     }
-    
+
+    // called from systems
+    public boolean notComplex(Term t)
+    {
+        return !t.isComplexTerm();
+    }
+
+
     public boolean isCheckEnabled(String name)
     {
         return Main.getFacts().isCheckEnabled(name);

@@ -214,17 +214,24 @@ public final class JUtils {
      *   (parser set attributes (file and line) to java_identifier terms).
      * nil if one is not found.
      **/
-    public static Term findMarkedIdentifier(Term t) throws TermWareException
+    public static Term findMarkedTerm(Term t) throws TermWareException
     {
+     Term fileMark = TermHelper.getAttribute(t, "file");
+     if (!fileMark.isNil()) {
+         return t;
+     }
      if (t.isComplexTerm()) {
        if (t.getName().equals("Identifier")) {
          return t;
        }else{
          for(int i=0; i<t.getArity(); ++i){
-           Term c=findMarkedIdentifier(t.getSubtermAt(i));
+           Term c=findMarkedTerm(t.getSubtermAt(i));
            if (!c.isNil()) {
              return c;
            }
+         }
+         if (!TermHelper.getAttribute(t,"file").isNil()) {
+             return t;
          }
        }
      }
@@ -246,7 +253,7 @@ public final class JUtils {
              return (FileAndLine)o;
          }
      }   
-     Term markedIdentifier=JUtils.findMarkedIdentifier(partOfCode);
+     Term markedIdentifier=JUtils.findMarkedTerm(partOfCode);
      Term fileTerm=TermHelper.getAttribute(markedIdentifier,"file");
      Term lineTerm=TermHelper.getAttribute(markedIdentifier,"line");
      String fname="unknown, entry is:";

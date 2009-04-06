@@ -155,8 +155,11 @@ public class Checkers {
                     }catch(TermWareException ex){
                         throw new ConfigException("Can't create checker with name "+name,ex);
                     }
-                    checkers_.put(name,checker);                    
+                    checkers_.put(name,checker);
                     boolean enabled = facts_.getBooleanConfigValue("Check"+name,enabledByDefault);
+                    if (Main.isExplicitEnabledOnly()) {
+                        enabled = Main.getExplicitEnabled().contains(name);
+                    }
                     Violations violations=Main.getFacts().getViolations();
                     violations.addType(name,category,description,enabled);                    
                     checker.configure(Main.getFacts());                    
@@ -304,7 +307,8 @@ public class Checkers {
             }
         }
     }
-    
+
+
     private CheckerType getCheckerType(Term ttype) throws ConfigException
     {
         String name;
@@ -320,10 +324,12 @@ public class Checkers {
     
     private void loadBuildinCheckers() throws TermWareException, ConfigException
     {
-        ClassChecker nameChecker=new ClassChecker("NamePatterns","style","check name patterns",TermUtils.createString("ua.gradsoft.javachecker.checkers.NamePatternsChecker"),true);
+        boolean checkerEnabled = (Main.isExplicitEnabledOnly() ? Main.getExplicitEnabled().contains("NamePattern") : true);
+        ClassChecker nameChecker=new ClassChecker("NamePatterns","style","check name patterns",TermUtils.createString("ua.gradsoft.javachecker.checkers.NamePatternsChecker"),checkerEnabled);
         checkers_.put(nameChecker.getName(),nameChecker);
         facts_.getViolations().addType(nameChecker.getName(),nameChecker.getCategory(),nameChecker.getDescription(),nameChecker.isEnabled());
-        ClassChecker equalsHashCodeChecker=new ClassChecker("EqualsHashCode","basic","check that overloaded hashCode and equals are correspond",TermUtils.createString("ua.gradsoft.javachecker.checkers.EqualsHashCodeChecker"),true);
+        checkerEnabled = (Main.isExplicitEnabledOnly() ? Main.getExplicitEnabled().contains("EqualsHashCode") : true);
+        ClassChecker equalsHashCodeChecker=new ClassChecker("EqualsHashCode","basic","check that overloaded hashCode and equals are correspond",TermUtils.createString("ua.gradsoft.javachecker.checkers.EqualsHashCodeChecker"),checkerEnabled);
         checkers_.put(equalsHashCodeChecker.getName(),equalsHashCodeChecker);
         facts_.getViolations().addType(equalsHashCodeChecker.getName(),equalsHashCodeChecker.getCategory(),equalsHashCodeChecker.getDescription(),equalsHashCodeChecker.isEnabled());
     }

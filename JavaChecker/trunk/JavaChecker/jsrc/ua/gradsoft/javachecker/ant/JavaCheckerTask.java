@@ -97,8 +97,7 @@ public class JavaCheckerTask extends Task {
     {
         enabled_.add(enabled);
     }
-    
-  
+      
     
     public void addConfiguredDisable(CheckName disabled)
     {
@@ -125,7 +124,11 @@ public class JavaCheckerTask extends Task {
     {
       configNVPairs_.add(nvPair);  
     }
-       
+
+    public void setExplicitEnabledOnly(boolean value)
+    {
+        explicitEnabledOnly_ = value;
+    }
 
     
     public void addConfiguredInclude(DirSet dirSet)
@@ -207,6 +210,10 @@ public class JavaCheckerTask extends Task {
       }else{
           main.setHome(jchhome_);
       }
+
+      if (explicitEnabledOnly_) {
+          main.setExplicitEnabledOnly(explicitEnabledOnly_);
+      }
       
       
       try {
@@ -214,7 +221,14 @@ public class JavaCheckerTask extends Task {
       }catch(ConfigException ex){
           throw new BuildException(ex.getMessage(),ex);
       }   
-      
+
+            for(CheckName cname: enabled_) {
+          main.getFacts().setCheckEnabled(cname.getCheck(),true);
+      }
+      for(CheckName cname: disabled_) {
+           main.getFacts().setCheckEnabled(cname.getCheck(),false);
+      }
+
       
       if (inputDirectory_!=null) {
          main.addInputDirectory(inputDirectory_,true);  
@@ -226,6 +240,7 @@ public class JavaCheckerTask extends Task {
       if (prefsFname_!=null) {
           main.setPrefsFname(prefsFname_);
       }
+
       
       if (reportFormatName_!=null) {
           try {
@@ -234,14 +249,7 @@ public class JavaCheckerTask extends Task {
               throw new BuildException(ex.getMessage(),ex);
           }
       }
-
-     
-      for(CheckName cname: enabled_) {
-          main.getFacts().setCheckEnabled(cname.getCheck(),true);
-      }
-      for(CheckName cname: disabled_) {
-           main.getFacts().setCheckEnabled(cname.getCheck(),false);
-      }
+    
       
       for(ConfigNVPair nvPair: configNVPairs_) {
           main.getFacts().setConfigValue(nvPair.getName(),nvPair.getValue());
@@ -320,6 +328,10 @@ public class JavaCheckerTask extends Task {
           cmd.createArgument().setValue(nvPair.getName());          
           cmd.createArgument().setValue(nvPair.getValue());          
       }
+
+      if (explicitEnabledOnly_) {
+          cmd.createArgument().setValue("--explicit-enabled-only");
+      }
       
       
       Path classpath=cmd.createClasspath(getProject());
@@ -372,6 +384,7 @@ public class JavaCheckerTask extends Task {
     private String reportFormatName_=null;
     private List<CheckName>  enabled_=new LinkedList<CheckName>();
     private List<CheckName>  disabled_=new LinkedList<CheckName>();
+    private boolean          explicitEnabledOnly_=false;
     private List<ConfigNVPair> configNVPairs_=new LinkedList<ConfigNVPair>();
     
     

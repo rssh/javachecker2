@@ -117,7 +117,10 @@ public class Violations {
             out.println("<table>");
         }
         for(Map.Entry<String,TypeOfViolation> me : byTypes_.entrySet()) {
-            me.getValue().report(out,format);
+            if (me.getValue().isEnabled()) {
+               //System.err.println("enabled "+me.getValue().getName());
+               me.getValue().report(out,format);
+            }
         }
         if (format==ReportFormat.HTML) {
             out.print("</table>");

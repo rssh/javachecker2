@@ -1,0 +1,19 @@
+
+system("FindSubterm",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJavaFacts"),
+  ruleset(
+     import(general,logical_or),
+     import(general,logical_and),
+     import(general,term_name),
+     find($x,$x) -> true ,
+     find($x,cons($y,$z)) -> ( find($x,$y) || find($x,$z) ) ,
+     find($x,[]) -> false ,
+     find($x,$f..($y)) [term_name($x)!=$f]-> find($x,$y) 
+                                         !-> same($x, $f..($y)),
+     find($x,$y)  [notComplex($y)] -> false ,
+     p($x) -> $x [ println($x) ],
+     same($x,$y) [ $x == $y ] -> true
+                             !-> false
+
+  ),
+  FirstTop
+);

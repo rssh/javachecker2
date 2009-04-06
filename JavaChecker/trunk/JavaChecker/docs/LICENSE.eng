@@ -28,13 +28,10 @@ This product includes software developed by Grad-Soft Ltd,
            Original software is available from GradSoft and can be
            downloaded from GradSoft website http://www.gradsoft.kiev.ua
 
-  2.3. All modifications to source code of the Covered Software must be 
-       available to the initial author of this software. 
-          
-  2.4. Any warrants from Initial Author for original Software are not
+  2.3. Any warrants from Initial Author for original Software are not
        applied to modified copy.  
 
-  2.5. The name of the Initial Author can not be 
+  2.4. The name of the Initial Author can not be 
        used to endorse or promote Derived Work without specific prior 
        written permission.
    
@@ -63,7 +60,7 @@ This product includes software developed by Grad-Soft Ltd,
 
  4.1. Conditions 1.1 - 1.2 in any redistribution of software are met.
 
- 4.2. All modifications of Covered Software must meet conditions 2.1 - 2.5
+ 4.2. All modifications of Covered Software must meet conditions 2.1 - 2.4
       of this License.
 
  4.3. When Larger Work is used for non-commercial purposes, condition
@@ -110,8 +107,6 @@ A:
      Grad-Soft Ltd:
      postal: Ukraine, Kiev 01001, p.o 12V
      e-mail: info@gradsoft.com.ua
-
-
 
 
 

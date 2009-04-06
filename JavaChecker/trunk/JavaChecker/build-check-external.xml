@@ -59,4 +59,62 @@
 
  <target name="check-all" depends="check-jetty,check-guice" />
 
+ <target name="check-coin-jetty" depends="declareJavaChecker" >
+   <JavaChecker jchhome="${basedir}" output="coin-jetty.txt" 
+                outputFormat="text" showFiles="false" 
+                explicitEnabledOnly="true"
+                >
+    <input dir="${jetty.home}/modules/jetty/src/main/java" />
+    <input dir="${jetty.home}/modules/util/src/main/java" />
+    <classpath>
+			<fileset dir="${jetty.home}/lib">
+				<include name="*.jar" />
+			</fileset>
+    </classpath>
+    
+    <enable check="StringInSwitch" />
+    <enable check="InstanceOfSwitch" />
+    <enable check="ByteLiteral" />
+    <enable check="MultiCatch" />
+    <enable check="Elvis" />
+    <enable check="LoopWithRemove" />
+   </JavaChecker>
+ </target>
+
+ <target name="check-coin-openjdk" depends="declareJavaChecker" >
+   <JavaChecker jchhome="${basedir}" output="coin-jdk.txt" 
+                outputFormat="text" showFiles="true" 
+                explicitEnabledOnly="true"
+                >
+    <input dir="${openjdk.home}/jdk/src/share/classes" />
+    <input dir="${openjdk.home}/jaxp/src/share/classes" />
+   <!--
+    <classpath>
+    </classpath>
+   -->
+    <enable check="StringInSwitch" />
+    <enable check="InstanceOfSwitch" />
+    <enable check="ByteLiteral" />
+    <enable check="MultiCatch" />
+    <enable check="Elvis" />
+    <enable check="LoopWithRemove" />
+   </JavaChecker>
+ </target>
+
+ <target name="check-coin-gwt-user" depends="declareJavaChecker" >
+   <JavaChecker jchhome="${basedir}" output="coin-gwt-user.txt" 
+                outputFormat="text" showFiles="true" 
+                explicitEnabledOnly="true"
+                >
+    <input dir="${gwt.home}/user/src" />
+    <input dir="${gwt.home}/user/super/com/google/gwt/emul" />
+    <enable check="StringInSwitch" />
+    <enable check="InstanceOfSwitch" />
+    <enable check="ByteLiteral" />
+    <enable check="MultiCatch" />
+    <enable check="Elvis" />
+    <enable check="LoopWithRemove" />
+   </JavaChecker>
+ </target>
+
 </project>

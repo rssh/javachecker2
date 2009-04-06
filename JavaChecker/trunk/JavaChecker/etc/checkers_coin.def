@@ -1,0 +1,103 @@
+Checkers(
+[
+ define(StringInSwitch,coin,"string in switch",
+        BT_TYPE_RULESET,
+        ruleset(
+          IfStatement(MethodCall($x,Identifier("equals"),
+                                   Arguments([StringLiteral($y)])),
+                      $block1,
+           IfStatement(MethodCall($x,Identifier("equals"),
+                                   Arguments([StringLiteral($z)])),
+                      $block2,
+                      $block3
+                      ))
+              -> true [ violationDiscovered(StringInSwitch,"string in switch",
+                        x($block1,$block2,$block3)) ],
+
+        # also String literals can be first in if-s
+          IfStatement(MethodCall(StringLiteral($l1),Identifier("equals"),
+                                                     Arguments([$x])),
+                      $block1,
+          IfStatement(MethodCall(StringLiteral($l2),Identifier("equals"),
+                                                     Arguments([$x])),
+                      $block2,
+                      $block3
+                     ))
+              -> true [ violationDiscovered(StringInSwitch,"string in switch",
+                        x($block1,$block2,$block3)) ]
+        ),
+        true
+  ),
+
+ define(InstanceOfSwitch,coin,"instanceof switch",
+        FT_TYPE_RULESET,
+        ruleset(
+          IfStatement(InstanceOfExpression($x,$c1),
+           $block1,
+           IfStatement(InstanceOfExpression($x,$c2),
+            $blok2,
+            $block3
+          ))
+           -> true [ violationDiscovered(InstanceOfSwitch,
+                         "instanceof switch",$block1) ]
+         ),
+         true
+ ),
+
+ define(ByteLiteral,coin,"byte literal",
+        FT_TYPE_RULESET,
+        ruleset(
+         CastExpression(byte,IntegerLiteral($x)) -> true
+                    [ violationDiscovered(ByteLiteral, "byte literal", $x) ],
+         CastExpression(byte,CharacterLiteral($x)) -> true
+                     [ violationDiscovered(ByteLiteral, "byte literal", $x) ]
+        ),true),
+
+
+ define(MultiCatch,coin,"multi catch",
+        FT_TYPE_RULESET,
+        ruleset(
+         cons(Catch($fp1,$block),cons(Catch($fp2,$block),$z)) -> true
+                    [ violationDiscovered(MultiCatch, "multi catch", $fp1) ]
+        ),true),
+
+ define(Elvis,coin,"elvis",
+        FT_TYPE_RULESET,
+        ruleset(
+          ConditionalExpression(
+           EqualityExpression($x,"==",NullLiteral()), 
+                 $ifNull,  MethodCall($x,$method,$args)) -> true
+                 [ violationDiscovered(Elvis, "elvis", $method) ],
+          ConditionalExpression(
+           EqualityExpression($x,"!=",NullLiteral()), 
+                 MethodCall($x,$method,$args), $ifNull) -> true
+                 [ violationDiscovered(Elvis, "elvis", $method) ]
+        ),true),
+
+ define(LoopWithRemove,coin,"loop with remove",
+        BT_TYPE_RULESET,
+        ruleset(
+         import(general,apply),
+         WhileStatement(
+           MethodCall($x,Identifier("hasNext"),Arguments([])),
+           $block
+         ) -> FindRemove($x,$block) ,
+
+         FindRemove($x,$block) -> 
+           CHECK(FindSubterm.find(
+                   MethodCall($x,Identifier("remove"),Arguments([])),
+                   $block),$block),
+                       
+           CHECK(false,$block) -> false,
+           CHECK(true,$block) -> true
+                    [  violationDiscovered(LoopWithRemove,"loop with remove",
+                                           $block) ],
+
+            p($x) -> $x [ println($x) ]
+
+        ),true)
+ 
+]
+
+);
+

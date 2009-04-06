@@ -10,6 +10,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
@@ -91,19 +93,24 @@ public class Main
        throw new ProcessingException("Error during reading sources:"+ex.getMessage(),ex);
    }
 
-   try {
      for(AnalyzedUnitRef unitRef: processedUnits) {
-       String fname = unitRef.getDirectory()+File.separator+unitRef.getResource();             
-       JavaUnitModel unit = unitRef.getJavaUnitModel();
-       if (unit instanceof JavaCompilationUnitModel) {
-         checkers_.checkTypes2(fname,(JavaCompilationUnitModel)unit);
-       }else{
+       String fname = unitRef.getDirectory()+File.separator+unitRef.getResource();
+       try {
+         JavaUnitModel unit = unitRef.getJavaUnitModel();
+         if (unit instanceof JavaCompilationUnitModel) {
+           checkers_.checkTypes2(fname,(JavaCompilationUnitModel)unit);
+         }else{
            throw new ProcessingException("Bad unit model for "+fname+", must be JavaCompilationUnitModel");                   
+         }
+       }catch(Exception ex){
+           ex.printStackTrace();
+           if (exitOnFirstError_) {
+               throw new ProcessingException("Exception during processing "+fname,ex);
+           }else{
+               System.err.println("Exception during processing model in "+fname+", skipping");
+           }
        }
      }
-   }catch(TermWareException ex){
-       throw new ProcessingException(ex.getMessage(),ex);
-   }
    
    try {
       report();
@@ -231,13 +238,23 @@ public class Main
           String checkName = args[i+1];
           ++i;
           getFacts().setCheckEnabled(checkName,true);
+          if (explicitEnabled_==null) {
+              explicitEnabled_ = new TreeSet<String>();
+          }
+          explicitEnabled_.add(checkName);
       }else if (args[i].equals("--disable")){
           if (args.length==i+1) {
               throw new ConfigException("--disable option require argument");
           }
           String checkName = args[i+1];
           ++i;
-          getFacts().setCheckEnabled(checkName,false);          
+          getFacts().setCheckEnabled(checkName,false);
+          if (explicitDisabled_==null) {
+              explicitDisabled_ = new TreeSet<String>();
+          }
+          explicitDisabled_.add(checkName);
+      }else if (args[i].equals("--explicit-enabled-only")){
+          explicitEnabledOnly_=true;
       }else if (args[i].equals("--config")){
           if (args.length==i+1 || args.length==i+2) {
               throw new ConfigException("--config option require two arguments");              
@@ -322,6 +339,7 @@ public class Main
    System.err.println("  --output-format (text|html)    format report in text or html");
    System.err.println("  --enable check-name            enable checking for check-name");
    System.err.println("  --disable check-name           disable checking for check-name");
+   System.err.println("  --explicit-enabled-only        run only checks, explicit enabled in command line, all other checks are disabled.");
    System.err.println("  --config  name value           set configuration item of name to value");
    System.err.println("  --include dir                  set directory, where situated source files, from which processed sources are depend");
    System.err.println("  --includejar fname             set jar, where situated classes, from which processed sources are depend  ");
@@ -385,6 +403,10 @@ public class Main
        System.err.println(ex.getMessage());
        System.err.println("skipping");
        return;
+     }catch(ua.gradsoft.parsers.java5.jjt.TokenMgrError ex){
+       System.err.println(ex.getMessage());
+       System.err.println("skipping");
+       return;
      }
      if (dump_) {
          System.out.println();
@@ -415,6 +437,9 @@ public class Main
            ex.printStackTrace();
        }catch(TermWareException ex){
            System.err.print("error during reading sources");
+           ex.printStackTrace();
+       }catch(Exception ex){
+           System.err.print("error during reading sources, skip this model");
            ex.printStackTrace();
        }
        if (processedUnits!=null) {
@@ -680,7 +705,33 @@ public class Main
    }
  }
 
+ public static boolean isExplicitEnabledOnly()
+ { return explicitEnabledOnly_; }
 
+ public static void setExplicitEnabledOnly(boolean explicitEnabledOnly)
+ {
+   explicitEnabledOnly_=explicitEnabledOnly;
+ }
+
+ public static void  setExplicitEnabled(Set<String> enabledCheckNames)
+ {
+     explicitEnabled_=enabledCheckNames;
+ }
+
+ public static Set<String>  getExplicitEnabled()
+ {
+     return explicitEnabled_;
+ }
+
+ public static void setExplicitDisabled(Set<String> explicitDisabled)
+ {
+     explicitDisabled_=explicitDisabled;
+ }
+
+ public static Set<String> getExplicitDisabled()
+ {
+     return explicitDisabled_;
+ }
 
  private static IEnv         env_          = null;
 
@@ -713,6 +764,11 @@ public class Main
  private static JavaFacts    facts_ = null;
  //private static TermSystem   mainSystem_ = null;
  private static Checkers      checkers_ = null;
+ private static Set<String>   explicitEnabled_ = new TreeSet<String>();
+ private static Set<String>   explicitDisabled_ = new TreeSet<String>();
+ private static boolean       explicitEnabledOnly_ = false;
+ private static boolean       exitOnFirstError_=false;
+
  private static boolean       isMandatoryCheckersLoading_=true;
  private static JavaCheckerExceptionHandler exceptionHandler_=new DefaultExceptionHandler();
  

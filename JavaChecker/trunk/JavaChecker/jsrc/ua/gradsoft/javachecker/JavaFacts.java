@@ -49,7 +49,9 @@ public class JavaFacts extends DefaultFacts {
         //violations_.addType("EmptyFile","style","nothing in file",true);
         //violations_.addType("Hiding","style","hiding defects", true);
         //violations_.addType("SynchronizeViolations","threading","synchronize violations", true);
-        violations_.addType("InvalidCheckerComments", "style","invalid checker comments",true);
+
+        violations_.addType("InvalidCheckerComments", "style","invalid checker comments",
+                Main.isExplicitEnabledOnly() ? Main.getExplicitEnabled().contains("InvalidCheckerComments"):true);
         violations_.addType("*","uncategorized","*",true);
         
         nonFinalFieldNamePattern_=getStringConfigValue("NonFinalNamePattern",nonFinalFieldNamePattern_);
@@ -89,6 +91,11 @@ public class JavaFacts extends DefaultFacts {
         return true;
     }
 
+    // called from systems
+    public boolean notComplex(Term t)
+    {
+        return !t.isComplexTerm();
+    }
     
     public void    setConfigValue(String key, String value)
     {
@@ -102,14 +109,16 @@ public class JavaFacts extends DefaultFacts {
     }
     
     public void setCheckEnabled(String name, boolean value)
-    {               
-        System.err.println("JavaFacts.setCheckEnabled("+name+","+value+")");
+    {                   
         setConfigValue("Check"+name,value ? "true" : "false");
-        violations_.setEnabled(name,value);                
+        violations_.setEnabled(name,value);
+        if (value) {
+            Main.getExplicitEnabled().add(name);
+        } else {
+            Main.getExplicitDisabled().add(name);
+        }
     }
-    
-    
-    
+        
     public String  getStringConfigValue(String name,String sdefault)
     {        
         String retval = localPreferences_.get(name);
@@ -251,6 +260,7 @@ public class JavaFacts extends DefaultFacts {
         }else{
             for(DefectReportItem ei: items) {
                 if (ei.getDescription().equals(item.getDescription())) {
+
                     // duplicate
                     return retval;
                 }
