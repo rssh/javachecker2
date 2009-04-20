@@ -3,6 +3,8 @@ package ua.gradsoft.javachecker;
 import java.util.Collections;
 import java.util.List;
 import junit.framework.TestCase;
+import ua.gradsoft.termware.TermSystem;
+import ua.gradsoft.termware.TermWare;
 
 /**
  *Check number of rules for coin-tests
@@ -111,6 +113,33 @@ public class CoinTest extends TestCase
 
     }
 
+    public void testBigIntegerLiterals() throws Exception
+    {
+        Main main = new Main();
+
+       // set options.
+        main.setExplicitEnabledOnly(true);
+        main.setExplicitEnabled(Collections.singleton("BigIntegerLiteral"));
+        main.setDump(false);
+        Main.setShowFiles(true);
+
+        main.init(new String[0]);
+        Main.addInputDirectory("testpackages/coin/bigintegerliteral",true);
+
+        main.process();
+
+        List<DefectReportItem> defects = Main.getFacts().getDefectReportItems();
+
+        assertTrue(defects.size()>0);
+        System.err.println("defects.size()="+defects.size());
+
+        String category = defects.get(0).getCategory();
+        assertEquals("coin",category);
+
+    }
+
+
+
     public void testMultiCatch() throws Exception
     {
         Main main = new Main();
@@ -173,7 +202,7 @@ public class CoinTest extends TestCase
        // set options.
         main.setExplicitEnabledOnly(true);
         main.setExplicitEnabled(Collections.singleton("LoopWithRemove"));
-        main.setDump(true);
+        main.setDump(false);
         Main.setShowFiles(true);
 
 
@@ -194,6 +223,65 @@ public class CoinTest extends TestCase
 
     }
 
+    public void testCatchInFinally() throws Exception
+    {
+        Main main = new Main();
+
+       // set options.
+        main.setExplicitEnabledOnly(true);
+        main.setExplicitEnabled(Collections.singleton("CatchInFinally"));
+        main.setDump(false);
+        Main.setShowFiles(true);
+        //TermSystem ts =TermWare.getInstance().resolveSystem("FindSubterm");
+        //ts.setLoggedEntity("All");
+        //ts.setLoggingMode(true);
+
+        main.init(new String[0]);
+        Main.addInputDirectory("testpackages/coin/catchinfinally",true);
+
+        Main.getFacts().clearDefectReportItems();
+
+        main.process();
+
+        List<DefectReportItem> defects = Main.getFacts().getDefectReportItems();
+
+        assertTrue(defects.size()>0);
+        System.err.println("defects.size()="+defects.size());
+
+        String category = defects.get(0).getCategory();
+        assertEquals("coin",category);
+
+    }
+
+    public void testRethrow() throws Exception
+    {
+        Main main = new Main();
+
+       // set options.
+        main.setExplicitEnabledOnly(true);
+        main.setExplicitEnabled(Collections.singleton("RethrowClause"));
+        main.setDump(false);
+        Main.setShowFiles(true);
+        //TermSystem ts =TermWare.getInstance().resolveSystem("FindSubterm");
+        //ts.setLoggedEntity("All");
+        //ts.setLoggingMode(true);
+
+        main.init(new String[0]);
+        Main.addInputDirectory("testpackages/coin/rethrow",true);
+
+        Main.getFacts().clearDefectReportItems();
+
+        main.process();
+
+        List<DefectReportItem> defects = Main.getFacts().getDefectReportItems();
+
+        assertTrue(defects.size()>0);
+        System.err.println("defects.size()="+defects.size());
+
+        String category = defects.get(0).getCategory();
+        assertEquals("coin",category);
+
+    }
 
 
 }

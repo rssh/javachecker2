@@ -78,6 +78,13 @@
     <enable check="MultiCatch" />
     <enable check="Elvis" />
     <enable check="LoopWithRemove" />
+    <enable check="AllIfs" />
+    <enable check="AllIntegerLiteral" />
+    <enable check="BigIntegerLiteral" />
+    <enable check="AllCatchs" />
+    <enable check="CatchInFinally" />
+    <enable check="ObjectSwitch" />
+    <enable check="RethrowClause" />
    </JavaChecker>
  </target>
 
@@ -98,6 +105,13 @@
     <enable check="MultiCatch" />
     <enable check="Elvis" />
     <enable check="LoopWithRemove" />
+    <enable check="AllIfs" />
+    <enable check="BigIntegerLiteral" />
+    <enable check="AllIntegerLiteral" />
+    <enable check="AllCatchs" />
+    <enable check="CatchInFinally" />
+    <enable check="ObjectSwitch" />
+    <enable check="RethrowClause" />
    </JavaChecker>
  </target>
 
@@ -114,6 +128,41 @@
     <enable check="MultiCatch" />
     <enable check="Elvis" />
     <enable check="LoopWithRemove" />
+    <enable check="AllIfs" />
+    <enable check="AllIntegerLiteral" />
+    <enable check="BigIntegerLiteral" />
+    <enable check="AllCatchs" />
+    <enable check="CatchInFinally" />
+    <enable check="ObjectSwitch" />
+    <enable check="RethrowClause" />
+   </JavaChecker>
+ </target>
+
+ <target name="check-coin-hibernate" depends="declareJavaChecker" >
+   <JavaChecker jchhome="${basedir}" output="coin-hibernate.txt" 
+                outputFormat="text" showFiles="true" 
+                explicitEnabledOnly="true"
+                >
+    <input dir="${hibernate.home}/core/src/main/java" />
+    <input dir="${hibernate.home}/annotations/src/main/java" />
+    <input dir="${hibernate.home}/entitymanager/src/main/java" />
+    <input dir="${hibernate.home}/commons-annotations/src/main/java" />
+    <classpath>
+     <pathelement location="${j2ee.jar}" />
+    </classpath>
+    <enable check="StringInSwitch" />
+    <enable check="InstanceOfSwitch" />
+    <enable check="ByteLiteral" />
+    <enable check="AllIntegerLiteral" />
+    <enable check="BigIntegerLiteral" />
+    <enable check="MultiCatch" />
+    <enable check="Elvis" />
+    <enable check="LoopWithRemove" />
+    <enable check="AllIfs" />
+    <enable check="AllCatchs" />
+    <enable check="CatchInFinally" />
+    <enable check="ObjectSwitch" />
+    <enable check="RethrowClause" />
    </JavaChecker>
  </target>
 

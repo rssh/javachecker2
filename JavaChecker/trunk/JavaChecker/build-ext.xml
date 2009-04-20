@@ -52,7 +52,7 @@
   />
  </target>
 
- <target name="installation" depends="binary_installation,source_installation" /> 
+ <target name="installation" depends="binary_installation,source_installation,docs" /> 
 
  <target name="all" depends="build,clean,docs,installation"/>
 

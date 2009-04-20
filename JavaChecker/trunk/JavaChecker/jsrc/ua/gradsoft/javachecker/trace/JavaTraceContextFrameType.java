@@ -8,6 +8,7 @@ public enum JavaTraceContextFrameType {
 
     INITIAL,
     TRY_CATCH,
-    CALL
+    CALL,
+    LOOP
     
 }

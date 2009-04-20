@@ -29,6 +29,16 @@ Checkers(
         true
   ),
 
+ define(AllIfs,coin,"all ifs",
+        BT_TYPE_RULESET,
+        ruleset(
+          IfStatement($x,$y,$z)
+                -> true [ violationDiscovered(AllIfs, "all ifs",$x) ]
+         ),
+         true
+ ),
+ 
+
  define(InstanceOfSwitch,coin,"instanceof switch",
         FT_TYPE_RULESET,
         ruleset(
@@ -54,6 +64,24 @@ Checkers(
         ),true),
 
 
+ define(AllIntegerLiteral,coin,"all integer literals",
+        FT_TYPE_RULESET,
+        ruleset(
+         IntegerLiteral($x) -> true
+         [ violationDiscovered(AllIntegerLiteral, "all integer literals", $x) ]
+        ),true),
+
+ define(BigIntegerLiteral,coin,"big integer literals(undescores)",
+        FT_TYPE_RULESET,
+        ruleset(
+         IntegerLiteral($x) 
+           [ ($x > 100000) || ($x < -100000) ] -> true
+                              [ violationDiscovered(BigIntegerLiteral, 
+                                     "big integer literals(undescores)", $x) ]
+                              !-> false
+        ),true),
+
+
  define(MultiCatch,coin,"multi catch",
         FT_TYPE_RULESET,
         ruleset(
@@ -61,8 +89,28 @@ Checkers(
                     [ violationDiscovered(MultiCatch, "multi catch", $fp1) ]
         ),true),
 
- define(Elvis,coin,"elvis",
+ define(AllCatchs,coin,"all catchs",
         FT_TYPE_RULESET,
+        ruleset(
+         cons(Catch($fp1,$block),$x) -> true
+                    [ violationDiscovered(AllCatchs, "all catchs", $fp1) ]
+        ),true),
+
+ define(CatchInFinally,coin,"catch in finally",
+        BT_TYPE_RULESET,
+        ruleset(
+         import(general,apply),
+         TryStatement($block1,$catchs,$finally) -> FindCatch($finally),
+         FindCatch($block) -> 
+           CHECK(FindSubterm.find(Catch($a,$b),$block),$block),
+         CHECK(false,$block) -> false,
+         CHECK(true,$block) -> true
+                    [  violationDiscovered(CatchInFinally,"catch in finally",
+                                           $block) ]
+        ),true),
+
+ define(Elvis,coin,"elvis",
+        BT_TYPE_RULESET,
         ruleset(
           ConditionalExpression(
            EqualityExpression($x,"==",NullLiteral()), 
@@ -70,6 +118,14 @@ Checkers(
                  [ violationDiscovered(Elvis, "elvis", $method) ],
           ConditionalExpression(
            EqualityExpression($x,"!=",NullLiteral()), 
+                 MethodCall($x,$method,$args), $ifNull) -> true
+                 [ violationDiscovered(Elvis, "elvis", $method) ],
+          ConditionalExpression(
+           EqualityExpression(NullLiteral(),"!=",$x), 
+                 MethodCall($x,$method,$args), $ifNull) -> true
+                 [ violationDiscovered(Elvis, "elvis", $method) ],
+          ConditionalExpression(
+           EqualityExpression(NullLiteral(),"==",$x), 
                  MethodCall($x,$method,$args), $ifNull) -> true
                  [ violationDiscovered(Elvis, "elvis", $method) ]
         ),true),
@@ -95,7 +151,46 @@ Checkers(
 
             p($x) -> $x [ println($x) ]
 
+        ),true),
+
+ define(ObjectSwitch,coin,"object switch",
+        FT_TYPE_RULESET,
+        ruleset(
+          IfStatement(InstanceOfExpression($x,$c1),
+           $block1,
+           IfStatement(InstanceOfExpression($x,$c2),
+            $blok2,
+            $block3
+          ))
+           -> true [ violationDiscovered(ObjectSwitch,
+                         "object switch",$block1) ],
+          IfStatement(EqualityExpression($x,$op1,$c1),
+           $block1,
+           IfStatement(EqualityExpression($x,$op1,$c2),
+            $blok2,
+            $block3
+          ))
+           -> true [ violationDiscovered(ObjectSwitch,
+                         "object switch",$block1) ],
+          IfStatement(MethodCall($x,$method1,$args1),
+           $block1,
+           IfStatement(MethodCall($x,$method2,$args2),
+            $blok2,
+            $block3
+          ))
+           -> true [ violationDiscovered(ObjectSwitch,
+                         "object switch",$block1) ]
+         ),
+         true
+ ),
+
+ define(RethrowClause,coin,"rethrow clause",
+        FT_TYPE_RULESET,
+        ruleset(
+         Catch($fp1,Block([ThrowStatement($x)])) -> true
+                 [ violationDiscovered(RethrowClause, "rethrow clause", $fp1) ]
         ),true)
+
  
 ]
 

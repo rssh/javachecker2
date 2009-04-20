@@ -7,9 +7,11 @@ import java.util.TreeMap;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.models.JavaPlaceContext;
 import ua.gradsoft.javachecker.annotations.Nullable;
+import ua.gradsoft.javachecker.models.JavaConstructorModel;
 import ua.gradsoft.javachecker.models.JavaFormalParameterModel;
 import ua.gradsoft.javachecker.models.JavaInitializerModel;
 import ua.gradsoft.javachecker.models.JavaMethodModel;
+import ua.gradsoft.javachecker.models.JavaNullTypeModel;
 import ua.gradsoft.javachecker.models.JavaPlaceContextFactory;
 import ua.gradsoft.javachecker.models.JavaStatementModel;
 import ua.gradsoft.javachecker.models.JavaTopLevelBlockModel;
@@ -30,7 +32,8 @@ public class JavaTraceContext {
      * create 'zero' context
      * @param place
      */
-    public JavaTraceContext(JavaPlaceContext place)
+    public JavaTraceContext(JavaPlaceContext place, JavaTraceObjectModel thisObjectModel)
+                                                          throws EvaluationException, EntityNotFoundException
     {
       place_=place;
       if (place_.getTypeModel()!=null) {
@@ -45,9 +48,25 @@ public class JavaTraceContext {
               }else if (bo instanceof JavaInitializerModel) {
                   JavaInitializerModel im = (JavaInitializerModel)bo;
                   isStaticContext_=im.getModifiers().isStatic();
+              }else if (bo instanceof JavaConstructorModel) {
+                  JavaConstructorModel cm = (JavaConstructorModel)bo;
+                  isStaticContext_=false;
               }else{
                   //TODO:  write more.
               }
+          }
+          if (thisObjectModel!=null) {
+            try {
+              JavaTypeModel traceThis = thisObjectModel.getType();
+              if (JavaTypeModelHelper.same(traceThis, JavaNullTypeModel.INSTANCE)) {
+                  // check that thisObjextModel is appropriative for
+                  if (!JavaTypeModelHelper.subtypeOrSame(traceThis, thisTypeModel)) {
+                      throw new EvaluationException("trace object does not have type of this("+traceThis.getFullName()+", "+thisTypeModel.getFullName()+")");
+                  }
+              }
+            }catch(TermWareException ex){
+                throw new EvaluationException("exception during context creation",ex);
+            }
           }
       }
     }
@@ -224,12 +243,18 @@ public class JavaTraceContext {
     }
 
 
+    public JavaTraceObjectModel getThisTraceObjectModel()
+    {
+      return thisTraceObjectModel_;
+    }
+
+
     private JavaPlaceContext place_;
     List<JavaStatementModel>  statements_;
     int                       statementIndex_=0;
     private Map<String, JavaTraceObjectModel> localVariables_;
     private Map<String, JavaTraceObjectModel> formalParameters_;
-    private JavaTraceObjectModel  thisTraceObjectModel_;
+    private JavaTraceObjectModel  thisTraceObjectModel_=null;
     private boolean               isStaticContext_=false;
 
     private JavaTraceContext prev_;

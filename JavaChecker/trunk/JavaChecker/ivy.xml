@@ -4,12 +4,14 @@
   <conf name="jar" description="provide javachecker jar" />
   <conf name="build" description="provide javacjecke with build tools" />
   <conf name="test" extends="jar" description="java5pp with tests" />
-  <conf name="installation" extends="test,build" 
+  <conf name="docs"  description="javadocs for internal API" />
+  <conf name="installation" extends="test,build,docs" 
                          description="source distribution" />
  </configurations>
  <publications>
     <artifact name="JavaChecker" type="jar" conf="jar" />
     <artifact name="JavaChecker2Annotations" type="jar" conf="jar" />
+    <artifact name="JavaChecker-docs" type="zip" conf="docs" />
     <artifact name="JavaCheckerSourceInstaller" type="installation" ext="jar" 
               conf="installation" />
     <artifact name="JavaCheckerBinaryInstaller" type="installation" ext="jar" 

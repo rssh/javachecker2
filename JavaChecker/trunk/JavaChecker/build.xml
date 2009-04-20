@@ -162,8 +162,20 @@
    </JavaChecker>
  </target>
 
+ <target name="javadoc">
+  <javadoc destdir="docs/api">
+    <packageset dir="jsrc" />
+    <packageset dir="jsrc-ann" />
+    <classpath>
+      <path refid="std.build.path" />
+    </classpath>
+    <link href="http://www.gradsoft.ua/rus/Products/termware/jdocs/" />
+  </javadoc>
+  <zip destfile="installer/JavaChecker-docs-${version}.zip"
+       basedir="docs/api" />
+ </target>
 
- <target name="docs">
+ <target name="docs" depends="javadoc">
  </target>
  
 </project>

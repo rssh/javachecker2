@@ -35,6 +35,7 @@ import ua.gradsoft.termware.envs.SystemEnv;
 import ua.gradsoft.termware.exceptions.AssertException;
 import ua.gradsoft.parsers.java5.JavaParserFactory;
 import ua.gradsoft.printers.java5.JavaPrinterFactory;
+import ua.gradsoft.termware.TermWareRuntimeException;
 import ua.gradsoft.termware.exceptions.ExternalException;
 
 
@@ -449,7 +450,7 @@ public class Main
        try {
           checkSource(f.getAbsolutePath(), source,cu);              
        }catch(ProcessingException ex){
-           System.err.println("error during checking "+f.getAbsolutePath()+":"+ex.getMessage());
+           System.err.println("error during checking (skip)"+f.getAbsolutePath()+":"+ex.getMessage());
        }
      }
           
@@ -458,10 +459,15 @@ public class Main
  
  
  private void checkSource(String fname, Term source, JavaCompilationUnitModel cu) throws ProcessingException
- {   
-   checkers_.checkCompilationUnitAST(fname, source);  
-   checkers_.checkTypes(fname, cu);  
-   ++nProcessedFiles_;
+ {
+   try {
+     checkers_.checkCompilationUnitAST(fname, source);
+     checkers_.checkTypes(fname, cu);
+     ++nProcessedFiles_;
+   }catch(TermWareRuntimeException ex){
+       ex.printStackTrace();
+       throw new ProcessingException(ex.getMessage(),ex);
+   }
  }
  
   public static void processOneClass(String fullClassName) throws ProcessingException 
