@@ -189,8 +189,49 @@ Checkers(
         ruleset(
          Catch($fp1,Block([ThrowStatement($x)])) -> true
                  [ violationDiscovered(RethrowClause, "rethrow clause", $fp1) ]
-        ),true)
+        ),true),
 
+ define(WideningSyntax,coin,"widening operator (syntax)",
+        BT_TYPE_RULESET,
+        ruleset(
+         AndExpression($x,IntegerLiteral(255)) -> true
+              [ violationDiscovered(WideningSyntax, "widening operator (syntax)", $x) ],
+         AndExpression(IntegerLiteral(255),$x) -> true
+              [ violationDiscovered(WideningSyntax, "widening operator (syntax)", $x) ]
+        ),true),
+
+             #  $ctx.getExpressionModel().getSubExpressions().get(0).getType(),
+
+ define(WideningSemantics,coin,"widening operator (semantics)",
+        MODEL_RULESET,
+        ruleset(
+         import(general,apply),
+         import(List,car),
+         import(List,cdr),
+         AndExpressionModel($x,IntegerLiteral(255),$ctx)
+             [ $ctx.sameTypes(
+               car($ctx.getExpressionModel().getSubExpressions()).getType(),
+               $ctx.resolveTypeTerm(byte)) ]  -> true
+            [ violationDiscovered(WideningSemantics, 
+                              "widening operator (semantics)", $x) ]
+                                              !-> false,
+         AndExpressionModel(IntegerLiteral(255),$x,$ctx)
+            [ $ctx.sameTypes(
+                car(cdr($ctx.getExpressionModel().getSubExpressions()))
+                                                                  .getType(),
+                $ctx.resolveTypeTerm(byte)) ]  -> true
+              [ violationDiscovered(WideningSemantics, 
+                              "widening operator (semantics)", $x) ]
+                                              !-> false
+        ),true),
+
+
+ define(AllBitAnds,coin,"all bit ands",
+        BT_TYPE_RULESET,
+        ruleset(
+         AndExpression($x,$y) -> true 
+              [ violationDiscovered(AllBitAnds, "all bit ands", A($x,$y)) ]
+        ),true)
  
 ]
 

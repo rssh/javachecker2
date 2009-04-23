@@ -1,10 +1,11 @@
 package ua.gradsoft.javachecker;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import junit.framework.TestCase;
-import ua.gradsoft.termware.TermSystem;
-import ua.gradsoft.termware.TermWare;
 
 /**
  *Check number of rules for coin-tests
@@ -282,6 +283,39 @@ public class CoinTest extends TestCase
         assertEquals("coin",category);
 
     }
+
+    public void testWideningOperator() throws Exception
+    {
+        Main main = new Main();
+
+       // set options.
+        main.setExplicitEnabledOnly(true);
+
+        Set<String> enabled = new TreeSet<String>();
+        enabled.addAll(Arrays.asList("WideningSemantics","WideningSyntax"));
+        main.setExplicitEnabled(enabled);
+        main.setDump(true);
+        Main.setShowFiles(true);
+        //TermSystem ts =TermWare.getInstance().resolveSystem("FindSubterm");
+        //ts.setLoggedEntity("All");
+        //ts.setLoggingMode(true);
+
+        main.init(new String[0]);
+        Main.addInputDirectory("testpackages/coin/wideningoperator",true);
+
+        Main.getFacts().clearDefectReportItems();
+
+        main.process();
+
+        List<DefectReportItem> defects = Main.getFacts().getDefectReportItems();
+
+        assertTrue(defects.size()>0);
+        System.err.println("defects.size()="+defects.size());
+
+
+    }
+
+
 
 
 }

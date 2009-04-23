@@ -85,6 +85,9 @@
     <enable check="CatchInFinally" />
     <enable check="ObjectSwitch" />
     <enable check="RethrowClause" />
+    <enable check="WideningSyntax" />
+    <enable check="WideningSemantics" />
+    <enable check="AllBitAnds" />
    </JavaChecker>
  </target>
 
@@ -112,6 +115,9 @@
     <enable check="CatchInFinally" />
     <enable check="ObjectSwitch" />
     <enable check="RethrowClause" />
+    <enable check="WideningSyntax" />
+    <enable check="WideningSemantics" />
+    <enable check="AllBitAnds" />
    </JavaChecker>
  </target>
 
@@ -135,6 +141,9 @@
     <enable check="CatchInFinally" />
     <enable check="ObjectSwitch" />
     <enable check="RethrowClause" />
+    <enable check="WideningSyntax" />
+    <enable check="WideningSemantics" />
+    <enable check="AllBitAnds" />
    </JavaChecker>
  </target>
 
@@ -163,6 +172,9 @@
     <enable check="CatchInFinally" />
     <enable check="ObjectSwitch" />
     <enable check="RethrowClause" />
+    <enable check="WideningSyntax" />
+    <enable check="WideningSemantics" />
+    <enable check="AllBitAnds" />
    </JavaChecker>
  </target>
 
