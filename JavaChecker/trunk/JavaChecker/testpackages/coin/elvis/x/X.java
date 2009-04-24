@@ -17,4 +17,20 @@ public class X
     int al3 = ((args==null) ? 1 : args.length() );
   }
 
+  String  fun1(String s)
+  {
+    String retval=null;
+    if (s!=null) {
+        retval=s.replace("*","A");
+    }
+  }
+
+  
+  String  fun2(String s)
+  {
+    if (s!=null) {
+        s.replace("*","A");
+    }
+  }
+
 }

@@ -7,19 +7,35 @@ Checkers(
            # a==null ? b : a
           ConditionalExpression(
            EqualityExpression($a,"==",NullLiteral()), $b, $a ) -> true
-                 [ violationDiscovered(Elvis1, "elvis1", $a) ],
+                 [ violationDiscovered(Elvis1, "elvis1", s($a,$b)) ],
            # a!=null ? a : b
           ConditionalExpression(
                 EqualityExpression($a,"!=",NullLiteral()),  $a, $b ) -> true
-                 [ violationDiscovered(Elvis1, "elvis1", $a) ],
+                 [ violationDiscovered(Elvis1, "elvis1", s($a,$b)) ],
            # null==a ? b: a
           ConditionalExpression(
            EqualityExpression(NullLiteral(),"==",$a), $b, $a) -> true
-                 [ violationDiscovered(Elvis1, "elvis1", $a) ],
+                 [ violationDiscovered(Elvis1, "elvis1", s($a,$b)) ],
            # null!=a ? a: b
           ConditionalExpression(
            EqualityExpression(NullLiteral(),"!=",$a), $a, $b ) -> true
-                 [ violationDiscovered(Elvis1, "elvis1", $a) ]
+                 [ violationDiscovered(Elvis1, "elvis1", s($a,$b)) ],
+          
+           # if (foo!=null) { foo.process(); }
+          IfStatement(EqualityExpression($foo,"!=",NullLiteral()),
+              Block([StatementExpressionStatement(StatementExpression(
+                     MethodCall($foo,$m,$args)
+                    ))]))
+                -> true
+                 [ violationDiscovered(Elvis1, "elvis1", s($m,$args)) ],
+           # if (foo!=null) { bar=foo.process(); }
+          IfStatement(EqualityExpression($foo,"!=",NullLiteral()),
+              Block([StatementExpressionStatement(StatementExpression(
+                     $bar,"=",MethodCall($foo,$m,$args)
+                    ))]))
+                -> true
+                 [ violationDiscovered(Elvis1, "elvis1", s($m,$a)) ]
+
         ),true)
 
 ]

@@ -196,6 +196,33 @@ public class CoinTest extends TestCase
 
     }
 
+    public void testElvis1() throws Exception
+    {
+        Main main = new Main();
+
+       // set options.
+        main.setExplicitEnabledOnly(true);
+        main.setExplicitEnabled(Collections.singleton("Elvis1"));
+        main.setDump(true);
+        Main.setShowFiles(true);
+
+
+        main.init(new String[0]);
+        Main.addInputDirectory("testpackages/coin/elvis",true);
+
+        Main.getFacts().clearDefectReportItems();
+
+        main.process();
+
+        List<DefectReportItem> defects = Main.getFacts().getDefectReportItems();
+
+        assertTrue(defects.size()>0);
+        System.err.println("defects.size()="+defects.size());
+
+
+    }
+
+
     public void testLoopWithRemove() throws Exception
     {
         Main main = new Main();
@@ -294,7 +321,7 @@ public class CoinTest extends TestCase
         Set<String> enabled = new TreeSet<String>();
         enabled.addAll(Arrays.asList("WideningSemantics","WideningSyntax"));
         main.setExplicitEnabled(enabled);
-        main.setDump(true);
+        main.setDump(false);
         Main.setShowFiles(true);
         //TermSystem ts =TermWare.getInstance().resolveSystem("FindSubterm");
         //ts.setLoggedEntity("All");
