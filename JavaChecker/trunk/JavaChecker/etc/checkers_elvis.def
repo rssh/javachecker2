@@ -15,11 +15,11 @@ Checkers(
            # null==a ? b: a
           ConditionalExpression(
            EqualityExpression(NullLiteral(),"==",$a), $b, $a) -> true
-                 [ violationDiscovered(Elvis1, "elvis1", $x) ],
+                 [ violationDiscovered(Elvis1, "elvis1", $a) ],
            # null!=a ? a: b
           ConditionalExpression(
            EqualityExpression(NullLiteral(),"!=",$a), $a, $b ) -> true
-                 [ violationDiscovered(Elvis1, "elvis1", $method) ]
+                 [ violationDiscovered(Elvis1, "elvis1", $a) ]
         ),true)
 
 ]
