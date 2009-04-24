@@ -139,6 +139,12 @@ Checkers(
            $block
          ) -> FindRemove($x,$block) ,
 
+         ForStatement(
+            TraditionalForLoopHead($forinit, 
+               MethodCall($x,Identifier("hasNext"),Arguments([])),
+               NIL
+            ), $block) -> FindRemove($x,$block), 
+
          FindRemove($x,$block) -> 
            CHECK(FindSubterm.find(
                    MethodCall($x,Identifier("remove"),Arguments([])),
@@ -152,6 +158,8 @@ Checkers(
             p($x) -> $x [ println($x) ]
 
         ),true),
+
+
 
  define(ObjectSwitch,coin,"object switch",
         FT_TYPE_RULESET,

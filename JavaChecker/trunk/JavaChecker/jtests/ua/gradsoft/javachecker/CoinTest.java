@@ -203,7 +203,7 @@ public class CoinTest extends TestCase
        // set options.
         main.setExplicitEnabledOnly(true);
         main.setExplicitEnabled(Collections.singleton("Elvis1"));
-        main.setDump(true);
+        main.setDump(false);
         Main.setShowFiles(true);
 
 
@@ -230,7 +230,7 @@ public class CoinTest extends TestCase
        // set options.
         main.setExplicitEnabledOnly(true);
         main.setExplicitEnabled(Collections.singleton("LoopWithRemove"));
-        main.setDump(false);
+        main.setDump(true);
         Main.setShowFiles(true);
 
 
@@ -243,11 +243,9 @@ public class CoinTest extends TestCase
 
         List<DefectReportItem> defects = Main.getFacts().getDefectReportItems();
 
-        assertTrue(defects.size()>0);
+        assertTrue(defects.size()>1);
         System.err.println("defects.size()="+defects.size());
 
-        String category = defects.get(0).getCategory();
-        assertEquals("coin",category);
 
     }
 
