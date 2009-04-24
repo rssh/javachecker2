@@ -1,0 +1,28 @@
+Checkers(
+[
+
+ define(Elvis1,coin,"elvis1",
+        BT_TYPE_RULESET,
+        ruleset(
+           # a==null ? b : a
+          ConditionalExpression(
+           EqualityExpression($a,"==",NullLiteral()), $b, $a ) -> true
+                 [ violationDiscovered(Elvis1, "elvis1", $a) ],
+           # a!=null ? a : b
+          ConditionalExpression(
+                EqualityExpression($a,"!=",NullLiteral()),  $a, $b ) -> true
+                 [ violationDiscovered(Elvis1, "elvis1", $a) ],
+           # null==a ? b: a
+          ConditionalExpression(
+           EqualityExpression(NullLiteral(),"==",$a), $b, $a) -> true
+                 [ violationDiscovered(Elvis1, "elvis1", $x) ],
+           # null!=a ? a: b
+          ConditionalExpression(
+           EqualityExpression(NullLiteral(),"!=",$a), $a, $b ) -> true
+                 [ violationDiscovered(Elvis1, "elvis1", $method) ]
+        ),true)
+
+]
+
+);
+
