@@ -78,6 +78,7 @@
     <enable check="MultiCatch" />
     <enable check="Elvis" />
     <enable check="Elvis1" />
+    <enable check="NullSafe" />
     <enable check="LoopWithRemove" />
     <enable check="AllIfs" />
     <enable check="AllIntegerLiteral" />
@@ -108,6 +109,8 @@
     <enable check="ByteLiteral" />
     <enable check="MultiCatch" />
     <enable check="Elvis" />
+    <enable check="Elvis1" />
+    <enable check="NullSafe" />
     <enable check="LoopWithRemove" />
     <enable check="AllIfs" />
     <enable check="BigIntegerLiteral" />
@@ -136,6 +139,8 @@
     <enable check="ByteLiteral" />
     <enable check="MultiCatch" />
     <enable check="Elvis" />
+    <enable check="Elvis1" />
+    <enable check="NullSafe" />
     <enable check="LoopWithRemove" />
     <enable check="AllIfs" />
     <enable check="AllIntegerLiteral" />
@@ -174,6 +179,7 @@
     <enable check="MultiCatch" />
     <enable check="Elvis" />
     <enable check="Elvis1" />
+    <enable check="NullSafe" />
     <enable check="LoopWithRemove" />
     <enable check="AllIfs" />
     <enable check="AllCatchs" />

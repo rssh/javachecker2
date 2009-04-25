@@ -37,6 +37,16 @@ Checkers(
          ),
          true
  ),
+
+ define(AllCEs,coin,"all condition expressions",
+        BT_TYPE_RULESET,
+        ruleset(
+          ConditionExpression($x,$y,$z)
+             -> true [ violationDiscovered(AllCEs, "condition expression",$x) ]
+         ),
+         true
+ ),
+ 
  
 
  define(InstanceOfSwitch,coin,"instanceof switch",
