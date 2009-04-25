@@ -27,9 +27,7 @@
                conf="test->default" />
    <dependency org="ua.gradsoft" name="termware" rev="${termware.version}"
                conf="*->*" >
-    <artifact name="TermWare" type="jar"
-              url="http://www.gradsoft.ua/common/termware/TermWare-${termware.version}.jar"
-    />
+    <artifact name="TermWare" type="jar" />
    </dependency>
    <dependency org="ua.gradsoft" name="termwarejpp" 
                rev="${termwarejpp.version}" >

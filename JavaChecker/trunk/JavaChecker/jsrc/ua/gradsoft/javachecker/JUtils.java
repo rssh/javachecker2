@@ -1,7 +1,6 @@
 /*
  * Utils.java
  *
- * Created 18, 02, 2004, 13:46
  */
 
 package ua.gradsoft.javachecker;
@@ -226,7 +225,8 @@ public final class JUtils {
        }else{
          for(int i=0; i<t.getArity(); ++i){
            Term c=findMarkedTerm(t.getSubtermAt(i));
-           if (!c.isNil()) {
+           fileMark = TermHelper.getAttribute(c, "file");
+           if (!fileMark.isNil()) {
              return c;
            }
          }

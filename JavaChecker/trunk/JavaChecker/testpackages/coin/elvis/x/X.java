@@ -33,4 +33,10 @@ public class X
     }
   }
 
+  String safeIndex(String[] ss, int i)
+  {
+    return (ss!=null) ? ss[i] : null;
+  }
+
+
 }

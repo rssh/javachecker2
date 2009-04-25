@@ -19,22 +19,96 @@ Checkers(
            # null!=a ? a: b
           ConditionalExpression(
            EqualityExpression(NullLiteral(),"!=",$a), $a, $b ) -> true
-                 [ violationDiscovered(Elvis1, "elvis1", s($a,$b)) ],
+                 [ violationDiscovered(Elvis1, "elvis1", s($a,$b)) ]
+
+        ),true),
           
+
+ define(NullSafe,coin,"nullsafe call of fields and methods",
+        BT_TYPE_RULESET,
+        ruleset(
+
+          import(general, apply),
+          import(List, car),
+
+          # we don not want write same conditions exceptions 4 times, so
+          # transform all to one form.
+          EqualityExpression($a,"!=",NullLiteral()) -> IsNotNullExpression($a),
+          EqualityExpression(NullLiteral(),"!=",$a) -> IsNotNullExpression($a),
+          EqualityExpression($a,"==",NullLiteral()) -> IsNullExpression($a),
+          EqualityExpression(NullLiteral(),"==",$a) -> IsNullExpression($a),
+
            # if (foo!=null) { foo.process(); }
-          IfStatement(EqualityExpression($foo,"!=",NullLiteral()),
+          IfStatement(IsNotNullExpression($foo),
               Block([StatementExpressionStatement(StatementExpression(
                      MethodCall($foo,$m,$args)
                     ))]))
                 -> true
-                 [ violationDiscovered(Elvis1, "elvis1", s($m,$args)) ],
+                 [ violationDiscovered(NullSafe, "null safe method call in statement", s($foo,$m,$args)) ],
            # if (foo!=null) { bar=foo.process(); }
-          IfStatement(EqualityExpression($foo,"!=",NullLiteral()),
+          IfStatement(IsNotNullExpression($foo),
               Block([StatementExpressionStatement(StatementExpression(
                      $bar,"=",MethodCall($foo,$m,$args)
                     ))]))
                 -> true
-                 [ violationDiscovered(Elvis1, "elvis1", s($m,$a)) ]
+                 [ violationDiscovered(NullSafe, "null safe methd call in statement", s($foo,$m,$args)) ],
+
+
+          ConditionalExpression(IsNotNullExpression($a),$x,$y)->
+                                ConditionalExpressionNotNull($a,$x,$y), 
+          ConditionalExpression(IsNullExpression($a),$x,$y)->
+                                ConditionalExpressionNotNull($a,$y,$x), 
+
+           # a!=null ? a.method() : null
+          ConditionalExpressionNotNull($a,
+                    MethodCall($a,$m,$args), NullLiteral() ) -> true
+                 [ violationDiscovered(NullSafe, 
+                   "null safe method call in condition", s($m,$args)) ],
+
+          ConditionalExpressionNotNull($a,
+                    Name([$a:$x]), NullLiteral() ) -> true
+                 [ violationDiscovered(NullSafe, 
+                   "null safe field access in condition", s($a,$x)) ],
+
+          ConditionalExpressionNotNull($a,
+                    Field($a,$x), NullLiteral() ) -> true
+                 [ violationDiscovered(NullSafe, 
+                   "null safe field access in condition", s($a,$x)) ],
+
+          ConditionalExpressionNotNull($a,ArrayIndex($a,$x),NullLiteral())
+                  -> true
+                 [ violationDiscovered(NullSafe, 
+                   "null safe array access ", s($a,$x)) ],
+
+           # now try to handle complex If expressions. 
+           # interesting if-s are those, who consists only from
+           # IsNotNullExpression
+           ConditionalAndExpression(IsNotNullExpression($a),
+                                    IsNotNullExpression($b)) 
+             ->
+              ConditionalAndExpressions([$a,$b]),
+
+           ConditionalAndExpression(IsNotNullExpression($a),
+                               ConditionalAndExpressions($list))
+            -> ConditionalAndExpressions(cons($a,$list)),
+
+           IfStatement(ConditionalAndExpressions($cn),$block) 
+                -> CHECK(FindSubterm.find(car($cn),$block),$block),
+
+           IfStatement($other,$x) -> false,
+
+           IfStatement(ConditionalAndExpressions($cn),$block, $elsblock) 
+                -> CHECK(FindSubterm.find(car($cn),$block),$block),
+
+           IfStatement($other,$x,$y) -> false,
+
+           CHECK(true,$block) -> true
+                 [ violationDiscovered(NullSafe, 
+                            "multiple test for null access", $block) ],
+
+           CHECK(false,$block) -> false,
+                                                            
+           p($x) -> $x [ println($x) ]
 
         ),true)
 

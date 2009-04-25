@@ -202,8 +202,10 @@ public class CoinTest extends TestCase
 
        // set options.
         main.setExplicitEnabledOnly(true);
-        main.setExplicitEnabled(Collections.singleton("Elvis1"));
-        main.setDump(false);
+        Set<String> checks = new TreeSet<String>();
+        checks.addAll(Arrays.asList("Elvis1","NullSafe"));
+        main.setExplicitEnabled(checks);
+        main.setDump(true);
         Main.setShowFiles(true);
 
 
@@ -230,7 +232,7 @@ public class CoinTest extends TestCase
        // set options.
         main.setExplicitEnabledOnly(true);
         main.setExplicitEnabled(Collections.singleton("LoopWithRemove"));
-        main.setDump(true);
+        main.setDump(false);
         Main.setShowFiles(true);
 
 
