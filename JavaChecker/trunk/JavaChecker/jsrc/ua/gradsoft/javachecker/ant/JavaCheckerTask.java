@@ -2,7 +2,6 @@
  * JavaCheckerTask.java
  *
  * Created 07/04/2004, 4:11
- * $Id: JavaCheckerTask.java,v 1.8 2007-10-11 15:27:01 rssh Exp $
  */
 
 package ua.gradsoft.javachecker.ant;

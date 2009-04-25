@@ -6,7 +6,6 @@
 package ua.gradsoft.javachecker.models;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.util.HashMap;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
@@ -15,6 +14,7 @@ import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermHelper;
 import ua.gradsoft.termware.TermWareException;
 import ua.gradsoft.termware.exceptions.AssertException;
+import ua.gradsoft.termware.exceptions.TermParseException;
 
 
 /**
@@ -129,9 +129,9 @@ public class JavaPackageModel {
     {
       boolean debug=false;
       //DEBUG
-      //if (name.equals("TreePath")) {
-      //    debug=true;
-      //}
+      if (name.equals("ASTFactory")) {
+          debug=true;
+      }
     
       if (debug) {
         System.err.println("call of packageModel ("+this.getName()+") findTypeModel for "+name);  
@@ -165,7 +165,12 @@ public class JavaPackageModel {
           
           File f = new File(fname);          
           if (f.exists()) {
-              Term t=JUtils.readSourceFile(f);
+              Term t;
+              try {
+                t=JUtils.readSourceFile(f);
+              }catch(TermParseException ex){
+                  throw new AssertException("Exception during reading source "+f.getAbsolutePath()+":"+ex.getMessage(),ex);
+              }
               JavaCompilationUnitModel cu = new JavaCompilationUnitModel(fname);
               cu.setPackageModel(this);              
               AnalyzedUnitRef newRef = new AnalyzedUnitRef(AnalyzedUnitType.SOURCE,directory,resource,cu);              

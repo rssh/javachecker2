@@ -739,6 +739,7 @@ public class Main
      return explicitDisabled_;
  }
 
+
  private static IEnv         env_          = null;
 
 // private static HashSet      sourcesSet_    = null;
@@ -777,7 +778,7 @@ public class Main
 
  private static boolean       isMandatoryCheckersLoading_=true;
  private static JavaCheckerExceptionHandler exceptionHandler_=new DefaultExceptionHandler();
- 
+
  private static boolean      inShutdown_ = false;
  
 }

@@ -774,9 +774,9 @@ public class JavaResolver {
     public static JavaTypeModel resolveTypeModelFromPackage(String classShortName,String packageName) throws EntityNotFoundException, TermWareException {
         boolean debug=false;
         //DEBUG!!
-        //if (classShortName.equals("TreePath")) {
-        //    debug=true;
-        //}
+        if (classShortName.equals("ASTFactory")) {
+            debug=true;
+        }
         if (debug) {
            LOG.info("resolveTypeModelFromPackage:"+classShortName+","+packageName);
         }
@@ -792,7 +792,7 @@ public class JavaResolver {
     }
     
     public static JavaTypeModel  resolveTypeModelByFullClassName(String name) throws EntityNotFoundException, TermWareException {        
-       // LOG.info("resolveTypeModelByFullClassName:"+name);
+        //LOG.info("resolveTypeModelByFullClassName:"+name);
         int lastDotIndex=name.lastIndexOf('.');
         if (lastDotIndex!=-1) {
             String packageName = name.substring(0,lastDotIndex);
@@ -801,7 +801,12 @@ public class JavaResolver {
                 return resolveTypeModelFromPackage(className,packageName);
             }catch(EntityNotFoundException ex){
                 // this can be request to nested class.
-                JavaTypeModel enclosingModel = resolveTypeModelByFullClassName(packageName);
+                JavaTypeModel enclosingModel = null;   
+                try {
+                  enclosingModel=resolveTypeModelByFullClassName(packageName);
+                }catch(EntityNotFoundException ex1){
+                    throw new EntityNotFoundException("type",name,"");
+                }
                 JavaTypeModel retval = enclosingModel.findNestedTypeModel(className);
                 if (retval==null) {
                     throw new EntityNotFoundException("type",name,"");
@@ -1096,13 +1101,14 @@ public class JavaResolver {
     
     /**
      * resolve method call to where (in where and all superclasses) and build substitutuion of method type arguments if needed.
+     *
      */
     public static JavaMethodModel resolveMethod(String methodName,List<JavaTypeModel> argumentTypes, JavaTypeArgumentsSubstitution substitution,JavaTypeModel where) throws EntityNotFoundException, TermWareException {
         boolean printDetails=false;
         
-      //  if (methodName.equals("println")) {
-      //      printDetails=true;
-      // }
+        //if (methodName.equals("getDeclaredMethod")) {
+        //    printDetails=true;
+        //}
         
         if (printDetails) {
             StringBuilder sb=new StringBuilder();
@@ -1334,6 +1340,24 @@ public class JavaResolver {
             return retval.getFirst();
         }
         
+        // we still herse, that
+        if (Main.getFacts().getBooleanConfigValue("resolver.recheckJavaLangByClass", false)) {
+            JavaPackageModel pm = where.getPackageModel();
+            if (pm!=null) {
+                if (pm.getName().startsWith("java.lang")) {
+                    try {
+                      Class cl = Class.forName(where.getErasedFullName());
+                      return resolveMethod(methodName, argumentTypes, substitution, 
+                                      new JavaClassTypeModel(cl) );
+                    }catch(ClassNotFoundException ex){
+                        if (printDetails) {
+                            LOG.log(Level.INFO, "language class not found");
+                        }
+                    }
+                }
+            }
+        }
+
         // we still here ?
         //  ok, it means that notning is found.
         //  let's prepare full method name and throw exception
@@ -1677,7 +1701,8 @@ public class JavaResolver {
             throw new AssertException("java.lang.Annotation must be resolved");
         }
     }
-    
+
+
     private static final Logger LOG = Logger.getLogger(JavaResolver.class.getName());
     
 }

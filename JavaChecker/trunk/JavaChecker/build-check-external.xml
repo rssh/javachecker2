@@ -129,6 +129,8 @@
                 >
     <input dir="${gwt.home}/user/src" />
     <input dir="${gwt.home}/user/super/com/google/gwt/emul" />
+    <include dir="${gwt.home}/dev/core/src" />
+    <config name="resolver.recheckJavaLangByClass" value="true" />
     <enable check="StringInSwitch" />
     <enable check="InstanceOfSwitch" />
     <enable check="ByteLiteral" />
@@ -149,6 +151,7 @@
  </target>
 
  <target name="check-coin-hibernate" depends="declareJavaChecker" >
+   <echo message="check.hibernate, antlr.jar=${antlr.jar}" />
    <JavaChecker jchhome="${basedir}" output="coin-hibernate.txt" 
                 outputFormat="text" showFiles="true" 
                 explicitEnabledOnly="true"
@@ -158,7 +161,10 @@
     <input dir="${hibernate.home}/entitymanager/src/main/java" />
     <input dir="${hibernate.home}/commons-annotations/src/main/java" />
     <classpath>
+     <pathelement location="${antlr.jar}" />
      <pathelement location="${j2ee.jar}" />
+     <pathelement location="${slf4j-api.jar}" />
+     <pathelement location="${slf4j-impl.jar}" />
     </classpath>
     <enable check="StringInSwitch" />
     <enable check="InstanceOfSwitch" />

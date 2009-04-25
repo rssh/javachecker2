@@ -102,7 +102,8 @@ public class JavaCheckerFacade {
     
     public static void setMandatoryCheckersLoading(boolean value)
     { main_.setMandatoryCheckersLoading(value); }
-    
+
+
     public static void process() throws ProcessingException
     {
         List<AnalyzedUnitRef> unitRefs = new LinkedList<AnalyzedUnitRef>();
