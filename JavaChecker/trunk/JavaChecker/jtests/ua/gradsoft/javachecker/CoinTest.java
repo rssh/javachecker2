@@ -205,7 +205,7 @@ public class CoinTest extends TestCase
         Set<String> checks = new TreeSet<String>();
         checks.addAll(Arrays.asList("Elvis1","NullSafe"));
         main.setExplicitEnabled(checks);
-        main.setDump(true);
+        main.setDump(false);
         Main.setShowFiles(true);
 
 
@@ -218,7 +218,7 @@ public class CoinTest extends TestCase
 
         List<DefectReportItem> defects = Main.getFacts().getDefectReportItems();
 
-        assertTrue(defects.size()>0);
+        assertTrue(defects.size()>5);
         System.err.println("defects.size()="+defects.size());
 
 
@@ -245,11 +245,38 @@ public class CoinTest extends TestCase
 
         List<DefectReportItem> defects = Main.getFacts().getDefectReportItems();
 
-        assertTrue(defects.size()>1);
+        assertTrue(defects.size()==2);
         System.err.println("defects.size()="+defects.size());
 
 
     }
+
+    public void testLoopWithIndex() throws Exception
+    {
+        Main main = new Main();
+
+       // set options.
+        main.setExplicitEnabledOnly(true);
+        main.setExplicitEnabled(Collections.singleton("ForAroundSizeOrLength"));
+        main.setDump(true);
+        Main.setShowFiles(true);
+
+
+        main.init(new String[0]);
+        Main.addInputDirectory("testpackages/coin/forindex",true);
+
+        Main.getFacts().clearDefectReportItems();
+
+        main.process();
+
+        List<DefectReportItem> defects = Main.getFacts().getDefectReportItems();
+
+        assertTrue(defects.size()>0);
+        System.err.println("defects.size()="+defects.size());
+
+
+    }
+
 
     public void testCatchInFinally() throws Exception
     {
@@ -306,8 +333,6 @@ public class CoinTest extends TestCase
         assertTrue(defects.size()>0);
         System.err.println("defects.size()="+defects.size());
 
-        String category = defects.get(0).getCategory();
-        assertEquals("coin",category);
 
     }
 

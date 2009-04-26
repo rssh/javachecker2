@@ -49,11 +49,14 @@
   <file src="../lib/TermWare-@TERMWARE_VERSION@.jar"  targetdir="$INSTALL_PATH/lib" />
   <file src="../lib/TermWareJPP-@TERMWAREJPP_VERSION@.jar"  targetdir="$INSTALL_PATH/lib" />
   <file src="../build.xml"  targetdir="$INSTALL_PATH" />
+  <file src="../build-ivy.xml"  targetdir="$INSTALL_PATH" />
   <file src="../build-ext.xml"  targetdir="$INSTALL_PATH" />
   <file src="../build.properties"  targetdir="$INSTALL_PATH" />
   <file src="../build.properties.default"  targetdir="$INSTALL_PATH" />
   <file src="../build-check-external.xml"  targetdir="$INSTALL_PATH" />
   <file src="../check-external.properties"  targetdir="$INSTALL_PATH" />
+  <file src="../ivy.xml"  targetdir="$INSTALL_PATH" />
+  <file src="../ivysettings.xml"  targetdir="$INSTALL_PATH" />
   <fileset dir="../systems/" targetdir="$INSTALL_PATH/systems" 
            defaultexcludes="yes" />
   <fileset dir="../attrs/" targetdir="$INSTALL_PATH/attrs" 

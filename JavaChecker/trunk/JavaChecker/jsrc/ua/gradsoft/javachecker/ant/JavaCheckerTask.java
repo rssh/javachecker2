@@ -334,10 +334,10 @@ public class JavaCheckerTask extends Task {
       
       
       Path classpath=cmd.createClasspath(getProject());
-      classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"TermWare2.jar");
-      classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"JavaChecker2.jar");
-      classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"JavaChecker2Annotations.jar");
-      classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"TermWareJPP.jar");
+      classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"TermWare-2.3.2.jar");
+      classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"JavaChecker-2.5.0p3.jar");
+      classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"JavaChecker2Annotations-2.5.0p3.jar");
+      classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"TermWareJPP-1.1.1.jar");
       
       cmd.setClassname("ua.gradsoft.javachecker.Main");
       

@@ -38,11 +38,13 @@ Checkers(
          true
  ),
 
- define(AllCEs,coin,"all condition expressions",
+ define(AllCEs,coin,"all conditional expressions",
         BT_TYPE_RULESET,
         ruleset(
-          ConditionExpression($x,$y,$z)
-             -> true [ violationDiscovered(AllCEs, "condition expression",$x) ]
+          ConditionalExpression($x,$y,$z)
+             -> true [ violationDiscovered(AllCEs, "condition expression",
+                          s($x,$y,$z)) ],
+          $x [ x!=true ] -> true
          ),
          true
  ),
@@ -249,8 +251,69 @@ Checkers(
         ruleset(
          AndExpression($x,$y) -> true 
               [ violationDiscovered(AllBitAnds, "all bit ands", A($x,$y)) ]
+        ),true),
+
+ define(ForsWithNext,coin,"for with limit like it.next()",
+        BT_TYPE_RULESET,
+        ruleset(
+         ForStatement(
+            TraditionalForLoopHead($forinit, 
+               MethodCall($x,Identifier("hasNext"),Arguments([])),
+               NIL
+            ), $block) -> true
+              [ violationDiscovered(ForsWithNext, 
+                        "for loop, limited by it.next", A($x,$block)) ]
+        ),true),
+       
+ define(AllTraditionalFors,coin,"all traditional fors",
+        FT_TYPE_RULESET,
+        ruleset(
+         ForStatement(
+            TraditionalForLoopHead($x, $y, $z),
+            $block   )              ->  $block
+              [ violationDiscovered(AllTraditionalFors, 
+                                    "traditional for", A($x,$y,$z)) ]
+        ),true),
+
+ define(ForAroundSizeOrLength,coin,"for loop from 0 to size or length",
+        FT_TYPE_RULESET,
+        ruleset(
+          
+         # let LengthOrSize will be uniform 
+         Name([$x,Identifier("length")]) -> LengthOrSize($x),
+         FieldAccess([$x,Identifier("length")]) -> LengthOrSize($x),
+         MethodCall($x,Identifier("size"),Arguments([])) -> LengthOrSize($x),
+
+         # also PreIncrement and PostIncrement are same in ForUpdate statements
+         StatementExpression(PreIncrementExpression($x)) -> Increment($x),
+         StatementExpression($x,"++") -> Increment($x),
+
+         ForInit(LocalVariableDeclaration($im,int,
+                    [VariableDeclarator(
+                       VariableDeclaratorId($index,0),
+                        IntegerLiteral(0)
+                     )]
+                 )) -> ZeroForInit($index),
+
+         ForInit(StatementExpressionList([
+              StatementExpression($index,"=",IntegerLiteral(0))
+                ])) -> ZeroForInit($index),
+
+
+         ForStatement(
+            TraditionalForLoopHead(
+               ZeroForInit($index),
+               RelationalExpression($index,"<",LengthOrSize($x)), 
+               ForUpdate(StatementExpressionList(
+                [Increment($index)]
+               ))),
+            $block   )              -> $block 
+              [ violationDiscovered(ForAroundSizeOrLength, 
+                          "for loop from 0 to size or length()",
+                          s($index,$block)) ]
+
         ),true)
- 
+
 ]
 
 );

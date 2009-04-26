@@ -19,7 +19,9 @@ Checkers(
            # null!=a ? a: b
           ConditionalExpression(
            EqualityExpression(NullLiteral(),"!=",$a), $a, $b ) -> true
-                 [ violationDiscovered(Elvis1, "elvis1", s($a,$b)) ]
+                 [ violationDiscovered(Elvis1, "elvis1", s($a,$b)) ],
+
+           Block($x) -> false
 
         ),true),
           
@@ -107,6 +109,9 @@ Checkers(
                             "multiple test for null access", $block) ],
 
            CHECK(false,$block) -> false,
+
+           ## all other can be reduced.
+           Block($x) -> false,
                                                             
            p($x) -> $x [ println($x) ]
 
