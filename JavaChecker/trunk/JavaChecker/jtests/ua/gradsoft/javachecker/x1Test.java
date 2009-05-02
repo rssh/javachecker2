@@ -238,6 +238,22 @@ public class x1Test extends TestCase
 
         
     }
-    
+
+    public void testOE() throws Exception
+    {
+        Main main = new Main();
+        String[] args=new String[0];
+        main.init(args);
+        main.addInputDirectory("testpackages/oe",true);
+        main.setDump(true);
+        main.getFacts().clearDefectReportItems();
+        main.process();
+
+        List<DefectReportItem> defects = main.getFacts().getDefectReportItems();
+
+        assertTrue("defect must be found",defects.size()>0);
+
+    }
+
     
 }

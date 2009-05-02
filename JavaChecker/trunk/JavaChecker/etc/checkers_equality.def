@@ -1,0 +1,34 @@
+Checkers(
+[
+ define(ObjectComparison,expressions,
+          "comparing objects using equiality operator",
+        MODEL_RULESET,
+        ruleset(
+         import(general,apply),
+         import(List,car),
+         import(List,cdr),
+
+         EqualityExpressionModel($x,$y,$op,$ctx)
+             [ 
+               !car($ctx.getExpressionModel().getSubExpressions())
+                        .getType().isPrimitiveType()
+                &&
+               !car($ctx.getExpressionModel().getSubExpressions())
+                        .getType().isEnum()
+                &&
+               !car(cdr($ctx.getExpressionModel().getSubExpressions()))
+                        .getType().isPrimitiveType()
+                &&
+               !car($ctx.getExpressionModel().getSubExpressions())
+                        .getType().isEnum()
+             ] 
+              -> true
+                 [ violationDiscovered(ObjectComparison, 
+                              "object compared by == or !=", s($x,$y)) ]
+             !-> false
+        ),true)
+
+]
+
+);
+
