@@ -1,0 +1,27 @@
+
+domain(coin,
+  system("EraseGet",
+   javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJavaFacts"),
+   ruleset(
+     import(general,apply),
+     
+     EraseGet(
+         MethodCall($x,Identifier("get"),Arguments([$i])),$x,$i)  
+       ->   A,
+
+     EraseGet($f..($x),$a,$b) -> $f..($y) where ($y<-EraseGetI($x,$a,$b)) ,
+     EraseGet([],$a,$b) -> [],
+     EraseGet($x,$a,$b) [ isAtom($x)   || isNumber($x) || 
+                          isString($x) || isChar($x) ||
+                          isBoolean($x) ] -> $x,
+
+     EraseGetI([],$a,$b) -> [],
+     EraseGetI([$x:$y],$a,$b) -> cons(EraseGetI1($x,$a,$b),EraseGetI($y,$a,$b)),
+     EraseGetI1($x,$a,$b) -> EraseGet($x,$a,$b)  ,
+
+     p($x) -> $x [ println($x) ]
+
+   ),
+   FirstTop
+  )
+);

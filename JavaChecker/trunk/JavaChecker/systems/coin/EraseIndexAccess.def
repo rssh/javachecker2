@@ -1,0 +1,29 @@
+
+domain(coin,
+  system("EraseIndexAccess",
+   javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJavaFacts"),
+   ruleset(
+     import(general,apply),
+     
+     EraseIndexAccess(
+         ArrayIndex($x,$i),$x,$i 
+      ) ->   A,
+
+     EraseIndexAccess($f..($x),$a,$b) -> $f..($y) 
+                                    where ($y<-EraseIndexAccessI($x,$a,$b)) ,
+     EraseIndexAccess([],$a,$b) -> [],
+     EraseIndexAccess($x,$a,$b) [ isAtom($x)   || isNumber($x) || 
+                          isString($x) || isChar($x) ||
+                          isBoolean($x) ] -> $x,
+
+     EraseIndexAccessI([],$a,$b) -> [],
+     EraseIndexAccessI([$x:$y],$a,$b) -> cons(EraseIndexAccessI1($x,$a,$b),
+                                              EraseIndexAccessI($y,$a,$b)),
+     EraseIndexAccessI1($x,$a,$b) -> EraseIndexAccess($x,$a,$b)  ,
+
+     p($x) -> $x [ println($x) ]
+
+   ),
+   FirstTop
+  )
+);

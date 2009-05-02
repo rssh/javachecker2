@@ -5,6 +5,7 @@ system("FindSubterm",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJa
      import(general,logical_and),
      import(general,term_name),
      import(general,unify),
+
      find($x,$x) -> true ,
      find($x,cons($y,$z)) -> ( find($x,$y) || find($x,$z) ) ,
      find($x,[]) -> false ,

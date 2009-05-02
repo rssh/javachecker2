@@ -15,6 +15,9 @@ public class X
     int al2 = (args!=null ? args.length() : 1 );
 
     int al3 = ((args==null) ? 1 : args.length() );
+
+    String nArgs = (args[0]==null ?  null : args[0]);
+
   }
 
   String  fun1(String s)

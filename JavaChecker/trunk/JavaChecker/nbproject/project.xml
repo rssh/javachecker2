@@ -90,14 +90,14 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
             <compilation-unit>
                 <package-root>jsrc</package-root>
-                <classpath mode="compile">lib/TermWare-2.3.1.jar:lib/TermWareJPP-1.1.1.jar:lib/JavaChecker2Annotations-2.5.0p0.jar</classpath>
+                <classpath mode="compile">lib/TermWareJPP-1.1.1.jar:lib/JavaChecker2Annotations-2.5.0p0.jar:lib/TermWare-2.3.2.jar</classpath>
                 <built-to>lib/JavaChecker2.jar</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
             <compilation-unit>
                 <package-root>jtests</package-root>
                 <unit-tests/>
-                <classpath mode="compile">lib/junit-3.8.jar:lib/TermWare-2.3.1.jar:lib/JavaChecker2Annotations-2.5.0p0.jar:lib/TermWareJPP-1.1.1.jar:lib/JavaChecker-2.5.0p0.jar</classpath>
+                <classpath mode="compile">lib/junit-3.8.jar:lib/JavaChecker2Annotations-2.5.0p0.jar:lib/TermWareJPP-1.1.1.jar:lib/TermWare-2.3.2.jar:lib/JavaChecker-2.5.0p3.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
             <compilation-unit>

@@ -12,5 +12,11 @@ public class X
    }
  }
 
+ public static void fun2(String[] a)
+ {
+   for(int i=0; i<a.length; ++i) {
+      System.out.println(a[i]);
+   }
+ }
 
 }

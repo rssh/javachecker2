@@ -80,7 +80,6 @@
     <enable check="InstanceOfSwitch" />
     <enable check="ByteLiteral" />
     <enable check="MultiCatch" />
-    <enable check="Elvis" />
     <enable check="Elvis1" />
     <enable check="NullSafe" />
     <enable check="LoopWithRemove" />
@@ -92,7 +91,6 @@
     <enable check="CatchInFinally" />
     <enable check="ObjectSwitch" />
     <enable check="RethrowClause" />
-    <enable check="WideningSyntax" />
     <enable check="WideningSemantics" />
     <enable check="AllBitAnds" />
     <enable check="ForsWithNext" />
@@ -102,7 +100,7 @@
  </target>
 
  <target name="check-coin-loop-jetty" depends="declareJavaChecker" >
-   <JavaChecker jchhome="${basedir}" output="coin-jetty.txt" 
+   <JavaChecker jchhome="${basedir}" output="coin-loop-jetty.txt" 
                 outputFormat="text" showFiles="false" 
                 explicitEnabledOnly="true"
                 fork="true"
@@ -110,7 +108,6 @@
    <!--
     <jvmarg   value="-javaagent:${jrat.jar}" />
    -->
-    <jvmarg   value="-agentlib:hprof=cpu=samples" />
     <input dir="${jetty.home}/modules/jetty/src/main/java" />
     <input dir="${jetty.home}/modules/util/src/main/java" />
     <classpath>
@@ -121,6 +118,7 @@
     <enable check="AllTraditionalFors" />
     <enable check="ForAroundSizeOrLength" />
     <enable check="ForAroundSizeConvertable" />
+    <enable check="ForAroundLengthConvertable" />
    </JavaChecker>
  </target>
 
@@ -160,6 +158,25 @@
    </JavaChecker>
  </target>
 
+ <target name="check-coin-loop-openjdk" depends="declareJavaChecker" >
+   <JavaChecker jchhome="${basedir}" output="coin-loop-jdk.txt" 
+                outputFormat="text" showFiles="true" 
+                explicitEnabledOnly="true"
+                >
+    <input dir="${openjdk.home}/jdk/src/share/classes" />
+    <input dir="${openjdk.home}/jaxp/src/share/classes" />
+   <!--
+    <classpath>
+    </classpath>
+   -->
+    <enable check="AllTraditionalFors" />
+    <enable check="ForAroundSizeOrLength" />
+    <enable check="ForAroundSizeConvertable" />
+    <enable check="ForAroundLengthConvertable" />
+   </JavaChecker>
+ </target>
+
+
  <target name="check-coin-gwt-user" depends="declareJavaChecker" >
    <JavaChecker jchhome="${basedir}" output="coin-gwt-user.txt" 
                 outputFormat="text" showFiles="true" 
@@ -193,6 +210,23 @@
     <enable check="ForAroundSizeOrLength" />
    </JavaChecker>
  </target>
+
+ <target name="check-coin-loop-gwt-user" depends="declareJavaChecker" >
+   <JavaChecker jchhome="${basedir}" output="coin-loop-gwt-user.txt" 
+                outputFormat="text" showFiles="true" 
+                explicitEnabledOnly="true"
+                >
+    <input dir="${gwt.home}/user/src" />
+    <input dir="${gwt.home}/user/super/com/google/gwt/emul" />
+    <include dir="${gwt.home}/dev/core/src" />
+    <config name="resolver.recheckJavaLangByClass" value="true" />
+    <enable check="AllTraditionalFors" />
+    <enable check="ForAroundSizeOrLength" />
+    <enable check="ForAroundSizeConvertable" />
+    <enable check="ForAroundLengthConvertable" />
+   </JavaChecker>
+ </target>
+
 
  <target name="check-coin-hibernate" depends="declareJavaChecker" >
    <echo message="check.hibernate, antlr.jar=${antlr.jar}" />
@@ -234,5 +268,29 @@
     <enable check="ForAroundSizeOrLength" />
    </JavaChecker>
  </target>
+
+ <target name="check-coin-loop-hibernate" depends="declareJavaChecker" >
+   <JavaChecker jchhome="${basedir}" output="coin-loop-hibernate.txt" 
+                outputFormat="text" showFiles="true" 
+                explicitEnabledOnly="true"
+                >
+    <input dir="${hibernate.home}/core/src/main/java" />
+    <input dir="${hibernate.home}/annotations/src/main/java" />
+    <input dir="${hibernate.home}/entitymanager/src/main/java" />
+    <input dir="${hibernate.home}/commons-annotations/src/main/java" />
+    <classpath>
+     <pathelement location="${antlr.jar}" />
+     <pathelement location="${j2ee.jar}" />
+     <pathelement location="${slf4j-api.jar}" />
+     <pathelement location="${slf4j-impl.jar}" />
+    </classpath>
+    <enable check="AllTraditionalFors" />
+    <enable check="ForAroundSizeOrLength" />
+    <enable check="ForAroundSizeConvertable" />
+    <enable check="ForAroundLengthConvertable" />
+   </JavaChecker>
+ </target>
+
+
 
 </project>

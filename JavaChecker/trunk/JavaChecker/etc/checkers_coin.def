@@ -121,27 +121,6 @@ Checkers(
                                            $block) ]
         ),true),
 
- define(Elvis,coin,"elvis",
-        BT_TYPE_RULESET,
-        ruleset(
-          ConditionalExpression(
-           EqualityExpression($x,"==",NullLiteral()), 
-                 $ifNull,  MethodCall($x,$method,$args)) -> true
-                 [ violationDiscovered(Elvis, "elvis", $method) ],
-          ConditionalExpression(
-           EqualityExpression($x,"!=",NullLiteral()), 
-                 MethodCall($x,$method,$args), $ifNull) -> true
-                 [ violationDiscovered(Elvis, "elvis", $method) ],
-          ConditionalExpression(
-           EqualityExpression(NullLiteral(),"!=",$x), 
-                 MethodCall($x,$method,$args), $ifNull) -> true
-                 [ violationDiscovered(Elvis, "elvis", $method) ],
-          ConditionalExpression(
-           EqualityExpression(NullLiteral(),"==",$x), 
-                 MethodCall($x,$method,$args), $ifNull) -> true
-                 [ violationDiscovered(Elvis, "elvis", $method) ]
-        ),true),
-
  define(LoopWithRemove,coin,"loop with remove",
         BT_TYPE_RULESET,
         ruleset(
@@ -210,17 +189,6 @@ Checkers(
          Catch($fp1,Block([ThrowStatement($x)])) -> true
                  [ violationDiscovered(RethrowClause, "rethrow clause", $fp1) ]
         ),true),
-
- define(WideningSyntax,coin,"widening operator (syntax)",
-        BT_TYPE_RULESET,
-        ruleset(
-         AndExpression($x,IntegerLiteral(255)) -> true
-              [ violationDiscovered(WideningSyntax, "widening operator (syntax)", $x) ],
-         AndExpression(IntegerLiteral(255),$x) -> true
-              [ violationDiscovered(WideningSyntax, "widening operator (syntax)", $x) ]
-        ),true),
-
-             #  $ctx.getExpressionModel().getSubExpressions().get(0).getType(),
 
  define(WideningSemantics,coin,"widening operator (semantics)",
         MODEL_RULESET,

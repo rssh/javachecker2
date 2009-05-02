@@ -4,10 +4,8 @@ system("ModelHelper",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJa
 
      import(general,logical_and),
      import(general,apply),
-
       
      getVariableName(VariableModel($name,$model)) -> $name,
-
 
      getType(TypeRef($tname,$type)) -> $type,
      getType(VariableModel($id,$model)) -> $model.getType(),
