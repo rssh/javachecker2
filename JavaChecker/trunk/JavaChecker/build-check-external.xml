@@ -101,6 +101,29 @@
    </JavaChecker>
  </target>
 
+ <target name="check-coin-loop-jetty" depends="declareJavaChecker" >
+   <JavaChecker jchhome="${basedir}" output="coin-jetty.txt" 
+                outputFormat="text" showFiles="false" 
+                explicitEnabledOnly="true"
+                fork="true"
+                >
+   <!--
+    <jvmarg   value="-javaagent:${jrat.jar}" />
+   -->
+    <jvmarg   value="-agentlib:hprof=cpu=samples" />
+    <input dir="${jetty.home}/modules/jetty/src/main/java" />
+    <input dir="${jetty.home}/modules/util/src/main/java" />
+    <classpath>
+			<fileset dir="${jetty.home}/lib">
+				<include name="*.jar" />
+			</fileset>
+    </classpath>
+    <enable check="AllTraditionalFors" />
+    <enable check="ForAroundSizeOrLength" />
+    <enable check="ForAroundSizeConvertable" />
+   </JavaChecker>
+ </target>
+
  <target name="check-coin-openjdk" depends="declareJavaChecker" >
    <JavaChecker jchhome="${basedir}" output="coin-jdk.txt" 
                 outputFormat="text" showFiles="true" 
