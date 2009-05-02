@@ -1,0 +1,109 @@
+Checkers(
+[
+       
+ define(ForAroundSizeConvertable,coin,"for loop (size),convertable to foreach",
+        BT_TYPE_RULESET,
+        ruleset(
+         import(general,apply),
+          
+         # also PreIncrement and PostIncrement are same in ForUpdate statements
+         StatementExpression(PreIncrementExpression($x)) -> Increment($x),
+         StatementExpression($x,"++") -> Increment($x),
+
+         ForInit(LocalVariableDeclaration($im,int,
+                    [VariableDeclarator(
+                       VariableDeclaratorId($index,0),
+                        IntegerLiteral(0)
+                     )]
+                 )) -> ZeroForInit($index),
+
+         ForInit(StatementExpressionList([
+              StatementExpression($index,"=",IntegerLiteral(0))
+                ])) -> ZeroForInit($index),
+
+
+         ForStatement(
+            TraditionalForLoopHead(
+               ZeroForInit($index),
+               RelationalExpression($index,"<",
+                     MethodCall($x,Identifier("size"),Arguments([]))
+                                   ), 
+               ForUpdate(StatementExpressionList(
+                [Increment($index)]
+               ))),
+            $block   )    -> CHECK(WithoutGet($x,$index,$block),
+                                   s($x,$index,$block)),
+                  
+               WithoutGet($x,$i,$block) ->
+                let ($cleanBlock <- coin::EraseGet.EraseGet($block,$x,$i))
+                    FindSubterm.find($i,$cleanBlock),
+
+               CHECK(true,$x) -> false,
+               CHECK(false,$x) -> true 
+                         [ violationDiscovered(ForAroundSizeConvertable, 
+                            "for loop whith size which can be converted",
+                            $x) ],
+
+               CHECK($x,$y) -> p($x),
+
+               p($x) -> $x [ println($x) ]
+
+        ),true),
+
+
+ define(ForAroundLengthConvertable,coin,
+                           "for loop (length),convertable to foreach",
+        BT_TYPE_RULESET,
+        ruleset(
+         import(general,apply),
+          
+         StatementExpression(PreIncrementExpression($x)) -> Increment($x),
+         StatementExpression($x,"++") -> Increment($x),
+
+         Name([$x,Identifier("length")]) -> Length($x),
+         FieldAccess([$x,Identifier("length")]) -> Length($x),
+
+
+         ForInit(LocalVariableDeclaration($im,int,
+                    [VariableDeclarator(
+                       VariableDeclaratorId($index,0),
+                        IntegerLiteral(0)
+                     )]
+                 )) -> ZeroForInit($index),
+
+         ForInit(StatementExpressionList([
+              StatementExpression($index,"=",IntegerLiteral(0))
+                ])) -> ZeroForInit($index),
+
+
+         ForStatement(
+            TraditionalForLoopHead(
+               ZeroForInit($index),
+               RelationalExpression($index,"<",Length($x)),
+               ForUpdate(StatementExpressionList(
+                [Increment($index)]
+               ))),
+            $block   )    -> CHECK(WithoutIndexAccess($x,$index,$block),
+                                   s($x,$index,$block)),
+                  
+               WithoutIndexAccess($x,$i,$block) ->
+                let ($cleanBlock <- coin::EraseIndexAccess.EraseIndexAccess($block,$x,$i))
+                    FindSubterm.find($i,$cleanBlock),
+
+               CHECK(true,$x) -> false,
+               CHECK(false,$x) -> true 
+                         [ violationDiscovered(ForAroundLengthConvertable, 
+                            "for array loop which can be converted to foreach",
+                            $x) ],
+
+               CHECK($x,$y) -> p($x),
+
+               p($x) -> $x [ println($x) ]
+
+        ),true)
+
+
+]
+
+);
+

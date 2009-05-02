@@ -1,6 +1,7 @@
 
 domain(coin,
   system("EraseGet",
+   #@option(loggedEntity(All))
    javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJavaFacts"),
    ruleset(
      import(general,apply),
@@ -9,15 +10,17 @@ domain(coin,
          MethodCall($x,Identifier("get"),Arguments([$i])),$x,$i)  
        ->   A,
 
-     EraseGet($f..($x),$a,$b) -> $f..($y) where ($y<-EraseGetI($x,$a,$b)) ,
+     EraseGet($f..($x),$a,$b) 
+                   [term_name($f)!="cons"] ->
+                        $f..($y) where ($y<-EraseGet($x,$a,$b)) ,
+
+     EraseGet(cons($x,NIL),$a,$b) -> cons(EraseGet($x,$a,$b),NIL),
+     EraseGet(cons($x,$y),$a,$b) -> cons(EraseGet($x,$a,$b),
+                                         EraseGet($y,$a,$b)),
      EraseGet([],$a,$b) -> [],
      EraseGet($x,$a,$b) [ isAtom($x)   || isNumber($x) || 
                           isString($x) || isChar($x) ||
                           isBoolean($x) ] -> $x,
-
-     EraseGetI([],$a,$b) -> [],
-     EraseGetI([$x:$y],$a,$b) -> cons(EraseGetI1($x,$a,$b),EraseGetI($y,$a,$b)),
-     EraseGetI1($x,$a,$b) -> EraseGet($x,$a,$b)  ,
 
      p($x) -> $x [ println($x) ]
 

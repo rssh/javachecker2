@@ -9,17 +9,16 @@ domain(coin,
          ArrayIndex($x,$i),$x,$i 
       ) ->   A,
 
-     EraseIndexAccess($f..($x),$a,$b) -> $f..($y) 
-                                    where ($y<-EraseIndexAccessI($x,$a,$b)) ,
+     EraseIndexAccess($f..($x),$a,$b) 
+            [ term_name($f)!="cons" ] -> $f..($y) 
+                                    where ($y<-EraseIndexAccess($x,$a,$b)) ,
+     EraseIndexAccess(cons($x,$y),$a,$b)
+                   -> cons(EraseIndexAccess($x,$a,$b),
+                           EraseIndexAccess($y,$a,$b)),
      EraseIndexAccess([],$a,$b) -> [],
      EraseIndexAccess($x,$a,$b) [ isAtom($x)   || isNumber($x) || 
                           isString($x) || isChar($x) ||
                           isBoolean($x) ] -> $x,
-
-     EraseIndexAccessI([],$a,$b) -> [],
-     EraseIndexAccessI([$x:$y],$a,$b) -> cons(EraseIndexAccessI1($x,$a,$b),
-                                              EraseIndexAccessI($y,$a,$b)),
-     EraseIndexAccessI1($x,$a,$b) -> EraseIndexAccess($x,$a,$b)  ,
 
      p($x) -> $x [ println($x) ]
 
