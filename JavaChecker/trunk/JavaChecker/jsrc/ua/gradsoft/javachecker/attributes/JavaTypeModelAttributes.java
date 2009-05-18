@@ -3,12 +3,12 @@
  *
  * Created on April 22, 2007, 11:25 PM
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package ua.gradsoft.javachecker.attributes;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -260,7 +260,7 @@ public class JavaTypeModelAttributes {
                 if (f.exists()) {
                     ObjectInputStream oi = null;
                     try {
-                        oi=new ObjectInputStream(new FileInputStream(f));
+                        oi=new ObjectInputStream(new BufferedInputStream(new FileInputStream(f)));
                     }catch(FileNotFoundException ex){
                         LOG.log(Level.WARNING,"File.exists() is true, but file not found",ex);
                         throw new AssertException("Impossible situation during opening file "+fullLoadName,ex);
@@ -331,7 +331,7 @@ public class JavaTypeModelAttributes {
             
             ObjectOutputStream oo=null;
             try {
-                oo=new ObjectOutputStream(new FileOutputStream(f));
+                oo=new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(f)));
                 oo.writeObject(data_);
             }catch(FileNotFoundException ex){
                 throw new AssertException("Can't open file "+f.getAbsolutePath()+" for writing",ex);
