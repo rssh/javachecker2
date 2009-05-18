@@ -61,7 +61,7 @@
 
  <target name="check-coin-jetty" depends="declareJavaChecker" >
    <JavaChecker jchhome="${basedir}" output="coin-jetty.txt" 
-                outputFormat="text" showFiles="false" 
+                outputFormat="text" showFiles="true" 
                 explicitEnabledOnly="true"
                 fork="true"
                 >
@@ -69,6 +69,12 @@
     <jvmarg   value="-javaagent:${jrat.jar}" />
    -->
     <jvmarg   value="-agentlib:hprof=cpu=samples" />
+  <!--
+    <jvmarg   value="-Dcom.sun.management.jmxremote" />
+    <jvmarg   value="-Dcom.sun.management.jmxremote.port=9001" />
+    <jvmarg   value="-Dcom.sun.management.jmxremote.ssl=false" />
+    <jvmarg   value="-Dcom.sun.management.jmxremote.authenticate=false" />
+  -->
     <input dir="${jetty.home}/modules/jetty/src/main/java" />
     <input dir="${jetty.home}/modules/util/src/main/java" />
     <classpath>
@@ -96,6 +102,13 @@
     <enable check="ForsWithNext" />
     <enable check="AllTraditionalFors" />
     <enable check="ForAroundSizeOrLength" />
+    <enable check="ForAroundSizeConvertable" />
+    <enable check="ForAroundLengthConvertable" />
+    <enable check="StringBuilderOrBufferAppend" />
+    <enable check="CollectionGetOrSet" />
+    <enable check="AllVariableInitializers" />
+    <enable check="AutoInitializers" />
+    <enable check="DiamondInitializers" />
    </JavaChecker>
  </target>
 
@@ -155,27 +168,15 @@
     <enable check="ForsWithNext" />
     <enable check="AllTraditionalFors" />
     <enable check="ForAroundSizeOrLength" />
-   </JavaChecker>
- </target>
-
- <target name="check-coin-loop-openjdk" depends="declareJavaChecker" >
-   <JavaChecker jchhome="${basedir}" output="coin-loop-jdk.txt" 
-                outputFormat="text" showFiles="true" 
-                explicitEnabledOnly="true"
-                >
-    <input dir="${openjdk.home}/jdk/src/share/classes" />
-    <input dir="${openjdk.home}/jaxp/src/share/classes" />
-   <!--
-    <classpath>
-    </classpath>
-   -->
-    <enable check="AllTraditionalFors" />
-    <enable check="ForAroundSizeOrLength" />
     <enable check="ForAroundSizeConvertable" />
     <enable check="ForAroundLengthConvertable" />
+    <enable check="StringBuilderOrBufferAppend" />
+    <enable check="CollectionGetOrSet" />
+    <enable check="AllVariableInitializers" />
+    <enable check="AutoInitializers" />
+    <enable check="DiamondInitializers" />
    </JavaChecker>
  </target>
-
 
  <target name="check-coin-gwt-user" depends="declareJavaChecker" >
    <JavaChecker jchhome="${basedir}" output="coin-gwt-user.txt" 
@@ -208,22 +209,13 @@
     <enable check="ForsWithNext" />
     <enable check="AllTraditionalFors" />
     <enable check="ForAroundSizeOrLength" />
-   </JavaChecker>
- </target>
-
- <target name="check-coin-loop-gwt-user" depends="declareJavaChecker" >
-   <JavaChecker jchhome="${basedir}" output="coin-loop-gwt-user.txt" 
-                outputFormat="text" showFiles="true" 
-                explicitEnabledOnly="true"
-                >
-    <input dir="${gwt.home}/user/src" />
-    <input dir="${gwt.home}/user/super/com/google/gwt/emul" />
-    <include dir="${gwt.home}/dev/core/src" />
-    <config name="resolver.recheckJavaLangByClass" value="true" />
-    <enable check="AllTraditionalFors" />
-    <enable check="ForAroundSizeOrLength" />
     <enable check="ForAroundSizeConvertable" />
     <enable check="ForAroundLengthConvertable" />
+    <enable check="StringBuilderOrBufferAppend" />
+    <enable check="CollectionGetOrSet" />
+    <enable check="AllVariableInitializers" />
+    <enable check="AutoInitializers" />
+    <enable check="DiamondInitializers" />
    </JavaChecker>
  </target>
 
@@ -266,31 +258,15 @@
     <enable check="ForsWithNext" />
     <enable check="AllTraditionalFors" />
     <enable check="ForAroundSizeOrLength" />
-   </JavaChecker>
- </target>
-
- <target name="check-coin-loop-hibernate" depends="declareJavaChecker" >
-   <JavaChecker jchhome="${basedir}" output="coin-loop-hibernate.txt" 
-                outputFormat="text" showFiles="true" 
-                explicitEnabledOnly="true"
-                >
-    <input dir="${hibernate.home}/core/src/main/java" />
-    <input dir="${hibernate.home}/annotations/src/main/java" />
-    <input dir="${hibernate.home}/entitymanager/src/main/java" />
-    <input dir="${hibernate.home}/commons-annotations/src/main/java" />
-    <classpath>
-     <pathelement location="${antlr.jar}" />
-     <pathelement location="${j2ee.jar}" />
-     <pathelement location="${slf4j-api.jar}" />
-     <pathelement location="${slf4j-impl.jar}" />
-    </classpath>
-    <enable check="AllTraditionalFors" />
-    <enable check="ForAroundSizeOrLength" />
     <enable check="ForAroundSizeConvertable" />
     <enable check="ForAroundLengthConvertable" />
+    <enable check="StringBuilderOrBufferAppend" />
+    <enable check="CollectionGetOrSet" />
+    <enable check="AllVariableInitializers" />
+    <enable check="AutoInitializers" />
+    <enable check="DiamondInitializers" />
    </JavaChecker>
  </target>
-
 
 
 </project>

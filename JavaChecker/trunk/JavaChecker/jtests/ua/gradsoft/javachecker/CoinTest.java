@@ -380,7 +380,7 @@ public class CoinTest extends TestCase
         Set<String> enabled = new TreeSet<String>();
         enabled.addAll(Arrays.asList("ForAroundSizeConvertable","ForAroundLengthConvertable"));
         main.setExplicitEnabled(enabled);
-        main.setDump(true);
+        main.setDump(false);
         Main.setShowFiles(true);
         TermSystem ts =TermWare.getInstance().resolveSystem("FindSubterm");
         //ts.setLoggedEntity("All");
@@ -396,6 +396,67 @@ public class CoinTest extends TestCase
         List<DefectReportItem> defects = Main.getFacts().getDefectReportItems();
 
         assertTrue(defects.size()>0);
+        System.err.println("defects.size()="+defects.size());
+
+    }
+
+    public void testStringBuilderOrBufferAppend() throws Exception
+    {
+        Main main = new Main();
+
+       // set options.
+        main.setExplicitEnabledOnly(true);
+
+        Set<String> enabled = new TreeSet<String>();
+        enabled.addAll(Arrays.asList("StringBuilderOrBufferAppend"));
+        main.setExplicitEnabled(enabled);
+        main.setDump(false);
+        Main.setShowFiles(true);
+        //TermSystem ts =TermWare.getInstance().resolveSystem("FindSubterm");
+        //ts.setLoggedEntity("All");
+        //ts.setLoggingMode(true);
+
+        main.init(new String[0]);
+        Main.addInputDirectory("testpackages/coin/sbappend",true);
+
+        Main.getFacts().clearDefectReportItems();
+
+        main.process();
+
+        List<DefectReportItem> defects = Main.getFacts().getDefectReportItems();
+
+        assertTrue(defects.size()>1);
+        System.err.println("defects.size()="+defects.size());
+
+    }
+
+    public void testAutoOrDiamond() throws Exception
+    {
+        Main main = new Main();
+
+       // set options.
+        main.setExplicitEnabledOnly(true);
+
+        Set<String> enabled = new TreeSet<String>();
+        enabled.addAll(Arrays.asList("AllVariableInitializers",
+                                "AutoInitializers","DiamondInitializers"));
+        main.setExplicitEnabled(enabled);
+        main.setDump(true);
+        Main.setShowFiles(true);
+        //TermSystem ts =TermWare.getInstance().resolveSystem("FindSubterm");
+        //ts.setLoggedEntity("All");
+        //ts.setLoggingMode(true);
+
+        main.init(new String[0]);
+        Main.addInputDirectory("testpackages/coin/auto",true);
+
+        Main.getFacts().clearDefectReportItems();
+
+        main.process();
+
+        List<DefectReportItem> defects = Main.getFacts().getDefectReportItems();
+
+        assertTrue(defects.size()>1);
         System.err.println("defects.size()="+defects.size());
 
     }

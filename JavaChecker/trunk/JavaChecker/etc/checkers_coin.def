@@ -280,6 +280,191 @@ Checkers(
                           "for loop from 0 to size or length()",
                           s($index,$block)) ]
 
+        ),true),
+
+ define(StringBuilderOrBufferAppend,coin,
+        "simplicified StringBuilder/Buffer syntax",
+        MODEL_RULESET,
+        ruleset(
+          import(general,apply),
+          MethodCallModel($obj,Identifier("append"),$arguments,$mm,$ctx)
+             [ 
+              $ctx.subtypeOrSame(
+               $mm.getTypeModel(),
+               $ctx.resolveFullClassName("java.lang.StringBuilder")
+              )
+             ] -> true
+              [ violationDiscovered(StringBuilderOrBufferAppend, 
+                               "call of StringBuilder.append",
+                                s($obj,$arguments,$ctx)) ]
+            |
+             [
+              $ctx.subtypeOrSame(
+               $mm.getTypeModel(),
+               $ctx.resolveFullClassName("java.lang.StringBuffer")
+              )
+             ] -> true
+              [ violationDiscovered(StringBuilderOrBufferAppend, 
+                               "call of StringBuffer.append",
+                                s($obj,$arguments,$ctx)) ]
+             !-> false
+        ),true),
+
+ define(CollectionGetOrSet,coin,
+        "simplicified collection element access",
+        MODEL_RULESET,
+        ruleset(
+          MethodCallModel($obj,Identifier("get"),$arguments,$mm,$ctx)
+             [ 
+              $ctx.subtypeOrSame(
+                $mm.getTypeModel(),
+                $ctx.resolveFullClassName("java.util.Collection")
+              )
+             ] -> true
+              [ violationDiscovered(CollectionGetOrSet, 
+                                  "call of Collection.get",
+                                s($obj,$arguments,$ctx)) ]
+             !-> false,
+
+          MethodCallModel($obj,Identifier("set"),$arguments,$mm,$ctx)
+             [ 
+              $ctx.subtypeOrSame(
+                $mm.getTypeModel(),
+                $ctx.resolveFullClassName("java.util.List")
+              )
+             ] -> true
+              [ violationDiscovered(CollectionGetOrSet, 
+                                    "call of List.set",
+                                    s($obj,$arguments,$ctx)) ]
+             !-> false,
+
+          MethodCallModel($obj,Identifier("put"),$arguments,$mm,$ctx)
+             [ 
+              $ctx.subtypeOrSame(
+                $mm.getTypeModel(),
+                $ctx.resolveFullClassName("java.util.Map")
+              )
+             ] -> true
+              [ violationDiscovered(CollectionGetOrSet, 
+                                    "call of Map.put",
+                                    s($obj,$arguments,$ctx)) ]
+             !-> false
+
+        ),true),
+
+ define(AllVariableInitializers,coin,"all variable initializers",
+        FT_TYPE_RULESET,
+        ruleset(
+          VariableDeclarator($x) -> false,
+          VariableDeclarator($x,$y) -> true
+              [ violationDiscovered(AllVariableInitializers, 
+                                    "variable with initializer",
+                                    s($x,$y)) ]
+        ),true),
+
+ define(AutoInitializers,coin,
+        "initializers with type arguments or long type names",
+        FT_TYPE_RULESET,
+        ruleset(
+          import(general,logical_or),
+
+          LocalVariableDeclaration($modifiers, $type, NIL) -> false,
+
+          LocalVariableDeclaration($modifiers, $type, 
+                 cons( VariableDeclarator($name,$expr),$rest)) -> 
+                           DCL($type,$name,$expr,
+                               LocalVariableDeclaration($modifiers, 
+                                                       $type, $rest)),
+
+          LocalVariableDeclaration($x,$y,$z) -> false,
+
+          DCL(ClassOrInterfaceType($x),$name,$expr,$w) -> 
+                                            DCL_CL($x,$name,$expr,$w),
+
+          DCL(Identifier($x),$name,$expr,$w) -> DCL_CL([Identifier($x)],
+                                                            $name,$expr,$w),
+
+          DCL($x,$y,$z,$w) -> false,
+
+          DCL_CL([$x,TypeArguments($y)],$name,$expr,$w) -> $w
+              [ violationDiscovered(AutoInitializers, 
+                                  "declaration with type arguments",
+                                  s($x,$y,$name,$expr)) ],
+          
+          DCL_CL(cons(Identifier($t),$y),$name,$expr,$w) 
+              [ String.length($t) > 6 ] -> $w
+                    [ violationDiscovered(AutoInitializers, 
+                                  "declaration with long name",
+                                   s($t,$y,$name,$expr)) ]
+               !-> DCL_CL($y,$name,$expr,$w),
+
+          DCL_CL(NIL,$name,$expr,$w) -> $w,
+          DCL_CL($x,$y,$z,$w) -> $w,
+
+          FieldDeclaration($type,
+                 cons( VariableDeclarator($name,$expr),$rest)) -> 
+                           DCL($type,$name,$expr,
+                               FieldDeclaration($type,$rest)),
+
+          FieldDeclaration($type, [] ) -> false,
+
+          FieldDeclaration($x,$y) -> false,
+
+          p($x) -> $x [ println($x) ]
+
+        ),true),
+
+ define(DiamondInitializers,coin,
+         "initializers with allocation and type arguments",
+        FT_TYPE_RULESET,
+        ruleset(
+          LocalVariableDeclaration($modifiers, $type, NIL) -> false,
+
+          LocalVariableDeclaration($modifiers, $type, 
+                 cons( VariableDeclarator($name,$expr),$rest)) -> 
+                        DCL($type,$name,$expr,
+                            LocalVariableDeclaration($modifiers, $type, $rest)
+                           ),
+
+          LocalVariableDeclaration($modifiers, $type, 
+                 cons( VariableDeclarator($name),$rest)) -> 
+                          LocalVariableDeclaration($modifiers, $type, $rest),
+
+          FieldDeclaration($type,
+                 cons(VariableDeclarator($name,$expr),$rest))
+                          ->    DCL($type,$name,$expr,
+                                       FieldDeclaration($type,$rest)) ,
+
+          FieldDeclaration($type,
+                 cons(VariableDeclarator($name),$rest))
+                          ->    FieldDeclaration($type,$rest) ,
+
+          FieldDeclaration($type, []) -> false,
+
+          FieldDeclaration($x,$y) -> false,
+
+          DCL($x,$name,AllocationExpression($type,$ta,$arr,$abody),$w) 
+                    -> 
+                       CHECK_TA($type,$x,$name,$w),
+
+           DCL($type,$name,$expr,$w) -> $w,
+
+           CHECK_TA(ClassOrInterfaceType($x),$y,$name,$w)
+                                        -> CHECK_TA($x,$y,$name,$w),
+
+           CHECK_TA(cons($x,$y),$z,$name,$w) -> CHECK_TA($x,$z,$name,
+                                                  CHECK_TA($y,$z,$name,$w)),
+
+           CHECK_TA(TypeArguments($x),$z,$name,$w) -> $w
+                    [ violationDiscovered(DiamondInitializers, 
+                                  "allocation expression with type arguments",
+                                   s($x,$z,$name)) ],
+
+          CHECK_TA($x,$y,$z,$w) -> $w,
+
+          p($x) -> $x [ println($x) ]
+
+
         ),true)
 
 ]

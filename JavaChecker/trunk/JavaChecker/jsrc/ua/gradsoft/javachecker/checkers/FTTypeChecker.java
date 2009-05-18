@@ -23,13 +23,14 @@ public class FTTypeChecker  extends AbstractTypeChecker
 {
 
     /**
-     * Creates a new instance of BTTypeChecker
+     * Creates a new instance of FTTypeChecker
      */
     public FTTypeChecker(String name,String category,String description,Term rules, boolean enabled) throws TermWareException, ConfigException {
         super(name,category,description,enabled);
         ITermRewritingStrategy strategy = TermWare.getInstance().createStrategyByName("FirstTop");
         termSystem_ = new TermSystem(strategy,Main.getFacts(),TermWare.getInstance());
         addRuleset(termSystem_,rules);
+        TermWare.getInstance().addSystem(name, termSystem_);
     }
 
     public CheckerType  getCheckerType() {

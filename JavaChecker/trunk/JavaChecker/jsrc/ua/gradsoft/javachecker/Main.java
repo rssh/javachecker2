@@ -35,6 +35,7 @@ import ua.gradsoft.termware.envs.SystemEnv;
 import ua.gradsoft.termware.exceptions.AssertException;
 import ua.gradsoft.parsers.java5.JavaParserFactory;
 import ua.gradsoft.printers.java5.JavaPrinterFactory;
+import ua.gradsoft.termware.TermSystem;
 import ua.gradsoft.termware.TermWareRuntimeException;
 import ua.gradsoft.termware.exceptions.ExternalException;
 
@@ -52,6 +53,7 @@ public class Main
    }catch(ConfigException ex){
        System.err.println("Error during parsing options:"+ex.getMessage());
        System.err.println("try JavaChecker --help  for help");
+       ex.printStackTrace();
        return;
    }
    if (helpOnly_) {

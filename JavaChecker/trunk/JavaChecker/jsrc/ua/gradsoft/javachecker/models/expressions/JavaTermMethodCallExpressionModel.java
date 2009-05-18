@@ -2,7 +2,7 @@
  * JavaTermMethodCallExpressionModel.java
  *
  *
- * Copyright (c) 2006, 2007 GradSoft  Ukraine
+ * Copyright (c) 2006 - 2009 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -33,7 +33,7 @@ import ua.gradsoft.termware.TermWareException;
  *Model for method call
  * @author Ruslan Shevchenko
  */
-public class JavaTermMethodCallExpressionModel extends JavaTermExpressionModel
+public class JavaTermMethodCallExpressionModel extends JavaTermExpressionModel /*implements JavaMethodCallExpressionModel*/
 {
     
     public JavaTermMethodCallExpressionModel(Term t, JavaTermStatementModel st, JavaTypeModel enclosedType) throws TermWareException
