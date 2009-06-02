@@ -30,7 +30,7 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
                                       JavaTermStatementModel statement) throws TermWareException
     {
       identifierTerm_=identifierTerm;
-      kind_=kind;
+      //kind_=kind;
       typeTerm_=typeTerm;
       initOrIterateExpressionTerm_=initOrIterateExpressionTerm;
       initExpression_=initExpression;
@@ -133,12 +133,21 @@ public class JavaTermLocalVariableModel implements JavaLocalVariableModel
     public AttributedEntity getChildAttributes(String childName)
     { return null; }
 
+    public boolean isConstant() throws TermWareException, EntityNotFoundException
+    {
+      if (modifiers_.isFinal()) {
+         if (initExpression_!=null) {
+             return initExpression_.isConstantExpression();
+         }
+      }
+      return false;
+    }
     
     private Term identifierTerm_;
     private Term typeTerm_;   
     private Term initOrIterateExpressionTerm_;
     private JavaTermExpressionModel initExpression_;
-    private JavaLocalVariableKind  kind_;    
+    //private JavaLocalVariableKind  kind_;
     private JavaTermStatementModel statement_;
 
     private JavaTypeModel resolvedType_;

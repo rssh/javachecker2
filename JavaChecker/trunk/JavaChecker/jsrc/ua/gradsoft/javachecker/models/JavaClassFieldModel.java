@@ -95,6 +95,11 @@ public class JavaClassFieldModel extends JavaMemberVariableModel {
     public JavaExpressionModel  getInitializerExpression()
     { return null; }
     
+    public boolean isConstant()
+    {
+        return this.getModifiers().isFinal() && this.getModifiers().isStatic();
+    }
+
     /**
      * ClassField(this)
      */

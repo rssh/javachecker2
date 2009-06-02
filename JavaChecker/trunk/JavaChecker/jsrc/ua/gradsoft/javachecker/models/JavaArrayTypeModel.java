@@ -234,6 +234,9 @@ public class JavaArrayTypeModel extends JavaTypeModel {
             return lengthInitializer_;
         }
         
+        public boolean isConstant()
+        { return false; }
+
     }
     
     private JavaTypeModel referencedType_;

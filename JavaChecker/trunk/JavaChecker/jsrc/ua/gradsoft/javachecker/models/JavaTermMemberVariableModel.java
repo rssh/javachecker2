@@ -8,6 +8,7 @@ package ua.gradsoft.javachecker.models;
 
 import java.lang.annotation.ElementType;
 import java.util.Map;
+import ua.gradsoft.javachecker.annotations.Nullable;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
 import ua.gradsoft.javachecker.JavaFacts;
@@ -93,6 +94,7 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
     /**
      *return intializer expression, if one defined; otherwise - null
      */
+    @Nullable
     public JavaTermExpressionModel getInitializerExpression() throws TermWareException, EntityNotFoundException
     {        
       if (variableDeclarator_.getArity()>1)  {
@@ -120,7 +122,19 @@ public class JavaTermMemberVariableModel extends JavaMemberVariableModel
         return TermUtils.createTerm("MemberVariableModel",modifiersModelTerm,typeRef,identifierTerm,initializer,tthis);
     }
     
-    
+    public boolean isConstant() throws TermWareException, EntityNotFoundException
+    {
+      if (getModifiers().isFinal()) {
+          JavaExpressionModel ie = getInitializerExpression();
+          if (ie!=null) {
+              return ie.isConstantExpression();
+          } else {
+              return false;
+          }
+      } else {
+          return false;
+      }
+    }
     
     private String  name_;
     private Term    type_=null;

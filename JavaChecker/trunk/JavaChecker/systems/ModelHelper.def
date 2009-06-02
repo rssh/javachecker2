@@ -43,20 +43,84 @@ system("ModelHelper",javaFacts("ProxyJavaFacts","ua.gradsoft.javachecker.ProxyJa
      getType(CaseConstantModel($term, $type))-> $type,
      getType(ThisModel($x,$ctx))-> $ctx.getExpressionModel().getType(),
 
-     
-
-
      getType(ThisPrefixExpressionModel($ctx)) -> $ctx.getTypeModel(),
      getType(SuperPrefixExpressionModel($ctx)) -> $ctx.getTypeModel().getSuperClass(),
 
-     
      getType(BooleanLiteral($x)) -> $type [ assign($type,getPrimitiveType("boolean")) ],
      getType(CharacterLiteral($x)) -> $type [ assign($type,getPrimitiveType("char")) ],
      getType(FloatingPointLiteral($x)) -> $type [ assign($type,getFloatingPointLiteralType($x)) ],
      getType(StringLiteral($x)) -> $type [ assign($type,getClassType("java.lang.String")) ],
      getType(IntegerLiteral($x)) -> $type [ assign($type,getIntegerLiteralType($x)) ],
-     getType(NullLiteral())-> $type [ assign($type,getNullType($x)) ]
+     getType(NullLiteral())-> $type [ assign($type,getNullType($x)) ],
 
+     isConstant(TypeRef($tname,$type)) -> true,
+     isConstant(VariableModel($id,$model)) 
+                      [ $model.isConstant() ] -> true  !->  false,
+     isConstant(AllocationExpressionModel(TypeRef($tname,$type),$arguments,$ctx)) -> $ctx.isConstantExpression(),
+
+     isConstant(AdditiveExpressionModel($x,$y,$op,$ctx)) -> $ctx.isConstantExpression(),
+
+     isConstant(AndExpressionModel($x,$y,$ctx)) -> $ctx.isConstantExpression(),
+     isConstant(ArrayIndexExpressionModel($x,$y,$ctx)) -> $ctx.isConstantExpression(),
+
+     isConstant(UnaryExpressionModel($x,$op,$ctx)) -> $ctx.isConstantExpression(),
+     isConstant(ArrayInitializerModel($x,$ctx)) -> $ctx.isConstantExpression(),
+     isConstant(AssigmentExpressionModel($x,$y,$op,$ctx)) -> $ctx.isConstantExpression(),
+     isConstant(CastExpressionModel($typeRef,$subExpression,$ctx)) -> ctx.isConstantExpression(),
+     isConstant(ClassLiteralModel($typeRef,$ctx)) -> true,
+     isConstant(ConditionalAndExpressionModel($x,$y,$ctx))-> 
+                                                 $ctx.isConstantExpression(),
+     isConstant(ConditionalOrExpressionModel($x,$y,$ctx))-> 
+                                                 $ctx.isConstantExpression(),
+     isConstant(EqualityExpressionModel($x,$y,$op,$ctx))-> 
+                                                 $ctx.isConstantExpression(),
+     isConstant(ExclusiveOrExpressionModel($x,$y,$ctx))-> 
+                                                 $ctx.isConstantExpression(),
+     isConstant(FieldModel($objectOrType,$identifier,$fieldModel,$ctx))-> 
+                                                 $ctx.isConstantExpression(),
+
+     isConstant(FunctionCallModel($name,$argumentsList,$javaMethodModel,$ctx))
+                                          ->  $ctx.isConstantExpression(),
+     isConstant(InclusiveOrExpressionModel($x,$y,$ctx))-> 
+                                                 $ctx.isConstantExpression(),
+     isConstant(InnerAllocationExpressionModel($ownerType,$type,$expressions,$ctx))-> 
+                                                 $ctx.isConstantExpression(),
+     isConstant(InstanceOfExpressionModel($typeRef,$expression,$ctx))-> 
+                                                 $ctx.isConstantExpression(),
+
+     isConstant(MethodCallModel($obj,$identifier,
+                                 $arguments,$methodModel,$ctx))-> 
+                                                 $ctx.isConstantExpression(),
+     isConstant(MultiplicativeExpressionModel($x,$y,$op,$ctx))-> 
+                                                 $ctx.isConstantExpression(),
+     isConstant(PostfixExpressionModel($x,$op,$ctx))-> 
+                                                 $ctx.isConstantExpression(),
+     isConstant(PredecrementExpressionModel($x,$ctx))-> 
+                                                 $ctx.isConstantExpression(),
+     isConstant(PreincrementExpressionModel($x,$ctx))-> 
+                                                 $ctx.isConstantExpression(),
+     isConstant(RelationalExpressionModel($x,$y,$op,$ctx))-> 
+                                                 $ctx.isConstantExpression(),
+     isConstant(ShiftExpressionModel($x,$y,$op,$ctx))-> 
+                                                 $ctx.isConstantExpression(),
+     isConstant(SpecializedMethodCallModel($bounds,$methodCallModelTerm,$methodModel,$ctx))-> $ctx.isConstantExpression(),
+     isConstant(StaticFieldModel($typeRef,$identifier,$memberVariable,$ctx))-> 
+                                                 $ctx.isConstantExpression(),
+     isConstant(SuperModel($x,$ctx))-> $ctx.isConstantExpression(),
+     isConstant(CaseConstantModel($term, $type))-> true,
+     isConstant(ThisModel($x,$ctx))-> $ctx.isConstantExpression(),
+
+     isConstant(ThisPrefixExpressionModel($ctx)) ->
+                                                 $ctx.isConstantExpression(),
+     isConstant(SuperPrefixExpressionModel($ctx)) -> 
+                                                 $ctx.isConstantExpression(),
+
+     isConstant(BooleanLiteral($x)) -> true ,
+     isConstant(CharacterLiteral($x)) -> true ,
+     isConstant(FloatingPointLiteral($x)) -> true ,
+     isConstant(StringLiteral($x)) -> true,
+     isConstant(IntegerLiteral($x)) -> true,
+     isConstant(NullLiteral())-> true
 
   ),
   FirstTop

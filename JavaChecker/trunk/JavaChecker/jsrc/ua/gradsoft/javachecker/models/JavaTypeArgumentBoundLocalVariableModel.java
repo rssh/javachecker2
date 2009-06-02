@@ -79,6 +79,12 @@ public class JavaTypeArgumentBoundLocalVariableModel implements JavaLocalVariabl
        Term retval = TermUtils.createTerm("TypeArgumentBoundLocalVariableModel",x,y);
        return retval;
     }
+
+    public boolean isConstant() throws TermWareException, EntityNotFoundException
+    {
+        return origin_.isConstant();
+    }
+
     
     public boolean isForHead()
     { return origin_.isForHead(); }

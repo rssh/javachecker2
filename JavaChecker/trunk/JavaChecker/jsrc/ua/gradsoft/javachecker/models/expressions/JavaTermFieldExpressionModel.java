@@ -1,9 +1,6 @@
 /*
  * JavaTermFieldExpressionModel.java
  *
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package ua.gradsoft.javachecker.models.expressions;
@@ -94,7 +91,19 @@ public class JavaTermFieldExpressionModel extends JavaTermExpressionModel
     
     public boolean isConstantExpression() throws TermWareException, EntityNotFoundException
     {
-      return false;
+      lazyInitFieldModel();
+      if (objectOrType_.isConstantExpression()) {
+          return true;
+      }else if (fieldModel_.getModifiers().isFinal()) {
+          if (fieldModel_.isSupportInitializerExpression()) {
+              JavaExpressionModel initializerExpression = fieldModel_.getInitializerExpression();
+              return initializerExpression.isConstantExpression();
+          }else{
+              return false;
+          }
+      }else{
+          return false;
+      }
     }
         
     

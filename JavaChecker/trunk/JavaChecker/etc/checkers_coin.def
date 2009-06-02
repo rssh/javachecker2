@@ -26,18 +26,20 @@ Checkers(
               -> true [ violationDiscovered(StringInSwitch,"string in switch",
                         x($block1,$block2,$block3)) ]
         ),
-        true
+        false
   ),
-
+ 
+ #@Show(false)
  define(AllIfs,coin,"all ifs",
         BT_TYPE_RULESET,
         ruleset(
           IfStatement($x,$y,$z)
                 -> true [ violationDiscovered(AllIfs, "all ifs",$x) ]
          ),
-         true
+         false
  ),
 
+ #@Show(false)
  define(AllCEs,coin,"all conditional expressions",
         BT_TYPE_RULESET,
         ruleset(
@@ -46,7 +48,7 @@ Checkers(
                           s($x,$y,$z)) ],
           $x [ x!=true ] -> true
          ),
-         true
+         false
  ),
  
  
@@ -63,9 +65,10 @@ Checkers(
            -> true [ violationDiscovered(InstanceOfSwitch,
                          "instanceof switch",$block1) ]
          ),
-         true
+         false
  ),
 
+ #@Show(false)
  define(ByteLiteral,coin,"byte literal",
         FT_TYPE_RULESET,
         ruleset(
@@ -73,16 +76,17 @@ Checkers(
                     [ violationDiscovered(ByteLiteral, "byte literal", $x) ],
          CastExpression(byte,CharacterLiteral($x)) -> true
                      [ violationDiscovered(ByteLiteral, "byte literal", $x) ]
-        ),true),
+        ),false),
 
-
+ #@Show(false)
  define(AllIntegerLiteral,coin,"all integer literals",
         FT_TYPE_RULESET,
         ruleset(
          IntegerLiteral($x) -> true
          [ violationDiscovered(AllIntegerLiteral, "all integer literals", $x) ]
-        ),true),
+        ),false),
 
+ #@Show(false)
  define(BigIntegerLiteral,coin,"big integer literals(undescores)",
         FT_TYPE_RULESET,
         ruleset(
@@ -91,7 +95,7 @@ Checkers(
                               [ violationDiscovered(BigIntegerLiteral, 
                                      "big integer literals(undescores)", $x) ]
                               !-> false
-        ),true),
+        ),false),
 
 
  define(MultiCatch,coin,"multi catch",
@@ -99,14 +103,15 @@ Checkers(
         ruleset(
          cons(Catch($fp1,$block),cons(Catch($fp2,$block),$z)) -> true
                     [ violationDiscovered(MultiCatch, "multi catch", $fp1) ]
-        ),true),
+        ),false),
 
+ #@Show(false)
  define(AllCatchs,coin,"all catchs",
         FT_TYPE_RULESET,
         ruleset(
          cons(Catch($fp1,$block),$x) -> true
                     [ violationDiscovered(AllCatchs, "all catchs", $fp1) ]
-        ),true),
+        ),false),
 
  define(CatchInFinally,coin,"catch in finally",
         BT_TYPE_RULESET,
@@ -119,7 +124,7 @@ Checkers(
          CHECK(true,$block) -> true
                     [  violationDiscovered(CatchInFinally,"catch in finally",
                                            $block) ]
-        ),true),
+        ),false),
 
  define(LoopWithRemove,coin,"loop with remove",
         BT_TYPE_RULESET,
@@ -148,7 +153,7 @@ Checkers(
 
             p($x) -> $x [ println($x) ]
 
-        ),true),
+        ),false),
 
 
 
@@ -180,7 +185,7 @@ Checkers(
            -> true [ violationDiscovered(ObjectSwitch,
                          "object switch",$block1) ]
          ),
-         true
+         false
  ),
 
  define(RethrowClause,coin,"rethrow clause",
@@ -188,8 +193,9 @@ Checkers(
         ruleset(
          Catch($fp1,Block([ThrowStatement($x)])) -> true
                  [ violationDiscovered(RethrowClause, "rethrow clause", $fp1) ]
-        ),true),
+        ),false),
 
+ #@Show(false) 
  define(WideningSemantics,coin,"widening operator (semantics)",
         MODEL_RULESET,
         ruleset(
@@ -211,7 +217,7 @@ Checkers(
               [ violationDiscovered(WideningSemantics, 
                               "widening operator (semantics)", $x) ]
                                               !-> false
-        ),true),
+        ),false),
 
 
  define(AllBitAnds,coin,"all bit ands",
@@ -219,7 +225,7 @@ Checkers(
         ruleset(
          AndExpression($x,$y) -> true 
               [ violationDiscovered(AllBitAnds, "all bit ands", A($x,$y)) ]
-        ),true),
+        ),false),
 
  define(ForsWithNext,coin,"for with limit like it.next()",
         BT_TYPE_RULESET,
@@ -231,7 +237,7 @@ Checkers(
             ), $block) -> true
               [ violationDiscovered(ForsWithNext, 
                         "for loop, limited by it.next", A($x,$block)) ]
-        ),true),
+        ),false),
        
  define(AllTraditionalFors,coin,"all traditional fors",
         FT_TYPE_RULESET,
@@ -241,7 +247,7 @@ Checkers(
             $block   )              ->  $block
               [ violationDiscovered(AllTraditionalFors, 
                                     "traditional for", A($x,$y,$z)) ]
-        ),true),
+        ),false),
 
  define(ForAroundSizeOrLength,coin,"for loop from 0 to size or length",
         FT_TYPE_RULESET,
@@ -280,7 +286,7 @@ Checkers(
                           "for loop from 0 to size or length()",
                           s($index,$block)) ]
 
-        ),true),
+        ),false),
 
  define(StringBuilderOrBufferAppend,coin,
         "simplicified StringBuilder/Buffer syntax",
@@ -308,7 +314,7 @@ Checkers(
                                "call of StringBuffer.append",
                                 s($obj,$arguments,$ctx)) ]
              !-> false
-        ),true),
+        ),false),
 
  define(CollectionGetOrSet,coin,
         "simplicified collection element access",
@@ -350,8 +356,9 @@ Checkers(
                                     s($obj,$arguments,$ctx)) ]
              !-> false
 
-        ),true),
+        ),false),
 
+ #@Show(false)
  define(AllVariableInitializers,coin,"all variable initializers",
         FT_TYPE_RULESET,
         ruleset(
@@ -360,8 +367,9 @@ Checkers(
               [ violationDiscovered(AllVariableInitializers, 
                                     "variable with initializer",
                                     s($x,$y)) ]
-        ),true),
+        ),false),
 
+ #@Show(false)
  define(AutoInitializers,coin,
         "initializers with type arguments or long type names",
         FT_TYPE_RULESET,
@@ -412,7 +420,7 @@ Checkers(
 
           p($x) -> $x [ println($x) ]
 
-        ),true),
+        ),false),
 
  define(DiamondInitializers,coin,
          "initializers with allocation and type arguments",
@@ -465,7 +473,109 @@ Checkers(
           p($x) -> $x [ println($x) ]
 
 
-        ),true)
+        ),false),
+
+ #@Show(false)
+ define(AllForEachLoops,coin,"all foreach loops",
+        FT_TYPE_RULESET,
+        ruleset(
+           ForEachLoopHead($x,$y,$z) -> true
+                    [ violationDiscovered(AllForEachLoops, 
+                                "foreach loop", s($x,$y,$z)) ]
+        )
+       ,false),
+ 
+
+ calculate(PercentageOfUnconvertedLoops,"coin",
+        "percentage for converted loops",
+              (
+               1.0 - AllForEachLoops/(AllForEachLoops+
+                           ForAroundSizeConvertable+
+                           ForAroundLengthConvertable)
+              )*100
+ ,false),
+
+ define(CollectionLiterals,"coin",
+        "collection literals can be applied",
+        MODEL_RULESET,
+        ruleset(
+          import(general,logical_and),
+          import(general,apply),
+          MethodCallModel($obj,Identifier("asList"),$arguments,$mm,$ctx)
+              -> CHECK(is_constants($arguments),asList,s($obj,$arguments,$ctx)),
+
+          is_constants([]) -> true,
+          is_constants(cons($x,$y)) -> is_constants($x) && is_constants($y),
+          is_constants($x) -> ModelHelper.isConstant($x),
+
+          CHECK(true,asList,$x) -> true
+                    [ violationDiscovered(CollectionLiterals, 
+                              "possible list initializer", $x) ],
+
+          [StatementExpressionStatement(
+            MethodCallModel($obj,Identifier("put"),
+                                     [$a11,$a12],$mm,$ctx),$sctx)
+           :
+           [StatementExpressionStatement(
+            MethodCallModel($obj,Identifier("put"),
+                                     [$a21,$a22],$mm1,$ctx1),$sctx1)
+           :$rest]
+          ]  -> CHECK(is_constants([$a11,$a12,$a21,$a22]),asMap,
+                                         s($obj,$a11,$a12,$a21,$a22,$ctx)),
+
+
+          CHECK(true,asMap,$x) -> true
+                    [ violationDiscovered(CollectionLiterals, 
+                                              "map initializer", $x) ],
+
+          [StatementExpressionStatement(
+            MethodCallModel($obj,Identifier("add"),[$a],$mm,$ctx),$sctx)
+           :
+           [StatementExpressionStatement(
+             MethodCallModel($obj1,Identifier("add"),[$a1],$mm1,$ctx1),$sctx1)
+           :$rest]
+          ]  -> CHECK(is_constants([$a,$a1]),asSetOrList,
+                                         s($obj,$a,$a1,$ctx)),
+
+           StatementExpressionStatement($x) -> false,
+                                        
+          CHECK(true,asSetOrList,$x) -> true
+                    [ violationDiscovered(CollectionLiterals, 
+                                            "set or list initializer", $x) ],
+
+                
+          CHECK(false,$x,$y) -> false
+
+        ),false),
+
+        calculate(NewIntegerLiterals,coin,"New Integer Literals",
+                   ByteLiteral+WideningSemantics+BigIntegerLiteral,
+                   false),
+
+        calculate(NewIntegerLiterals_percents,"coin", "per all integer literal",
+                   (NewIntegerLiterals/AllIntegerLiteral)*100,
+                   false),
+
+        calculate(Elvis,"coin", "Elvis and Other Null-Safe Operators",
+                    Elvis1+NullSafe,
+                    false),
+ 
+        calculate(Elvis_percents,"coin", "per if-s and conditions",
+                    Elvis/(AllIfs+AllCEs)*100,
+                    false),
+
+        calculate(DiamondInitializers_percents,"coint",
+                  "per all variable initializers",
+                  (DiamondInitializers/AllVariableInitializers)*100,
+                  false),
+
+        calculate(MultiCatch_percents,"coint",
+                  "per all catchs",
+                  (MultiCatch/AllCatchs)*100,
+                  false)
+                     
+
+ 
 
 ]
 

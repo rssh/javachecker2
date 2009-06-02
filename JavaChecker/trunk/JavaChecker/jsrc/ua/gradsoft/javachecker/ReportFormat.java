@@ -13,7 +13,8 @@ public enum ReportFormat {
     
 
     TEXT("text"),
-    HTML("html")
+    HTML("html"),
+    XML("xml")
     ;
     
     ReportFormat(String name)

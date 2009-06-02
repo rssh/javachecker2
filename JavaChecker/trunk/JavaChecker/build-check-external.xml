@@ -68,7 +68,9 @@
    <!--
     <jvmarg   value="-javaagent:${jrat.jar}" />
    -->
+   <!--
     <jvmarg   value="-agentlib:hprof=cpu=samples" />
+   -->
   <!--
     <jvmarg   value="-Dcom.sun.management.jmxremote" />
     <jvmarg   value="-Dcom.sun.management.jmxremote.port=9001" />
@@ -83,32 +85,16 @@
 			</fileset>
     </classpath>
     <enable check="StringInSwitch" />
-    <enable check="InstanceOfSwitch" />
-    <enable check="ByteLiteral" />
     <enable check="MultiCatch" />
-    <enable check="Elvis1" />
-    <enable check="NullSafe" />
-    <enable check="LoopWithRemove" />
-    <enable check="AllIfs" />
-    <enable check="AllCEs" />
-    <enable check="AllIntegerLiteral" />
-    <enable check="BigIntegerLiteral" />
-    <enable check="AllCatchs" />
-    <enable check="CatchInFinally" />
-    <enable check="ObjectSwitch" />
-    <enable check="RethrowClause" />
-    <enable check="WideningSemantics" />
-    <enable check="AllBitAnds" />
-    <enable check="ForsWithNext" />
-    <enable check="AllTraditionalFors" />
-    <enable check="ForAroundSizeOrLength" />
-    <enable check="ForAroundSizeConvertable" />
-    <enable check="ForAroundLengthConvertable" />
-    <enable check="StringBuilderOrBufferAppend" />
+    <enable check="MultiCatch_percents" />
     <enable check="CollectionGetOrSet" />
-    <enable check="AllVariableInitializers" />
-    <enable check="AutoInitializers" />
     <enable check="DiamondInitializers" />
+    <enable check="DiamondInitializers_percents" />
+    <enable check="CollectionLiterals" />
+    <enable check="NewIntegerLiterals" />
+    <enable check="NewIntegerLiterals_percents" />
+    <enable check="Elvis" />
+    <enable check="Elvis_percents" />
    </JavaChecker>
  </target>
 
@@ -147,34 +133,16 @@
     </classpath>
    -->
     <enable check="StringInSwitch" />
-    <enable check="InstanceOfSwitch" />
-    <enable check="ByteLiteral" />
     <enable check="MultiCatch" />
+    <enable check="MultiCatch_percents" />
     <enable check="Elvis" />
-    <enable check="Elvis1" />
-    <enable check="NullSafe" />
-    <enable check="LoopWithRemove" />
-    <enable check="AllIfs" />
-    <enable check="AllCEs" />
-    <enable check="BigIntegerLiteral" />
-    <enable check="AllIntegerLiteral" />
-    <enable check="AllCatchs" />
-    <enable check="CatchInFinally" />
-    <enable check="ObjectSwitch" />
-    <enable check="RethrowClause" />
-    <enable check="WideningSyntax" />
-    <enable check="WideningSemantics" />
-    <enable check="AllBitAnds" />
-    <enable check="ForsWithNext" />
-    <enable check="AllTraditionalFors" />
-    <enable check="ForAroundSizeOrLength" />
-    <enable check="ForAroundSizeConvertable" />
-    <enable check="ForAroundLengthConvertable" />
-    <enable check="StringBuilderOrBufferAppend" />
+    <enable check="Elvis_percents" />
     <enable check="CollectionGetOrSet" />
-    <enable check="AllVariableInitializers" />
-    <enable check="AutoInitializers" />
+    <enable check="CollectionLiterals" />
     <enable check="DiamondInitializers" />
+    <enable check="DiamondInitializers_percents" />
+    <enable check="NewIntegerLiterals" />
+    <enable check="NewIntegerLiterals_percents" />
    </JavaChecker>
  </target>
 
@@ -188,34 +156,16 @@
     <include dir="${gwt.home}/dev/core/src" />
     <config name="resolver.recheckJavaLangByClass" value="true" />
     <enable check="StringInSwitch" />
-    <enable check="InstanceOfSwitch" />
-    <enable check="ByteLiteral" />
     <enable check="MultiCatch" />
+    <enable check="MultiCatch_percents" />
     <enable check="Elvis" />
-    <enable check="Elvis1" />
-    <enable check="NullSafe" />
-    <enable check="LoopWithRemove" />
-    <enable check="AllIfs" />
-    <enable check="AllCEs" />
-    <enable check="AllIntegerLiteral" />
-    <enable check="BigIntegerLiteral" />
-    <enable check="AllCatchs" />
-    <enable check="CatchInFinally" />
-    <enable check="ObjectSwitch" />
-    <enable check="RethrowClause" />
-    <enable check="WideningSyntax" />
-    <enable check="WideningSemantics" />
-    <enable check="AllBitAnds" />
-    <enable check="ForsWithNext" />
-    <enable check="AllTraditionalFors" />
-    <enable check="ForAroundSizeOrLength" />
-    <enable check="ForAroundSizeConvertable" />
-    <enable check="ForAroundLengthConvertable" />
-    <enable check="StringBuilderOrBufferAppend" />
+    <enable check="Elvis_percents" />
     <enable check="CollectionGetOrSet" />
-    <enable check="AllVariableInitializers" />
-    <enable check="AutoInitializers" />
-    <enable check="DiamondInitializers" />
+    <enable check="CollectionLiterals" />
+    <enable check="DiamondInitializer" />
+    <enable check="DiamondInitializers_percents" />
+    <enable check="NewIntegerLiterals" />
+    <enable check="NewIntegerLiterals_percents" />
    </JavaChecker>
  </target>
 
@@ -237,34 +187,48 @@
      <pathelement location="${slf4j-impl.jar}" />
     </classpath>
     <enable check="StringInSwitch" />
-    <enable check="InstanceOfSwitch" />
-    <enable check="ByteLiteral" />
-    <enable check="AllIntegerLiteral" />
-    <enable check="BigIntegerLiteral" />
     <enable check="MultiCatch" />
+    <enable check="MultiCatch_percents" />
     <enable check="Elvis" />
-    <enable check="Elvis1" />
-    <enable check="NullSafe" />
-    <enable check="LoopWithRemove" />
-    <enable check="AllIfs" />
-    <enable check="AllCEs" />
-    <enable check="AllCatchs" />
-    <enable check="CatchInFinally" />
-    <enable check="ObjectSwitch" />
-    <enable check="RethrowClause" />
-    <enable check="WideningSyntax" />
-    <enable check="WideningSemantics" />
-    <enable check="AllBitAnds" />
-    <enable check="ForsWithNext" />
-    <enable check="AllTraditionalFors" />
-    <enable check="ForAroundSizeOrLength" />
-    <enable check="ForAroundSizeConvertable" />
-    <enable check="ForAroundLengthConvertable" />
-    <enable check="StringBuilderOrBufferAppend" />
+    <enable check="Elvis_percents" />
     <enable check="CollectionGetOrSet" />
-    <enable check="AllVariableInitializers" />
-    <enable check="AutoInitializers" />
+    <enable check="CollectionLiterals" />
     <enable check="DiamondInitializers" />
+    <enable check="DiamondInitializers_percents" />
+    <enable check="NewIntegerLiterals" />
+    <enable check="NewIntegerLiterals_percents" />
+   </JavaChecker>
+ </target>
+
+ <target name="check-coin-compiere" depends="declareJavaChecker" >
+   <JavaChecker jchhome="${basedir}" output="coin-compiere.txt"
+                outputFormat="text" showFiles="true"
+                explicitEnabledOnly="true"
+                >
+    <input dir="${compiere.home}/common/src" />
+    <input dir="${compiere.home}/serverRoot/src/main/ejb" />
+    <input dir="${compiere.home}/serverRoot/src/main/server" />
+    <input dir="${compiere.home}/serverRoot/src/main/servlet" />
+    <input dir="${compiere.home}/ad/src/" />
+    <input dir="${compiere.home}/base/src/" />
+    <input dir="${compiere.home}/interfaces/src/" />
+    <input dir="${compiere.home}/tools/Src/" />
+    <classpath>
+     <fileset dir="${compiere.home}/lib" includes="**/*.jar" />
+     <fileset dir="${compiere.home}/jboss" includes="**/*.jar" />
+     <fileset dir="${compiere.home}/tools/lib" includes="**/*.jar" />
+    </classpath>
+    <enable check="StringInSwitch" />
+    <enable check="MultiCatch" />
+    <enable check="MultiCatch_percents" />
+    <enable check="Elvis" />
+    <enable check="Elvis_percents" />
+    <enable check="CollectionGetOrSet" />
+    <enable check="CollectionLiterals" />
+    <enable check="DiamondInitializers" />
+    <enable check="DiamondInitializers_percents" />
+    <enable check="NewIntegerLiterals" />
+    <enable check="NewIntegerLiterals_percents" />
    </JavaChecker>
  </target>
 

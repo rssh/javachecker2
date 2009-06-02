@@ -15,14 +15,15 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import ua.gradsoft.javachecker.attributes.ConfigurationAttributesStorage;
+import ua.gradsoft.javachecker.checkers.CheckerNotFoundException;
 import ua.gradsoft.termware.DefaultFacts;
 import ua.gradsoft.termware.IEnv;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *Facts for java sources analysis.
- * @author  Ruslan Shevchenko
  */
 public class JavaFacts extends DefaultFacts {
    
@@ -51,8 +52,9 @@ public class JavaFacts extends DefaultFacts {
         //violations_.addType("SynchronizeViolations","threading","synchronize violations", true);
 
         violations_.addType("InvalidCheckerComments", "style","invalid checker comments",
-                Main.isExplicitEnabledOnly() ? Main.getExplicitEnabled().contains("InvalidCheckerComments"):true);
-        violations_.addType("*","uncategorized","*",true);
+                Main.isExplicitEnabledOnly() ? Main.getExplicitEnabled().contains("InvalidCheckerComments"):true,true);
+
+        violations_.addType("*","uncategorized","*",true,true);
         
         nonFinalFieldNamePattern_=getStringConfigValue("NonFinalNamePattern",nonFinalFieldNamePattern_);
         finalFieldNamePattern_=getStringConfigValue("FinalFieldNamePattern", getFinalFieldNamePattern());
@@ -83,12 +85,20 @@ public class JavaFacts extends DefaultFacts {
     
     // called from systems
     public boolean violationDiscovered(String name,String message,Term partOfCode) throws TermWareException
-    {                
-        DefectReportItem item=new DefectReportItem(violations_.getCategory(name),message,JUtils.getFileAndLine(partOfCode));
+    {
+      try {
+        DefectReportItem item=new DefectReportItem(violations_.getCategory(name),
+                                        message,
+                                        JUtils.getFileAndLine(partOfCode),
+                                        Main.getCheckers().getChecker(name)
+                              );
         if (addDefectReportItem(item)) {
            violations_.discovered(name);    
         }
         return true;
+      }catch(CheckerNotFoundException ex){
+          throw new AssertException(ex.getMessage());
+      }
     }
 
     // called from systems
@@ -187,8 +197,14 @@ public class JavaFacts extends DefaultFacts {
     
     public void invalidCheckerCommentDiscovered(Term t,String message) throws TermWareException
     {
-      DefectReportItem item=new DefectReportItem("checker","invalid checker comment:"+message,JUtils.getFileAndLine(t));
-      addDefectReportItem(item);
+      try {
+        DefectReportItem item=new DefectReportItem("checker","invalid checker comment:"+message,JUtils.getFileAndLine(t),
+                                                 Main.getCheckers().getChecker("InvalidCheckerComment"));
+        addDefectReportItem(item);
+      }catch(CheckerNotFoundException ex){
+          // impossible.
+          throw new AssertException(ex.getMessage());
+      }
     }
     
     //
@@ -203,14 +219,19 @@ public class JavaFacts extends DefaultFacts {
               out.println("<p align=\"left\">Violations found:</p>");            
               out.println("<table>");            
               break;
+          case XML:
+              out.println("<JavaCheckerReport>");
           default:
               // internal error
               throw new AssertionError("internal error: unknown report format "+format);
       }
-      
+
       for(ArrayList<DefectReportItem> items: defectReportItems_.values()) {
           for(DefectReportItem item: items) {
-              item.println(out,format);
+              StatisticItem si = Main.getStatistics().getItem(item.getChecker().getName());
+              if (si.isShow()) {
+                item.println(out,format);
+              }
           }
       }
             
@@ -222,13 +243,16 @@ public class JavaFacts extends DefaultFacts {
               out.println("");
               out.println("<p>Summary:</p>");
               break;
+          case XML:
+              out.println("</JavaCheckerReport>");
           default:
               // internal error
               throw new AssertionError("internal error: unknown report format "+format);
       }
       
-           
-      violations_.report(out,format);
+
+      Main.getStatistics().report(out, format);
+      //violations_.report(out,format);
      
       switch(format)  {
           case TEXT:
@@ -268,7 +292,8 @@ public class JavaFacts extends DefaultFacts {
             items.add(item);
             retval=true;
         }      
-        if (!Main.isQOption()&&Main.getOutputFname()!=null) {
+        if (!Main.isQOption()&&Main.getOutputFname()!=null
+             && Main.getStatistics().getItem(item.getChecker().getName()).isShow()) {
             item.println(System.out,ReportFormat.TEXT);
         }
         return retval;

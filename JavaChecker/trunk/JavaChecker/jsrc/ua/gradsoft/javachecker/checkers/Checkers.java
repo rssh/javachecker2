@@ -12,7 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import ua.gradsoft.javachecker.CheckerComment;
-import ua.gradsoft.javachecker.CheckerType;
+import ua.gradsoft.javachecker.checkers.CheckerNotFoundException;
+import ua.gradsoft.javachecker.checkers.CheckerType;
 import ua.gradsoft.javachecker.ConfigException;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JUtils;
@@ -20,6 +21,7 @@ import ua.gradsoft.javachecker.JavaFacts;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.ProcessingException;
 import ua.gradsoft.javachecker.SourceCodeLocation;
+import ua.gradsoft.javachecker.StatisticItem;
 import ua.gradsoft.javachecker.Violations;
 import ua.gradsoft.javachecker.models.JavaCompilationUnitModel;
 import ua.gradsoft.javachecker.models.JavaTermTypeAbstractModel;
@@ -51,11 +53,11 @@ public class Checkers {
             throw new ConfigException("Can't load buildin checkers",ex);
         }
 
-        loadCheckersFromFiles();
+        loadCheckersAndStatisticsFromFiles();
         //}
     }
 
-    public void loadCheckersFromFiles() throws ConfigException
+    public void loadCheckersAndStatisticsFromFiles() throws ConfigException
     {
         String dirfname = getEtcDirectory();
         if (!dirfname.endsWith(File.separator)) {
@@ -72,11 +74,11 @@ public class Checkers {
             throw new ConfigException("checkers are not found in dir "+dir.getName());
         }
         for(String fname: fnames) {
-            loadCheckersFromFile(dirfname+fname);
+            loadCheckersAndStatisticsFromFile(dirfname+fname);
         }
     }
 
-    public void loadCheckersFromFile(String checkersFname) throws ConfigException
+    public void loadCheckersAndStatisticsFromFile(String checkersFname) throws ConfigException
     {
             if (!Main.isMandatoryCheckersLoading()) {
                 File checkersFile = new File(checkersFname);
@@ -97,7 +99,7 @@ public class Checkers {
             while(!l.isNil()) {
                 Term ct = l.getSubtermAt(0);
                 l=l.getSubtermAt(1);
-                if (ct.getName().equals("define")) {
+                if (ct.getName().equals("define")||ct.getName().equals("checker")) {
                     Term tname = ct.getSubtermAt(0);
                     String name = null;
                     if (tname.isAtom()) {
@@ -160,12 +162,30 @@ public class Checkers {
                     if (Main.isExplicitEnabledOnly()) {
                         enabled = Main.getExplicitEnabled().contains(name);
                     }
+                    boolean show=true;
+                    Term showAttr = TermHelper.getAttribute(ct,"Show");
+                    if (showAttr.isBoolean()) {
+                        show=showAttr.getBoolean();
+                    }
                     Violations violations=Main.getFacts().getViolations();
-                    violations.addType(name,category,description,enabled);                    
-                    checker.configure(Main.getFacts());                    
+                    violations.addType(name,category,description,enabled,show);
+                    checker.configure(Main.getFacts());
+                }else if (ct.getName().equals("statistics")||ct.getName().equals("calculate")){
+                    try {
+                      StatisticItem si = Main.getStatistics().parseStatisticDefinition(ct);
+                      boolean enabled = facts_.getBooleanConfigValue("Check"+si.getName(),si.isEnabled());
+                      if (Main.isExplicitEnabledOnly()) {
+                        enabled = Main.getExplicitEnabled().contains(si.getName());
+                        si.setShow(enabled);
+                      }
+                      si.setEnabled(enabled);
+                      Main.getStatistics().addItem(si);
+                    }catch(TermWareException ex){
+                      throw new ConfigException("Can't read statistic item: "+ex.getMessage(),ex);
+                    }
                 }else{
                   try {
-                    throw new ConfigException("define term required instead "+TermHelper.termToPrettyString(ct));
+                    throw new ConfigException("define or calculate term required instead "+TermHelper.termToPrettyString(ct));
                   }catch(TermWareException ex){
                       throw new ConfigException("define term required instead "+ct.getName());
                   }
@@ -308,6 +328,14 @@ public class Checkers {
         }
     }
 
+    public AbstractChecker getChecker(String name)  throws CheckerNotFoundException
+    {
+       AbstractChecker retval = checkers_.get(name);
+       if (retval==null) {
+           throw new CheckerNotFoundException(name);
+       }
+       return retval;
+    }
 
     private CheckerType getCheckerType(Term ttype) throws ConfigException
     {
@@ -327,11 +355,13 @@ public class Checkers {
         boolean checkerEnabled = (Main.isExplicitEnabledOnly() ? Main.getExplicitEnabled().contains("NamePattern") : true);
         ClassChecker nameChecker=new ClassChecker("NamePatterns","style","check name patterns",TermUtils.createString("ua.gradsoft.javachecker.checkers.NamePatternsChecker"),checkerEnabled);
         checkers_.put(nameChecker.getName(),nameChecker);
-        facts_.getViolations().addType(nameChecker.getName(),nameChecker.getCategory(),nameChecker.getDescription(),nameChecker.isEnabled());
+        facts_.getViolations().addType(nameChecker.getName(),nameChecker.getCategory(),nameChecker.getDescription(),nameChecker.isEnabled(),true);
         checkerEnabled = (Main.isExplicitEnabledOnly() ? Main.getExplicitEnabled().contains("EqualsHashCode") : true);
         ClassChecker equalsHashCodeChecker=new ClassChecker("EqualsHashCode","basic","check that overloaded hashCode and equals are correspond",TermUtils.createString("ua.gradsoft.javachecker.checkers.EqualsHashCodeChecker"),checkerEnabled);
         checkers_.put(equalsHashCodeChecker.getName(),equalsHashCodeChecker);
-        facts_.getViolations().addType(equalsHashCodeChecker.getName(),equalsHashCodeChecker.getCategory(),equalsHashCodeChecker.getDescription(),equalsHashCodeChecker.isEnabled());
+        facts_.getViolations().addType(equalsHashCodeChecker.getName(),equalsHashCodeChecker.getCategory(),equalsHashCodeChecker.getDescription(),equalsHashCodeChecker.isEnabled(),true);
+        InvalidCheckerCommentChecker invalidCheckerCommentChecker = new InvalidCheckerCommentChecker();
+        checkers_.put(invalidCheckerCommentChecker.getName(), invalidCheckerCommentChecker);
     }
     
     private String getEtcDirectory() {

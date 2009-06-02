@@ -98,7 +98,8 @@ public class JavaClassFormalParameterModel extends JavaFormalParameterModel
                 );                           
     }
 
-    
+    public boolean isConstant()
+    { return false; }
     
     public int getIndex()
     { return index_; }

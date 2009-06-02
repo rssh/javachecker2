@@ -82,6 +82,9 @@ public class JavaClassEnumConstantModel extends JavaEnumConstantModel
     {
         return new JavaClassObjectConstantExpressionModel(instance_,owner_);
     }
+
+    public boolean isConstant()
+    { return true; }
     
     /**
      * ClassEnumConstantModel(this)

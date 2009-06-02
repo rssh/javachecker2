@@ -6,7 +6,7 @@
  */
 
 
-package ua.gradsoft.javachecker;
+package ua.gradsoft.javachecker.checkers;
 
 /**
  *Type of checker
@@ -43,6 +43,11 @@ public enum CheckerType {
     /**
      * java class, which called after processing and use facts API. 
      */
-    POST_PROCESS_JAVA_CLASS
+    POST_PROCESS_JAVA_CLASS,
+
+    /**
+     * dummy type, whcih do nothing. 
+     */
+     DUMMY
         
 }

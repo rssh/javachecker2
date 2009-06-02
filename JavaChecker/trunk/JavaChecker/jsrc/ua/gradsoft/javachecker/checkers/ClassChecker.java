@@ -5,7 +5,7 @@
 
 package ua.gradsoft.javachecker.checkers;
 
-import ua.gradsoft.javachecker.CheckerType;
+import ua.gradsoft.javachecker.checkers.CheckerType;
 import ua.gradsoft.javachecker.ConfigException;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JavaFacts;

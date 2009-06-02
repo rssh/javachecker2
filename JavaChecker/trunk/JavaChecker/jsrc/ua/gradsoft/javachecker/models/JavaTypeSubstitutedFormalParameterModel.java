@@ -16,7 +16,7 @@ import ua.gradsoft.javachecker.util.Function;
 import ua.gradsoft.termware.TermWareException;
 
 /**
- *
+ *formalParameter model after applying type substitution
  * @author rssh
  */
 public class JavaTypeSubstitutedFormalParameterModel extends JavaFormalParameterModel
@@ -60,7 +60,11 @@ public class JavaTypeSubstitutedFormalParameterModel extends JavaFormalParameter
      */
     public int getIndex()
     { return origin_.getIndex(); }
-    
+
+    public boolean isConstant() throws TermWareException, EntityNotFoundException
+    {
+      return origin_.isConstant();
+    }
     
     
     private JavaFormalParameterModel origin_;

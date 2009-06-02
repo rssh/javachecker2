@@ -1,6 +1,7 @@
 Checkers(
 [
        
+ #@Show(false)
  define(ForAroundSizeConvertable,coin,"for loop (size),convertable to foreach",
         BT_TYPE_RULESET,
         ruleset(
@@ -51,6 +52,7 @@ Checkers(
         ),true),
 
 
+ #@Show(false)
  define(ForAroundLengthConvertable,coin,
                            "for loop (length),convertable to foreach",
         BT_TYPE_RULESET,
@@ -100,7 +102,13 @@ Checkers(
 
                p($x) -> $x [ println($x) ]
 
-        ),true)
+        ),true),
+
+   calculate(ForConvertable,coin,
+                           "traditional for loop, convertable to foreach",
+             ForAroundLengthConvertable+ForAroundSizeConvertable,
+             true)
+             
 
 
 ]

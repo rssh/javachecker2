@@ -76,7 +76,7 @@ public class NamePatternsChecker extends JavaTypeModelOnePassProcessor {
     }
     
     public void configure(JavaFacts facts) throws ConfigException, TermWareException {
-        facts.getViolations().addType("NonFinalPublicFileds","style","warn about non-final public field",true);
+        facts.getViolations().addType("NonFinalPublicFileds","style","warn about non-final public field",true,true);
     }
     
     public void checkClassNamePatterns(JavaTermTypeAbstractModel tm, JavaFacts facts) throws TermWareException {

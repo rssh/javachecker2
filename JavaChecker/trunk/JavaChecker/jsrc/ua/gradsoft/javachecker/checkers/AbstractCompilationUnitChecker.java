@@ -1,7 +1,6 @@
 /*
  * AbstractCompilationUnitChecker.java
  *
- * $Id: AbstractCompilationUnitChecker.java,v 1.1 2007-04-22 00:53:43 rssh Exp $
  */
 
 package ua.gradsoft.javachecker.checkers;

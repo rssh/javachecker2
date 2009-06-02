@@ -1,6 +1,7 @@
 Checkers(
 [
 
+ #@Show(false)
  define(Elvis1,coin,"elvis1",
         BT_TYPE_RULESET,
         ruleset(
@@ -23,9 +24,10 @@ Checkers(
 
            Block($x) -> false
 
-        ),true),
+        ),false),
           
 
+ #@Show(false)
  define(NullSafe,coin,"nullsafe call of fields and methods",
         BT_TYPE_RULESET,
         ruleset(
@@ -115,7 +117,7 @@ Checkers(
                                                             
            p($x) -> $x [ println($x) ]
 
-        ),true)
+        ),false)
 
 ]
 

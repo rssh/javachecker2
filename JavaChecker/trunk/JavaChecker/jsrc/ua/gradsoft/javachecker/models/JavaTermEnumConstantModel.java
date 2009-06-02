@@ -101,7 +101,9 @@ public class JavaTermEnumConstantModel extends JavaEnumConstantModel
     
     public JavaExpressionModel getInitializerExpression()
     { return null; }
-    
+
+    public boolean isConstant()
+    { return true; }
     
     private String               name_;
     private Term                 identifierTerm_;

@@ -461,6 +461,70 @@ public class CoinTest extends TestCase
 
     }
 
+    public void testForEach() throws Exception
+    {
+        Main main = new Main();
+
+       // set options.
+        main.setExplicitEnabledOnly(true);
+
+        Set<String> enabled = new TreeSet<String>();
+        enabled.addAll(Arrays.asList("AllForEachLoops"));
+        main.setExplicitEnabled(enabled);
+        main.setDump(false);
+        Main.setShowFiles(true);
+        //TermSystem ts =TermWare.getInstance().resolveSystem("FindSubterm");
+        //ts.setLoggedEntity("All");
+        //ts.setLoggingMode(true);
+
+        main.init(new String[0]);
+        Main.addInputDirectory("testpackages/coin/foreach",true);
+
+        Main.getFacts().clearDefectReportItems();
+
+        main.process();
+
+        List<DefectReportItem> defects = Main.getFacts().getDefectReportItems();
+
+        assertTrue(defects.size()>1);
+        System.err.println("defects.size()="+defects.size());
+
+    }
+
+    public void testCLI() throws Exception
+    {
+        Main main = new Main();
+
+
+       // set options.
+        main.setExplicitEnabledOnly(true);
+
+        Set<String> enabled = new TreeSet<String>();
+        enabled.add("CollectionLiterals");
+        main.setExplicitEnabled(enabled);
+        main.setDump(true);
+        Main.setShowFiles(true);
+
+        main.init(new String[0]);
+
+        TermSystem ts =TermWare.getInstance().resolveSystem("CollectionLiterals");
+       // ts.setLoggedEntity("All");
+       // ts.setLoggingMode(true);
+
+        Main.addInputDirectory("testpackages/coin/cli",true);
+
+        Main.getFacts().clearDefectReportItems();
+
+
+        main.process();
+
+        List<DefectReportItem> defects = Main.getFacts().getDefectReportItems();
+
+        assertTrue(defects.size()>1);
+        System.err.println("defects.size()="+defects.size());
+
+    }
+
 
 
 }

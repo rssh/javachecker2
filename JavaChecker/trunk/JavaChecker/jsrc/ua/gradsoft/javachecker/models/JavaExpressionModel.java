@@ -2,7 +2,7 @@
  * JavaExpressionModel.java
  *
  *
- * Copyright (c) 2006-2007 GradSoft  Ukraine
+ * Copyright (c) 2006-2009 GradSoft  Ukraine
  *http://www.gradsoft.ua
  * All Rights Reserved
  */
@@ -57,16 +57,13 @@ public interface JavaExpressionModel {
      * enclosing type of statement.
      */
     public JavaTypeModel  getEnclosedType();
-    
+
+    /**
+     * @return true if this is constant expression
+     * @throws ua.gradsoft.termware.TermWareException
+     * @throws ua.gradsoft.javachecker.EntityNotFoundException
+     */
     public boolean  isConstantExpression() throws TermWareException, EntityNotFoundException;
-    
-    //public PartialConditionResult forse(JavaTraceContext trace);
-      
-    //TODO:
-    //   think about semantics: this must be full or partial evaluation ?
-    //   if full -- may be check at first.
-    //public JavaExpressionModel  eval(JavaTraceContext trace);
-    
-    
+       
        
 }

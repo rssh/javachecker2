@@ -62,6 +62,11 @@ public class JavaTypeArgumentBoundMemberVariableModel extends JavaMemberVariable
     
     public boolean isSupportInitializerExpression()
     { return origin_.isSupportInitializerExpression(); }
+
+    public boolean isConstant() throws TermWareException, EntityNotFoundException
+    {
+      return origin_.isConstant();
+    }
     
     public JavaExpressionModel getInitializerExpression() throws TermWareException, EntityNotFoundException
     {

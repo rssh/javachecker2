@@ -6,6 +6,7 @@
 package ua.gradsoft.javachecker;
 
 import java.io.PrintStream;
+import ua.gradsoft.javachecker.checkers.AbstractChecker;
 
 
 
@@ -16,11 +17,15 @@ import java.io.PrintStream;
 public class DefectReportItem {
     
     /** Creates a new instance of DefectReport */
-    public DefectReportItem(String category,String description, FileAndLine marker) 
+    public DefectReportItem(String category,
+                            String description,
+                            FileAndLine marker,
+                            AbstractChecker checker)
     {
      category_=category;
      description_=description;
      marker_=marker;
+     checker_=checker;
     }
     
     public void println(PrintStream out, ReportFormat format)
@@ -75,7 +80,11 @@ public class DefectReportItem {
     public FileAndLine  getFileAndLine()
     { return marker_; }
     
+    public AbstractChecker getChecker()
+    { return checker_; }
+
     private String category_;
     private String description_;
     private FileAndLine marker_;
+    private AbstractChecker checker_;
 }

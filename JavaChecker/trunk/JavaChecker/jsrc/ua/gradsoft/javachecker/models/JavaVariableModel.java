@@ -54,5 +54,9 @@ public interface JavaVariableModel extends AttributedEntity
      *if one exists, otherwise return null.
      */
     public JavaTopLevelBlockOwnerModel getTopLevelBlockOwner();
-    
+
+    /**
+     * is this is constant expression
+     */
+    public boolean isConstant() throws TermWareException, EntityNotFoundException;
 }

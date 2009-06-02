@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
@@ -27,6 +29,7 @@ import ua.gradsoft.javachecker.ConfigException;
 import ua.gradsoft.javachecker.Main;
 import ua.gradsoft.javachecker.ProcessingException;
 import ua.gradsoft.javachecker.ReportFormat;
+import ua.gradsoft.javachecker.StatisticScope;
 import ua.gradsoft.javachecker.annotations.CheckerDisable;
 import ua.gradsoft.javachecker.models.AnalyzedUnitRef;
 import ua.gradsoft.termware.TermWareRuntimeException;
@@ -153,6 +156,7 @@ public class JavaCheckerTask extends Task {
     {
         fork_=fork;
     }
+
     
     public Commandline.Argument createJvmarg()
     {
@@ -163,6 +167,17 @@ public class JavaCheckerTask extends Task {
     {
         failOnError_=value;
     }
+
+    public void setStatisticDetail(String statisticDetail)
+    {
+        statisticDetail_=statisticDetail;
+    }
+
+    public void  setStatisticOnly(boolean statisticOnly)
+    {
+        statisticOnly_=statisticOnly;
+    }
+
         
     public void execute() throws BuildException
     {
@@ -213,7 +228,19 @@ public class JavaCheckerTask extends Task {
       if (explicitEnabledOnly_) {
           main.setExplicitEnabledOnly(explicitEnabledOnly_);
       }
-      
+
+      Set<String> enabledNames = new TreeSet<String>();
+      for(CheckName cname: enabled_) {
+          enabledNames.add(cname.check_);
+      }
+      Main.setExplicitEnabled(enabledNames);
+
+      Set<String> disabledNames = new TreeSet<String>();
+      for(CheckName cname: disabled_) {
+           disabledNames.add(cname.check_);
+      }
+      Main.setExplicitDisabled(disabledNames);
+
       
       try {
         main.init(new String[0]);
@@ -221,9 +248,10 @@ public class JavaCheckerTask extends Task {
           throw new BuildException(ex.getMessage(),ex);
       }   
 
-            for(CheckName cname: enabled_) {
+      for(CheckName cname: enabled_) {
           main.getFacts().setCheckEnabled(cname.getCheck(),true);
       }
+      
       for(CheckName cname: disabled_) {
            main.getFacts().setCheckEnabled(cname.getCheck(),false);
       }
@@ -240,6 +268,13 @@ public class JavaCheckerTask extends Task {
           main.setPrefsFname(prefsFname_);
       }
 
+      if (statisticDetail_!=null) {
+          Main.setStatisticDetail(StatisticScope.valueOf(statisticDetail_.toUpperCase()));
+      }
+
+      if (statisticOnly_) {
+          Main.setStatisticOnly(statisticOnly_);
+      }
       
       if (reportFormatName_!=null) {
           try {
@@ -331,12 +366,20 @@ public class JavaCheckerTask extends Task {
       if (explicitEnabledOnly_) {
           cmd.createArgument().setValue("--explicit-enabled-only");
       }
-      
+
+      if (statisticDetail_!=null) {
+          cmd.createArgument().setValue("--statistic-detail");
+          cmd.createArgument().setValue(statisticDetail_);
+      }
+
+      if (statisticOnly_) {
+          cmd.createArgument().setValue("--statisticOnly");
+      }
       
       Path classpath=cmd.createClasspath(getProject());
       classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"TermWare-2.3.3.jar");
-      classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"JavaChecker-2.5.0p5.jar");
-      classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"JavaChecker2Annotations-2.5.0p5.jar");
+      classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"JavaChecker-2.5.0p6.jar");
+      classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"JavaChecker2Annotations-2.5.0p6.jar");
       classpath.createPathElement().setPath(jchhome_+File.separator+"lib"+File.separator+"TermWareJPP-1.1.1.jar");
       
       cmd.setClassname("ua.gradsoft.javachecker.Main");
@@ -394,4 +437,8 @@ public class JavaCheckerTask extends Task {
     private boolean fork_=false;
     private boolean failOnError_=true;
     private CommandlineJava cmd=new CommandlineJava();
+
+    private String         statisticDetail_ = null;
+    private boolean        statisticOnly_ = false;
+
 }

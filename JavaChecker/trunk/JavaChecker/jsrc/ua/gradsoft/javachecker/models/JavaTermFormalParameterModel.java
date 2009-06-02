@@ -47,15 +47,17 @@ public class JavaTermFormalParameterModel extends JavaFormalParameterModel
     public JavaTopLevelBlockOwnerModel  getTopLevelBlockOwner()
     { return owner_; }
     
-    
+    @Override
     public Map<String,JavaAnnotationInstanceModel>  getAnnotationsMap()
     { return modifiers_.getAnnotationsMap(); }
-    
+
+    @Override
     public Term getAttribute(String name) throws TermWareException
     {
        return owner_.getChildAttributes(name_).getAttribute(name); 
     }
-    
+
+    @Override
     public void setAttribute(String name, Term value) throws TermWareException
     {
        owner_.getChildAttributes(name_).setAttribute(name,value);  
@@ -66,8 +68,13 @@ public class JavaTermFormalParameterModel extends JavaFormalParameterModel
      */
     public int getIndex()
     { return index_; }
-    
-    
+
+    /**
+     * @return false
+     */
+    @Override
+    public boolean isConstant()
+    { return false; }
     
     private JavaTermModifiersModel  modifiers_;
     private String name_;

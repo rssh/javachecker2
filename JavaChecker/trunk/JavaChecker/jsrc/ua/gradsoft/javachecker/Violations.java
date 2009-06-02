@@ -7,10 +7,11 @@ package ua.gradsoft.javachecker;
 
 import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.TermWareRuntimeException;
 
 /**
  *Set of violations, found in source
@@ -22,12 +23,13 @@ public class Violations {
         byTypes_=new TreeMap<String,TypeOfViolation>();
     }
     
-    public void addType(String typeOfViolation, String category, String description, boolean enabledByDefault)
+    public void addType(String typeOfViolation, String category, String description, boolean enabledByDefault, boolean show)
     {
         TypeOfViolation o=byTypes_.get(typeOfViolation);
         if (o==null) {
-            o=new TypeOfViolation(typeOfViolation,category,description,enabledByDefault);
+            o=new TypeOfViolation(typeOfViolation,category,description,enabledByDefault,show, Main.getStatistics());
             byTypes_.put(typeOfViolation, o);
+            Main.getStatistics().addItem(o);
         }
     }
     
@@ -110,7 +112,7 @@ public class Violations {
         }
     }
     
-    
+   
     public  void report(PrintStream out, ReportFormat format)
     {
         if (format==ReportFormat.HTML) {
@@ -119,7 +121,11 @@ public class Violations {
         for(Map.Entry<String,TypeOfViolation> me : byTypes_.entrySet()) {
             if (me.getValue().isEnabled()) {
                //System.err.println("enabled "+me.getValue().getName());
-               me.getValue().report(out,format);
+               try {
+                me.getValue().report(out,format,StatisticScope.ALL);
+               }catch(TermWareException ex){
+                   throw new TermWareRuntimeException(ex);
+               }
             }
         }
         if (format==ReportFormat.HTML) {

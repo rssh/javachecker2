@@ -35,7 +35,6 @@ import ua.gradsoft.termware.envs.SystemEnv;
 import ua.gradsoft.termware.exceptions.AssertException;
 import ua.gradsoft.parsers.java5.JavaParserFactory;
 import ua.gradsoft.printers.java5.JavaPrinterFactory;
-import ua.gradsoft.termware.TermSystem;
 import ua.gradsoft.termware.TermWareRuntimeException;
 import ua.gradsoft.termware.exceptions.ExternalException;
 
@@ -96,6 +95,15 @@ public class Main
        throw new ProcessingException("Error during reading sources:"+ex.getMessage(),ex);
    }
 
+   try {    
+     statistics_.endOfScope("*", StatisticScope.ALL);
+   }catch(TermWareException ex){
+       if (debug_) {
+           ex.printStackTrace();
+       }
+       throw new ProcessingException("Error during statistic calculating :"+ex.getMessage(),ex);
+   }
+
      for(AnalyzedUnitRef unitRef: processedUnits) {
        String fname = unitRef.getDirectory()+File.separator+unitRef.getResource();
        try {
@@ -138,7 +146,13 @@ public class Main
    TermWare.getInstance().addParserFactory("Java",new JavaParserFactory()); 
    TermWare.getInstance().addPrinterFactory("Java",new JavaPrinterFactory());
    getPreferences();
- 
+
+   try {
+     statistics_ = new Statistics();
+   }catch(TermWareException ex){
+       throw new ConfigException("Error during statistics initialization",ex);  
+   }
+
    if (home_==null) {
      home_=System.getProperty("javachecker.home");
      if (home_==null) {
@@ -176,7 +190,10 @@ public class Main
        }
        throw new ConfigException("Can't init check systems:"+ex.getMessage(),ex);
    }
-  
+
+
+  statistics_.init();
+
   nProcessedFiles_=0;
   nLoadedFiles_=0;
  }
@@ -268,13 +285,13 @@ public class Main
           getFacts().setConfigValue(configName,configValue);
       }else if (args[i].equals("--output-format")) {
           if (args.length==i+1) {
-              throw new ConfigException("--disable option require argument");
+              throw new ConfigException("--output-format option require argument");
           }
           String formatName = args[i+1];
           ++i;
           boolean found=false;
           for(ReportFormat rf: ReportFormat.values()) {
-              if (rf.getName().equals(formatName)) {
+              if (rf.getName().equalsIgnoreCase(formatName)) {
                   reportFormat_=rf;
                   found=true;
                   break;
@@ -283,6 +300,24 @@ public class Main
           if (!found) {
               throw new ConfigException("Unknown output format:"+formatName);
           }
+      }else if (args[i].equals("--statistic-detail")) {
+          if (args.length==i+1) {
+              throw new ConfigException("--statistic-detail option require argument");
+          }
+          String detailLevel = args[i+1];
+          boolean found=false;
+          for(StatisticScope ss: StatisticScope.values()) {
+              if (ss.name().equalsIgnoreCase(detailLevel)) {
+                  statisticDetail_=ss;
+                  found=true;
+                  break;
+              }
+          }
+          if (!found) {
+              throw new ConfigException("Unknown statistic detail level:"+detailLevel);
+          }
+      }else if (args[i].equals("--statistic-only")) {
+          statisticOnly_=true;
       }else{
           getFacts().getPackagesStore().getSourceDirs().add(args[i]);    
           getFacts().getPackagesStore().getSourceDirsToProcess().add(args[i]);
@@ -340,6 +375,9 @@ public class Main
    System.err.println("  --help                         output this help message.");     
    System.err.println("  --output fname                 write report to file fname");
    System.err.println("  --output-format (text|html)    format report in text or html");
+   System.err.println("  --statistic-detail file|directory|all level of detailzation for output of statistic");
+   System.err.println("                                 i.e. print statistics for each file or per-directory or at end");
+   System.err.println("  --statistic-only               print only summary statistics");
    System.err.println("  --enable check-name            enable checking for check-name");
    System.err.println("  --disable check-name           disable checking for check-name");
    System.err.println("  --explicit-enabled-only        run only checks, explicit enabled in command line, all other checks are disabled.");
@@ -370,7 +408,11 @@ public class Main
              throw new ConfigException(dirName + " is not a directory");
          }
          readAndCheckSources(dirName,"",f,processedUnits);
+         if (statisticDetail_.ordinal() <= StatisticScope.DIRECTORY.ordinal()) {
+            statistics_.endOfScope(dirName,StatisticScope.DIRECTORY);
+         }
      }
+     
  }
  
  /**
@@ -454,6 +496,11 @@ public class Main
        }catch(ProcessingException ex){
            System.err.println("error during checking (skip)"+f.getAbsolutePath()+":"+ex.getMessage());
        }
+
+       if (statisticDetail_.ordinal()<=StatisticScope.FILE.ordinal()) {
+          statistics_.endOfScope(f.getAbsolutePath(), statisticDetail_);
+       }
+
      }
           
      ++nLoadedFiles_;          
@@ -741,6 +788,29 @@ public class Main
      return explicitDisabled_;
  }
 
+ public static Checkers getCheckers()
+ {
+   return checkers_;
+ }
+
+ public  static Statistics getStatistics()
+ {
+   return statistics_;
+ }
+
+ public  static StatisticScope getStatisticDetail()
+ { return statisticDetail_; }
+ 
+ public  static void  setStatisticDetail(StatisticScope statisticScope)
+ { 
+   statisticDetail_=statisticScope;  
+ }
+ 
+ public  static boolean isStatisticOnly()
+ { return statisticOnly_; }
+ 
+ public static void setStatisticOnly(boolean statisticOnly)
+ { statisticOnly_=statisticOnly; }
 
  private static IEnv         env_          = null;
 
@@ -771,16 +841,21 @@ public class Main
  private static boolean             isHomeRequired_=true;
  
  private static JavaFacts    facts_ = null;
- //private static TermSystem   mainSystem_ = null;
  private static Checkers      checkers_ = null;
  private static Set<String>   explicitEnabled_ = new TreeSet<String>();
  private static Set<String>   explicitDisabled_ = new TreeSet<String>();
  private static boolean       explicitEnabledOnly_ = false;
  private static boolean       exitOnFirstError_=false;
 
+ private static Statistics     statistics_;
+ private static StatisticScope statisticDetail_ = StatisticScope.ALL;
+ private static boolean        statisticOnly_ = false;
+
+
  private static boolean       isMandatoryCheckersLoading_=true;
  private static JavaCheckerExceptionHandler exceptionHandler_=new DefaultExceptionHandler();
 
  private static boolean      inShutdown_ = false;
+
  
 }
