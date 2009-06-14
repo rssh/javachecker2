@@ -82,6 +82,10 @@
                 pubrevision="${version}"
                 overwrite="true"
                 artifactspattern="output/[artifact]-[revision].[ext]" />
+   <ivy:publish resolver="datacenter.gradsoft.ua" 
+                pubrevision="${version}"
+                overwrite="true"
+                artifactspattern="output/[artifact]-[revision].[ext]" />
  </target>
 
 
