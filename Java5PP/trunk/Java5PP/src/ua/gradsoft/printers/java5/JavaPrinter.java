@@ -110,6 +110,8 @@ public class JavaPrinter extends AbstractPrinter {
             writeMemberValuePairs(t,level);
         }else if(t.getName().equals("MemberValuePair")){
             writeMemberValuePair(t,level);
+        }else if(t.getName().equals("MemberValue")) {
+            writeMemberValue(t,level);
         }else if(t.getName().equals("TypeDeclaration")){
             writeTypeDeclaration(t,level);
         }else if(t.getName().equals("ClassOrInterfaceDeclaration")){
@@ -624,6 +626,11 @@ public class JavaPrinter extends AbstractPrinter {
         out_.print("=");
         writeTerm(t.getSubtermAt(1),level);
     }
+
+    public void writeMemberValue(Term t,int level) throws TermWareException {
+        writeTerm(t.getSubtermAt(0),level);
+    }
+
     
     public void writeTypeDeclaration(Term t,int level) throws TermWareException {
         if (t.getArity()==2) {

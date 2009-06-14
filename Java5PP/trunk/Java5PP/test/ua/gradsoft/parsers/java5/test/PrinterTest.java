@@ -1,7 +1,7 @@
 /*
  * PrinterTest.java
  *
- * Copyright (c) 2004-2005 GradSoft  Ukraine
+ * Copyright (c) 2004-2009 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -100,6 +100,24 @@ public class PrinterTest extends TestCase
       source=TermWare.getInstance().getParserFactory("Java").createParser(reader,fname,nil,TermWare.getInstance()).readTerm();
       String s0=TermHelper.termToString(source);
       //String s0=TermHelper.termToPrettyString(source);
+      //System.out.println("!!!!----!!!!!");
+      //System.out.println(s0);
+      String s = TermHelper.termToPrettyString(source,"Java",TermWare.getInstance().getTermFactory().createNIL());
+      //System.out.println("!!!!----!!!!!");
+      //System.out.println(s);
+      Term source1=TermWare.getInstance().getParserFactory("Java").createParser(new StringReader(s),"s",nil,TermWare.getInstance()).readTerm();
+      assertTrue("printed source is not parsed",!source1.isNil());
+    }
+
+    public void testAI() throws Exception
+    {
+      Term source=null;
+      String fname = "testdata/ai/Constants.java";
+      Reader reader = new FileReader(fname);
+      Term nil=TermWare.getInstance().getTermFactory().createNIL();
+      source=TermWare.getInstance().getParserFactory("Java").createParser(reader,fname,nil,TermWare.getInstance()).readTerm();
+      //String s0=TermHelper.termToString(source);
+      String s0=TermHelper.termToPrettyString(source);
       System.out.println("!!!!----!!!!!");
       System.out.println(s0);
       String s = TermHelper.termToPrettyString(source,"Java",TermWare.getInstance().getTermFactory().createNIL());
@@ -108,6 +126,8 @@ public class PrinterTest extends TestCase
       Term source1=TermWare.getInstance().getParserFactory("Java").createParser(new StringReader(s),"s",nil,TermWare.getInstance()).readTerm();
       assertTrue("printed source is not parsed",!source1.isNil());
     }
-    
+
+
+
     
 }

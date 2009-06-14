@@ -15,7 +15,8 @@
               conf="src,src.only" />
  </publications>
  <dependencies>
-   <dependency org="net.java.dev.javacc" name="javacc" rev="4.0" 
+   <dependency org="net.java.dev.javacc" name="javacc" 
+               rev="[${javacc.version},)" 
                conf="build->default" transitive="false" >
    </dependency>
    <!--
@@ -23,7 +24,7 @@
    <dependency org="izpack" name="installer" rev="3.10.2" 
                conf="src->default" transitive="false" />
    -->
-   <dependency org="org.junit" name="junit" rev="3.8" 
+   <dependency org="org.junit" name="junit" rev="${junit.version}" 
                conf="test->default" />
    <dependency org="ua.gradsoft" name="termware" rev="${termware.version}"
                conf="build->default" >

@@ -21,7 +21,7 @@
  * and specially designated nationals lists is strictly prohibited.
  *
  * adoption to TermWare:
- * Copyright (C) 2004-2007  GradSoft, Ukraine
+ * Copyright (C) 2004-2009  GradSoft, Ukraine
  */
 
 options {
@@ -852,6 +852,8 @@ void ClassOrInterfaceBodyDeclaration(boolean isInterface):
       ClassOrInterfaceDeclaration()
     |
       EnumDeclaration(modifiers.getSubtermAt(0).getInt())
+    |
+      AnnotationTypeDeclaration(modifiers.getSubtermAt(0).getInt())
     |
       LOOKAHEAD( [ TypeParameters() ] Identifier() "(" )
       ConstructorDeclaration()
