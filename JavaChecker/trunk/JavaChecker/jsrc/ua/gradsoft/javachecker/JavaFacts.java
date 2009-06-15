@@ -47,12 +47,17 @@ public class JavaFacts extends DefaultFacts {
         //violations_.addType("EnumConstantNamePatterns","style","violation of enumeration constant name pattern",true);
         //violations_.addType("TypeArgumentNamePatterns","style","violation of type argument name pattern",true);
         //violations_.addType("EmptyPackageDeclarations","style","empty package declarations", true);
-        //violations_.addType("EmptyFile","style","nothing in file",true);
+        violations_.addType("EmptyFile","style","nothing in file",
+                Main.isExplicitEnabledOnly() ? Main.getExplicitEnabled().contains("EmptyFile"):true,true);
         //violations_.addType("Hiding","style","hiding defects", true);
         //violations_.addType("SynchronizeViolations","threading","synchronize violations", true);
 
         violations_.addType("InvalidCheckerComments", "style","invalid checker comments",
                 Main.isExplicitEnabledOnly() ? Main.getExplicitEnabled().contains("InvalidCheckerComments"):true,true);
+
+        violations_.addType("WrongPackage", "basic","package name does not match directory structure",
+                Main.isExplicitEnabledOnly() ? Main.getExplicitEnabled().contains("WrangPackage"):true,true);
+
 
         violations_.addType("*","uncategorized","*",true,true);
         

@@ -372,6 +372,14 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
           variableDeclarators=variableDeclarators.getSubtermAt(1);
       }
     }
+
+    public void addAnnotationTypeDeclaration(Term modifiers, Term annotationTypeDeclaration) throws TermWareException
+    {
+      JavaTermAnnotationTypeModel newModel = new JavaTermAnnotationTypeModel(modifiers,annotationTypeDeclaration,this.getPackageModel(),this.getUnitModel());
+      newModel.setParentType(this);
+      nestedTypes_.put(newModel.getName(),newModel);
+      newModel.setUnitModel(getUnitModel());
+    }
     
     public void addTypeParameter(Term typeParameter) throws TermWareException
     {

@@ -467,7 +467,7 @@ public class Main
      
           
        if (!packageSrcName.equals(packageDirName)) {
-         facts_.violationDiscovered("package","package name does not math directory structure",source);
+         facts_.violationDiscovered("WrongPackage","package name does not math directory structure",source);
        }
      
        JavaPackageModel pm=facts_.getPackagesStore().findOrAddPackage(packageSrcName);

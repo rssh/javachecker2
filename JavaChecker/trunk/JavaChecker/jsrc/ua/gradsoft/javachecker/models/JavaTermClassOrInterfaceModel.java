@@ -117,6 +117,8 @@ public  class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
                             addFieldDeclaration(modifiersTerm,declaration);
                         }else if(declaration.getName().equals("MethodDeclaration")) {
                             addMethodDeclaration(modifiersTerm,declaration);
+                        }else if(declaration.getName().equals("AnnotationTypeDeclaration")){
+                            addAnnotationTypeDeclaration(modifiersTerm,declaration);
                         }else{
                             throw new AssertException("Unknown declaration:"+TermHelper.termToString(declaration));
                         }

@@ -248,9 +248,9 @@ public class JavaResolver {
     public static JavaTypeModel resolveTypeModelByName(String name, JavaTypeModel where,List<JavaTypeVariableAbstractModel> typeVariables,Iterable<JavaTypeModel> localTypes) throws EntityNotFoundException, TermWareException {
         boolean printDetails=false;
         
-       // if (name.equals("TypeCheckerProperties")) {
-       //     printDetails=true;
-       // }
+        //if (name.equals("ArgHandlerValueChooser")) {
+        //     printDetails=true;
+        //}
         
         if (printDetails) {
             String stv;
@@ -293,9 +293,7 @@ public class JavaResolver {
             }
         }
         
-        
-        
-        
+                        
         
         //2. try to find among local types
         if (localTypes!=null) {
@@ -468,22 +466,47 @@ public class JavaResolver {
                 ; /* do nothing */
             }
         }else{
-            return resolveTypeModelByName(name,um,pm,typeVariables);
+            try {
+              return resolveTypeModelByName(name,um,pm,typeVariables);
+            }catch(EntityNotFoundException ex){
+                ; /* do nothing */
+            }
         }
-        
-        
-        
-        
-        try {
-            //if all fail, try to find in "java.lang"
+
+
+        //if all fail, try to find in "java.lang"
+        try {            
             return resolveTypeModelFromPackage(name,"java.lang");
         }catch(EntityNotFoundException ex){
             /* do nothing */
             ;
         }
-        
+
+        //hack for gwt-user.
+        if (name.equals("ArgHandlerValueChooser")) {
+            if (printDetails) {
+                LOG.log(Level.INFO,"Check special hack for gwt");
+            }
+            if (where.getErasedFullName().equals("com.google.gwt.i18n.tools.I18NCreator")) {
+                if (printDetails) {
+                   LOG.log(Level.INFO,"yes, this is com.google.gwt.i18n.tools.I18NCreator");
+                }
+                JavaTypeModel tmsync = JavaResolver.resolveTypeModelByFullClassName("com.google.gwt.i18n.tools.I18NSync");
+                JavaUnitModel um1 = tmsync.getUnitModel();
+                for(JavaTypeModel tmc: um1.getTypeModels()) {
+                   if (printDetails) {
+                     LOG.log(Level.INFO,"compare with "+tmc.getName());
+                   }
+                   if (tmc.getName().equals(name)) {
+                       return tmc;
+                   }
+                }
+            }
+        }
+
+
         if (printDetails) {
-            LOG.log(Level.INFO,"failed resolving of "+name+" in "+where.getName());
+            LOG.log(Level.INFO,"failed resolving of "+name+" in "+where.getErasedFullName());
         }
         //we still here - it means that class was not found in import declarations.
         throw new EntityNotFoundException(" type ",name,"");
@@ -565,9 +588,7 @@ public class JavaResolver {
         }catch(EntityNotFoundException ex){
             ; /* do nothing */
         }
-        
-       
-        
+                       
         
         // try to get Type Model from any aviable packages.
         if (um instanceof JavaCompilationUnitModel) {
@@ -667,9 +688,16 @@ public class JavaResolver {
                 }
             }                        
         }
-        
-        
-        
+
+        // try to find as name of type, defined in the same compilation unit
+        if (um instanceof JavaCompilationUnitModel) {
+            JavaCompilationUnitModel cu=(JavaCompilationUnitModel)um;
+            for(JavaTypeModel tp:  cu.getTypeModels()) {
+                if (tp.getName().equals(name)) {
+                    return tp;
+                }
+            }
+        }
         
         
         try {
@@ -679,7 +707,8 @@ public class JavaResolver {
             /* do nothing */
             ;
         }
-        
+
+
         if (printDetails) {
             LOG.log(Level.INFO,"failed search of type "+name+" outside class ");
         }

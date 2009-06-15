@@ -2,7 +2,7 @@
  * ExprTypeResolvingTest.java
  *
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006-2009 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -73,4 +73,6 @@ public class ExprTypeResolvingTest extends TestCase
          JavaTypeModel tme2=JavaResolver.resolveExpressionType(expr2,ctx);
          assertEquals("Type of args[LOWER] must be String","String",tme2.getName());         
       }
+
+
 }

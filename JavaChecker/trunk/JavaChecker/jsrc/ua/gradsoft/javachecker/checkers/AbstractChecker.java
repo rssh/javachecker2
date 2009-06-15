@@ -1,6 +1,6 @@
 /*
  * AbstractChecker.java
- * Copyright (c) 2004-2005 GradSoft  Ukraine
+ * Copyright (c) 2004-2009 GradSoft  Ukraine
  * All Rights Reserved
  */
 

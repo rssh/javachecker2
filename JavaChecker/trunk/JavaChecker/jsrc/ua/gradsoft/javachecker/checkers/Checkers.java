@@ -360,8 +360,12 @@ public class Checkers {
         ClassChecker equalsHashCodeChecker=new ClassChecker("EqualsHashCode","basic","check that overloaded hashCode and equals are correspond",TermUtils.createString("ua.gradsoft.javachecker.checkers.EqualsHashCodeChecker"),checkerEnabled);
         checkers_.put(equalsHashCodeChecker.getName(),equalsHashCodeChecker);
         facts_.getViolations().addType(equalsHashCodeChecker.getName(),equalsHashCodeChecker.getCategory(),equalsHashCodeChecker.getDescription(),equalsHashCodeChecker.isEnabled(),true);
-        InvalidCheckerCommentChecker invalidCheckerCommentChecker = new InvalidCheckerCommentChecker();
+        DummyChecker invalidCheckerCommentChecker = new DummyChecker("InvalidCheckerCommand","comments","invalid checker comment",true);
         checkers_.put(invalidCheckerCommentChecker.getName(), invalidCheckerCommentChecker);
+        DummyChecker emptyFileChecker = new DummyChecker("EmptyFile","style","empty file",true);
+        checkers_.put(emptyFileChecker.getName(), emptyFileChecker);
+        DummyChecker wrongPackageChecker = new DummyChecker("WrongPackage","basic","package name does not match directory structure",true);
+        checkers_.put(wrongPackageChecker.getName(), wrongPackageChecker);
     }
     
     private String getEtcDirectory() {

@@ -159,11 +159,6 @@ public class JavaTermAnnotationTypeModel extends JavaTermTypeAbstractModel
       }
     }
     
-    protected void addAnnotationTypeDeclaration(Term modifiers, Term t) throws TermWareException
-    {
-       JavaTermAnnotationTypeModel tm = new JavaTermAnnotationTypeModel(modifiers,t,getPackageModel(),getUnitModel());
-       addNestedType(tm.getName(),tm);
-    }
 
     protected void addAnnotationMethodDeclaration(Term modifiers, Term typeTerm, Term identifierTerm, Term defaultValueTerm) throws TermWareException
     {

@@ -1,9 +1,7 @@
 /*
  * LoadingTest.java
  *
- * Created on ��������, 15, ���� 2007, 0:45
- *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006-2009 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -21,6 +19,7 @@ import ua.gradsoft.javachecker.models.JavaResolver;
 import ua.gradsoft.javachecker.models.JavaTypeArgumentBoundTypeModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.javachecker.models.JavaTypeVariableAbstractModel;
+import ua.gradsoft.javachecker.models.JavaVariableModel;
 import ua.gradsoft.javachecker.models.TermUtils;
 import ua.gradsoft.termware.Term;
 
@@ -205,6 +204,17 @@ public class LoadingTest extends TestCase
       tl = t.getSubtermAt(0);
       assertTrue(tl.getSubtermAt(0).getName().equals("Identifier"));
       assertEquals(tl.getSubtermAt(0).getSubtermAt(0).getString(),"x");
+    }
+
+    public void testLoadingResolv1() throws Exception
+    {
+        JavaCheckerFacade.init();
+        JavaCheckerFacade.addInputDirectory("testpackages/resolv1",true);
+        JavaTypeModel xModel = JavaResolver.resolveTypeModelFromPackage("x","X");
+        JavaVariableModel yVarModel = xModel.findMemberVariableModel("y_");
+        assertTrue(yVarModel!=null);
+        JavaTypeModel yModel = yVarModel.getType();
+        assertTrue(yModel!=null);
     }
     
     
