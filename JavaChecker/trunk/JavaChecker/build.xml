@@ -54,7 +54,7 @@
     <!--<compilerarg value="-Xlint:unchecked" />  -->
     <classpath refid="std.build.path" />
   </javac>
-  <jar basedir="jsrc" includes="**/*.class" 
+  <jar basedir="jsrc" includes="**/*.class,**/*.xml" 
        destfile="lib/JavaChecker-${version}.jar" 
        index="true">
       <include name="build"/>
