@@ -1,3 +1,8 @@
+2.5.1 (21.07.2009)
+    - added semantics checks.
+    - added counters.
+    - added check for possible optimizations of project coin
+
 2.2.3 (29.10.2007)
     - fixed bug with name of attribute store file on windows.
     - improvements in external API.

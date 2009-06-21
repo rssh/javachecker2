@@ -210,11 +210,13 @@ public class LoadingTest extends TestCase
     {
         JavaCheckerFacade.init();
         JavaCheckerFacade.addInputDirectory("testpackages/resolv1",true);
-        JavaTypeModel xModel = JavaResolver.resolveTypeModelFromPackage("x","X");
-        JavaVariableModel yVarModel = xModel.findMemberVariableModel("y_");
-        assertTrue(yVarModel!=null);
-        JavaTypeModel yModel = yVarModel.getType();
-        assertTrue(yModel!=null);
+
+          JavaTypeModel xModel = JavaResolver.resolveTypeModelFromPackage("X","x");
+          JavaVariableModel yVarModel = xModel.findMemberVariableModel("y_");
+          assertTrue(yVarModel!=null);
+          JavaTypeModel yModel = yVarModel.getType();
+          assertTrue(yModel!=null);
+        
     }
     
     

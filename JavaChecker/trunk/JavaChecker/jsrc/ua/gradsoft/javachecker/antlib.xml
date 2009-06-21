@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<antlib>
+ <typedef name="check" 
+    classname="ua.gradsoft.javachecker.ant.JavaCheckerTask" />
+</antlib>

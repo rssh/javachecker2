@@ -1,6 +1,6 @@
 Checkers(
 [
- define(ObjectComparison,expressions,
+ define(ObjectComparisonWithEquality,expressions,
           "comparing objects using equiality operator",
         MODEL_RULESET,
         ruleset(
@@ -27,7 +27,7 @@ Checkers(
                         .getType().isEnum()
              ] 
               -> true
-                 [ violationDiscovered(ObjectComparison, 
+                 [ violationDiscovered(ObjectComparisonWithEquality, 
                               "object compared by == or !=", s($x,$y)) ]
              !-> false
         ),true)
