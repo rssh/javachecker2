@@ -98,8 +98,8 @@
    </JavaChecker>
  </target>
 
- <target name="check-coin-loop-jetty" depends="declareJavaChecker" >
-   <JavaChecker jchhome="${basedir}" output="coin-loop-jetty.txt" 
+ <target name="check-coin-misc-jetty" depends="declareJavaChecker" >
+   <JavaChecker jchhome="${basedir}" output="coin-misc-jetty.txt" 
                 outputFormat="text" showFiles="false" 
                 explicitEnabledOnly="true"
                 fork="true"
@@ -114,10 +114,13 @@
 				<include name="*.jar" />
 			</fileset>
     </classpath>
+    <enable check="CompoundAssigments" />
+   <!--
     <enable check="AllTraditionalFors" />
     <enable check="ForAroundSizeOrLength" />
     <enable check="ForAroundSizeConvertable" />
     <enable check="ForAroundLengthConvertable" />
+   -->
    </JavaChecker>
  </target>
 
@@ -169,6 +172,19 @@
    </JavaChecker>
  </target>
 
+ <target name="check-coin-misc-gwt-user" depends="declareJavaChecker" >
+   <JavaChecker jchhome="${basedir}" output="coin-misc-gwt-user.txt" 
+                outputFormat="text" showFiles="true" 
+                explicitEnabledOnly="true"
+                >
+    <input dir="${gwt.home}/user/src" />
+    <input dir="${gwt.home}/user/super/com/google/gwt/emul" />
+    <include dir="${gwt.home}/dev/core/src" />
+    <config name="resolver.recheckJavaLangByClass" value="true" />
+    <enable check="CompoundAssigments" />
+   </JavaChecker>
+ </target>
+
 
  <target name="check-coin-hibernate" depends="declareJavaChecker" >
    <echo message="check.hibernate, antlr.jar=${antlr.jar}" />
@@ -197,6 +213,26 @@
     <enable check="DiamondInitializers_percents" />
     <enable check="NewIntegerLiterals" />
     <enable check="NewIntegerLiterals_percents" />
+   </JavaChecker>
+ </target>
+
+ <target name="check-coin-misc-hibernate" depends="declareJavaChecker" >
+   <echo message="check.hibernate, antlr.jar=${antlr.jar}" />
+   <JavaChecker jchhome="${basedir}" output="coin-misc-hibernate.txt" 
+                outputFormat="text" showFiles="true" 
+                explicitEnabledOnly="true"
+                >
+    <input dir="${hibernate.home}/core/src/main/java" />
+    <input dir="${hibernate.home}/annotations/src/main/java" />
+    <input dir="${hibernate.home}/entitymanager/src/main/java" />
+    <input dir="${hibernate.home}/commons-annotations/src/main/java" />
+    <classpath>
+     <pathelement location="${antlr.jar}" />
+     <pathelement location="${j2ee.jar}" />
+     <pathelement location="${slf4j-api.jar}" />
+     <pathelement location="${slf4j-impl.jar}" />
+    </classpath>
+    <enable check="CompoundAssigments" />
    </JavaChecker>
  </target>
 

@@ -564,18 +564,25 @@ Checkers(
                     Elvis/(AllIfs+AllCEs)*100,
                     false),
 
-        calculate(DiamondInitializers_percents,"coint",
+        calculate(DiamondInitializers_percents,"coin",
                   "per all variable initializers",
                   (DiamondInitializers/AllVariableInitializers)*100,
                   false),
 
-        calculate(MultiCatch_percents,"coint",
+        calculate(MultiCatch_percents,"coin",
                   "per all catchs",
                   (MultiCatch/AllCatchs)*100,
-                  false)
+                  false),
                      
+ define(CompoundAssigments,coin, "compound assigment",
+        BT_TYPE_RULESET,
+        ruleset(
+          StatementExpression($x,"=", Expression($y,"=",$z))
+               -> true 
+                    [ violationDiscovered(CompoundAssigments, 
+                               "compound assigment", s($x,$y,$z)) ]
+        ),true)
 
- 
 
 ]
 
