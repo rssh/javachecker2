@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
 <!-- build file for TermWare/PHP driver  -->
-<project name="TermWarePhpPP" default="build" basedir=".">
+<project name="TermWarePhpPP" default="build" basedir="."
+   xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
+>
 
 
  <property file="build.properties" />
 
+ <import file="build-ivy.xml" />
 
  <!-- set here location of JavaCC [version 4.2] -->
  <condition property="javacc.int.home" value="${javacchome}"
@@ -27,7 +30,15 @@
  </target>
 
 
- <target name="build-php5-jj" depends="retrieve-javacc" >
+ <target name="build-php5-jj" depends="retrieve-for-build" >
+   <!--
+     <ivy:artifactproperty name="[module].version" value="[revision]"
+                           override="true" />     
+   -->
+     <echo message="javacc.int.home=${javacc.int.home}" />
+     <echo message="javacc.version=${javacc.version}" />
+     <echo message="javacc.v1=${javacc.v1}" />
+     <echo message="ivy.version=${ivy.version}" />
      <java classpath="${javacc.int.home}/javacc-${javacc.version}.jar"
            classname="org.javacc.jjtree.Main"
            fork="true"
@@ -36,11 +47,6 @@
            <arg file="src/ua/gradsoft/parsers/php5/jjt/php.jt"/>
      </java>
  </target>
-
- <target name="retrieve-javacc">
-  <ant antfile="build-ivy.xml" target="retrieve-for-build" dir="${basedir}" />
- </target>
-
 
  <target name="build-php5-jv" depends="build-php5-jj">
      <java classpath="${javacc.int.home}/javacc-${javacc.version}.jar"
@@ -53,7 +59,7 @@
  </target>
  
 
- <target name="build-php5-classes" depends="build-php5-jv,retrieve-for-build">
+ <target name="build-php5-classes" depends="build-php5-jv,retrieve-for-default">
   <javac srcdir="src" includes="**/*.java" debug="${debug}" >
     <classpath>
       <pathelement location="src"/>
@@ -63,14 +69,6 @@
   </javac>
  </target>
  
- <target name="retrieve-for-build">
-  <ant antfile="build-ivy.xml" target="retrieve-for-build" dir="${basedir}" />
- </target>
-
- <target name="retrieve-for-test">
-  <ant antfile="build-ivy.xml" target="retrieve-for-test" dir="${basedir}" />
- </target>
-
  <target name="build-lib"  depends="build-php5-classes">
    <jar basedir="src" includes="**/*.class,**/*.dtd" 
        destfile="output/TermWarePhp-${version}.jar" 
@@ -168,8 +166,6 @@
   <delete dir="output/TermWarePhp-src-${version}" />
  </target>
 
- <target name="publish" depends="source-distributive">
-  <ant antfile="build-ivy.xml" target="publish" dir="${basedir}" />
- </target>
+ <target name="publish" depends="source-distributive,publish.only" />
 
 </project>

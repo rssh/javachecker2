@@ -4,13 +4,13 @@
         xmlns:ivy='antlib:fr.jayasoft.ivy.ant'
 >
 
-<!-- proeprties -->
+<!-- properties -->
 
 <property file="build.properties" />
 
-<property name="ivy.install.version" value="2.0.0-beta2" />
+<property name="ivy.install.version" value="2.0.0" />
 
-<condition property="ivy.int.home" value="${ivy.home}" else="${user.home}/.ivy">
+<condition property="ivy.int.home" value="${ivy.home}" else="${user.home}/.ivy2">
   <isset property="ivy.home" />
 </condition>
 
@@ -51,35 +51,45 @@
 
  <target name="resolve-ivy" depends="declare-ivy">
    <ivy:configure file="ivysettings.xml" />
-   <ivy:resolve />
+   <ivy:resolve />   
  </target>
 
 
  <target name="retrieve-for-default" depends="resolve-ivy" >
    <ivy:retrieve conf="default" 
                  pattern="lib/[artifact]-[revision].[ext]" />
+   <ivy:artifactproperty name="[module].version" 
+                        value="[revision]" overwrite="true" />
  </target>
 
  <target name="retrieve-for-build" depends="resolve-ivy" >
    <ivy:retrieve conf="build" 
                  pattern="lib/[artifact]-[revision].[ext]" />
+   <ivy:artifactproperty name="[module].version" 
+                        value="[revision]" overwrite="true" />
  </target>
 
  <target name="retrieve-for-test" depends="declare-ivy" >
    <ivy:retrieve conf="test" 
                  pattern="lib/[artifact]-[revision].[ext]" />
+   <ivy:artifactproperty name="[module].version" 
+                        value="[revision]" overwrite="true" />
  </target>
 
  <target name="retrieve-for-src" depends="declare-ivy" >
    <ivy:retrieve conf="src" 
                  pattern="lib/[artifact]-[revision].[ext]" />
+   <ivy:artifactproperty name="[module].version" 
+                        value="[revision]" overwrite="true" />
  </target>
 
- <target name="publish" depends="resolve-ivy" >
+ <target name="publish.only" depends="resolve-ivy" >
    <ivy:publish resolver="datacenter.gradsoft.ua" 
                 pubrevision="${version}"
                 overwrite="true"
-                artifactspattern="output/[artifact]-[revision].[ext]" />
+                artifactspattern="output/[artifact]-[revision].[ext]" 
+                replacedynamicrev="false"
+  />
  </target>
 
 
