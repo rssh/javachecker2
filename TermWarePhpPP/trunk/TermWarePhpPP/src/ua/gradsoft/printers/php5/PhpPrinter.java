@@ -164,6 +164,10 @@ public class PhpPrinter extends AbstractPrinter
             printMemberAbstractFunctionDeclaration(t,level);
         }else if (t.getName().equals("InterfaceMethodDeclaration")){
             printInterfaceMethodDeclaration(t,level);
+        }else if (t.getName().equals("HtmlBlocks")) {
+            printHtmlBlocks(t,level);
+        }else if (t.getName().equals("HtmlBlock")) {
+            printHtmlBlock(t,level);
         }else{
             t.print(out_);
         }
@@ -196,7 +200,11 @@ public class PhpPrinter extends AbstractPrinter
     
     public void printHtmlBlock(Term t, int level)
     {
+      if (t.getSubtermAt(0).isString()) {
         out_.print(t.getSubtermAt(0).getString());
+      } else {
+        writeTerm(t.getSubtermAt(0),level);
+      }
     }
 
     public void printEmbeddedHtml(Term t, int level)
@@ -1112,6 +1120,13 @@ public class PhpPrinter extends AbstractPrinter
           out_.print(" = ");
           writeTerm(t.getSubtermAt(3),level+1);
       }
+    }
+
+    public void printHtmlBlocks(Term t, int level)
+    {
+     for(int i=0; i<t.getArity();++i) {
+         writeTerm(t.getSubtermAt(i),level+1);
+     }
     }
 
 
