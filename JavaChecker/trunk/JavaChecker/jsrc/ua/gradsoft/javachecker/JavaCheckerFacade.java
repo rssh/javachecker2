@@ -98,10 +98,10 @@ public class JavaCheckerFacade {
     }
     
     public static boolean isMandatoryCheckersLoading()
-    { return main_.isMandatoryCheckersLoading(); }
+    { return Main.isMandatoryCheckersLoading(); }
     
     public static void setMandatoryCheckersLoading(boolean value)
-    { main_.setMandatoryCheckersLoading(value); }
+    { Main.setMandatoryCheckersLoading(value); }
 
     /**
      * @see Main#isInEmbeddedMode()
@@ -109,7 +109,7 @@ public class JavaCheckerFacade {
      */
     public static boolean isInEmbeddedMode()
     {
-      return main_.isInEmbeddedMode();
+      return Main.isInEmbeddedMode();
     }
 
 
@@ -119,7 +119,7 @@ public class JavaCheckerFacade {
      */
     public static void setInEmbeddedMode(boolean flag)
     {
-      main_.setInEmbeddedMode(flag);
+      Main.setInEmbeddedMode(flag);
     }
 
 

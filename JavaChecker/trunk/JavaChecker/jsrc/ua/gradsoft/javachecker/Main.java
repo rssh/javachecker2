@@ -832,7 +832,7 @@ public class Main
   *@param value - value to set.
   *@see isInEmbeddedMode()
   */
- public void setInEmbeddedMode(boolean value)
+ public static void setInEmbeddedMode(boolean value)
  {
    isInEmbeddedMode_=value;
  }
