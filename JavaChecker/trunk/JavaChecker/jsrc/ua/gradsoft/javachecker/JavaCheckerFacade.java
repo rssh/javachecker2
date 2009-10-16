@@ -103,6 +103,26 @@ public class JavaCheckerFacade {
     public static void setMandatoryCheckersLoading(boolean value)
     { main_.setMandatoryCheckersLoading(value); }
 
+    /**
+     * @see Main#isInEmbeddedMode()
+     * @return embedded mode flag.
+     */
+    public static boolean isInEmbeddedMode()
+    {
+      return main_.isInEmbeddedMode();
+    }
+
+
+    /**
+     * set flag for embedded mode.
+     * @see Main#setInEmbeddedMode(boolean)
+     */
+    public static void setInEmbeddedMode(boolean flag)
+    {
+      main_.setInEmbeddedMode(flag);
+    }
+
+
 
     public static void process() throws ProcessingException
     {

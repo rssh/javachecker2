@@ -400,6 +400,8 @@ public class CoinTest extends TestCase
 
     }
 
+    /*
+     * temprary disabled, see http://redmine.gradsoft.ua/issues/show/215
     public void testStringBuilderOrBufferAppend() throws Exception
     {
         Main main = new Main();
@@ -429,6 +431,7 @@ public class CoinTest extends TestCase
         System.err.println("defects.size()="+defects.size());
 
     }
+     */
 
     public void testAutoOrDiamond() throws Exception
     {

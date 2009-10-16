@@ -181,7 +181,8 @@ public class Main
   parseArgs(args);    
 
   initTmpDirBase();
-  
+
+  if (!isInEmbeddedMode()) {
    try {
      loadCheckSystems(args);
    }catch(TermWareException ex){
@@ -190,7 +191,7 @@ public class Main
        }
        throw new ConfigException("Can't init check systems:"+ex.getMessage(),ex);
    }
-
+  }
 
   statistics_.init();
 
@@ -812,6 +813,31 @@ public class Main
  public static void setStatisticOnly(boolean statisticOnly)
  { statisticOnly_=statisticOnly; }
 
+ /**
+  *When this flag is set, than JavaChecker used as library for
+  *reading java sources throught API, i. e. checkers does not
+  *run and does not loaded during init.
+  *
+  *
+  * @return embedded mode flag.
+  */
+ public static boolean isInEmbeddedMode()
+ {
+   return isInEmbeddedMode_;
+ }
+
+ /**
+  *set embedded mode flag.
+  *Flag must be set before init call.
+  *@param value - value to set.
+  *@see isInEmbeddedMode()
+  */
+ public void setInEmbeddedMode(boolean value)
+ {
+   isInEmbeddedMode_=value;
+ }
+
+
  private static IEnv         env_          = null;
 
 // private static HashSet      sourcesSet_    = null;
@@ -851,11 +877,13 @@ public class Main
  private static StatisticScope statisticDetail_ = StatisticScope.ALL;
  private static boolean        statisticOnly_ = false;
 
-
  private static boolean       isMandatoryCheckersLoading_=true;
  private static JavaCheckerExceptionHandler exceptionHandler_=new DefaultExceptionHandler();
 
+ private static boolean       isInEmbeddedMode_=false;
+
  private static boolean      inShutdown_ = false;
+
 
  
 }
