@@ -168,6 +168,8 @@ public class PhpPrinter extends AbstractPrinter
             printHtmlBlocks(t,level);
         }else if (t.getName().equals("HtmlBlock")) {
             printHtmlBlock(t,level);
+        }else if (t.getName().equals("Invisible")) {
+            printInvisible(t,level);
         }else{
             t.print(out_);
         }
@@ -269,8 +271,12 @@ public class PhpPrinter extends AbstractPrinter
 
     public void printExpressionStatement(Term t, int level)
     {
+     if (t.getArity()==2) {
       writeTerm(t.getSubtermAt(0),level);  
       writeTerm(t.getSubtermAt(1),level);  
+     } else {
+      t.print(out_);
+     }
     }
 
     public void printSArgumentExpressionList(Term t, int level)
@@ -545,7 +551,11 @@ public class PhpPrinter extends AbstractPrinter
     {
       if (t.getArity()==1 && t.getName().equals("Identifier")) {
         Term s = t.getSubtermAt(0);
-        out_.print(s.getString());
+        if (s.isString()) {
+          out_.print(s.getString());
+        } else {
+          t.print(out_);
+        }
       } else {
         out_.print("IDENTIFIER(");
         t.print(out_);
@@ -575,7 +585,11 @@ public class PhpPrinter extends AbstractPrinter
     {
         Term l = t.getSubtermAt(0);
         out_.print("'");
-        out_.print(l.getString());
+        if (l.isString()) {
+          out_.print(l.getString());
+        } else {
+          l.print(out_);
+        }
         out_.print("'");
     }
 
@@ -678,6 +692,10 @@ public class PhpPrinter extends AbstractPrinter
       out_.print("array(");
       Term l = t.getSubtermAt(0);
       while(!l.isNil()) {
+          if (!l.getName().equals("cons") || l.getArity()!=2) {
+             l.print(out_);
+             break;
+          }
           Term element = l.getSubtermAt(0);
           l=l.getSubtermAt(1);
           if (element.getName().equals("ArrayKeyValuePair")){
@@ -698,11 +716,16 @@ public class PhpPrinter extends AbstractPrinter
     {
       out_.println("{");
       writeIdent(level+1);
-      Term l = t.getSubtermAt(0);
-      while(!l.isNil()) {
+      if (t.getArity()==0) {
+       out_.print("COMPOUND_STATEMENT_ERROR:");
+       t.print(out_);
+      }else{
+       Term l = t.getSubtermAt(0);
+       while(!l.isNil()) {
           writeTerm(l.getSubtermAt(0),level+1);
           writeNextLine(level+1);
           l=l.getSubtermAt(1);
+       }
       }
       out_.println("}");
       writeIdent(level);
@@ -1130,6 +1153,10 @@ public class PhpPrinter extends AbstractPrinter
     }
 
 
+    public void printInvisible(Term t, int level)
+    {
+     /* do nothing */
+    }
 
     public void flush()
     {

@@ -49,12 +49,13 @@ public class ParsePrintTest
         doParsePrintParse("testdata/ta/language.control-structures.foreach.1.php",false);
     }
 
-    @Test
-    public void testExample5() throws Exception
-    {
-        doParsePrintParse("testdata/ta/language.control-structures.while.php",false);
+    //TODO: enable when restore file
+    //@Test
+    //public void testExample5() throws Exception
+    //{
+    //    doParsePrintParse("testdata/ta/language.control-structures.while.php",false);
         //String s = doParsePrint("testdata/ta/language.control-structures.while.php",true);
-    }
+    //}
 
     @Test
     public void testExample6() throws Exception
@@ -185,9 +186,24 @@ public class ParsePrintTest
     @Test
     public void testRequireOnce() throws Exception
     {
-        doParsePrintParse("testdata/ta/requireOnce.php",true);
+        doParsePrintParse("testdata/ta/requireOnce.php",false);
         //String s = doParsePrint("testdata/ta/language.oop5.interfaces.4.php",true);
     }
+
+    @Test
+    public void testSnPHOJAOClassDescription() throws Exception
+    {
+        String fname="testdata/sn/phpjaoClassDescription.php";
+        doParsePrintParse(fname,false);
+    }
+
+    @Test
+    public void testSnPHOJAOInheritance() throws Exception
+    {
+        String fname="testdata/sn/phpjaoInhAdd.php";
+        doParsePrintParse(fname,false);
+    }
+
 
     @Test
     public void testMakeJUnitHappy()
