@@ -83,14 +83,17 @@ public interface PHPConstants {
   int CATCH = 95;
   int THROW = 96;
   int GOTO = 97;
-  int VAR_NAME = 98;
-  int LETTER1 = 99;
-  int DIGIT1 = 100;
-  int DOLLAR1 = 101;
-  int VARTYPE = 102;
-  int IDENTIFIER = 103;
-  int LETTER = 104;
-  int DIGIT = 105;
+  int DECLARE = 98;
+  int NAMESPACE = 99;
+  int USE = 100;
+  int VAR_NAME = 101;
+  int LETTER1 = 102;
+  int DIGIT1 = 103;
+  int DOLLAR1 = 104;
+  int VARTYPE = 105;
+  int IDENTIFIER = 106;
+  int LETTER = 107;
+  int DIGIT = 108;
 
   int HTML_STATE = 0;
   int DEFAULT = 1;
@@ -204,6 +207,9 @@ public interface PHPConstants {
     "\"catch\"",
     "\"throw\"",
     "\"goto\"",
+    "\"declare\"",
+    "\"namespace\"",
+    "\"use\"",
     "<VAR_NAME>",
     "<LETTER1>",
     "<DIGIT1>",
@@ -222,6 +228,7 @@ public interface PHPConstants {
     "\"=>\"",
     "\"=\"",
     "\"@\"",
+    "\"\\\\\"",
     "\"+=\"",
     "\"-=\"",
     "\"*=\"",

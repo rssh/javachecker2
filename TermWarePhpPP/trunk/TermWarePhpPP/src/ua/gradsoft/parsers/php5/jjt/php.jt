@@ -375,6 +375,10 @@ TOKEN_MGR_DECLS : {
 |	<THROW: "throw">
 |	<GOTO: "goto">
 
+|	<DECLARE: "declare">
+|	<NAMESPACE: "namespace">
+|	<USE: "use">
+
 }
 
 <VAR_NAME_STATE> TOKEN : 
@@ -427,7 +431,6 @@ void HtmlBlock() throws TermWareException  :
 
 void Statement() throws TermWareException  : {}
 {
-	LOOKAHEAD(2) LabeledStatement() |
 	LOOKAHEAD(2) GotoLabeledStatement() |
 	LOOKAHEAD(2) ClassDeclaration() |
 	LOOKAHEAD(2) InterfaceDeclaration() |
@@ -442,6 +445,9 @@ void Statement() throws TermWareException  : {}
 	MemberDeclaration()
 |	ThrowStatement()
 | 	TryBlock()
+|       NamespaceStatement()
+|       UseStatement()
+|       DeclareStatement()
 |	EndOfStatement()
 }
 
@@ -503,12 +509,18 @@ void DefineStatement() throws TermWareException  : {}
 	<DEFINE> "(" String() "," Expression() ")" EndOfStatement()
 }
 
-void LabeledStatement() throws TermWareException  : {}
+void LabeledStatements() throws TermWareException  : {}
 {
-	<CASE> Expression() ":" Statement() 
+	<CASE> Expression() ":" Statements() 
        |
-	<DFLT> ":" Statement()
+	<DFLT> ":" Statements()
         { jjtThis.addTerm(createAtom("default"),0); }
+}
+
+void Statements() throws TermWareException  : 
+{}
+{
+ (Statement())*
 }
 
 void GotoLabeledStatement() throws TermWareException : 
@@ -565,7 +577,16 @@ void SelectionSwitchStatement() throws TermWareException  :
 {
 }
 {
-	<SWITCH> "(" Expression() ")" Statement()
+	<SWITCH> "(" Expression() ")" CaseStatements()
+}
+
+void CaseStatements() throws TermWareException  : 
+{
+}
+{
+  "{"
+     ( LabeledStatements() )*
+  "}"
 }
 
 void SelectionElseIfClauses() throws TermWareException :
@@ -1020,6 +1041,49 @@ void EchoStatement() throws TermWareException :
    jjtThis.addTerm(at,0);
   }
 }
+
+void NamespaceStatement() throws TermWareException : 
+{
+}
+{
+  <NAMESPACE> QualifiedName()
+}
+
+void QualifiedName() throws TermWareException:
+{
+ Token tk=null;
+ Token tk1 = null;
+ int n=1;
+}
+{
+  tk=<IDENTIFIER> ("\\" tk1=<IDENTIFIER> 
+                    { jjtThis.addTerm(createIdentifier(tk1.image),n); 
+                      ++n;
+                    }
+                  ) *
+  { jjtThis.addTerm(createIdentifier(tk.image),0); }
+}
+
+void UseStatement() throws TermWareException : 
+{
+ Token tk=null;
+}
+{
+ <USE> QualifiedName() [<AS> tk=<IDENTIFIER> ]
+ {
+   if (tk!=null) {
+      jjtThis.addTerm(createIdentifier(tk.image),1); 
+   }
+ }
+}
+
+void DeclareStatement() throws TermWareException : 
+{
+}
+{
+  <DECLARE> "(" AssignmentExpression()  ")" Statement()
+}
+
 
 void Expression() throws TermWareException : {}
 {

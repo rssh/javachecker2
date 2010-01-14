@@ -122,8 +122,10 @@ public class PhpPrinter extends AbstractPrinter
             printSelectionIfStatement(t,level);
         }else if (t.getName().equals("SelectionSwitchStatement")){
             printSelectionSwitchStatement(t,level);
-        }else if (t.getName().equals("LabeledStatement")){
-            printLabeledStatement(t,level);
+        }else if (t.getName().equals("SCaseStatements")){
+            printSCaseStatements(t,level);
+        }else if (t.getName().equals("LabeledStatements")){
+            printLabeledStatements(t,level);
         }else if (t.getName().equals("BreakStatement")){
             printBreakStatement(t,level);
         }else if (t.getName().equals("ContinueStatement")){
@@ -771,7 +773,19 @@ public class PhpPrinter extends AbstractPrinter
         writeTerm(t.getSubtermAt(1),level);
     }
 
-    public void printLabeledStatement(Term t, int level) {
+    public void printSCaseStatements(Term t, int level) {
+        out_.print("{ ");
+        out_.println();
+        Term c = t.getSubtermAt(0);
+        while(!c.isNil()) {
+          writeTerm(c.getSubtermAt(0),level+1);
+          c=c.getSubtermAt(1);
+        }
+        out_.print("}");
+        out_.println();
+    }
+
+    public void printLabeledStatements(Term t, int level) {
         Term frs = t.getSubtermAt(0);
         if (frs.isAtom() && frs.getName().equals("default")) {
             out_.print("default:");
@@ -780,7 +794,11 @@ public class PhpPrinter extends AbstractPrinter
             writeTerm(frs,level);
             out_.print(":");
         }
-        writeTerm(t.getSubtermAt(1),level);
+        Term c = t.getSubtermAt(1);
+        while(!c.isNil()) {
+          writeTerm(c.getSubtermAt(0),level+1);
+          c=c.getSubtermAt(1);
+        }
     }
 
     public void printBreakStatement(Term t, int level)

@@ -86,6 +86,10 @@ public class ASTTransformer {
         beforeToList_.addRule("SSelectionElseIfClauses($x) -> $x");
         beforeToList_.addRule("SelectionStatement($x) -> $x");
 
+        beforeToList_.addRule("CaseStatements..($x) -> SCaseStatements($x)");
+        beforeToList_.addRule("Statements..($x) -> SStatements($x)");
+        beforeToList_.addRule("SStatements($x) -> $x");
+
         beforeToList_.addRule("VariableDeclSeq..($x) -> $x");
 
         beforeToList_.addRule("PostfixExpression..($x) -> SPostfixExpression($x) ");

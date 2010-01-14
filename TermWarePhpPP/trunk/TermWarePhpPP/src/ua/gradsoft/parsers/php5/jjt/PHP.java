@@ -169,8 +169,6 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
           case ECHO:
           case PRINT:
           case SWITCH:
-          case CASE:
-          case DFLT:
           case BREAK:
           case RETURN:
           case DO:
@@ -201,16 +199,19 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
           case TRY:
           case THROW:
           case GOTO:
+          case DECLARE:
+          case NAMESPACE:
+          case USE:
           case IDENTIFIER:
-          case 106:
-          case 110:
-          case 112:
+          case 109:
+          case 113:
           case 115:
-          case 143:
-          case 148:
-          case 149:
-          case 150:
-          case 151:
+          case 118:
+          case 147:
+          case 152:
+          case 153:
+          case 154:
+          case 155:
             ;
             break;
           default:
@@ -359,18 +360,16 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       if (jj_2_1(2)) {
-        LabeledStatement();
-      } else if (jj_2_2(2)) {
         GotoLabeledStatement();
-      } else if (jj_2_3(2)) {
+      } else if (jj_2_2(2)) {
         ClassDeclaration();
-      } else if (jj_2_4(2)) {
+      } else if (jj_2_3(2)) {
         InterfaceDeclaration();
-      } else if (jj_2_5(2)) {
+      } else if (jj_2_4(2)) {
         ExpressionStatement();
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 110:
+        case 113:
           CompoundStatement();
           break;
         case SWITCH:
@@ -393,7 +392,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         case REQUIRE:
         case INCLUDE_ONCE:
         case INCLUDE:
-        case 115:
+        case 118:
           IncludeStatement();
           break;
         case ECHO:
@@ -421,6 +420,15 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
           break;
         case TRY:
           TryBlock();
+          break;
+        case NAMESPACE:
+          NamespaceStatement();
+          break;
+        case USE:
+          UseStatement();
+          break;
+        case DECLARE:
+          DeclareStatement();
           break;
         case PHP_END:
         case SEMICOLON:
@@ -571,10 +579,10 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
  jjtree.openNodeScope(jjtn000);Token tk;
     try {
       jj_consume_token(CATCH);
-      jj_consume_token(106);
+      jj_consume_token(109);
       tk = jj_consume_token(IDENTIFIER);
       Variable();
-      jj_consume_token(107);
+      jj_consume_token(110);
       CompoundStatement();
     jjtree.closeNodeScope(jjtn000, true);
     jjtc000 = false;
@@ -711,11 +719,11 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       jj_consume_token(DEFINE);
-      jj_consume_token(106);
+      jj_consume_token(109);
       String();
-      jj_consume_token(108);
+      jj_consume_token(111);
       Expression();
-      jj_consume_token(107);
+      jj_consume_token(110);
       EndOfStatement();
     } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -741,9 +749,9 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     }
   }
 
-  final public void LabeledStatement() throws ParseException, TermWareException {
-                                                     /*@bgen(jjtree) LabeledStatement */
-  SimpleNode jjtn000 = new SimpleNode(JJTLABELEDSTATEMENT);
+  final public void LabeledStatements() throws ParseException, TermWareException {
+                                                      /*@bgen(jjtree) LabeledStatements */
+  SimpleNode jjtn000 = new SimpleNode(JJTLABELEDSTATEMENTS);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
@@ -751,13 +759,13 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
       case CASE:
         jj_consume_token(CASE);
         Expression();
-        jj_consume_token(109);
-        Statement();
+        jj_consume_token(112);
+        Statements();
         break;
       case DFLT:
         jj_consume_token(DFLT);
-        jj_consume_token(109);
-        Statement();
+        jj_consume_token(112);
+        Statements();
           jjtree.closeNodeScope(jjtn000, true);
           jjtc000 = false;
           jjtn000.addTerm(createAtom("default"),0);
@@ -791,6 +799,103 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     }
   }
 
+  final public void Statements() throws ParseException, TermWareException {
+ /*@bgen(jjtree) Statements */
+  SimpleNode jjtn000 = new SimpleNode(JJTSTATEMENTS);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+    try {
+      label_5:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case INTEGER_LITERAL:
+        case FLOATING_POINT_LITERAL:
+        case DOUBLE_STRING_LITERAL_START:
+        case SINGLE_STRING_LITERAL_START:
+        case HEREDOC_START:
+        case REQUIRE_ONCE:
+        case REQUIRE:
+        case INCLUDE_ONCE:
+        case INCLUDE:
+        case DEFINE:
+        case ECHO:
+        case PRINT:
+        case SWITCH:
+        case BREAK:
+        case RETURN:
+        case DO:
+        case WHILE:
+        case FOREACH:
+        case FOR:
+        case CONTINUE:
+        case IF:
+        case FUNCTION:
+        case CLASS:
+        case VAR:
+        case PUBLIC:
+        case PRIVATE:
+        case PROTECTED:
+        case ABSTRACT:
+        case FINAL:
+        case STATIC:
+        case INTERFACE:
+        case CONST:
+        case CLONE:
+        case GLOBAL:
+        case ARRAY:
+        case NEW:
+        case PREDEFINED_CONSTANT:
+        case PHP_END:
+        case DOLLAR:
+        case SEMICOLON:
+        case TRY:
+        case THROW:
+        case GOTO:
+        case DECLARE:
+        case NAMESPACE:
+        case USE:
+        case IDENTIFIER:
+        case 109:
+        case 113:
+        case 115:
+        case 118:
+        case 147:
+        case 152:
+        case 153:
+        case 154:
+        case 155:
+          ;
+          break;
+        default:
+          jj_la1[11] = jj_gen;
+          break label_5;
+        }
+        Statement();
+      }
+    } catch (Throwable jjte000) {
+   if (jjtc000) {
+     jjtree.clearNodeScope(jjtn000);
+     jjtc000 = false;
+   } else {
+     jjtree.popNode();
+   }
+   if (jjte000 instanceof TermWareException) {
+     {if (true) throw (TermWareException)jjte000;}
+   }
+   if (jjte000 instanceof RuntimeException) {
+     {if (true) throw (RuntimeException)jjte000;}
+   }
+   if (jjte000 instanceof ParseException) {
+     {if (true) throw (ParseException)jjte000;}
+   }
+   {if (true) throw (Error)jjte000;}
+    } finally {
+   if (jjtc000) {
+     jjtree.closeNodeScope(jjtn000, true);
+   }
+    }
+  }
+
   final public void GotoLabeledStatement() throws ParseException, TermWareException {
  /*@bgen(jjtree) GotoLabeledStatement */
  SimpleNode jjtn000 = new SimpleNode(JJTGOTOLABELEDSTATEMENT);
@@ -798,7 +903,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
  jjtree.openNodeScope(jjtn000);Token tk;
     try {
       tk = jj_consume_token(IDENTIFIER);
-      jj_consume_token(109);
+      jj_consume_token(112);
       Statement();
         jjtree.closeNodeScope(jjtn000, true);
         jjtc000 = false;
@@ -865,8 +970,8 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      jj_consume_token(110);
-      label_5:
+      jj_consume_token(113);
+      label_6:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case INTEGER_LITERAL:
@@ -882,8 +987,6 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         case ECHO:
         case PRINT:
         case SWITCH:
-        case CASE:
-        case DFLT:
         case BREAK:
         case RETURN:
         case DO:
@@ -914,25 +1017,28 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         case TRY:
         case THROW:
         case GOTO:
+        case DECLARE:
+        case NAMESPACE:
+        case USE:
         case IDENTIFIER:
-        case 106:
-        case 110:
-        case 112:
+        case 109:
+        case 113:
         case 115:
-        case 143:
-        case 148:
-        case 149:
-        case 150:
-        case 151:
+        case 118:
+        case 147:
+        case 152:
+        case 153:
+        case 154:
+        case 155:
           ;
           break;
         default:
-          jj_la1[11] = jj_gen;
-          break label_5;
+          jj_la1[12] = jj_gen;
+          break label_6;
         }
         Statement();
       }
-      jj_consume_token(111);
+      jj_consume_token(114);
     } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -971,7 +1077,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         SelectionSwitchStatement();
         break;
       default:
-        jj_la1[12] = jj_gen;
+        jj_la1[13] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1007,17 +1113,17 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   boolean withElse = false;
     try {
       jj_consume_token(IF);
-      jj_consume_token(106);
+      jj_consume_token(109);
       Expression();
-      jj_consume_token(107);
+      jj_consume_token(110);
       Statement();
-      if (jj_2_6(2)) {
+      if (jj_2_5(2)) {
         SelectionElseIfClauses();
                                                       withElseIf = true;
       } else {
         ;
       }
-      if (jj_2_7(2)) {
+      if (jj_2_6(2)) {
         jj_consume_token(ELSE);
         Statement();
                                                 withElse=true;
@@ -1063,10 +1169,10 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       jj_consume_token(SWITCH);
-      jj_consume_token(106);
+      jj_consume_token(109);
       Expression();
-      jj_consume_token(107);
-      Statement();
+      jj_consume_token(110);
+      CaseStatements();
     } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -1091,19 +1197,64 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     }
   }
 
+  final public void CaseStatements() throws ParseException, TermWareException {
+ /*@bgen(jjtree) CaseStatements */
+  SimpleNode jjtn000 = new SimpleNode(JJTCASESTATEMENTS);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+    try {
+      jj_consume_token(113);
+      label_7:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case CASE:
+        case DFLT:
+          ;
+          break;
+        default:
+          jj_la1[14] = jj_gen;
+          break label_7;
+        }
+        LabeledStatements();
+      }
+      jj_consume_token(114);
+    } catch (Throwable jjte000) {
+    if (jjtc000) {
+      jjtree.clearNodeScope(jjtn000);
+      jjtc000 = false;
+    } else {
+      jjtree.popNode();
+    }
+    if (jjte000 instanceof TermWareException) {
+      {if (true) throw (TermWareException)jjte000;}
+    }
+    if (jjte000 instanceof RuntimeException) {
+      {if (true) throw (RuntimeException)jjte000;}
+    }
+    if (jjte000 instanceof ParseException) {
+      {if (true) throw (ParseException)jjte000;}
+    }
+    {if (true) throw (Error)jjte000;}
+    } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+    }
+  }
+
   final public void SelectionElseIfClauses() throws ParseException, TermWareException {
  /*@bgen(jjtree) SelectionElseIfClauses */
   SimpleNode jjtn000 = new SimpleNode(JJTSELECTIONELSEIFCLAUSES);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      label_6:
+      label_8:
       while (true) {
         SelectionElseIfClause();
-        if (jj_2_8(2)) {
+        if (jj_2_7(2)) {
           ;
         } else {
-          break label_6;
+          break label_8;
         }
       }
     } catch (Throwable jjte000) {
@@ -1137,9 +1288,9 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       jj_consume_token(ELSEIF);
-      jj_consume_token(106);
+      jj_consume_token(109);
       Expression();
-      jj_consume_token(107);
+      jj_consume_token(110);
       Statement();
     } catch (Throwable jjte000) {
      if (jjtc000) {
@@ -1185,7 +1336,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         ForEachStatement();
         break;
       default:
-        jj_la1[13] = jj_gen;
+        jj_la1[15] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1220,9 +1371,9 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       jj_consume_token(WHILE);
-      jj_consume_token(106);
+      jj_consume_token(109);
       Expression();
-      jj_consume_token(107);
+      jj_consume_token(110);
       Statement();
     } catch (Throwable jjte000) {
     if (jjtc000) {
@@ -1257,9 +1408,9 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
       jj_consume_token(DO);
       Statement();
       jj_consume_token(WHILE);
-      jj_consume_token(106);
+      jj_consume_token(109);
       Expression();
-      jj_consume_token(107);
+      jj_consume_token(110);
       EndOfStatement();
     } catch (Throwable jjte000) {
    if (jjtc000) {
@@ -1294,7 +1445,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   boolean withE3=false;
     try {
       jj_consume_token(FOR);
-      jj_consume_token(106);
+      jj_consume_token(109);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case INTEGER_LITERAL:
       case FLOATING_POINT_LITERAL:
@@ -1307,78 +1458,78 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
       case PREDEFINED_CONSTANT:
       case DOLLAR:
       case IDENTIFIER:
-      case 106:
-      case 112:
+      case 109:
       case 115:
-      case 143:
-      case 148:
-      case 149:
-      case 150:
-      case 151:
+      case 118:
+      case 147:
+      case 152:
+      case 153:
+      case 154:
+      case 155:
         Expression();
                             withE1=true;
-        break;
-      default:
-        jj_la1[14] = jj_gen;
-        ;
-      }
-      jj_consume_token(SEMICOLON);
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case INTEGER_LITERAL:
-      case FLOATING_POINT_LITERAL:
-      case DOUBLE_STRING_LITERAL_START:
-      case SINGLE_STRING_LITERAL_START:
-      case HEREDOC_START:
-      case CLONE:
-      case ARRAY:
-      case NEW:
-      case PREDEFINED_CONSTANT:
-      case DOLLAR:
-      case IDENTIFIER:
-      case 106:
-      case 112:
-      case 115:
-      case 143:
-      case 148:
-      case 149:
-      case 150:
-      case 151:
-        Expression();
-                            withE2=true;
-        break;
-      default:
-        jj_la1[15] = jj_gen;
-        ;
-      }
-      jj_consume_token(SEMICOLON);
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case INTEGER_LITERAL:
-      case FLOATING_POINT_LITERAL:
-      case DOUBLE_STRING_LITERAL_START:
-      case SINGLE_STRING_LITERAL_START:
-      case HEREDOC_START:
-      case CLONE:
-      case ARRAY:
-      case NEW:
-      case PREDEFINED_CONSTANT:
-      case DOLLAR:
-      case IDENTIFIER:
-      case 106:
-      case 112:
-      case 115:
-      case 143:
-      case 148:
-      case 149:
-      case 150:
-      case 151:
-        Expression();
-                            withE3=true;
         break;
       default:
         jj_la1[16] = jj_gen;
         ;
       }
-      jj_consume_token(107);
+      jj_consume_token(SEMICOLON);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case INTEGER_LITERAL:
+      case FLOATING_POINT_LITERAL:
+      case DOUBLE_STRING_LITERAL_START:
+      case SINGLE_STRING_LITERAL_START:
+      case HEREDOC_START:
+      case CLONE:
+      case ARRAY:
+      case NEW:
+      case PREDEFINED_CONSTANT:
+      case DOLLAR:
+      case IDENTIFIER:
+      case 109:
+      case 115:
+      case 118:
+      case 147:
+      case 152:
+      case 153:
+      case 154:
+      case 155:
+        Expression();
+                            withE2=true;
+        break;
+      default:
+        jj_la1[17] = jj_gen;
+        ;
+      }
+      jj_consume_token(SEMICOLON);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case INTEGER_LITERAL:
+      case FLOATING_POINT_LITERAL:
+      case DOUBLE_STRING_LITERAL_START:
+      case SINGLE_STRING_LITERAL_START:
+      case HEREDOC_START:
+      case CLONE:
+      case ARRAY:
+      case NEW:
+      case PREDEFINED_CONSTANT:
+      case DOLLAR:
+      case IDENTIFIER:
+      case 109:
+      case 115:
+      case 118:
+      case 147:
+      case 152:
+      case 153:
+      case 154:
+      case 155:
+        Expression();
+                            withE3=true;
+        break;
+      default:
+        jj_la1[18] = jj_gen;
+        ;
+      }
+      jj_consume_token(110);
       Statement();
     jjtree.closeNodeScope(jjtn000, true);
     jjtc000 = false;
@@ -1424,7 +1575,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
  boolean withRef = false;
     try {
       jj_consume_token(FOREACH);
-      jj_consume_token(106);
+      jj_consume_token(109);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case INTEGER_LITERAL:
       case FLOATING_POINT_LITERAL:
@@ -1437,52 +1588,52 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
       case PREDEFINED_CONSTANT:
       case DOLLAR:
       case IDENTIFIER:
-      case 106:
-      case 112:
+      case 109:
       case 115:
-      case 143:
-      case 148:
-      case 149:
-      case 150:
-      case 151:
+      case 118:
+      case 147:
+      case 152:
+      case 153:
+      case 154:
+      case 155:
         Expression();
                                withExpr=true;
         break;
       default:
-        jj_la1[17] = jj_gen;
+        jj_la1[19] = jj_gen;
         ;
       }
       jj_consume_token(AS);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 112:
-        jj_consume_token(112);
+      case 115:
+        jj_consume_token(115);
                            withRef=true;
         break;
       default:
-        jj_la1[18] = jj_gen;
+        jj_la1[20] = jj_gen;
         ;
       }
       Variable();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 113:
-        jj_consume_token(113);
+      case 116:
+        jj_consume_token(116);
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 112:
-          jj_consume_token(112);
+        case 115:
+          jj_consume_token(115);
                                 withRef=true;
           break;
         default:
-          jj_la1[19] = jj_gen;
+          jj_la1[21] = jj_gen;
           ;
         }
         Variable();
                           withKey=true;
         break;
       default:
-        jj_la1[20] = jj_gen;
+        jj_la1[22] = jj_gen;
         ;
       }
-      jj_consume_token(107);
+      jj_consume_token(110);
       Statement();
     jjtree.closeNodeScope(jjtn000, true);
     jjtc000 = false;
@@ -1537,7 +1688,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         GotoStatement();
         break;
       default:
-        jj_la1[21] = jj_gen;
+        jj_la1[23] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1577,7 +1728,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         tk = jj_consume_token(INTEGER_LITERAL);
         break;
       default:
-        jj_la1[22] = jj_gen;
+        jj_la1[24] = jj_gen;
         ;
       }
       EndOfStatement();
@@ -1624,7 +1775,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         tk = jj_consume_token(INTEGER_LITERAL);
         break;
       default:
-        jj_la1[23] = jj_gen;
+        jj_la1[25] = jj_gen;
         ;
       }
       EndOfStatement();
@@ -1678,19 +1829,19 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
       case PREDEFINED_CONSTANT:
       case DOLLAR:
       case IDENTIFIER:
-      case 106:
-      case 112:
+      case 109:
       case 115:
-      case 143:
-      case 148:
-      case 149:
-      case 150:
-      case 151:
+      case 118:
+      case 147:
+      case 152:
+      case 153:
+      case 154:
+      case 155:
         Expression();
                            withexpr=true;
         break;
       default:
-        jj_la1[24] = jj_gen;
+        jj_la1[26] = jj_gen;
         ;
       }
       EndOfStatement();
@@ -1766,14 +1917,14 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       Parameter();
-      label_7:
+      label_9:
       while (true) {
-        if (jj_2_9(2)) {
+        if (jj_2_8(2)) {
           ;
         } else {
-          break label_7;
+          break label_9;
         }
-        jj_consume_token(108);
+        jj_consume_token(111);
         Parameter();
       }
     } catch (Throwable jjte000) {
@@ -1813,26 +1964,26 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         tkId = jj_consume_token(IDENTIFIER);
         break;
       default:
-        jj_la1[25] = jj_gen;
+        jj_la1[27] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 112:
-        tkRef = jj_consume_token(112);
+      case 115:
+        tkRef = jj_consume_token(115);
         break;
       default:
-        jj_la1[26] = jj_gen;
+        jj_la1[28] = jj_gen;
         ;
       }
       Variable();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 114:
-        jj_consume_token(114);
+      case 117:
+        jj_consume_token(117);
         Expression();
                                                      withInit=true;
         break;
       default:
-        jj_la1[27] = jj_gen;
+        jj_la1[29] = jj_gen;
         ;
       }
     jjtree.closeNodeScope(jjtn000, true);
@@ -1892,13 +2043,13 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
           tkFinal = jj_consume_token(FINAL);
           break;
         default:
-          jj_la1[28] = jj_gen;
+          jj_la1[30] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[29] = jj_gen;
+        jj_la1[31] = jj_gen;
         ;
       }
       jj_consume_token(CLASS);
@@ -1909,7 +2060,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         tkSuper = jj_consume_token(IDENTIFIER);
         break;
       default:
-        jj_la1[30] = jj_gen;
+        jj_la1[32] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1918,23 +2069,23 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         tkI = jj_consume_token(IDENTIFIER);
                                           implementsList.add(
                                              createIdentifier(tkI.image));
-        label_8:
+        label_10:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case 108:
+          case 111:
             ;
             break;
           default:
-            jj_la1[31] = jj_gen;
-            break label_8;
+            jj_la1[33] = jj_gen;
+            break label_10;
           }
-          jj_consume_token(108);
+          jj_consume_token(111);
           tkI = jj_consume_token(IDENTIFIER);
                            implementsList.add(createIdentifier(tkI.image));
         }
         break;
       default:
-        jj_la1[32] = jj_gen;
+        jj_la1[34] = jj_gen;
         ;
       }
       ClassMembers();
@@ -1984,8 +2135,8 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      jj_consume_token(110);
-      label_9:
+      jj_consume_token(113);
+      label_11:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case FUNCTION:
@@ -2002,12 +2153,12 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
           ;
           break;
         default:
-          jj_la1[33] = jj_gen;
-          break label_9;
+          jj_la1[35] = jj_gen;
+          break label_11;
         }
         MemberDeclaration();
       }
-      jj_consume_token(111);
+      jj_consume_token(114);
     } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -2038,9 +2189,9 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      if (jj_2_10(2147483647)) {
+      if (jj_2_9(2147483647)) {
         MemberFunctionDeclaration();
-      } else if (jj_2_11(2147483647)) {
+      } else if (jj_2_10(2147483647)) {
         MemberConstantDeclaration();
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2059,7 +2210,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
           MemberAbstractFunctionDeclaration();
           break;
         default:
-          jj_la1[34] = jj_gen;
+          jj_la1[36] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -2099,27 +2250,27 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
       MemberFunctionAttributes();
       jj_consume_token(FUNCTION);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 112:
-        tkRef = jj_consume_token(112);
+      case 115:
+        tkRef = jj_consume_token(115);
         break;
       default:
-        jj_la1[35] = jj_gen;
+        jj_la1[37] = jj_gen;
         ;
       }
       tkName = jj_consume_token(IDENTIFIER);
-      jj_consume_token(106);
+      jj_consume_token(109);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case DOLLAR:
       case IDENTIFIER:
-      case 112:
+      case 115:
         ParameterList();
                                  withPL=true;
         break;
       default:
-        jj_la1[36] = jj_gen;
+        jj_la1[38] = jj_gen;
         ;
       }
-      jj_consume_token(107);
+      jj_consume_token(110);
       CompoundStatement();
         jjtree.closeNodeScope(jjtn000, true);
         jjtc000 = false;
@@ -2171,12 +2322,12 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
                  withV=true;
         break;
       default:
-        jj_la1[37] = jj_gen;
+        jj_la1[39] = jj_gen;
         ;
       }
       jj_consume_token(CONST);
       tk = jj_consume_token(IDENTIFIER);
-      jj_consume_token(114);
+      jj_consume_token(117);
       Expression();
       EndOfStatement();
     jjtree.closeNodeScope(jjtn000, true);
@@ -2249,17 +2400,17 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       VariableDecl();
-      label_10:
+      label_12:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 108:
+        case 111:
           ;
           break;
         default:
-          jj_la1[38] = jj_gen;
-          break label_10;
+          jj_la1[40] = jj_gen;
+          break label_12;
         }
-        jj_consume_token(108);
+        jj_consume_token(111);
         VariableDecl();
       }
     } catch (Throwable jjte000) {
@@ -2295,12 +2446,12 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
       jj_consume_token(DOLLAR);
       tk = jj_consume_token(VAR_NAME);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 114:
-        jj_consume_token(114);
+      case 117:
+        jj_consume_token(117);
         Expression();
         break;
       default:
-        jj_la1[39] = jj_gen;
+        jj_la1[41] = jj_gen;
         ;
       }
       jjtree.closeNodeScope(jjtn000, true);
@@ -2336,7 +2487,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      label_11:
+      label_13:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case VAR:
@@ -2347,8 +2498,8 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
           ;
           break;
         default:
-          jj_la1[40] = jj_gen;
-          break label_11;
+          jj_la1[42] = jj_gen;
+          break label_13;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case VAR:
@@ -2365,7 +2516,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
                    jjtn000.addTerm( createAtom("static"), jjtn000.getArity());
           break;
         default:
-          jj_la1[41] = jj_gen;
+          jj_la1[43] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -2431,17 +2582,17 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       Variable();
-      label_12:
+      label_14:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 108:
+        case 111:
           ;
           break;
         default:
-          jj_la1[42] = jj_gen;
-          break label_12;
+          jj_la1[44] = jj_gen;
+          break label_14;
         }
-        jj_consume_token(108);
+        jj_consume_token(111);
         Variable();
       }
     } catch (Throwable jjte000) {
@@ -2480,27 +2631,27 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
       MemberFunctionAttributes();
       jj_consume_token(FUNCTION);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 112:
-        tkRef = jj_consume_token(112);
+      case 115:
+        tkRef = jj_consume_token(115);
         break;
       default:
-        jj_la1[43] = jj_gen;
+        jj_la1[45] = jj_gen;
         ;
       }
       tkId = jj_consume_token(IDENTIFIER);
-      jj_consume_token(106);
+      jj_consume_token(109);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case DOLLAR:
       case IDENTIFIER:
-      case 112:
+      case 115:
         ParameterList();
                                   withPL=true;
         break;
       default:
-        jj_la1[44] = jj_gen;
+        jj_la1[46] = jj_gen;
         ;
       }
-      jj_consume_token(107);
+      jj_consume_token(110);
       EndOfStatement();
     jjtree.closeNodeScope(jjtn000, true);
     jjtc000 = false;
@@ -2539,7 +2690,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      label_13:
+      label_15:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case PUBLIC:
@@ -2550,8 +2701,8 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
           ;
           break;
         default:
-          jj_la1[45] = jj_gen;
-          break label_13;
+          jj_la1[47] = jj_gen;
+          break label_15;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case FINAL:
@@ -2568,7 +2719,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
                  jjtn000.addTerm(createAtom("static"),jjtn000.getArity());
           break;
         default:
-          jj_la1[46] = jj_gen;
+          jj_la1[48] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -2610,23 +2761,23 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         jj_consume_token(EXTENDS);
         tkn1 = jj_consume_token(IDENTIFIER);
                      extendsList.add(createIdentifier(tkn1.image));
-        label_14:
+        label_16:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case 108:
+          case 111:
             ;
             break;
           default:
-            jj_la1[47] = jj_gen;
-            break label_14;
+            jj_la1[49] = jj_gen;
+            break label_16;
           }
-          jj_consume_token(108);
+          jj_consume_token(111);
           tkn2 = jj_consume_token(IDENTIFIER);
                         extendsList.add(createIdentifier(tkn2.image));
         }
         break;
       default:
-        jj_la1[48] = jj_gen;
+        jj_la1[50] = jj_gen;
         ;
       }
       InterfaceMembers();
@@ -2668,8 +2819,8 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      jj_consume_token(110);
-      label_15:
+      jj_consume_token(113);
+      label_17:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case FUNCTION:
@@ -2681,12 +2832,12 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
           ;
           break;
         default:
-          jj_la1[49] = jj_gen;
-          break label_15;
+          jj_la1[51] = jj_gen;
+          break label_17;
         }
         InterfaceMember();
       }
-      jj_consume_token(111);
+      jj_consume_token(114);
     } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -2717,9 +2868,9 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      if (jj_2_12(2147483647)) {
+      if (jj_2_11(2147483647)) {
         InterfaceMethodDeclaration();
-      } else if (jj_2_13(2147483647)) {
+      } else if (jj_2_12(2147483647)) {
         MemberConstantDeclaration();
       } else {
         jj_consume_token(-1);
@@ -2758,7 +2909,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
  boolean  withPL=false;
  boolean  withBody=false;
     try {
-      label_16:
+      label_18:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case PUBLIC:
@@ -2766,8 +2917,8 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
           ;
           break;
         default:
-          jj_la1[50] = jj_gen;
-          break label_16;
+          jj_la1[52] = jj_gen;
+          break label_18;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case ABSTRACT:
@@ -2777,42 +2928,42 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
           jj_consume_token(PUBLIC);
           break;
         default:
-          jj_la1[51] = jj_gen;
+          jj_la1[53] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
       }
       jj_consume_token(FUNCTION);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 112:
-        tkRef = jj_consume_token(112);
+      case 115:
+        tkRef = jj_consume_token(115);
         break;
       default:
-        jj_la1[52] = jj_gen;
+        jj_la1[54] = jj_gen;
         ;
       }
       tkId = jj_consume_token(IDENTIFIER);
-      jj_consume_token(106);
+      jj_consume_token(109);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case DOLLAR:
       case IDENTIFIER:
-      case 112:
+      case 115:
         ParameterList();
                                   withPL=true;
         break;
       default:
-        jj_la1[53] = jj_gen;
+        jj_la1[55] = jj_gen;
         ;
       }
-      jj_consume_token(107);
+      jj_consume_token(110);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 110:
-        jj_consume_token(110);
-        jj_consume_token(111);
+      case 113:
+        jj_consume_token(113);
+        jj_consume_token(114);
                                                        withBody=true;
         break;
       default:
-        jj_la1[54] = jj_gen;
+        jj_la1[56] = jj_gen;
         ;
       }
       EndOfStatement();
@@ -2856,11 +3007,11 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
  Token wordTk=null;
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 115:
-        refTk = jj_consume_token(115);
+      case 118:
+        refTk = jj_consume_token(118);
         break;
       default:
-        jj_la1[55] = jj_gen;
+        jj_la1[57] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2877,14 +3028,14 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         wordTk = jj_consume_token(REQUIRE_ONCE);
         break;
       default:
-        jj_la1[56] = jj_gen;
+        jj_la1[58] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-      if (jj_2_14(2)) {
-        jj_consume_token(106);
+      if (jj_2_13(2)) {
+        jj_consume_token(109);
         Expression();
-        jj_consume_token(107);
+        jj_consume_token(110);
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case INTEGER_LITERAL:
@@ -2898,18 +3049,18 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         case PREDEFINED_CONSTANT:
         case DOLLAR:
         case IDENTIFIER:
-        case 106:
-        case 112:
+        case 109:
         case 115:
-        case 143:
-        case 148:
-        case 149:
-        case 150:
-        case 151:
+        case 118:
+        case 147:
+        case 152:
+        case 153:
+        case 154:
+        case 155:
           Expression();
           break;
         default:
-          jj_la1[57] = jj_gen;
+          jj_la1[59] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -2962,7 +3113,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         tkPrint = jj_consume_token(PRINT);
         break;
       default:
-        jj_la1[58] = jj_gen;
+        jj_la1[60] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2972,6 +3123,153 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     jjtc000 = false;
    Term at = createAtom(tkEcho!=null ? "echo" : "print");
    jjtn000.addTerm(at,0);
+    } catch (Throwable jjte000) {
+    if (jjtc000) {
+      jjtree.clearNodeScope(jjtn000);
+      jjtc000 = false;
+    } else {
+      jjtree.popNode();
+    }
+    if (jjte000 instanceof TermWareException) {
+      {if (true) throw (TermWareException)jjte000;}
+    }
+    if (jjte000 instanceof RuntimeException) {
+      {if (true) throw (RuntimeException)jjte000;}
+    }
+    if (jjte000 instanceof ParseException) {
+      {if (true) throw (ParseException)jjte000;}
+    }
+    {if (true) throw (Error)jjte000;}
+    } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+    }
+  }
+
+  final public void NamespaceStatement() throws ParseException, TermWareException {
+ /*@bgen(jjtree) NamespaceStatement */
+  SimpleNode jjtn000 = new SimpleNode(JJTNAMESPACESTATEMENT);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+    try {
+      jj_consume_token(NAMESPACE);
+      QualifiedName();
+    } catch (Throwable jjte000) {
+    if (jjtc000) {
+      jjtree.clearNodeScope(jjtn000);
+      jjtc000 = false;
+    } else {
+      jjtree.popNode();
+    }
+    if (jjte000 instanceof TermWareException) {
+      {if (true) throw (TermWareException)jjte000;}
+    }
+    if (jjte000 instanceof RuntimeException) {
+      {if (true) throw (RuntimeException)jjte000;}
+    }
+    if (jjte000 instanceof ParseException) {
+      {if (true) throw (ParseException)jjte000;}
+    }
+    {if (true) throw (Error)jjte000;}
+    } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+    }
+  }
+
+  final public void QualifiedName() throws ParseException, TermWareException {
+ /*@bgen(jjtree) QualifiedName */
+ SimpleNode jjtn000 = new SimpleNode(JJTQUALIFIEDNAME);
+ boolean jjtc000 = true;
+ jjtree.openNodeScope(jjtn000);Token tk=null;
+ Token tk1 = null;
+ int n=1;
+    try {
+      tk = jj_consume_token(IDENTIFIER);
+      label_19:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case 119:
+          ;
+          break;
+        default:
+          jj_la1[61] = jj_gen;
+          break label_19;
+        }
+        jj_consume_token(119);
+        tk1 = jj_consume_token(IDENTIFIER);
+                      jjtn000.addTerm(createIdentifier(tk1.image),n);
+                      ++n;
+      }
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtc000 = false;
+    jjtn000.addTerm(createIdentifier(tk.image),0);
+    } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+    }
+  }
+
+  final public void UseStatement() throws ParseException, TermWareException {
+ /*@bgen(jjtree) UseStatement */
+ SimpleNode jjtn000 = new SimpleNode(JJTUSESTATEMENT);
+ boolean jjtc000 = true;
+ jjtree.openNodeScope(jjtn000);Token tk=null;
+    try {
+      jj_consume_token(USE);
+      QualifiedName();
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case AS:
+        jj_consume_token(AS);
+        tk = jj_consume_token(IDENTIFIER);
+        break;
+      default:
+        jj_la1[62] = jj_gen;
+        ;
+      }
+   jjtree.closeNodeScope(jjtn000, true);
+   jjtc000 = false;
+   if (tk!=null) {
+      jjtn000.addTerm(createIdentifier(tk.image),1);
+   }
+    } catch (Throwable jjte000) {
+   if (jjtc000) {
+     jjtree.clearNodeScope(jjtn000);
+     jjtc000 = false;
+   } else {
+     jjtree.popNode();
+   }
+   if (jjte000 instanceof TermWareException) {
+     {if (true) throw (TermWareException)jjte000;}
+   }
+   if (jjte000 instanceof RuntimeException) {
+     {if (true) throw (RuntimeException)jjte000;}
+   }
+   if (jjte000 instanceof ParseException) {
+     {if (true) throw (ParseException)jjte000;}
+   }
+   {if (true) throw (Error)jjte000;}
+    } finally {
+   if (jjtc000) {
+     jjtree.closeNodeScope(jjtn000, true);
+   }
+    }
+  }
+
+  final public void DeclareStatement() throws ParseException, TermWareException {
+ /*@bgen(jjtree) DeclareStatement */
+  SimpleNode jjtn000 = new SimpleNode(JJTDECLARESTATEMENT);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+    try {
+      jj_consume_token(DECLARE);
+      jj_consume_token(109);
+      AssignmentExpression();
+      jj_consume_token(110);
+      Statement();
     } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -3034,7 +3332,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       LogicalTextXorExpression();
-      if (jj_2_15(2)) {
+      if (jj_2_14(2)) {
         jj_consume_token(OR);
         LogicalTextOrExpression();
       } else {
@@ -3071,7 +3369,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       LogicalTextAndExpression();
-      if (jj_2_16(2)) {
+      if (jj_2_15(2)) {
         jj_consume_token(XOR);
         LogicalTextXorExpression();
       } else {
@@ -3108,7 +3406,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       AssignmentExpression();
-      if (jj_2_17(2)) {
+      if (jj_2_16(2)) {
         jj_consume_token(AND);
         LogicalTextAndExpression();
       } else {
@@ -3145,7 +3443,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       ConditionalExpression();
-      if (jj_2_18(2)) {
+      if (jj_2_17(2)) {
         AssignmentOperator();
         Expression();
       } else {
@@ -3182,20 +3480,8 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
  jjtree.openNodeScope(jjtn000);Token tk;
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 114:
-        tk = jj_consume_token(114);
-        break;
-      case 116:
-        tk = jj_consume_token(116);
-        break;
       case 117:
         tk = jj_consume_token(117);
-        break;
-      case 118:
-        tk = jj_consume_token(118);
-        break;
-      case 119:
-        tk = jj_consume_token(119);
         break;
       case 120:
         tk = jj_consume_token(120);
@@ -3218,8 +3504,20 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
       case 126:
         tk = jj_consume_token(126);
         break;
+      case 127:
+        tk = jj_consume_token(127);
+        break;
+      case 128:
+        tk = jj_consume_token(128);
+        break;
+      case 129:
+        tk = jj_consume_token(129);
+        break;
+      case 130:
+        tk = jj_consume_token(130);
+        break;
       default:
-        jj_la1[59] = jj_gen;
+        jj_la1[63] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -3240,10 +3538,10 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       Logical_Or_Expression();
-      if (jj_2_19(2)) {
-        jj_consume_token(127);
+      if (jj_2_18(2)) {
+        jj_consume_token(131);
         Expression();
-        jj_consume_token(109);
+        jj_consume_token(112);
         Expression();
       } else {
         ;
@@ -3279,8 +3577,8 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       Logical_And_Expression();
-      if (jj_2_20(2)) {
-        jj_consume_token(128);
+      if (jj_2_19(2)) {
+        jj_consume_token(132);
         Logical_Or_Expression();
       } else {
         ;
@@ -3316,8 +3614,8 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       BitwiseOrExpression();
-      if (jj_2_21(2)) {
-        jj_consume_token(129);
+      if (jj_2_20(2)) {
+        jj_consume_token(133);
         Logical_And_Expression();
       } else {
         ;
@@ -3353,8 +3651,8 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       BitwiseXorExpression();
-      if (jj_2_22(2)) {
-        jj_consume_token(130);
+      if (jj_2_21(2)) {
+        jj_consume_token(134);
         BitwiseOrExpression();
       } else {
         ;
@@ -3390,8 +3688,8 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       BitwiseAndExpression();
-      if (jj_2_23(2)) {
-        jj_consume_token(131);
+      if (jj_2_22(2)) {
+        jj_consume_token(135);
         BitwiseXorExpression();
       } else {
         ;
@@ -3427,8 +3725,8 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       EqualityExpression();
-      if (jj_2_24(2)) {
-        jj_consume_token(112);
+      if (jj_2_23(2)) {
+        jj_consume_token(115);
         BitwiseAndExpression();
       } else {
         ;
@@ -3464,22 +3762,22 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
  jjtree.openNodeScope(jjtn000);Token tk=null;
     try {
       RelationalExpression();
-      if (jj_2_25(2)) {
+      if (jj_2_24(2)) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 132:
-          tk = jj_consume_token(132);
+        case 136:
+          tk = jj_consume_token(136);
           break;
-        case 133:
-          tk = jj_consume_token(133);
+        case 137:
+          tk = jj_consume_token(137);
           break;
-        case 134:
-          tk = jj_consume_token(134);
+        case 138:
+          tk = jj_consume_token(138);
           break;
-        case 135:
-          tk = jj_consume_token(135);
+        case 139:
+          tk = jj_consume_token(139);
           break;
         default:
-          jj_la1[60] = jj_gen;
+          jj_la1[64] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -3521,22 +3819,22 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
  jjtree.openNodeScope(jjtn000);Token tk=null;
     try {
       ShiftExpression();
-      if (jj_2_26(2)) {
+      if (jj_2_25(2)) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 136:
-          tk = jj_consume_token(136);
+        case 140:
+          tk = jj_consume_token(140);
           break;
-        case 137:
-          tk = jj_consume_token(137);
+        case 141:
+          tk = jj_consume_token(141);
           break;
-        case 138:
-          tk = jj_consume_token(138);
+        case 142:
+          tk = jj_consume_token(142);
           break;
-        case 139:
-          tk = jj_consume_token(139);
+        case 143:
+          tk = jj_consume_token(143);
           break;
         default:
-          jj_la1[61] = jj_gen;
+          jj_la1[65] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -3578,16 +3876,16 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
  jjtree.openNodeScope(jjtn000);Token tk=null;
     try {
       AdditiveExpression();
-      if (jj_2_27(2)) {
+      if (jj_2_26(2)) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 140:
-          tk = jj_consume_token(140);
+        case 144:
+          tk = jj_consume_token(144);
           break;
-        case 141:
-          tk = jj_consume_token(141);
+        case 145:
+          tk = jj_consume_token(145);
           break;
         default:
-          jj_la1[62] = jj_gen;
+          jj_la1[66] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -3629,19 +3927,19 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
  jjtree.openNodeScope(jjtn000);Token tk=null;
     try {
       MultiplicativeExpression();
-      if (jj_2_28(2)) {
+      if (jj_2_27(2)) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 142:
-          tk = jj_consume_token(142);
+        case 146:
+          tk = jj_consume_token(146);
           break;
-        case 143:
-          tk = jj_consume_token(143);
+        case 147:
+          tk = jj_consume_token(147);
           break;
-        case 144:
-          tk = jj_consume_token(144);
+        case 148:
+          tk = jj_consume_token(148);
           break;
         default:
-          jj_la1[63] = jj_gen;
+          jj_la1[67] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -3685,19 +3983,19 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
  jjtree.openNodeScope(jjtn000);Token tk=null;
     try {
       CastExpression();
-      if (jj_2_29(2)) {
+      if (jj_2_28(2)) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 145:
-          tk = jj_consume_token(145);
+        case 149:
+          tk = jj_consume_token(149);
           break;
-        case 146:
-          tk = jj_consume_token(146);
+        case 150:
+          tk = jj_consume_token(150);
           break;
-        case 147:
-          tk = jj_consume_token(147);
+        case 151:
+          tk = jj_consume_token(151);
           break;
         default:
-          jj_la1[64] = jj_gen;
+          jj_la1[68] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -3738,10 +4036,10 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);Token tk=null;
     try {
-      if (jj_2_30(2147483647)) {
-        jj_consume_token(106);
+      if (jj_2_29(2147483647)) {
+        jj_consume_token(109);
         tk = jj_consume_token(VARTYPE);
-        jj_consume_token(107);
+        jj_consume_token(110);
       } else {
         ;
       }
@@ -3780,25 +4078,25 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);Token tk=null;
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 112:
-      case 143:
-      case 148:
-      case 149:
+      case 115:
+      case 147:
+      case 152:
+      case 153:
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 112:
-          tk = jj_consume_token(112);
+        case 115:
+          tk = jj_consume_token(115);
           break;
-        case 143:
-          tk = jj_consume_token(143);
+        case 147:
+          tk = jj_consume_token(147);
           break;
-        case 148:
-          tk = jj_consume_token(148);
+        case 152:
+          tk = jj_consume_token(152);
           break;
-        case 149:
-          tk = jj_consume_token(149);
+        case 153:
+          tk = jj_consume_token(153);
           break;
         default:
-          jj_la1[65] = jj_gen;
+          jj_la1[69] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -3818,14 +4116,14 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
       case PREDEFINED_CONSTANT:
       case DOLLAR:
       case IDENTIFIER:
-      case 106:
-      case 115:
-      case 150:
-      case 151:
+      case 109:
+      case 118:
+      case 154:
+      case 155:
         PrefixIncDecExpression();
         break;
       default:
-        jj_la1[66] = jj_gen;
+        jj_la1[70] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -3860,17 +4158,17 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);Token tk=null;
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 150:
-      case 151:
+      case 154:
+      case 155:
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 150:
-          tk = jj_consume_token(150);
+        case 154:
+          tk = jj_consume_token(154);
           break;
-        case 151:
-          tk = jj_consume_token(151);
+        case 155:
+          tk = jj_consume_token(155);
           break;
         default:
-          jj_la1[67] = jj_gen;
+          jj_la1[71] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -3880,8 +4178,8 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
             jjtn000.addTerm(createString(tk.image),0);
         break;
       default:
-        jj_la1[68] = jj_gen;
-        if (jj_2_31(2)) {
+        jj_la1[72] = jj_gen;
+        if (jj_2_30(2)) {
           PostfixIncDecExpression0();
         } else {
           jj_consume_token(-1);
@@ -3919,7 +4217,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       InstanceOfExpression();
-      if (jj_2_32(2)) {
+      if (jj_2_31(2)) {
         IncDecSuffix();
       } else {
         ;
@@ -3954,29 +4252,29 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
  boolean jjtc000 = true;
  jjtree.openNodeScope(jjtn000);Token tk=null;
     try {
-      label_17:
+      label_20:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 150:
-          tk = jj_consume_token(150);
+        case 154:
+          tk = jj_consume_token(154);
           break;
-        case 151:
-          tk = jj_consume_token(151);
+        case 155:
+          tk = jj_consume_token(155);
           break;
         default:
-          jj_la1[69] = jj_gen;
+          jj_la1[73] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
      jjtn000.addTerm(createString(tk.image),jjtn000.getArity());
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 150:
-        case 151:
+        case 154:
+        case 155:
           ;
           break;
         default:
-          jj_la1[70] = jj_gen;
-          break label_17;
+          jj_la1[74] = jj_gen;
+          break label_20;
         }
       }
     } finally {
@@ -3993,7 +4291,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       PostfixExpression();
-      if (jj_2_33(2)) {
+      if (jj_2_32(2)) {
         jj_consume_token(INSTANCEOF);
         Expression();
       } else {
@@ -4030,33 +4328,33 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       PrimaryExpression();
-      label_18:
+      label_21:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 106:
-        case 110:
-        case 152:
-        case 153:
-        case 154:
+        case 109:
+        case 113:
+        case 156:
+        case 157:
+        case 158:
           ;
           break;
         default:
-          jj_la1[71] = jj_gen;
-          break label_18;
+          jj_la1[75] = jj_gen;
+          break label_21;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 106:
+        case 109:
           PostfixExpressionMethodCallSuffix();
           break;
         default:
-          jj_la1[72] = jj_gen;
-          if (jj_2_34(2147483647)) {
+          jj_la1[76] = jj_gen;
+          if (jj_2_33(2147483647)) {
             PostfixExpressionMemberSelectorSuffix();
-          } else if (jj_2_35(2147483647)) {
+          } else if (jj_2_34(2147483647)) {
             PostfixExpressionScopeResolutionSuffix();
-          } else if (jj_2_36(2147483647)) {
+          } else if (jj_2_35(2147483647)) {
             PostfixExpressionArrayIndexSuffix();
-          } else if (jj_2_37(2147483647)) {
+          } else if (jj_2_36(2147483647)) {
             PostfixExpressionCurlyBracketsSuffix();
           } else {
             jj_consume_token(-1);
@@ -4094,9 +4392,9 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      jj_consume_token(106);
+      jj_consume_token(109);
       ArgumentExpressionList();
-      jj_consume_token(107);
+      jj_consume_token(110);
     } catch (Throwable jjte000) {
    if (jjtc000) {
      jjtree.clearNodeScope(jjtn000);
@@ -4127,7 +4425,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      jj_consume_token(152);
+      jj_consume_token(156);
       PostfixExpression();
     } catch (Throwable jjte000) {
    if (jjtc000) {
@@ -4159,7 +4457,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      jj_consume_token(153);
+      jj_consume_token(157);
       PostfixExpression();
     } catch (Throwable jjte000) {
     if (jjtc000) {
@@ -4191,7 +4489,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      jj_consume_token(154);
+      jj_consume_token(158);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case INTEGER_LITERAL:
       case FLOATING_POINT_LITERAL:
@@ -4204,21 +4502,21 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
       case PREDEFINED_CONSTANT:
       case DOLLAR:
       case IDENTIFIER:
-      case 106:
-      case 112:
+      case 109:
       case 115:
-      case 143:
-      case 148:
-      case 149:
-      case 150:
-      case 151:
+      case 118:
+      case 147:
+      case 152:
+      case 153:
+      case 154:
+      case 155:
         Expression();
         break;
       default:
-        jj_la1[73] = jj_gen;
+        jj_la1[77] = jj_gen;
         ;
       }
-      jj_consume_token(155);
+      jj_consume_token(159);
     } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -4249,9 +4547,9 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      jj_consume_token(110);
+      jj_consume_token(113);
       Expression();
-      jj_consume_token(111);
+      jj_consume_token(114);
     } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -4282,14 +4580,14 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
  boolean jjtc000 = true;
  jjtree.openNodeScope(jjtn000);boolean withRef=false;
     try {
-      if (jj_2_38(2)) {
+      if (jj_2_37(2)) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 115:
-          jj_consume_token(115);
+        case 118:
+          jj_consume_token(118);
                            withRef=true;
           break;
         default:
-          jj_la1[74] = jj_gen;
+          jj_la1[78] = jj_gen;
           ;
         }
         Variable();
@@ -4305,14 +4603,14 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         case HEREDOC_START:
         case PREDEFINED_CONSTANT:
         case IDENTIFIER:
-        case 115:
+        case 118:
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case 115:
-            jj_consume_token(115);
+          case 118:
+            jj_consume_token(118);
                withRef=true;
             break;
           default:
-            jj_la1[75] = jj_gen;
+            jj_la1[79] = jj_gen;
             ;
           }
           Constant();
@@ -4321,8 +4619,8 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
             if (withRef) { jjtn000.addTerm(createAtom("IgnoreErrors"),0); }
           break;
         default:
-          jj_la1[76] = jj_gen;
-          if (jj_2_39(3)) {
+          jj_la1[80] = jj_gen;
+          if (jj_2_38(3)) {
             InBracesExpression();
           } else {
             switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -4334,7 +4632,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
               Array();
               break;
             default:
-              jj_la1[77] = jj_gen;
+              jj_la1[81] = jj_gen;
               jj_consume_token(-1);
               throw new ParseException();
             }
@@ -4371,9 +4669,9 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      jj_consume_token(106);
+      jj_consume_token(109);
       Expression();
-      jj_consume_token(107);
+      jj_consume_token(110);
     } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -4405,7 +4703,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   jjtree.openNodeScope(jjtn000);
     try {
       jj_consume_token(ARRAY);
-      jj_consume_token(106);
+      jj_consume_token(109);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case INTEGER_LITERAL:
       case FLOATING_POINT_LITERAL:
@@ -4418,34 +4716,34 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
       case PREDEFINED_CONSTANT:
       case DOLLAR:
       case IDENTIFIER:
-      case 106:
-      case 112:
+      case 109:
       case 115:
-      case 143:
-      case 148:
-      case 149:
-      case 150:
-      case 151:
+      case 118:
+      case 147:
+      case 152:
+      case 153:
+      case 154:
+      case 155:
         ArrayKeyOrValue();
         break;
       default:
-        jj_la1[78] = jj_gen;
+        jj_la1[82] = jj_gen;
         ;
       }
-      label_19:
+      label_22:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 108:
+        case 111:
           ;
           break;
         default:
-          jj_la1[79] = jj_gen;
-          break label_19;
+          jj_la1[83] = jj_gen;
+          break label_22;
         }
-        jj_consume_token(108);
+        jj_consume_token(111);
         ArrayKeyOrValue();
       }
-      jj_consume_token(107);
+      jj_consume_token(110);
     } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -4478,12 +4776,12 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     try {
       Expression();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 113:
-        jj_consume_token(113);
+      case 116:
+        jj_consume_token(116);
         Expression();
         break;
       default:
-        jj_la1[80] = jj_gen;
+        jj_la1[84] = jj_gen;
         ;
       }
     } catch (Throwable jjte000) {
@@ -4524,7 +4822,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         CloneExpression();
         break;
       default:
-        jj_la1[81] = jj_gen;
+        jj_la1[85] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -4561,10 +4859,10 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     try {
       jj_consume_token(NEW);
       tk = jj_consume_token(IDENTIFIER);
-      if (jj_2_40(3)) {
-        jj_consume_token(106);
+      if (jj_2_39(3)) {
+        jj_consume_token(109);
         ArgumentExpressionList();
-        jj_consume_token(107);
+        jj_consume_token(110);
                                                         withArguments=true;
       } else {
         ;
@@ -4639,15 +4937,15 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
  Token tk;
     try {
       jj_consume_token(DOLLAR);
-      label_20:
+      label_23:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case DOLLAR1:
           ;
           break;
         default:
-          jj_la1[82] = jj_gen;
-          break label_20;
+          jj_la1[86] = jj_gen;
+          break label_23;
         }
         jj_consume_token(DOLLAR1);
                               ++nDollars;
@@ -4682,31 +4980,31 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
       case PREDEFINED_CONSTANT:
       case DOLLAR:
       case IDENTIFIER:
-      case 106:
-      case 112:
+      case 109:
       case 115:
-      case 143:
-      case 148:
-      case 149:
-      case 150:
-      case 151:
+      case 118:
+      case 147:
+      case 152:
+      case 153:
+      case 154:
+      case 155:
         Expression();
         break;
       default:
-        jj_la1[83] = jj_gen;
+        jj_la1[87] = jj_gen;
         ;
       }
-      label_21:
+      label_24:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 108:
+        case 111:
           ;
           break;
         default:
-          jj_la1[84] = jj_gen;
-          break label_21;
+          jj_la1[88] = jj_gen;
+          break label_24;
         }
-        jj_consume_token(108);
+        jj_consume_token(111);
         Expression();
       }
     } catch (Throwable jjte000) {
@@ -4770,7 +5068,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
                       jjtn000.addTerm(createIdentifier(tk.image),0);
         break;
       default:
-        jj_la1[85] = jj_gen;
+        jj_la1[89] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -4823,7 +5121,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         jj_consume_token(HEREDOC_START);
         break;
       default:
-        jj_la1[86] = jj_gen;
+        jj_la1[90] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -4864,7 +5162,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
  List<Term> sterms=new ArrayList<Term>();
     try {
       tkBegin = jj_consume_token(DOUBLE_STRING_LITERAL_START);
-      if (jj_2_41(2)) {
+      if (jj_2_40(2)) {
         tkVBegin = jj_consume_token(DSL_SIMPLE_VAR_START);
         tkVEnd = jj_consume_token(DSL_SIMPLE_STRING_VAR_END);
             if (tkVBegin.specialToken!=null) {
@@ -4876,7 +5174,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         case DOUBLE_STRING_LITERAL_END:
         case DSL_SIMPLE_VAR_START:
         case DSL_COMPLEX_VAR_START:
-          label_22:
+          label_25:
           while (true) {
             switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
             case DSL_SIMPLE_VAR_START:
@@ -4884,8 +5182,8 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
               ;
               break;
             default:
-              jj_la1[87] = jj_gen;
-              break label_22;
+              jj_la1[91] = jj_gen;
+              break label_25;
             }
             switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
             case DSL_SIMPLE_VAR_START:
@@ -4898,7 +5196,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
                 tkVNo = jj_consume_token(DSL_SIMPLE_VAR_WASNT);
                 break;
               default:
-                jj_la1[88] = jj_gen;
+                jj_la1[92] = jj_gen;
                 jj_consume_token(-1);
                 throw new ParseException();
               }
@@ -4908,7 +5206,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
               tkVEnd = jj_consume_token(DSL_COMPLEX_VAR_END);
               break;
             default:
-              jj_la1[89] = jj_gen;
+              jj_la1[93] = jj_gen;
               jj_consume_token(-1);
               throw new ParseException();
             }
@@ -4956,7 +5254,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
             }
           break;
         default:
-          jj_la1[90] = jj_gen;
+          jj_la1[94] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -4989,7 +5287,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         tk = jj_consume_token(PROTECTED);
         break;
       default:
-        jj_la1[91] = jj_gen;
+        jj_la1[95] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -5283,259 +5581,63 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     finally { jj_save(39, xla); }
   }
 
-  final private boolean jj_2_41(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_41(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(40, xla); }
-  }
-
-  final private boolean jj_3R_59() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(79)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(80)) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_25() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_59()) jj_scanpos = xsp;
-    if (jj_scan_token(CLASS)) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_48() {
-    if (jj_3R_49()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_27()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3_24() {
-    if (jj_scan_token(112)) return true;
-    if (jj_3R_45()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_23() {
-    if (jj_scan_token(131)) return true;
-    if (jj_3R_44()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_26() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(136)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(137)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(138)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(139)) return true;
-    }
-    }
-    }
-    if (jj_3R_47()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_9() {
-    if (jj_scan_token(108)) return true;
-    if (jj_3R_31()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_31() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(103)) jj_scanpos = xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(112)) jj_scanpos = xsp;
-    if (jj_3R_54()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_47() {
-    if (jj_3R_48()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_26()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_73() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(76)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(77)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(78)) return true;
-    }
-    }
-    return false;
-  }
-
-  final private boolean jj_3_22() {
-    if (jj_scan_token(130)) return true;
-    if (jj_3R_43()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_21() {
-    if (jj_scan_token(129)) return true;
-    if (jj_3R_42()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_20() {
-    if (jj_scan_token(128)) return true;
-    if (jj_3R_41()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_25() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(132)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(133)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(134)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(135)) return true;
-    }
-    }
-    }
-    if (jj_3R_46()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_46() {
-    if (jj_3R_47()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_25()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_45() {
-    if (jj_3R_46()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_24()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3_19() {
-    if (jj_scan_token(127)) return true;
-    if (jj_3R_36()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_44() {
-    if (jj_3R_45()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_23()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_125() {
-    if (jj_scan_token(GOTO)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_43() {
-    if (jj_3R_44()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_22()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_42() {
-    if (jj_3R_43()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_21()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_124() {
-    if (jj_scan_token(RETURN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_41() {
-    if (jj_3R_42()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_20()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3_18() {
-    if (jj_3R_40()) return true;
-    if (jj_3R_36()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_92() {
-    if (jj_3R_41()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_19()) jj_scanpos = xsp;
+  final private boolean jj_3_8() {
+    if (jj_scan_token(111)) return true;
+    if (jj_3R_33()) return true;
     return false;
   }
 
   final private boolean jj_3_17() {
-    if (jj_scan_token(AND)) return true;
-    if (jj_3R_39()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_123() {
-    if (jj_scan_token(BREAK)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_16() {
-    if (jj_scan_token(XOR)) return true;
+    if (jj_3R_42()) return true;
     if (jj_3R_38()) return true;
     return false;
   }
 
-  final private boolean jj_3R_179() {
-    if (jj_scan_token(DSL_COMPLEX_VAR_START)) return true;
+  final private boolean jj_3R_98() {
+    if (jj_3R_43()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_18()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_33() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(106)) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(115)) jj_scanpos = xsp;
+    if (jj_3R_56()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_16() {
+    if (jj_scan_token(AND)) return true;
+    if (jj_3R_41()) return true;
     return false;
   }
 
   final private boolean jj_3_15() {
-    if (jj_scan_token(OR)) return true;
-    if (jj_3R_37()) return true;
+    if (jj_scan_token(XOR)) return true;
+    if (jj_3R_40()) return true;
     return false;
   }
 
-  final private boolean jj_3R_40() {
+  final private boolean jj_3R_185() {
+    if (jj_scan_token(DSL_COMPLEX_VAR_START)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_14() {
+    if (jj_scan_token(OR)) return true;
+    if (jj_3R_39()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_42() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(114)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(116)) {
-    jj_scanpos = xsp;
     if (jj_scan_token(117)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(118)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(119)) {
     jj_scanpos = xsp;
     if (jj_scan_token(120)) {
     jj_scanpos = xsp;
@@ -5549,7 +5651,15 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     jj_scanpos = xsp;
     if (jj_scan_token(125)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(126)) return true;
+    if (jj_scan_token(126)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(127)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(128)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(129)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(130)) return true;
     }
     }
     }
@@ -5564,138 +5674,268 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     return false;
   }
 
-  final private boolean jj_3R_178() {
+  final private boolean jj_3R_184() {
     if (jj_scan_token(DSL_SIMPLE_VAR_START)) return true;
     return false;
   }
 
-  final private boolean jj_3R_122() {
-    if (jj_scan_token(CONTINUE)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_177() {
+  final private boolean jj_3R_183() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_178()) {
+    if (jj_3R_184()) {
     jj_scanpos = xsp;
-    if (jj_3R_179()) return true;
+    if (jj_3R_185()) return true;
     }
     return false;
   }
 
-  final private boolean jj_3R_106() {
-    if (jj_3R_125()) return true;
+  final private boolean jj_3R_131() {
+    if (jj_scan_token(GOTO)) return true;
     return false;
   }
 
-  final private boolean jj_3R_74() {
-    if (jj_3R_92()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_18()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_176() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_177()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(DOUBLE_STRING_LITERAL_END)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_105() {
-    if (jj_3R_124()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_104() {
-    if (jj_3R_123()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_85() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_103()) {
-    jj_scanpos = xsp;
-    if (jj_3R_104()) {
-    jj_scanpos = xsp;
-    if (jj_3R_105()) {
-    jj_scanpos = xsp;
-    if (jj_3R_106()) return true;
-    }
-    }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_103() {
-    if (jj_3R_122()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_39() {
-    if (jj_3R_74()) return true;
+  final private boolean jj_3R_77() {
+    if (jj_3R_98()) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_17()) jj_scanpos = xsp;
     return false;
   }
 
-  final private boolean jj_3R_38() {
-    if (jj_3R_39()) return true;
+  final private boolean jj_3R_182() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_183()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(DOUBLE_STRING_LITERAL_END)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_41() {
+    if (jj_3R_77()) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_16()) jj_scanpos = xsp;
     return false;
   }
 
-  final private boolean jj_3_41() {
-    if (jj_scan_token(DSL_SIMPLE_VAR_START)) return true;
-    if (jj_scan_token(DSL_SIMPLE_STRING_VAR_END)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_37() {
-    if (jj_3R_38()) return true;
+  final private boolean jj_3R_40() {
+    if (jj_3R_41()) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_15()) jj_scanpos = xsp;
     return false;
   }
 
-  final private boolean jj_3R_175() {
+  final private boolean jj_3R_130() {
+    if (jj_scan_token(RETURN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_40() {
+    if (jj_scan_token(DSL_SIMPLE_VAR_START)) return true;
+    if (jj_scan_token(DSL_SIMPLE_STRING_VAR_END)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_39() {
+    if (jj_3R_40()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_14()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_181() {
     if (jj_scan_token(DOUBLE_STRING_LITERAL_START)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_41()) {
+    if (jj_3_40()) {
     jj_scanpos = xsp;
-    if (jj_3R_176()) return true;
+    if (jj_3R_182()) return true;
     }
     return false;
   }
 
-  final private boolean jj_3R_36() {
-    if (jj_3R_37()) return true;
+  final private boolean jj_3R_38() {
+    if (jj_3R_39()) return true;
     return false;
   }
 
-  final private boolean jj_3R_121() {
-    if (jj_scan_token(FOREACH)) return true;
+  final private boolean jj_3R_129() {
+    if (jj_scan_token(BREAK)) return true;
     return false;
   }
 
-  final private boolean jj_3R_174() {
+  final private boolean jj_3R_97() {
+    if (jj_scan_token(DECLARE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_180() {
     if (jj_scan_token(SINGLE_STRING_LITERAL_START)) return true;
     if (jj_scan_token(SINGLE_STRING_LITERAL_END)) return true;
     return false;
   }
 
-  final private boolean jj_3R_87() {
+  final private boolean jj_3R_179() {
+    if (jj_3R_181()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_176() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_179()) {
+    jj_scanpos = xsp;
+    if (jj_3R_180()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(20)) return true;
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_128() {
+    if (jj_scan_token(CONTINUE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_112() {
+    if (jj_3R_131()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_111() {
+    if (jj_3R_130()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_110() {
+    if (jj_3R_129()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_96() {
+    if (jj_scan_token(USE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_83() {
+    if (jj_scan_token(111)) return true;
+    if (jj_3R_38()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_88() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_109()) {
+    jj_scanpos = xsp;
+    if (jj_3R_110()) {
+    jj_scanpos = xsp;
+    if (jj_3R_111()) {
+    jj_scanpos = xsp;
+    if (jj_3R_112()) return true;
+    }
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_109() {
+    if (jj_3R_128()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_167() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_166() {
+    if (jj_scan_token(PREDEFINED_CONSTANT)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_165() {
+    if (jj_3R_176()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_164() {
+    if (jj_scan_token(FLOATING_POINT_LITERAL)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_163() {
+    if (jj_scan_token(INTEGER_LITERAL)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_152() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_163()) {
+    jj_scanpos = xsp;
+    if (jj_3R_164()) {
+    jj_scanpos = xsp;
+    if (jj_3R_165()) {
+    jj_scanpos = xsp;
+    if (jj_3R_166()) {
+    jj_scanpos = xsp;
+    if (jj_3R_167()) return true;
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_82() {
+    if (jj_3R_38()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_58() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_82()) jj_scanpos = xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_83()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_81() {
+    if (jj_scan_token(DOLLAR1)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_95() {
+    if (jj_scan_token(NAMESPACE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_56() {
+    if (jj_scan_token(DOLLAR)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_81()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(VAR_NAME)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_127() {
+    if (jj_scan_token(FOREACH)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_90() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(52)) {
@@ -5705,55 +5945,34 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     return false;
   }
 
-  final private boolean jj_3R_173() {
-    if (jj_3R_175()) return true;
+  final private boolean jj_3_13() {
+    if (jj_scan_token(109)) return true;
+    if (jj_3R_38()) return true;
     return false;
   }
 
-  final private boolean jj_3R_170() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_173()) {
-    jj_scanpos = xsp;
-    if (jj_3R_174()) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(20)) return true;
-    }
-    }
+  final private boolean jj_3R_178() {
+    if (jj_scan_token(CLONE)) return true;
+    if (jj_3R_56()) return true;
     return false;
   }
 
-  final private boolean jj_3_14() {
-    if (jj_scan_token(106)) return true;
-    if (jj_3R_36()) return true;
+  final private boolean jj_3_39() {
+    if (jj_scan_token(109)) return true;
+    if (jj_3R_58()) return true;
+    if (jj_scan_token(110)) return true;
     return false;
   }
 
-  final private boolean jj_3R_80() {
-    if (jj_scan_token(108)) return true;
-    if (jj_3R_36()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_161() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_160() {
-    if (jj_scan_token(PREDEFINED_CONSTANT)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_120() {
+  final private boolean jj_3R_126() {
     if (jj_scan_token(FOR)) return true;
     return false;
   }
 
-  final private boolean jj_3R_86() {
+  final private boolean jj_3R_89() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(115)) jj_scanpos = xsp;
+    if (jj_scan_token(118)) jj_scanpos = xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(50)) {
     jj_scanpos = xsp;
@@ -5768,138 +5987,116 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     return false;
   }
 
-  final private boolean jj_3R_159() {
-    if (jj_3R_170()) return true;
+  final private boolean jj_3R_177() {
+    if (jj_scan_token(NEW)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
     return false;
   }
 
-  final private boolean jj_3R_158() {
-    if (jj_scan_token(FLOATING_POINT_LITERAL)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_157() {
-    if (jj_scan_token(INTEGER_LITERAL)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_146() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_157()) {
-    jj_scanpos = xsp;
-    if (jj_3R_158()) {
-    jj_scanpos = xsp;
-    if (jj_3R_159()) {
-    jj_scanpos = xsp;
-    if (jj_3R_160()) {
-    jj_scanpos = xsp;
-    if (jj_3R_161()) return true;
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_79() {
-    if (jj_3R_36()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_56() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_79()) jj_scanpos = xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_80()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_78() {
-    if (jj_scan_token(DOLLAR1)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_119() {
+  final private boolean jj_3R_125() {
     if (jj_scan_token(DO)) return true;
     return false;
   }
 
-  final private boolean jj_3R_102() {
-    if (jj_3R_121()) return true;
+  final private boolean jj_3R_169() {
+    if (jj_3R_178()) return true;
     return false;
   }
 
-  final private boolean jj_3R_118() {
+  final private boolean jj_3R_168() {
+    if (jj_3R_177()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_153() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_168()) {
+    jj_scanpos = xsp;
+    if (jj_3R_169()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_108() {
+    if (jj_3R_127()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_124() {
     if (jj_scan_token(WHILE)) return true;
     return false;
   }
 
-  final private boolean jj_3R_101() {
-    if (jj_3R_120()) return true;
+  final private boolean jj_3R_107() {
+    if (jj_3R_126()) return true;
     return false;
   }
 
-  final private boolean jj_3R_54() {
-    if (jj_scan_token(DOLLAR)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_78()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(VAR_NAME)) return true;
+  final private boolean jj_3R_106() {
+    if (jj_3R_125()) return true;
     return false;
   }
 
-  final private boolean jj_3R_100() {
-    if (jj_3R_119()) return true;
+  final private boolean jj_3R_37() {
+    if (jj_3R_76()) return true;
     return false;
   }
 
-  final private boolean jj_3R_35() {
-    if (jj_3R_73()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_84() {
+  final private boolean jj_3R_87() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_99()) {
+    if (jj_3R_105()) {
     jj_scanpos = xsp;
-    if (jj_3R_100()) {
+    if (jj_3R_106()) {
     jj_scanpos = xsp;
-    if (jj_3R_101()) {
+    if (jj_3R_107()) {
     jj_scanpos = xsp;
-    if (jj_3R_102()) return true;
+    if (jj_3R_108()) return true;
     }
     }
     }
     return false;
   }
 
-  final private boolean jj_3R_99() {
-    if (jj_3R_118()) return true;
+  final private boolean jj_3R_105() {
+    if (jj_3R_124()) return true;
     return false;
   }
 
-  final private boolean jj_3_13() {
+  final private boolean jj_3_12() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_35()) jj_scanpos = xsp;
+    if (jj_3R_37()) jj_scanpos = xsp;
     if (jj_scan_token(CONST)) return true;
     return false;
   }
 
-  final private boolean jj_3R_30() {
-    if (jj_scan_token(ELSEIF)) return true;
-    if (jj_scan_token(106)) return true;
+  final private boolean jj_3R_154() {
+    if (jj_scan_token(ARRAY)) return true;
+    if (jj_scan_token(109)) return true;
     return false;
   }
 
-  final private boolean jj_3R_34() {
+  final private boolean jj_3R_57() {
+    if (jj_scan_token(109)) return true;
+    if (jj_3R_38()) return true;
+    if (jj_scan_token(110)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_55() {
+    if (jj_scan_token(118)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_32() {
+    if (jj_scan_token(ELSEIF)) return true;
+    if (jj_scan_token(109)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_36() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(79)) {
@@ -5909,13 +6106,663 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     return false;
   }
 
+  final private boolean jj_3R_140() {
+    if (jj_3R_154()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_11() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_36()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(FUNCTION)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_139() {
+    if (jj_3R_153()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_7() {
+    if (jj_3R_32()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_30() {
+    Token xsp;
+    if (jj_3_7()) return true;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_7()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3_38() {
+    if (jj_3R_57()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_151() {
+    if (jj_scan_token(118)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_138() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_151()) jj_scanpos = xsp;
+    if (jj_3R_152()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_37() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_55()) jj_scanpos = xsp;
+    if (jj_3R_56()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_123() {
+    if (jj_scan_token(SWITCH)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_120() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_37()) {
+    jj_scanpos = xsp;
+    if (jj_3R_138()) {
+    jj_scanpos = xsp;
+    if (jj_3_38()) {
+    jj_scanpos = xsp;
+    if (jj_3R_139()) {
+    jj_scanpos = xsp;
+    if (jj_3R_140()) return true;
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3_36() {
+    if (jj_scan_token(113)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_35() {
+    if (jj_scan_token(158)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_159() {
+    if (jj_scan_token(113)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_6() {
+    if (jj_scan_token(ELSE)) return true;
+    if (jj_3R_31()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_5() {
+    if (jj_3R_30()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_34() {
+    if (jj_scan_token(157)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_158() {
+    if (jj_scan_token(158)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_145() {
+    if (jj_3R_159()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_28() {
+    if (jj_scan_token(INTERFACE)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_122() {
+    if (jj_scan_token(IF)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_144() {
+    if (jj_3R_158()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_157() {
+    if (jj_scan_token(157)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_143() {
+    if (jj_3R_157()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_33() {
+    if (jj_scan_token(156)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_156() {
+    if (jj_scan_token(156)) return true;
+    return false;
+  }
+
   final private boolean jj_3R_172() {
-    if (jj_scan_token(CLONE)) return true;
+    if (jj_scan_token(STATIC)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_141() {
+    if (jj_3R_155()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_121() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_141()) {
+    jj_scanpos = xsp;
+    if (jj_3R_142()) {
+    jj_scanpos = xsp;
+    if (jj_3R_143()) {
+    jj_scanpos = xsp;
+    if (jj_3R_144()) {
+    jj_scanpos = xsp;
+    if (jj_3R_145()) return true;
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_171() {
+    if (jj_3R_76()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_155() {
+    if (jj_scan_token(109)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_142() {
+    if (jj_3R_156()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_104() {
+    if (jj_3R_123()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_170() {
+    if (jj_scan_token(FINAL)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_160() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_170()) {
+    jj_scanpos = xsp;
+    if (jj_3R_171()) {
+    jj_scanpos = xsp;
+    if (jj_3R_172()) return true;
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_86() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_103()) {
+    jj_scanpos = xsp;
+    if (jj_3R_104()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_103() {
+    if (jj_3R_122()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_146() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_160()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_85() {
+    if (jj_scan_token(113)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_29() {
+    if (jj_3R_38()) return true;
+    if (jj_3R_60()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_32() {
+    if (jj_scan_token(INSTANCEOF)) return true;
+    if (jj_3R_38()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_136() {
+    if (jj_scan_token(ABSTRACT)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_26() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(112)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_31() {
     if (jj_3R_54()) return true;
     return false;
   }
 
-  final private boolean jj_3_12() {
+  final private boolean jj_3R_101() {
+    if (jj_3R_120()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_121()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_79() {
+    if (jj_3R_101()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_32()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_135() {
+    if (jj_scan_token(GLOBAL)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_175() {
+    if (jj_scan_token(STATIC)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_91() {
+    if (jj_scan_token(DEFINE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_174() {
+    if (jj_3R_76()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_173() {
+    if (jj_scan_token(VAR)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_161() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_173()) {
+    jj_scanpos = xsp;
+    if (jj_3R_174()) {
+    jj_scanpos = xsp;
+    if (jj_3R_175()) return true;
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_80() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(154)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(155)) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_148() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_161()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_54() {
+    Token xsp;
+    if (jj_3R_80()) return true;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_80()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_53() {
+    if (jj_3R_79()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_31()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3_30() {
+    if (jj_3R_53()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_162() {
+    if (jj_scan_token(DOLLAR)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_102() {
+    if (jj_scan_token(PHP_END)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_150() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(154)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(155)) return true;
+    }
+    if (jj_3R_137()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_137() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_150()) {
+    jj_scanpos = xsp;
+    if (jj_3_30()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_84() {
+    if (jj_3R_102()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_149() {
+    if (jj_3R_162()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_60() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(93)) {
+    jj_scanpos = xsp;
+    if (jj_3R_84()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_134() {
+    if (jj_3R_148()) return true;
+    if (jj_3R_149()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_119() {
+    if (jj_3R_137()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_100() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_118()) {
+    jj_scanpos = xsp;
+    if (jj_3R_119()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_118() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(115)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(147)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(152)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(153)) return true;
+    }
+    }
+    }
+    if (jj_3R_100()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_29() {
+    if (jj_scan_token(109)) return true;
+    if (jj_scan_token(VARTYPE)) return true;
+    if (jj_scan_token(110)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_147() {
+    if (jj_3R_76()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_133() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_147()) jj_scanpos = xsp;
+    if (jj_scan_token(CONST)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_99() {
+    if (jj_scan_token(109)) return true;
+    if (jj_scan_token(VARTYPE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_94() {
+    if (jj_scan_token(TRY)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_78() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_99()) jj_scanpos = xsp;
+    if (jj_3R_100()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_93() {
+    if (jj_scan_token(THROW)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_28() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(149)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(150)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(151)) return true;
+    }
+    }
+    if (jj_3R_52()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_75() {
+    if (jj_3R_76()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_26() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(144)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(145)) return true;
+    }
+    if (jj_3R_50()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_74() {
+    if (jj_3R_60()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_73() {
+    if (jj_3R_97()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_72() {
+    if (jj_3R_96()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_132() {
+    if (jj_3R_146()) return true;
+    if (jj_scan_token(FUNCTION)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_71() {
+    if (jj_3R_95()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_52() {
+    if (jj_3R_78()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_28()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_70() {
+    if (jj_3R_94()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_69() {
+    if (jj_3R_93()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_27() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(146)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(147)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(148)) return true;
+    }
+    }
+    if (jj_3R_51()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_68() {
+    if (jj_3R_92()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_67() {
+    if (jj_3R_91()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_35() {
+    if (jj_3R_76()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_66() {
+    if (jj_3R_90()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_10() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_35()) jj_scanpos = xsp;
+    if (jj_scan_token(CONST)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_65() {
+    if (jj_3R_89()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_34() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(80)) {
+    jj_scanpos = xsp;
+    if (jj_3R_75()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(81)) return true;
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_64() {
+    if (jj_3R_88()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_9() {
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
@@ -5925,588 +6772,60 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     return false;
   }
 
-  final private boolean jj_3_8() {
-    if (jj_3R_30()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_28() {
-    Token xsp;
-    if (jj_3_8()) return true;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_8()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3_40() {
-    if (jj_scan_token(106)) return true;
-    if (jj_3R_56()) return true;
-    if (jj_scan_token(107)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_117() {
-    if (jj_scan_token(SWITCH)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_171() {
-    if (jj_scan_token(NEW)) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_7() {
-    if (jj_scan_token(ELSE)) return true;
-    if (jj_3R_29()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_6() {
-    if (jj_3R_28()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_163() {
-    if (jj_3R_172()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_162() {
-    if (jj_3R_171()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_147() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_162()) {
-    jj_scanpos = xsp;
-    if (jj_3R_163()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_116() {
-    if (jj_scan_token(IF)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_26() {
-    if (jj_scan_token(INTERFACE)) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_148() {
-    if (jj_scan_token(ARRAY)) return true;
-    if (jj_scan_token(106)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_55() {
-    if (jj_scan_token(106)) return true;
-    if (jj_3R_36()) return true;
-    if (jj_scan_token(107)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_53() {
-    if (jj_scan_token(115)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_98() {
-    if (jj_3R_117()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_134() {
-    if (jj_3R_148()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_83() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_97()) {
-    jj_scanpos = xsp;
-    if (jj_3R_98()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_97() {
-    if (jj_3R_116()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_133() {
-    if (jj_3R_147()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_82() {
-    if (jj_scan_token(110)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_166() {
-    if (jj_scan_token(STATIC)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_165() {
-    if (jj_3R_73()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_39() {
-    if (jj_3R_55()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_145() {
-    if (jj_scan_token(115)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_27() {
-    if (jj_3R_36()) return true;
-    if (jj_3R_60()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_164() {
-    if (jj_scan_token(FINAL)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_154() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_164()) {
-    jj_scanpos = xsp;
-    if (jj_3R_165()) {
-    jj_scanpos = xsp;
-    if (jj_3R_166()) return true;
-    }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_132() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_145()) jj_scanpos = xsp;
-    if (jj_3R_146()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_140() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_154()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3_38() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_53()) jj_scanpos = xsp;
-    if (jj_3R_54()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_24() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_scan_token(109)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_114() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_38()) {
-    jj_scanpos = xsp;
-    if (jj_3R_132()) {
-    jj_scanpos = xsp;
-    if (jj_3_39()) {
-    jj_scanpos = xsp;
-    if (jj_3R_133()) {
-    jj_scanpos = xsp;
-    if (jj_3R_134()) return true;
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_130() {
-    if (jj_scan_token(ABSTRACT)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_58() {
-    if (jj_scan_token(DFLT)) return true;
-    if (jj_scan_token(109)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_37() {
-    if (jj_scan_token(110)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_23() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_57()) {
-    jj_scanpos = xsp;
-    if (jj_3R_58()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_57() {
-    if (jj_scan_token(CASE)) return true;
-    if (jj_3R_36()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_36() {
-    if (jj_scan_token(154)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_153() {
-    if (jj_scan_token(110)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_35() {
-    if (jj_scan_token(153)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_88() {
-    if (jj_scan_token(DEFINE)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_152() {
-    if (jj_scan_token(154)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_139() {
-    if (jj_3R_153()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_138() {
-    if (jj_3R_152()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_151() {
-    if (jj_scan_token(153)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_137() {
-    if (jj_3R_151()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_34() {
-    if (jj_scan_token(152)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_129() {
-    if (jj_scan_token(GLOBAL)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_169() {
-    if (jj_scan_token(STATIC)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_168() {
-    if (jj_3R_73()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_150() {
-    if (jj_scan_token(152)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_167() {
-    if (jj_scan_token(VAR)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_155() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_167()) {
-    jj_scanpos = xsp;
-    if (jj_3R_168()) {
-    jj_scanpos = xsp;
-    if (jj_3R_169()) return true;
-    }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_135() {
-    if (jj_3R_149()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_96() {
-    if (jj_scan_token(PHP_END)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_115() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_135()) {
-    jj_scanpos = xsp;
-    if (jj_3R_136()) {
-    jj_scanpos = xsp;
-    if (jj_3R_137()) {
-    jj_scanpos = xsp;
-    if (jj_3R_138()) {
-    jj_scanpos = xsp;
-    if (jj_3R_139()) return true;
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_149() {
-    if (jj_scan_token(106)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_136() {
-    if (jj_3R_150()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_142() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_155()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_81() {
-    if (jj_3R_96()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_60() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(93)) {
-    jj_scanpos = xsp;
-    if (jj_3R_81()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3_33() {
-    if (jj_scan_token(INSTANCEOF)) return true;
-    if (jj_3R_36()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_156() {
-    if (jj_scan_token(DOLLAR)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_143() {
-    if (jj_3R_156()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_128() {
-    if (jj_3R_142()) return true;
-    if (jj_3R_143()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_32() {
+  final private boolean jj_3R_51() {
     if (jj_3R_52()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_91() {
-    if (jj_scan_token(TRY)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_95() {
-    if (jj_3R_114()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_115()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_76() {
-    if (jj_3R_95()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_33()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_90() {
-    if (jj_scan_token(THROW)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_141() {
-    if (jj_3R_73()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_71() {
-    if (jj_3R_60()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_127() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_141()) jj_scanpos = xsp;
-    if (jj_scan_token(CONST)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_70() {
-    if (jj_3R_91()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_69() {
-    if (jj_3R_90()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_68() {
-    if (jj_3R_89()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_67() {
-    if (jj_3R_88()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_66() {
-    if (jj_3R_87()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_77() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(150)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(151)) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_65() {
-    if (jj_3R_86()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_64() {
-    if (jj_3R_85()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_52() {
-    Token xsp;
-    if (jj_3R_77()) return true;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_77()) { jj_scanpos = xsp; break; }
-    }
+    if (jj_3_27()) jj_scanpos = xsp;
     return false;
   }
 
   final private boolean jj_3R_63() {
-    if (jj_3R_84()) return true;
+    if (jj_3R_87()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_117() {
+    if (jj_3R_136()) return true;
     return false;
   }
 
   final private boolean jj_3R_62() {
-    if (jj_3R_83()) return true;
+    if (jj_3R_86()) return true;
     return false;
   }
 
   final private boolean jj_3R_61() {
-    if (jj_3R_82()) return true;
+    if (jj_3R_85()) return true;
     return false;
   }
 
-  final private boolean jj_3_5() {
-    if (jj_3R_27()) return true;
+  final private boolean jj_3R_116() {
+    if (jj_3R_135()) return true;
     return false;
   }
 
   final private boolean jj_3_4() {
-    if (jj_3R_26()) return true;
+    if (jj_3R_29()) return true;
     return false;
   }
 
   final private boolean jj_3_3() {
-    if (jj_3R_25()) return true;
+    if (jj_3R_28()) return true;
     return false;
   }
 
-  final private boolean jj_3R_51() {
-    if (jj_3R_76()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_32()) jj_scanpos = xsp;
+  final private boolean jj_3R_115() {
+    if (jj_3R_134()) return true;
     return false;
   }
 
   final private boolean jj_3_2() {
-    if (jj_3R_24()) return true;
+    if (jj_3R_27()) return true;
     return false;
   }
 
-  final private boolean jj_3R_72() {
-    if (jj_3R_73()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_29() {
+  final private boolean jj_3R_31() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_1()) {
@@ -6516,8 +6835,6 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     if (jj_3_3()) {
     jj_scanpos = xsp;
     if (jj_3_4()) {
-    jj_scanpos = xsp;
-    if (jj_3_5()) {
     jj_scanpos = xsp;
     if (jj_3R_61()) {
     jj_scanpos = xsp;
@@ -6539,7 +6856,15 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     jj_scanpos = xsp;
     if (jj_3R_70()) {
     jj_scanpos = xsp;
-    if (jj_3R_71()) return true;
+    if (jj_3R_71()) {
+    jj_scanpos = xsp;
+    if (jj_3R_72()) {
+    jj_scanpos = xsp;
+    if (jj_3R_73()) {
+    jj_scanpos = xsp;
+    if (jj_3R_74()) return true;
+    }
+    }
     }
     }
     }
@@ -6559,216 +6884,70 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   }
 
   final private boolean jj_3_1() {
-    if (jj_3R_23()) return true;
+    if (jj_3R_26()) return true;
     return false;
   }
 
-  final private boolean jj_3_31() {
-    if (jj_3R_51()) return true;
+  final private boolean jj_3R_114() {
+    if (jj_3R_133()) return true;
     return false;
   }
 
-  final private boolean jj_3R_126() {
-    if (jj_3R_140()) return true;
-    if (jj_scan_token(FUNCTION)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_144() {
+  final private boolean jj_3R_92() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(150)) {
+    if (jj_3R_113()) {
     jj_scanpos = xsp;
-    if (jj_scan_token(151)) return true;
-    }
-    if (jj_3R_131()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_131() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_144()) {
+    if (jj_3R_114()) {
     jj_scanpos = xsp;
-    if (jj_3_31()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_33() {
-    if (jj_3R_73()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_11() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_33()) jj_scanpos = xsp;
-    if (jj_scan_token(CONST)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_32() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(80)) {
+    if (jj_3R_115()) {
     jj_scanpos = xsp;
-    if (jj_3R_72()) {
+    if (jj_3R_116()) {
     jj_scanpos = xsp;
-    if (jj_scan_token(81)) return true;
+    if (jj_3R_117()) return true;
     }
     }
-    return false;
-  }
-
-  final private boolean jj_3_10() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_32()) { jj_scanpos = xsp; break; }
     }
-    if (jj_scan_token(FUNCTION)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_111() {
-    if (jj_3R_130()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_110() {
-    if (jj_3R_129()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_109() {
-    if (jj_3R_128()) return true;
+    }
     return false;
   }
 
   final private boolean jj_3R_113() {
-    if (jj_3R_131()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_108() {
-    if (jj_3R_127()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_94() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_112()) {
-    jj_scanpos = xsp;
-    if (jj_3R_113()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_112() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(112)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(143)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(148)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(149)) return true;
-    }
-    }
-    }
-    if (jj_3R_94()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_89() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_107()) {
-    jj_scanpos = xsp;
-    if (jj_3R_108()) {
-    jj_scanpos = xsp;
-    if (jj_3R_109()) {
-    jj_scanpos = xsp;
-    if (jj_3R_110()) {
-    jj_scanpos = xsp;
-    if (jj_3R_111()) return true;
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_107() {
-    if (jj_3R_126()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_30() {
-    if (jj_scan_token(106)) return true;
-    if (jj_scan_token(VARTYPE)) return true;
-    if (jj_scan_token(107)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_93() {
-    if (jj_scan_token(106)) return true;
-    if (jj_scan_token(VARTYPE)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_75() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_93()) jj_scanpos = xsp;
-    if (jj_3R_94()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_29() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(145)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(146)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(147)) return true;
-    }
-    }
-    if (jj_3R_50()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_27() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(140)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(141)) return true;
-    }
-    if (jj_3R_48()) return true;
+    if (jj_3R_132()) return true;
     return false;
   }
 
   final private boolean jj_3R_50() {
-    if (jj_3R_75()) return true;
+    if (jj_3R_51()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_29()) jj_scanpos = xsp;
+    if (jj_3_26()) jj_scanpos = xsp;
     return false;
   }
 
-  final private boolean jj_3_28() {
+  final private boolean jj_3_23() {
+    if (jj_scan_token(115)) return true;
+    if (jj_3R_47()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_22() {
+    if (jj_scan_token(135)) return true;
+    if (jj_3R_46()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_25() {
     Token xsp;
     xsp = jj_scanpos;
+    if (jj_scan_token(140)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(141)) {
+    jj_scanpos = xsp;
     if (jj_scan_token(142)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(143)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(144)) return true;
+    if (jj_scan_token(143)) return true;
+    }
     }
     }
     if (jj_3R_49()) return true;
@@ -6779,7 +6958,128 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     if (jj_3R_50()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_28()) jj_scanpos = xsp;
+    if (jj_3_25()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_76() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(76)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(77)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(78)) return true;
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3_21() {
+    if (jj_scan_token(134)) return true;
+    if (jj_3R_45()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_20() {
+    if (jj_scan_token(133)) return true;
+    if (jj_3R_44()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_19() {
+    if (jj_scan_token(132)) return true;
+    if (jj_3R_43()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_24() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(136)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(137)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(138)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(139)) return true;
+    }
+    }
+    }
+    if (jj_3R_48()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_48() {
+    if (jj_3R_49()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_24()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_47() {
+    if (jj_3R_48()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_23()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_59() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(79)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(80)) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3_18() {
+    if (jj_scan_token(131)) return true;
+    if (jj_3R_38()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_27() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_59()) jj_scanpos = xsp;
+    if (jj_scan_token(CLASS)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_46() {
+    if (jj_3R_47()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_22()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_45() {
+    if (jj_3R_46()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_21()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_44() {
+    if (jj_3R_45()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_20()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_43() {
+    if (jj_3R_44()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_19()) jj_scanpos = xsp;
     return false;
   }
 
@@ -6792,7 +7092,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
   public boolean lookingAhead = false;
   private boolean jj_semLA;
   private int jj_gen;
-  final private int[] jj_la1 = new int[92];
+  final private int[] jj_la1 = new int[96];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -6806,21 +7106,21 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
       jj_la1_4();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x1d1000,0x3,0x1c,0x1c,0x0,0x0,0x0,0x18,0x18,0x3,0x0,0x1d1000,0x0,0x0,0x1d1000,0x1d1000,0x1d1000,0x1d1000,0x0,0x0,0x0,0x0,0x1000,0x1000,0x1d1000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1d1000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1d1000,0x0,0x0,0x0,0x0,0x0,0x0,0x1d1000,0x0,0x0,0x1d1000,0x0,0x1d1000,0x0,0x0,0x0,0x0,0x1d1000,0x0,0x1d1000,0x1c0000,0x18000000,0x0,0x18000000,0x1c000000,0x0,};
+      jj_la1_0 = new int[] {0x1d1000,0x3,0x1c,0x1c,0x0,0x0,0x0,0x18,0x18,0x3,0x0,0x1d1000,0x1d1000,0x0,0x0,0x0,0x1d1000,0x1d1000,0x1d1000,0x1d1000,0x0,0x0,0x0,0x0,0x1000,0x1000,0x1d1000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1d1000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1d1000,0x0,0x0,0x0,0x0,0x0,0x0,0x1d1000,0x0,0x0,0x1d1000,0x0,0x1d1000,0x0,0x0,0x0,0x0,0x1d1000,0x0,0x1d1000,0x1c0000,0x18000000,0x0,0x18000000,0x1c000000,0x0,};
    }
    private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0xbfff8000,0x0,0x0,0x0,0xbe7f8000,0x0,0x0,0x0,0x0,0x0,0x1800000,0xbfff8000,0x400000,0xb8000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x6000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x78000,0x0,0x300000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xa,0x0,0x0,0x0,};
+      jj_la1_1 = new int[] {0xbe7f8000,0x0,0x0,0x0,0xbe7f8000,0x0,0x0,0x0,0x0,0x0,0x1800000,0xbe7f8000,0xbe7f8000,0x400000,0x1800000,0xb8000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x6000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x78000,0x0,0x300000,0x0,0x40000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xa,0x0,0x0,0x0,};
    }
    private static void jj_la1_2() {
-      jj_la1_2 = new int[] {0x7fb7fb03,0x0,0x0,0x0,0x7893f903,0x80000000,0x28000000,0x0,0x0,0x0,0x0,0x7fb7fb03,0x2,0x0,0x17200000,0x17200000,0x17200000,0x17200000,0x0,0x0,0x0,0x1,0x0,0x0,0x17200000,0x0,0x0,0x0,0x18000,0x18000,0x400,0x0,0x80000,0x1093f900,0x1082f800,0x0,0x10000000,0x7000,0x0,0x0,0x27800,0x27800,0x0,0x0,0x10000000,0x37000,0x37000,0x0,0x400,0x10f100,0x9000,0x9000,0x0,0x10000000,0x0,0x0,0x0,0x17200000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x17200000,0x0,0x0,0x0,0x0,0x0,0x0,0x17200000,0x0,0x0,0x4000000,0x3200000,0x17200000,0x0,0x0,0x2200000,0x0,0x17200000,0x0,0x4000000,0x0,0x0,0x0,0x0,0x0,0x7000,};
+      jj_la1_2 = new int[] {0x7fb7fb03,0x0,0x0,0x0,0x7893f903,0x80000000,0x28000000,0x0,0x0,0x0,0x0,0x7fb7fb03,0x7fb7fb03,0x2,0x0,0x0,0x17200000,0x17200000,0x17200000,0x17200000,0x0,0x0,0x0,0x1,0x0,0x0,0x17200000,0x0,0x0,0x0,0x18000,0x18000,0x400,0x0,0x80000,0x1093f900,0x1082f800,0x0,0x10000000,0x7000,0x0,0x0,0x27800,0x27800,0x0,0x0,0x10000000,0x37000,0x37000,0x0,0x400,0x10f100,0x9000,0x9000,0x0,0x10000000,0x0,0x0,0x0,0x17200000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x17200000,0x0,0x0,0x0,0x0,0x0,0x0,0x17200000,0x0,0x0,0x4000000,0x3200000,0x17200000,0x0,0x0,0x2200000,0x0,0x17200000,0x0,0x4000000,0x0,0x0,0x0,0x0,0x0,0x7000,};
    }
    private static void jj_la1_3() {
-      jj_la1_3 = new int[] {0x94483,0x0,0x0,0x0,0x84003,0x0,0x0,0x0,0x0,0x0,0x0,0x94483,0x0,0x0,0x90480,0x90480,0x90480,0x90480,0x10000,0x10000,0x20000,0x2,0x0,0x0,0x90480,0x80,0x10000,0x40000,0x0,0x0,0x0,0x1000,0x0,0x0,0x0,0x10000,0x10080,0x0,0x1000,0x40000,0x0,0x0,0x1000,0x10000,0x10080,0x0,0x0,0x1000,0x0,0x0,0x0,0x0,0x10000,0x10080,0x4000,0x80000,0x0,0x90480,0x0,0x7ff40000,0x0,0x0,0x0,0x0,0x0,0x10000,0x90480,0x0,0x0,0x0,0x0,0x4400,0x400,0x90480,0x80000,0x80000,0x80080,0x0,0x90480,0x1000,0x20000,0x0,0x20,0x90480,0x1000,0x80,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_3 = new int[] {0x4a241f,0x0,0x0,0x0,0x42001f,0x0,0x0,0x0,0x0,0x0,0x0,0x4a241f,0x4a241f,0x0,0x0,0x0,0x482400,0x482400,0x482400,0x482400,0x80000,0x80000,0x100000,0x2,0x0,0x0,0x482400,0x400,0x80000,0x200000,0x0,0x0,0x0,0x8000,0x0,0x0,0x0,0x80000,0x80400,0x0,0x8000,0x200000,0x0,0x0,0x8000,0x80000,0x80400,0x0,0x0,0x8000,0x0,0x0,0x0,0x0,0x80000,0x80400,0x20000,0x400000,0x0,0x482400,0x0,0x800000,0x0,0xff200000,0x0,0x0,0x0,0x0,0x0,0x80000,0x482400,0x0,0x0,0x0,0x0,0x22000,0x2000,0x482400,0x400000,0x400000,0x400400,0x0,0x482400,0x8000,0x100000,0x0,0x100,0x482400,0x8000,0x400,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
    private static void jj_la1_4() {
-      jj_la1_4 = new int[] {0xf08000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xf08000,0x0,0x0,0xf08000,0xf08000,0xf08000,0xf08000,0x0,0x0,0x0,0x0,0x0,0x0,0xf08000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xf08000,0x0,0x0,0xf0,0xf00,0x3000,0x1c000,0xe0000,0x308000,0xf08000,0xc00000,0xc00000,0xc00000,0xc00000,0x7000000,0x0,0xf08000,0x0,0x0,0x0,0x0,0xf08000,0x0,0x0,0x0,0x0,0xf08000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_4 = new int[] {0xf080000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xf080000,0xf080000,0x0,0x0,0x0,0xf080000,0xf080000,0xf080000,0xf080000,0x0,0x0,0x0,0x0,0x0,0x0,0xf080000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xf080000,0x0,0x0,0x0,0x7,0xf00,0xf000,0x30000,0x1c0000,0xe00000,0x3080000,0xf080000,0xc000000,0xc000000,0xc000000,0xc000000,0x70000000,0x0,0xf080000,0x0,0x0,0x0,0x0,0xf080000,0x0,0x0,0x0,0x0,0xf080000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[41];
+  final private JJCalls[] jj_2_rtns = new JJCalls[40];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -6833,7 +7133,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 92; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 96; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -6847,7 +7147,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 92; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 96; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -6857,7 +7157,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 92; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 96; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -6868,7 +7168,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 92; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 96; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -6877,7 +7177,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 92; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 96; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -6887,7 +7187,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 92; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 96; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -6998,15 +7298,15 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
 
   public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[156];
-    for (int i = 0; i < 156; i++) {
+    boolean[] la1tokens = new boolean[160];
+    for (int i = 0; i < 160; i++) {
       la1tokens[i] = false;
     }
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 92; i++) {
+    for (int i = 0; i < 96; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -7027,7 +7327,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
         }
       }
     }
-    for (int i = 0; i < 156; i++) {
+    for (int i = 0; i < 160; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
@@ -7052,7 +7352,7 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
 
   final private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 41; i++) {
+    for (int i = 0; i < 40; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -7099,7 +7399,6 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants, PHPConstants {/*@
             case 37: jj_3_38(); break;
             case 38: jj_3_39(); break;
             case 39: jj_3_40(); break;
-            case 40: jj_3_41(); break;
           }
         }
         p = p.next;

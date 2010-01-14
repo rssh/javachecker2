@@ -377,6 +377,10 @@ TOKEN_MGR_DECLS : {
 |	<THROW: "throw">
 |	<GOTO: "goto">
 
+|	<DECLARE: "declare">
+|	<NAMESPACE: "namespace">
+|	<USE: "use">
+
 }
 
 <VAR_NAME_STATE> TOKEN : 
@@ -537,7 +541,6 @@ void Statement() throws TermWareException  : {/*@bgen(jjtree) Statement */
 {/*@bgen(jjtree) Statement */
         try {
 /*@egen*/
-	LOOKAHEAD(2) LabeledStatement() |
 	LOOKAHEAD(2) GotoLabeledStatement() |
 	LOOKAHEAD(2) ClassDeclaration() |
 	LOOKAHEAD(2) InterfaceDeclaration() |
@@ -552,6 +555,9 @@ void Statement() throws TermWareException  : {/*@bgen(jjtree) Statement */
 	MemberDeclaration()
 |	ThrowStatement()
 | 	TryBlock()
+|       NamespaceStatement()
+|       UseStatement()
+|       DeclareStatement()
 |	EndOfStatement()/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -832,17 +838,17 @@ void DefineStatement() throws TermWareException  : {/*@bgen(jjtree) DefineStatem
 /*@egen*/
 }
 
-void LabeledStatement() throws TermWareException  : {/*@bgen(jjtree) LabeledStatement */
-  SimpleNode jjtn000 = new SimpleNode(JJTLABELEDSTATEMENT);
+void LabeledStatements() throws TermWareException  : {/*@bgen(jjtree) LabeledStatements */
+  SimpleNode jjtn000 = new SimpleNode(JJTLABELEDSTATEMENTS);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
 /*@egen*/}
-{/*@bgen(jjtree) LabeledStatement */
+{/*@bgen(jjtree) LabeledStatements */
         try {
 /*@egen*/
-	<CASE> Expression() ":" Statement() 
+	<CASE> Expression() ":" Statements() 
        |
-	<DFLT> ":" Statement()/*@bgen(jjtree)*/
+	<DFLT> ":" Statements()/*@bgen(jjtree)*/
         {
           jjtree.closeNodeScope(jjtn000, true);
           jjtc000 = false;
@@ -871,6 +877,41 @@ void LabeledStatement() throws TermWareException  : {/*@bgen(jjtree) LabeledStat
             jjtree.closeNodeScope(jjtn000, true);
           }
         }
+/*@egen*/
+}
+
+void Statements() throws TermWareException  : 
+{/*@bgen(jjtree) Statements */
+  SimpleNode jjtn000 = new SimpleNode(JJTSTATEMENTS);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) Statements */
+ try {
+/*@egen*/
+ (Statement())*/*@bgen(jjtree)*/
+ } catch (Throwable jjte000) {
+   if (jjtc000) {
+     jjtree.clearNodeScope(jjtn000);
+     jjtc000 = false;
+   } else {
+     jjtree.popNode();
+   }
+   if (jjte000 instanceof TermWareException) {
+     throw (TermWareException)jjte000;
+   }
+   if (jjte000 instanceof RuntimeException) {
+     throw (RuntimeException)jjte000;
+   }
+   if (jjte000 instanceof ParseException) {
+     throw (ParseException)jjte000;
+   }
+   throw (Error)jjte000;
+ } finally {
+   if (jjtc000) {
+     jjtree.closeNodeScope(jjtn000, true);
+   }
+ }
 /*@egen*/
 }
 
@@ -1089,7 +1130,7 @@ void SelectionSwitchStatement() throws TermWareException  :
 {/*@bgen(jjtree) SelectionSwitchStatement */
         try {
 /*@egen*/
-	<SWITCH> "(" Expression() ")" Statement()/*@bgen(jjtree)*/
+	<SWITCH> "(" Expression() ")" CaseStatements()/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -1112,6 +1153,44 @@ void SelectionSwitchStatement() throws TermWareException  :
             jjtree.closeNodeScope(jjtn000, true);
           }
         }
+/*@egen*/
+}
+
+void CaseStatements() throws TermWareException  : 
+{/*@bgen(jjtree) CaseStatements */
+  SimpleNode jjtn000 = new SimpleNode(JJTCASESTATEMENTS);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/
+}
+{/*@bgen(jjtree) CaseStatements */
+  try {
+/*@egen*/
+  "{"
+     ( LabeledStatements() )*
+  "}"/*@bgen(jjtree)*/
+  } catch (Throwable jjte000) {
+    if (jjtc000) {
+      jjtree.clearNodeScope(jjtn000);
+      jjtc000 = false;
+    } else {
+      jjtree.popNode();
+    }
+    if (jjte000 instanceof TermWareException) {
+      throw (TermWareException)jjte000;
+    }
+    if (jjte000 instanceof RuntimeException) {
+      throw (RuntimeException)jjte000;
+    }
+    if (jjte000 instanceof ParseException) {
+      throw (ParseException)jjte000;
+    }
+    throw (Error)jjte000;
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+  }
 /*@egen*/
 }
 
@@ -2598,6 +2677,158 @@ void EchoStatement() throws TermWareException :
   }
 /*@egen*/
 }
+
+void NamespaceStatement() throws TermWareException : 
+{/*@bgen(jjtree) NamespaceStatement */
+  SimpleNode jjtn000 = new SimpleNode(JJTNAMESPACESTATEMENT);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/
+}
+{/*@bgen(jjtree) NamespaceStatement */
+  try {
+/*@egen*/
+  <NAMESPACE> QualifiedName()/*@bgen(jjtree)*/
+  } catch (Throwable jjte000) {
+    if (jjtc000) {
+      jjtree.clearNodeScope(jjtn000);
+      jjtc000 = false;
+    } else {
+      jjtree.popNode();
+    }
+    if (jjte000 instanceof TermWareException) {
+      throw (TermWareException)jjte000;
+    }
+    if (jjte000 instanceof RuntimeException) {
+      throw (RuntimeException)jjte000;
+    }
+    if (jjte000 instanceof ParseException) {
+      throw (ParseException)jjte000;
+    }
+    throw (Error)jjte000;
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+  }
+/*@egen*/
+}
+
+void QualifiedName() throws TermWareException:
+{/*@bgen(jjtree) QualifiedName */
+ SimpleNode jjtn000 = new SimpleNode(JJTQUALIFIEDNAME);
+ boolean jjtc000 = true;
+ jjtree.openNodeScope(jjtn000);
+/*@egen*/
+ Token tk=null;
+ Token tk1 = null;
+ int n=1;
+}
+{/*@bgen(jjtree) QualifiedName */
+  try {
+/*@egen*/
+  tk=<IDENTIFIER> ("\\" tk1=<IDENTIFIER> 
+                    { jjtn000.addTerm(createIdentifier(tk1.image),n); 
+                      ++n;
+                    }
+                  ) */*@bgen(jjtree)*/
+  {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtc000 = false;
+  }
+/*@egen*/
+  { jjtn000.addTerm(createIdentifier(tk.image),0); }/*@bgen(jjtree)*/
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+  }
+/*@egen*/
+}
+
+void UseStatement() throws TermWareException : 
+{/*@bgen(jjtree) UseStatement */
+ SimpleNode jjtn000 = new SimpleNode(JJTUSESTATEMENT);
+ boolean jjtc000 = true;
+ jjtree.openNodeScope(jjtn000);
+/*@egen*/
+ Token tk=null;
+}
+{/*@bgen(jjtree) UseStatement */
+ try {
+/*@egen*/
+ <USE> QualifiedName() [<AS> tk=<IDENTIFIER> ]/*@bgen(jjtree)*/
+ {
+   jjtree.closeNodeScope(jjtn000, true);
+   jjtc000 = false;
+ }
+/*@egen*/
+ {
+   if (tk!=null) {
+      jjtn000.addTerm(createIdentifier(tk.image),1); 
+   }
+ }/*@bgen(jjtree)*/
+ } catch (Throwable jjte000) {
+   if (jjtc000) {
+     jjtree.clearNodeScope(jjtn000);
+     jjtc000 = false;
+   } else {
+     jjtree.popNode();
+   }
+   if (jjte000 instanceof TermWareException) {
+     throw (TermWareException)jjte000;
+   }
+   if (jjte000 instanceof RuntimeException) {
+     throw (RuntimeException)jjte000;
+   }
+   if (jjte000 instanceof ParseException) {
+     throw (ParseException)jjte000;
+   }
+   throw (Error)jjte000;
+ } finally {
+   if (jjtc000) {
+     jjtree.closeNodeScope(jjtn000, true);
+   }
+ }
+/*@egen*/
+}
+
+void DeclareStatement() throws TermWareException : 
+{/*@bgen(jjtree) DeclareStatement */
+  SimpleNode jjtn000 = new SimpleNode(JJTDECLARESTATEMENT);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/
+}
+{/*@bgen(jjtree) DeclareStatement */
+  try {
+/*@egen*/
+  <DECLARE> "(" AssignmentExpression()  ")" Statement()/*@bgen(jjtree)*/
+  } catch (Throwable jjte000) {
+    if (jjtc000) {
+      jjtree.clearNodeScope(jjtn000);
+      jjtc000 = false;
+    } else {
+      jjtree.popNode();
+    }
+    if (jjte000 instanceof TermWareException) {
+      throw (TermWareException)jjte000;
+    }
+    if (jjte000 instanceof RuntimeException) {
+      throw (RuntimeException)jjte000;
+    }
+    if (jjte000 instanceof ParseException) {
+      throw (ParseException)jjte000;
+    }
+    throw (Error)jjte000;
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+  }
+/*@egen*/
+}
+
 
 void Expression() throws TermWareException : {/*@bgen(jjtree) Expression */
   SimpleNode jjtn000 = new SimpleNode(JJTEXPRESSION);
