@@ -125,6 +125,9 @@ public class ASTTransformer {
         beforeToList_.addRule("VarList..($x) -> $x");
         beforeToList_.addRule("CatchBlocks..($x) -> $x");
 
+        beforeToList_.addRule("QualifiedName..($x) -> SQualifiedName($x)");
+        beforeToList_.addRule("UsePairs..($x) -> $x");
+
     }
 
     public Term transform(Term x) throws TermWareException

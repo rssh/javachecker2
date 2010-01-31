@@ -5,7 +5,8 @@
   By Satyam (satyam@satyam.com.ar)
 
   This is a partial grammar which I meant to use in a project of mine.
-  I refined it a little bit beyond my specific need, but didn't go to the very end.
+  I refined it a little bit beyond my specific need, but didn't go to the 
+  very end.
   It works for the purpose of my project, but it is not complete.
 
   It was tested by parsing all the source files in the PHP 5.0 test suite,
@@ -176,7 +177,6 @@ public  class PHP/*@bgen(jjtree)*/implements PHPTreeConstants/*@egen*/ {/*@bgen(
 
 
     private String inFname_;
-    private int    nLine_;
     private TermWareInstance termWareInstance_;
 
 
@@ -804,15 +804,30 @@ void EmbeddedHtml() throws TermWareException :
 /*@egen*/
 }
 
-void DefineStatement() throws TermWareException  : {/*@bgen(jjtree) DefineStatement */
-  SimpleNode jjtn000 = new SimpleNode(JJTDEFINESTATEMENT);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/}
+void DefineStatement() throws TermWareException  : 
+{/*@bgen(jjtree) DefineStatement */
+ SimpleNode jjtn000 = new SimpleNode(JJTDEFINESTATEMENT);
+ boolean jjtc000 = true;
+ jjtree.openNodeScope(jjtn000);
+/*@egen*/
+ boolean withcssn = false;
+}
 {/*@bgen(jjtree) DefineStatement */
         try {
 /*@egen*/
-	<DEFINE> "(" String() "," Expression() ")" EndOfStatement()/*@bgen(jjtree)*/
+	<DEFINE> "(" String() "," Expression() 
+                     [ "," Expression() { withcssn = true; } ] 
+                 ")" EndOfStatement()/*@bgen(jjtree)*/
+        {
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+        }
+/*@egen*/
+        {
+          if (!withcssn) {
+            jjtn000.addTerm(createNil(),2);
+          }
+        }/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -932,7 +947,10 @@ void GotoLabeledStatement() throws TermWareException :
         jjtc000 = false;
       }
 /*@egen*/
-      { jjtn000.addTerm(createString(tk.image),0); }/*@bgen(jjtree)*/
+      { jjtn000.addTerm(createString(tk.image),0); 
+        jjtn000.setAttribute("line",createInt(tk.beginLine));
+        jjtn000.setAttribute("file",createString(getInFname()));
+      }/*@bgen(jjtree)*/
      } catch (Throwable jjte000) {
        if (jjtc000) {
          jjtree.clearNodeScope(jjtn000);
@@ -2145,17 +2163,22 @@ void VariableDecl() throws TermWareException :
  jjtree.openNodeScope(jjtn000);
 /*@egen*/
  Token tk;
+ boolean withExpr=false;
 }
 {/*@bgen(jjtree) VariableDecl */
   try {
 /*@egen*/
-  <DOLLAR> tk=<VAR_NAME> [ "=" Expression() ]/*@bgen(jjtree)*/
+  <DOLLAR> tk=<VAR_NAME> [ "=" Expression() { withExpr=true; } ]/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
     }
 /*@egen*/ 
-    { jjtn000.addTerm(createIdentifier(tk.image),0); }/*@bgen(jjtree)*/
+    { jjtn000.addTerm(createIdentifier(tk.image),0); 
+      if (!withExpr) {
+        jjtn000.addTerm(createNil(),0); 
+      }
+    }/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -2688,7 +2711,7 @@ void NamespaceStatement() throws TermWareException :
 {/*@bgen(jjtree) NamespaceStatement */
   try {
 /*@egen*/
-  <NAMESPACE> QualifiedName()/*@bgen(jjtree)*/
+  <NAMESPACE> QualifiedName() EndOfStatement()/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -2722,7 +2745,7 @@ void QualifiedName() throws TermWareException:
 /*@egen*/
  Token tk=null;
  Token tk1 = null;
- int n=1;
+ int n=0;
 }
 {/*@bgen(jjtree) QualifiedName */
   try {
@@ -2737,7 +2760,10 @@ void QualifiedName() throws TermWareException:
     jjtc000 = false;
   }
 /*@egen*/
-  { jjtn000.addTerm(createIdentifier(tk.image),0); }/*@bgen(jjtree)*/
+  { jjtn000.addTerm(createIdentifier(tk.image),0); 
+    jjtn000.setAttribute("file",createString(getInFname()));
+    jjtn000.setAttribute("line",createInt(tk.beginLine));
+  }/*@bgen(jjtree)*/
   } finally {
     if (jjtc000) {
       jjtree.closeNodeScope(jjtn000, true);
@@ -2752,21 +2778,20 @@ void UseStatement() throws TermWareException :
  boolean jjtc000 = true;
  jjtree.openNodeScope(jjtn000);
 /*@egen*/
- Token tk=null;
+ Token tk;
 }
 {/*@bgen(jjtree) UseStatement */
  try {
 /*@egen*/
- <USE> QualifiedName() [<AS> tk=<IDENTIFIER> ]/*@bgen(jjtree)*/
+ tk=<USE> UsePairs() EndOfStatement()/*@bgen(jjtree)*/
  {
    jjtree.closeNodeScope(jjtn000, true);
    jjtc000 = false;
  }
 /*@egen*/
  {
-   if (tk!=null) {
-      jjtn000.addTerm(createIdentifier(tk.image),1); 
-   }
+   jjtn000.setAttribute("file",createString(getInFname()));
+   jjtn000.setAttribute("line",createInt(tk.beginLine));
  }/*@bgen(jjtree)*/
  } catch (Throwable jjte000) {
    if (jjtc000) {
@@ -2790,6 +2815,91 @@ void UseStatement() throws TermWareException :
      jjtree.closeNodeScope(jjtn000, true);
    }
  }
+/*@egen*/
+}
+
+void UsePairs() throws TermWareException : 
+{/*@bgen(jjtree) UsePairs */
+  SimpleNode jjtn000 = new SimpleNode(JJTUSEPAIRS);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/
+}
+{/*@bgen(jjtree) UsePairs */
+  try {
+/*@egen*/
+  UsePair() ( "," UsePair() )*/*@bgen(jjtree)*/
+  } catch (Throwable jjte000) {
+    if (jjtc000) {
+      jjtree.clearNodeScope(jjtn000);
+      jjtc000 = false;
+    } else {
+      jjtree.popNode();
+    }
+    if (jjte000 instanceof TermWareException) {
+      throw (TermWareException)jjte000;
+    }
+    if (jjte000 instanceof RuntimeException) {
+      throw (RuntimeException)jjte000;
+    }
+    if (jjte000 instanceof ParseException) {
+      throw (ParseException)jjte000;
+    }
+    throw (Error)jjte000;
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+  }
+/*@egen*/
+}
+
+void UsePair() throws TermWareException : 
+{/*@bgen(jjtree) UsePair */
+ SimpleNode jjtn000 = new SimpleNode(JJTUSEPAIR);
+ boolean jjtc000 = true;
+ jjtree.openNodeScope(jjtn000);
+/*@egen*/
+ Token tk=null;
+}
+{/*@bgen(jjtree) UsePair */
+  try {
+/*@egen*/
+  QualifiedName() [<AS> tk=<IDENTIFIER> ]/*@bgen(jjtree)*/
+  {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtc000 = false;
+  }
+/*@egen*/
+  {
+    if (tk!=null) {
+      jjtn000.addTerm(createIdentifier(tk.image),1);
+    }else{
+      jjtn000.addTerm(createNil(),1);
+    }
+  }/*@bgen(jjtree)*/
+  } catch (Throwable jjte000) {
+    if (jjtc000) {
+      jjtree.clearNodeScope(jjtn000);
+      jjtc000 = false;
+    } else {
+      jjtree.popNode();
+    }
+    if (jjte000 instanceof TermWareException) {
+      throw (TermWareException)jjte000;
+    }
+    if (jjte000 instanceof RuntimeException) {
+      throw (RuntimeException)jjte000;
+    }
+    if (jjte000 instanceof ParseException) {
+      throw (ParseException)jjte000;
+    }
+    throw (Error)jjte000;
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+  }
 /*@egen*/
 }
 

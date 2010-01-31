@@ -4,7 +4,8 @@
   By Satyam (satyam@satyam.com.ar)
 
   This is a partial grammar which I meant to use in a project of mine.
-  I refined it a little bit beyond my specific need, but didn't go to the very end.
+  I refined it a little bit beyond my specific need, but didn't go to the 
+  very end.
   It works for the purpose of my project, but it is not complete.
 
   It was tested by parsing all the source files in the PHP 5.0 test suite,
@@ -174,7 +175,6 @@ public  class PHP {
 
 
     private String inFname_;
-    private int    nLine_;
     private TermWareInstance termWareInstance_;
 
 
@@ -504,9 +504,19 @@ void EmbeddedHtml() throws TermWareException :
          }
 }
 
-void DefineStatement() throws TermWareException  : {}
+void DefineStatement() throws TermWareException  : 
 {
-	<DEFINE> "(" String() "," Expression() ")" EndOfStatement()
+ boolean withcssn = false;
+}
+{
+	<DEFINE> "(" String() "," Expression() 
+                     [ "," Expression() { withcssn = true; } ] 
+                 ")" EndOfStatement()
+        {
+          if (!withcssn) {
+            jjtThis.addTerm(createNil(),2);
+          }
+        }
 }
 
 void LabeledStatements() throws TermWareException  : {}
@@ -529,7 +539,10 @@ void GotoLabeledStatement() throws TermWareException :
 }
 {
      tk=<IDENTIFIER> ":" Statement()
-      { jjtThis.addTerm(createString(tk.image),0); }
+      { jjtThis.addTerm(createString(tk.image),0); 
+        jjtThis.setAttribute("line",createInt(tk.beginLine));
+        jjtThis.setAttribute("file",createString(getInFname()));
+      }
 }
 
 void ExpressionStatement() throws TermWareException  : {}
@@ -877,10 +890,15 @@ void VariableDeclSeq() throws TermWareException :
 void VariableDecl() throws TermWareException :
 {
  Token tk;
+ boolean withExpr=false;
 }
 {
-  <DOLLAR> tk=<VAR_NAME> [ "=" Expression() ] 
-    { jjtThis.addTerm(createIdentifier(tk.image),0); }
+  <DOLLAR> tk=<VAR_NAME> [ "=" Expression() { withExpr=true; } ] 
+    { jjtThis.addTerm(createIdentifier(tk.image),0); 
+      if (!withExpr) {
+        jjtThis.addTerm(createNil(),0); 
+      }
+    }
 }
 
 
@@ -1046,14 +1064,14 @@ void NamespaceStatement() throws TermWareException :
 {
 }
 {
-  <NAMESPACE> QualifiedName()
+  <NAMESPACE> QualifiedName() EndOfStatement()
 }
 
 void QualifiedName() throws TermWareException:
 {
  Token tk=null;
  Token tk1 = null;
- int n=1;
+ int n=0;
 }
 {
   tk=<IDENTIFIER> ("\\" tk1=<IDENTIFIER> 
@@ -1061,20 +1079,44 @@ void QualifiedName() throws TermWareException:
                       ++n;
                     }
                   ) *
-  { jjtThis.addTerm(createIdentifier(tk.image),0); }
+  { jjtThis.addTerm(createIdentifier(tk.image),0); 
+    jjtThis.setAttribute("file",createString(getInFname()));
+    jjtThis.setAttribute("line",createInt(tk.beginLine));
+  }
 }
 
 void UseStatement() throws TermWareException : 
 {
+ Token tk;
+}
+{
+ tk=<USE> UsePairs() EndOfStatement()
+ {
+   jjtThis.setAttribute("file",createString(getInFname()));
+   jjtThis.setAttribute("line",createInt(tk.beginLine));
+ }
+}
+
+void UsePairs() throws TermWareException : 
+{
+}
+{
+  UsePair() ( "," UsePair() )*
+}
+
+void UsePair() throws TermWareException : 
+{
  Token tk=null;
 }
 {
- <USE> QualifiedName() [<AS> tk=<IDENTIFIER> ]
- {
-   if (tk!=null) {
-      jjtThis.addTerm(createIdentifier(tk.image),1); 
-   }
- }
+  QualifiedName() [<AS> tk=<IDENTIFIER> ]
+  {
+    if (tk!=null) {
+      jjtThis.addTerm(createIdentifier(tk.image),1);
+    }else{
+      jjtThis.addTerm(createNil(),1);
+    }
+  }
 }
 
 void DeclareStatement() throws TermWareException : 
