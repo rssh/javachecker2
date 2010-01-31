@@ -1,0 +1,36 @@
+<ivy-module version="1.0">
+ <info organisation="ua.gradsoft" module="phpmodel" />
+ <configurations>
+  <conf name="jar" description="provide javachecker jar" />
+  <conf name="build" description="provide javacjecke with build tools" />
+  <conf name="test" extends="jar" description="java5pp with tests" />
+  <conf name="docs"  description="javadocs for internal API" />
+  <conf name="installation" extends="test,build,docs" 
+                         description="source distribution" />
+ </configurations>
+ <publications>
+    <artifact name="PhpModel" type="jar" conf="jar" />
+    <artifact name="PhpModel-docs" type="zip" conf="docs" />
+    <artifact name="PhpModelBinaryInstaller" type="installation" ext="jar" 
+              conf="installation" />
+ </publications>
+ <dependencies>
+   <!--
+     now installer must be set before building of javachecker
+   <dependency org="izpack" name="installer" rev="3.10.2" 
+               conf="src->default" transitive="false" />
+   -->
+   <dependency org="org.junit" name="junit" rev="[4.4,)" 
+               conf="test->default" />
+   <dependency org="ua.gradsoft" name="termware" rev="[${termware.version},)"
+               conf="*->*" >
+    <artifact name="TermWare" type="jar" />
+   </dependency>
+   <dependency org="ua.gradsoft" name="termwarephp" 
+               rev="[1.0.6,)" >
+    <artifact name="TermWarePhp" type="jar"
+          url="http://datacenter.gradsoft.ua/public.repository/ua.gradsoft/termwarephp/jars/TermWarePhp-1.0.6.jar"
+    />
+   </dependency>
+ </dependencies>
+</ivy-module>
