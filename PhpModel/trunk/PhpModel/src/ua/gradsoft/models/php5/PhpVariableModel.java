@@ -2,6 +2,7 @@
 package ua.gradsoft.models.php5;
 
 import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermWareException;
 
 /**
  *
@@ -30,6 +31,16 @@ public class PhpVariableModel implements PhpElementModel
            return s;
        }
     }
+
+    @Override
+    public Term getTerm(PhpEvalEnvironment pee) throws TermWareException {
+        Term[] body = new Term[2];
+        body[0] = PhpTermUtils.createInt(nDollars);
+        body[1] = PhpTermUtils.createString(identifier);
+        return PhpTermUtils.createContextTerm("Value", body, this);
+    }
+
+
 
     private int    nDollars;
     private String identifier;

@@ -30,10 +30,6 @@ public class PhpBreakStatementModel extends PhpStatementModel
        }
     }
 
-    @Override
-    public void compile(PhpCompileEnvironment env) {
-        /* do nothing */
-    }
 
     @Override
     public void eval(PhpEvalEnvironment env) {

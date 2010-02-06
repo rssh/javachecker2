@@ -146,6 +146,18 @@ public class PhpEvalEnvironment extends PhpCompileEnvironment
     public void setCurrentNamespace(List<String> currentNamespace)
     { this.currentNamespace = currentNamespace; }
 
+    public PhpValueModel evalVariable(String name)
+    {
+        PhpValueModel m = this.getLocals().get(name);
+        if (m==null) {
+            if (!supressWarnings) {
+              warning("use of undefined variable:" + name);
+            }
+            m = new PhpStringModel("");
+            this.getLocals().bind(name, m);
+        }
+        return m;
+    }
 
 
     private EvalState evalState;

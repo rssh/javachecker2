@@ -31,8 +31,10 @@ public class PhpUseStatementModel extends PhpStatementModel
     }
 
     public Term getTerm(PhpEvalEnvironment pee) throws TermWareException {
-        Term[] body = new Term[1];
-        body[]
+        Term[] body = new Term[2];
+        body[0] = PhpTermUtils.createList(importsOrAliases, pee);
+        body[1] = PhpTermUtils.createEndOfStamement();
+        return PhpTermUtils.createContextTerm("UseStatement",body,this);
     }
 
 

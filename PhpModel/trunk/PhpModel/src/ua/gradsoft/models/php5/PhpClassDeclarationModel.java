@@ -37,15 +37,8 @@ public class PhpClassDeclarationModel extends PhpStatementModel
     { return name; }
 
     @Override
-    public void compile(PhpCompileEnvironment env) {
-        env.addClassDeclarationModel(this);
-    }
-
-
-
-    @Override
     public void eval(PhpEvalEnvironment env) {
-        /* do nothing - work of class declaration is not evaluation */
+        env.addClassDeclarationModel(this);
     }
 
     private void addMember(Term md, PhpCompileEnvironment pce) throws TermWareException

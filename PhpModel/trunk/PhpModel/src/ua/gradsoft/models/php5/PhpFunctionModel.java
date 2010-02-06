@@ -22,7 +22,13 @@ public class PhpFunctionModel extends PhpStatementModel implements PhpCallableMo
     {
       if (t.getName().equals("MemberFuctionDeclaration")) {
           // t.getSubtermAt(0) - actually we have no attributes.
-          returnByReference = (!t.getSubtermAt(1).isNil());
+          if (t.getSubtermAt(0).isNil()) {
+             returnByReference = false;
+          } else if (t.getSubtermAt(1).isBoolean()) {
+              returnByReference = t.getSubtermAt(1).getBoolean();
+          } else if (t.getSubtermAt(1).isAtom()) {
+              returnByReference = true;
+          }
           Term identifier = t.getSubtermAt(2);
           name = identifier.getSubtermAt(0).getString();
           parameters = PhpCallableModelHelper.parseSParametersList(t.getSubtermAt(3), pce);
@@ -31,6 +37,25 @@ public class PhpFunctionModel extends PhpStatementModel implements PhpCallableMo
           throw new AssertException("MemberFunctionDeclaration exprected, have:"+TermHelper.termToString(t));
       }
     }
+
+    @Override
+    public void eval(PhpEvalEnvironment env) {
+        env.getFunctions().put(name, this);
+    }
+
+    public Term getTerm(PhpEvalEnvironment pee) throws TermWareException {
+        Term[] body = new Term[5];
+        body[0] = PhpTermUtils.getTermFactory().createTerm("SMemberFunctionAttributes",
+                                                           PhpTermUtils.createNil()
+                                                          );
+        body[1] = PhpTermUtils.createBoolean(returnByReference);
+        body[2] = PhpTermUtils.createIdentifier(name);
+        Term parmList = PhpTermUtils.createList(getParameters(), pee);
+        body[3] = PhpTermUtils.getTermFactory().createTerm("SParameterList",parmList);
+        body[4] = statement.getTerm(pee);
+        return PhpTermUtils.createContextTerm("MemberFunctionDeclaration", body, this);
+    }
+
 
 
     public String getName() {

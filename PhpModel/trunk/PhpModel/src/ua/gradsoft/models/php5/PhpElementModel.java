@@ -12,8 +12,5 @@ public interface PhpElementModel {
 
     public Term getTerm(PhpEvalEnvironment pee) throws TermWareException;
 
-    public int  getLine();
-
-    public String getFile();
-
+ 
 }
