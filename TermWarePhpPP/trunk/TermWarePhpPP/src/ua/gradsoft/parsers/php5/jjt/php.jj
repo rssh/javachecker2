@@ -1010,17 +1010,29 @@ void ExpressionStatement() throws TermWareException  : {/*@bgen(jjtree) Expressi
 /*@egen*/
 }
 
-void CompoundStatement() throws TermWareException  : {/*@bgen(jjtree) CompoundStatement */
-  SimpleNode jjtn000 = new SimpleNode(JJTCOMPOUNDSTATEMENT);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/}
+void CompoundStatement() throws TermWareException  : 
+{/*@bgen(jjtree) CompoundStatement */
+ SimpleNode jjtn000 = new SimpleNode(JJTCOMPOUNDSTATEMENT);
+ boolean jjtc000 = true;
+ jjtree.openNodeScope(jjtn000);
+/*@egen*/
+ Token tk=null;
+}
 {/*@bgen(jjtree) CompoundStatement */
         try {
 /*@egen*/
-	"{"
+	tk="{"
 	    ( Statement())*
 	"}"/*@bgen(jjtree)*/
+      {
+        jjtree.closeNodeScope(jjtn000, true);
+        jjtc000 = false;
+      }
+/*@egen*/
+      {
+        jjtn000.setAttribute("line",createInt(tk.beginLine));
+        jjtn000.setAttribute("file",createString(getInFname()));
+      }/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -1326,14 +1338,25 @@ void IterationStatement() throws TermWareException  : {/*@bgen(jjtree) Iteration
 
 void WhileStatement() throws TermWareException  : 
 {/*@bgen(jjtree) WhileStatement */
-  SimpleNode jjtn000 = new SimpleNode(JJTWHILESTATEMENT);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/}
+ SimpleNode jjtn000 = new SimpleNode(JJTWHILESTATEMENT);
+ boolean jjtc000 = true;
+ jjtree.openNodeScope(jjtn000);
+/*@egen*/
+ Token tk=null;
+}
 {/*@bgen(jjtree) WhileStatement */
   try {
 /*@egen*/
-  <WHILE> "(" Expression() ")" Statement()/*@bgen(jjtree)*/
+  tk=<WHILE> "(" Expression() ")" Statement()/*@bgen(jjtree)*/
+  {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtc000 = false;
+  }
+/*@egen*/ 
+  { 
+    jjtn000.setAttribute("line",createInt(tk.beginLine));
+    jjtn000.setAttribute("file",createString(getInFname()));
+  }/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -1356,19 +1379,30 @@ void WhileStatement() throws TermWareException  :
       jjtree.closeNodeScope(jjtn000, true);
     }
   }
-/*@egen*/ 
+/*@egen*/
 }
 
 void DoStatement() throws TermWareException  : 
 {/*@bgen(jjtree) DoStatement */
-  SimpleNode jjtn000 = new SimpleNode(JJTDOSTATEMENT);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/}
+ SimpleNode jjtn000 = new SimpleNode(JJTDOSTATEMENT);
+ boolean jjtc000 = true;
+ jjtree.openNodeScope(jjtn000);
+/*@egen*/
+ Token tk=null;
+}
 {/*@bgen(jjtree) DoStatement */
  try {
 /*@egen*/
  <DO> Statement() <WHILE> "(" Expression() ")" EndOfStatement()/*@bgen(jjtree)*/
+  {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtc000 = false;
+  }
+/*@egen*/ 
+  { 
+    jjtn000.setAttribute("line",createInt(tk.beginLine));
+    jjtn000.setAttribute("file",createString(getInFname()));
+  }/*@bgen(jjtree)*/
  } catch (Throwable jjte000) {
    if (jjtc000) {
      jjtree.clearNodeScope(jjtn000);
@@ -1391,7 +1425,7 @@ void DoStatement() throws TermWareException  :
      jjtree.closeNodeScope(jjtn000, true);
    }
  }
-/*@egen*/ 
+/*@egen*/
 }
 
 void ForStatement() throws TermWareException  : 
@@ -2905,15 +2939,25 @@ void UsePair() throws TermWareException :
 
 void DeclareStatement() throws TermWareException : 
 {/*@bgen(jjtree) DeclareStatement */
-  SimpleNode jjtn000 = new SimpleNode(JJTDECLARESTATEMENT);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
+ SimpleNode jjtn000 = new SimpleNode(JJTDECLARESTATEMENT);
+ boolean jjtc000 = true;
+ jjtree.openNodeScope(jjtn000);
 /*@egen*/
+ Token tk=null;
 }
 {/*@bgen(jjtree) DeclareStatement */
   try {
 /*@egen*/
-  <DECLARE> "(" AssignmentExpression()  ")" Statement()/*@bgen(jjtree)*/
+  tk=<DECLARE> "(" AssignmentExpression()  ")" Statement()/*@bgen(jjtree)*/
+  {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtc000 = false;
+  }
+/*@egen*/
+  {
+   jjtn000.setAttribute("file",createString(getInFname()));
+   jjtn000.setAttribute("line",createInt(tk.beginLine));
+  }/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);

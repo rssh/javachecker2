@@ -550,11 +550,18 @@ void ExpressionStatement() throws TermWareException  : {}
 	Expression() EndOfStatement()
 }
 
-void CompoundStatement() throws TermWareException  : {}
+void CompoundStatement() throws TermWareException  : 
 {
-	"{"
+ Token tk=null;
+}
+{
+	tk="{"
 	    ( Statement())*
 	"}"
+      {
+        jjtThis.setAttribute("line",createInt(tk.beginLine));
+        jjtThis.setAttribute("file",createString(getInFname()));
+      }
 }
 
 void SelectionStatement() throws TermWareException  : 
@@ -628,15 +635,27 @@ void IterationStatement() throws TermWareException  : {}
 }
 
 void WhileStatement() throws TermWareException  : 
-{}
 {
-  <WHILE> "(" Expression() ")" Statement() 
+ Token tk=null;
+}
+{
+  tk=<WHILE> "(" Expression() ")" Statement() 
+  { 
+    jjtThis.setAttribute("line",createInt(tk.beginLine));
+    jjtThis.setAttribute("file",createString(getInFname()));
+  }
 }
 
 void DoStatement() throws TermWareException  : 
-{}
+{
+ Token tk=null;
+}
 {
  <DO> Statement() <WHILE> "(" Expression() ")" EndOfStatement() 
+  { 
+    jjtThis.setAttribute("line",createInt(tk.beginLine));
+    jjtThis.setAttribute("file",createString(getInFname()));
+  }
 }
 
 void ForStatement() throws TermWareException  : 
@@ -1121,9 +1140,14 @@ void UsePair() throws TermWareException :
 
 void DeclareStatement() throws TermWareException : 
 {
+ Token tk=null;
 }
 {
-  <DECLARE> "(" AssignmentExpression()  ")" Statement()
+  tk=<DECLARE> "(" AssignmentExpression()  ")" Statement()
+  {
+   jjtThis.setAttribute("file",createString(getInFname()));
+   jjtThis.setAttribute("line",createInt(tk.beginLine));
+  }
 }
 
 
