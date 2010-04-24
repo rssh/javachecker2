@@ -24,8 +24,8 @@ public class PhpFlatVarContext {
         PhpValueModel v = map.get(name);
         if (v==null) {
             map.put(name, model);
-        } else if (v instanceof PhpReferenceModel) {
-            PhpReferenceModel rv = (PhpReferenceModel)v;
+        } else if (v instanceof PhpPrimitiveReferenceModel) {
+            PhpPrimitiveReferenceModel rv = (PhpPrimitiveReferenceModel)v;
             rv.set(model);
         } else {
             // overwrite

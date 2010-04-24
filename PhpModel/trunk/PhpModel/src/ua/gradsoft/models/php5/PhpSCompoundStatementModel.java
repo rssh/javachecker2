@@ -30,13 +30,6 @@ public class PhpSCompoundStatementModel extends PhpStatementModel
 
 
     @Override
-    public void compile(PhpCompileEnvironment env) {
-        for(PhpStatementModel st:statements) {
-            st.compile(env);
-        }
-    }
-
-    @Override
     public void eval(PhpEvalEnvironment env) {
         for(PhpStatementModel st:statements) {
             st.eval(env);
@@ -45,6 +38,14 @@ public class PhpSCompoundStatementModel extends PhpStatementModel
             }
         }
     }
+
+    public Term getTerm(PhpEvalEnvironment pee) throws TermWareException {
+        Term stlist = PhpTermUtils.createList(statements, pee);
+        Term[] body = new Term[1];
+        body[1] = stlist;
+        return PhpTermUtils.createContextTerm("SCompoundStatement", body, this);
+    }
+
 
 
     //private Term t;

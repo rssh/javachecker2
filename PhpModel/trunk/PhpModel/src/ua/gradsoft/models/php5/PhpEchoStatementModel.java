@@ -45,9 +45,6 @@ public class PhpEchoStatementModel extends PhpStatementModel
        }
     }
 
-    @Override
-    public void compile(PhpCompileEnvironment env) {
-    }
 
     @Override
     public void eval(PhpEvalEnvironment env) {
@@ -72,8 +69,8 @@ public class PhpEchoStatementModel extends PhpStatementModel
     public Term getTerm(PhpEvalEnvironment pee) throws TermWareException {
         Term[] body=new Term[3];
         body[0] = PhpTermUtils.createAtom((kind==Kind.ECHO) ? "echo" : "print");
-        body[1] = PhpTermUtils.createList(expressions);
-        body[2] = PhpTermUtils.createEndOfExpression();
+        body[1] = PhpTermUtils.createList(expressions, pee);
+        body[2] = PhpTermUtils.createEndOfStatement();
         Term retval = PhpTermUtils.getTermFactory().createTerm("EchoStatement",body);
         retval = TermHelper.setAttribute(retval, "ctx", PhpTermUtils.createJTerm(this));
         return retval;

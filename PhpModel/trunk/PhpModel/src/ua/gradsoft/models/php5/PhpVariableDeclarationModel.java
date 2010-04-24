@@ -34,7 +34,21 @@ public class PhpVariableDeclarationModel implements PhpElementModel
     public PhpExpressionModel getInitExpression()
     { return initExpression; }
 
+    public PhpMemberVariableAttributesModel getAttributes() {
+        return attributes;
+    }
 
+    public PhpVisibility getVisibility()
+    {
+        return attributes.getVisibility();
+    }
+
+
+
+
+
+    private PhpMemberVariableAttributesModel attributes;
     private String name;
     private PhpExpressionModel initExpression;
+
 }

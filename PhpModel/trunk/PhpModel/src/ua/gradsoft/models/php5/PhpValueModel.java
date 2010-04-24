@@ -15,6 +15,7 @@ public interface PhpValueModel extends PhpExpressionModel
  public PhpValueModel   copyByValue(PhpEvalEnvironment pee);
  public PhpValueModel   copyByReference(PhpEvalEnvironment pee);
 
+
  //public Object   getAsJavaObject();
 
 }

@@ -12,7 +12,8 @@ import ua.gradsoft.termware.TermWareException;
 public class PhpDefineStatementModel extends PhpStatementModel
 {
 
-    public PhpDefineStatementModel(Term t, PhpCompileEnvironment pce) {
+    public PhpDefineStatementModel(Term t, PhpCompileEnvironment pce) throws TermWareException
+    {
         name=t.getSubtermAt(0).getSubtermAt(0).getString();
         expression=PhpExpressionModelHelper.create(t.getSubtermAt(1), pce);
         if (t.getSubtermAt(2).isNil()) {

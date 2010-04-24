@@ -140,11 +140,6 @@ public class PhpEvalEnvironment extends PhpCompileEnvironment
         this.currentClassDeclaration = currentClassDeclaration;
     }
 
-    public List<String> getCurrentNamespace()
-    { return currentNamespace; }
-
-    public void setCurrentNamespace(List<String> currentNamespace)
-    { this.currentNamespace = currentNamespace; }
 
     public PhpValueModel evalVariable(String name)
     {
@@ -159,6 +154,20 @@ public class PhpEvalEnvironment extends PhpCompileEnvironment
         return m;
     }
 
+    public void setTick(int tick)
+    {
+      tick_=tick;
+    }
+
+    public void unsetTick()
+    {
+      tick_=0;
+    }
+
+    public int getTick()
+    {
+      return tick_;
+    }
 
     private EvalState evalState;
     private int       breakOrContinueDepth;
@@ -178,8 +187,10 @@ public class PhpEvalEnvironment extends PhpCompileEnvironment
 
     private Set<String>  includedInRequest;
     private boolean      supressWarnings;
-    private List<String> currentNamespace=Collections.emptyList();
+   
 
+    private int tick_;
+    private PhpFunctionModel tickHandler_;
 
     private PhpIOEnv     io;
 

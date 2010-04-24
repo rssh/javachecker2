@@ -42,6 +42,19 @@ public class PhpConstantDeclarationModel extends PhpStatementModel
 
     }
 
+    public Term getTerm(PhpEvalEnvironment pee) throws TermWareException {
+       Term[] body = new Term[4];
+       body[0] = PhpTermUtils.createTerm("cons",
+                     PhpTermUtils.createAtom(visibility.name()),
+                     PhpTermUtils.createNil()
+                 );
+       body[1] = PhpTermUtils.createIdentifier(getName());
+       body[2] = expression.getTerm(pee);
+       body[3] = PhpTermUtils.createEndOfStatement();
+       return PhpTermUtils.createContextTerm("ConstantDeclaration", body, this);
+    }
+
+
 
 
     public String getName()

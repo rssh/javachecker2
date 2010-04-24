@@ -17,7 +17,7 @@ public class PhpParameterModel implements PhpElementModel
      * @param t  - must be 'Parameter' term
      * @param pce - compile environment
      */
-    public PhpParameterModel(Term t, PhpCompileEnvironment pce)
+    public PhpParameterModel(Term t, PhpCompileEnvironment pce) throws TermWareException
     {
        if (t.getSubtermAt(0).isNil()) {
            typeHint=null;

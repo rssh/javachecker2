@@ -43,7 +43,11 @@ public class PhpObjectModel implements PhpValueModel
     public PhpArrayModel getArray(PhpEvalEnvironment pee) {
         PhpArrayModel retval = new PhpArrayModel(pee);
         for(Map.Entry<String,PhpValueModel> e: memberVariables.entrySet()) {
-            switch(phpClass.getVisibility(e.getKey())) {
+            PhpVariableDeclarationModel v = phpClass.getMemberVariables().get(e.getKey());
+            if (v==null) {
+                retval.put(new PhpStringModel(e.getKey()),e.getValue());
+            }else{
+              switch(v.getVisibility()) {
                 case PUBLIC:
                     retval.put(new PhpStringModel(e.getKey()),e.getValue());
                     break;
@@ -54,7 +58,8 @@ public class PhpObjectModel implements PhpValueModel
                     retval.put(new PhpStringModel(phpClass.getName()+e.getKey()),e.getValue());
                     break;
                 default:
-                    throw new PhpEvalException("Unkniewn visibility:"+phpClass.getVisibility(e.getKey()));
+                    throw new PhpEvalException("Unkniewn visibility:"+v.getVisibility());
+              }
             }
         }
         return retval;
@@ -66,7 +71,7 @@ public class PhpObjectModel implements PhpValueModel
         if (method==null) {
           return "Object";
         } else {
-          return method.eval(pee, Collections.singletonList(this));
+          return method.eval(pee, this, Collections.<PhpValueModel>emptyList()).getString(pee);
         }
     }
 
@@ -77,9 +82,17 @@ public class PhpObjectModel implements PhpValueModel
     public Term getTerm(PhpEvalEnvironment e) throws TermWareException {
         TermFactory tf = TermWare.getInstance().getTermFactory();
         Term args = tf.createTerm("SArgumentExpressionList",
-                      tf.createConsTerm(getArray().getTerm(), tf.createNil())
+                     tf.createConsTerm(
+                      tf.createString(phpClass.getName()),
+                      tf.createConsTerm(getArray(e).getTerm(e), tf.createNil())
+                     )
                                  );
-
+        Term fun = PhpTermUtils.createIdentifier("___createObject");
+        Term[] body = new Term[2];
+        body[0] = fun;
+        body[1] = args;
+        Term retval = PhpTermUtils.createContextTerm("MethodCall", body, this);
+        return retval;
     }
 
 
@@ -101,8 +114,6 @@ public class PhpObjectModel implements PhpValueModel
         return new PhpObjectModel(phpClass,newMemberVariables);
     }
 
-
-
     public PhpClassDeclarationModel getClassDeclaration()
     {
       return phpClass;
@@ -111,6 +122,23 @@ public class PhpObjectModel implements PhpValueModel
 
     public Map<String,PhpValueModel> getMemberVariables()
     { return memberVariables; }
+
+    public PhpReferenceModel getReferenceModel(PhpEvalEnvironment php) {
+        return new PhpDefaultReferenceModel(this);
+    }
+
+    public boolean isReference(PhpEvalEnvironment php) {
+        return false;
+    }
+
+    public String getIdentifierName() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    public boolean isIdentifier() {
+        return false;
+    }
+
 
 
 

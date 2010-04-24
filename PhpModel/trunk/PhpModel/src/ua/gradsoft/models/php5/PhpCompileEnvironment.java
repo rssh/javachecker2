@@ -1,7 +1,9 @@
 
 package ua.gradsoft.models.php5;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,9 +33,17 @@ public class PhpCompileEnvironment
     interfaceModels_.put(model.getName(), model);
   }
 
+  public List<String> getCurrentNamespace()
+    { return currentNamespace; }
 
-  private Map<String,PhpClassDeclarationModel> classModels_=new HashMap<String,PhpClassDeclarationModel>();
-  private Map<String,PhpInterfaceDeclarationModel> interfaceModels_=new HashMap<String,PhpInterfaceDeclarationModel>();
+  public void setCurrentNamespace(List<String> currentNamespace)
+    { this.currentNamespace = currentNamespace; }
+  
+
+  protected Map<String,PhpClassDeclarationModel> classModels_=new HashMap<String,PhpClassDeclarationModel>();
+  protected Map<String,PhpInterfaceDeclarationModel> interfaceModels_=new HashMap<String,PhpInterfaceDeclarationModel>();
+  protected List<String> currentNamespace=Collections.emptyList();
+
 
 
 }

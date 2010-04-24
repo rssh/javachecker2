@@ -87,14 +87,14 @@ public class PhpValueHelper {
                       
                       int c=x.getArray(pee).size() - y.getArray(pee).size();
                       if (c!=0) return c;
-                      for(Map.Entry<PhpValueModel,PhpEntityModel> e: x.getArray(pee).getMap().entrySet()) {
+                      for(Map.Entry<PhpValueModel,PhpValueModel> e: x.getArray(pee).getMap().entrySet()) {
                           PhpValueModel key = e.getKey();
-                          PhpEntityModel yv = y.getArray(pee).getMap().get(key);
+                          PhpValueModel yv = y.getArray(pee).getMap().get(key);
                           if (yv==null) {
                               return 1;
                               //throw new NotComparableException();
                           }
-                          c = PhpValueHelper.looseComparison(e.getValue().getValue(), yv.getValue(), pee);
+                          c = PhpValueHelper.looseComparison(e.getValue(), yv, pee);
                           if (c!=0) return c;
                       }
                       return 0;

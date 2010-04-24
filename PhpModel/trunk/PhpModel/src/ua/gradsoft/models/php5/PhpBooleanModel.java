@@ -39,28 +39,38 @@ public class PhpBooleanModel extends PhpPrimitiveValueModel
 
 
     public Term getTerm(PhpEvalEnvironment pee) throws TermWareException {
-        return TermWare.getInstance().getTermFactory().createBoolean(value);
+        return createConstantTerm(
+                  TermWare.getInstance().getTermFactory().createBoolean(value)
+                );
     }
 
-    public PhpValueModel copyByReference(PhpEvalEnvironment pee) {
-        if (isConstant) {
-            throw new PhpEvalException("Can't get constant by reference");
-        } else {
-            return new PhpDefaultReferenceModel(this);
-        }
+    public PhpReferenceModel getReferenceModel(PhpEvalEnvironment php) {
+        return new PhpDefaultReferenceModel(this);
     }
 
-    public PhpValueModel copyByValue(PhpEvalEnvironment pee) {
-        // we are immutable
-        return this;
+    public boolean isReference(PhpEvalEnvironment php) {
+        return false;
+    }
+
+    public String getIdentifierName() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    public boolean isIdentifier() {
+        return false;
     }
 
 
+
+    public static PhpBooleanModel create(boolean v)
+    {
+      return v ? TRUE : FALSE;
+    }
 
 
     public static final PhpBooleanModel TRUE = new PhpBooleanModel(true, true);
     public static final PhpBooleanModel FALSE = new PhpBooleanModel(false, true);
 
     private boolean value;
-    private boolean isConstant;
+    
 }

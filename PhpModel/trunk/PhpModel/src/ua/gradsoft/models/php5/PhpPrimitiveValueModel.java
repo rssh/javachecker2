@@ -3,6 +3,8 @@ package ua.gradsoft.models.php5;
 
 import java.util.Map;
 import java.util.TreeMap;
+import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermWareException;
 
 /**
  *
@@ -29,7 +31,26 @@ public abstract class PhpPrimitiveValueModel implements PhpValueModel
         return this;
     }
 
+    public PhpValueModel copyByReference(PhpEvalEnvironment pee) {
+        if (isConstant) {
+            throw new PhpEvalException("Can't get constant by reference");
+        } else {
+            return new PhpDefaultReferenceModel(this);
+        }
+    }
 
+    public PhpValueModel copyByValue(PhpEvalEnvironment pee) {
+        // we are immutable
+        return this;
+    }
 
+    protected Term createConstantTerm(Term v) throws TermWareException
+    {
+        Term[] body = new Term[1];
+        body[0] = v;
+        return PhpTermUtils.createContextTerm("Constant", body, this);
+    }
+
+    protected boolean isConstant = false;
 
 }

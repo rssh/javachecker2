@@ -22,10 +22,7 @@ public class PhpDoStatementModel extends PhpStatementModel
        expression=PhpExpressionModelHelper.create(t.getSubtermAt(1), pce);
     }
 
-    @Override
-    public void compile(PhpCompileEnvironment env) {
-        statement.compile(env);
-    }
+ 
 
     @Override
     public void eval(PhpEvalEnvironment env) {
@@ -70,10 +67,8 @@ public class PhpDoStatementModel extends PhpStatementModel
         Term[] body = new Term[3];
         body[0]=statement.getTerm(pee);
         body[1]=expression.getTerm(pee);
-        body[2]=PhpTermHelper.createEndOfStatement();
-        Term retval = PhpTermHelper.create("DoStatement",body);
-        retval=TermHelper.setAttribute(retval, "ctx", PhpTermHelper.createJTerm(this));
-        return retval;
+        body[2]=PhpTermUtils.createEndOfStatement();
+        return PhpTermUtils.createContextTerm("DoStatement", body, this);
     }
 
 

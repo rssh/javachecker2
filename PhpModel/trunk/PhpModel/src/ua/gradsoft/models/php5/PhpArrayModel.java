@@ -102,6 +102,23 @@ public class PhpArrayModel implements PhpValueModel
     public void put(PhpValueModel key, PhpValueModel value)
     { map.put(key, value); }
 
+    public PhpReferenceModel getReferenceModel(PhpEvalEnvironment php) {
+        return new PhpDefaultReferenceModel(this);
+    }
+
+    public boolean isReference(PhpEvalEnvironment php) {
+        return false;
+    }
+
+    public String getIdentifierName() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    public boolean isIdentifier() {
+        return false;
+    }
+
+
 
 
     private Map<PhpValueModel,PhpValueModel> map;

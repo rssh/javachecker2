@@ -30,10 +30,6 @@ public class PhpContinueStatementModel extends PhpStatementModel
        }
     }
 
-    @Override
-    public void compile(PhpCompileEnvironment env) {
-        /* do nothing */
-    }
 
     @Override
     public void eval(PhpEvalEnvironment env) {
