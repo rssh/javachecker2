@@ -1,7 +1,7 @@
 /*
  * JavaTermConstructorModel.java
  *
- * Copyright (c) 2004-2007 GradSoft  Ukraine
+ * Copyright (c) 2004-2010 GradSoft  Ukraine
  * All Rights Reserved
  */
 package ua.gradsoft.javachecker.models;

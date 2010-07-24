@@ -52,8 +52,8 @@ public class Checkers {
         } catch (TermWareException ex){
             throw new ConfigException("Can't load buildin checkers",ex);
         }
-
-        loadCheckersAndStatisticsFromFiles();
+        //if (!Main.isInEmbeddedMode()) {
+          loadCheckersAndStatisticsFromFiles();
         //}
     }
 
@@ -71,10 +71,13 @@ public class Checkers {
         };
         String[] fnames = dir.list(nameFilter);
         if (fnames==null) {
-            throw new ConfigException("checkers are not found in dir "+dir.getName());
-        }
-        for(String fname: fnames) {
+            if (!Main.isInEmbeddedMode()) {
+               throw new ConfigException("checkers are not found in dir "+dir.getName());
+            }
+        } else {
+          for(String fname: fnames) {
             loadCheckersAndStatisticsFromFile(dirfname+fname);
+          }
         }
     }
 

@@ -229,7 +229,8 @@ public class JavaTypeModelAttributes {
       AttributesData childsChilds = childs.getOrCreateChild(childChildName);
       return childsChilds;      
     }
-    
+
+    @Override
     protected void finalize() {
         if (!owner_.isNested()) {
             if (!Main.isInShutdown()) {
@@ -242,6 +243,11 @@ public class JavaTypeModelAttributes {
                 }
             }
         }
+        try {
+          super.finalize();
+        }catch(Throwable ex) {
+            LOG.log(Level.WARNING,"exception during attributes finalizing",ex);
+        }
     }
     
     
@@ -250,14 +256,15 @@ public class JavaTypeModelAttributes {
         return data_!=null;
     }
     
-    private synchronized void load() throws TermWareException {
+    private void load() throws TermWareException {
         if (!isLoaded()) {
             if (owner_.isNested()) {             
                 data_=owner_.getEnclosedType().getAttributesData().getOrCreateChild(owner_.getName());
             }else{
                 String fullLoadName = createAttributesFileName();
-                File f = new File(fullLoadName);
-                if (f.exists()) {
+                synchronized(fullLoadName.intern()) {
+                  File f = new File(fullLoadName);
+                  if (f.exists()) {
                     ObjectInputStream oi = null;
                     try {
                         oi=new ObjectInputStream(new BufferedInputStream(new FileInputStream(f)));
@@ -288,6 +295,7 @@ public class JavaTypeModelAttributes {
                             throw new AssertException("Type of object in "+fullLoadName+" is not JavaTypeModelAttributesData");
                         }
                     }
+                  }
                 }
             }
         }
@@ -310,7 +318,7 @@ public class JavaTypeModelAttributes {
         }
     }
     
-    private synchronized void save() throws TermWareException {
+    private void save() throws TermWareException {
         if (isLoaded()) {          
             
             if (data_.isEmpty()) {
@@ -318,26 +326,28 @@ public class JavaTypeModelAttributes {
             }
             
             String fullLoadName = createAttributesFileName();
-            File f = new File(fullLoadName);
+
+            synchronized(fullLoadName.intern()) {
+              File f = new File(fullLoadName);
                         
-            if (!f.exists()) {
+              if (!f.exists()) {
                 try {                    
                     f.createNewFile();
                 }catch(IOException ex){
                     throw new AssertException("Can't create file "+f.getAbsolutePath(),ex);
                 }
                 f.deleteOnExit();
-            }
+              }
             
-            ObjectOutputStream oo=null;
-            try {
+              ObjectOutputStream oo=null;
+              try {
                 oo=new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(f)));
                 oo.writeObject(data_);
-            }catch(FileNotFoundException ex){
+              }catch(FileNotFoundException ex){
                 throw new AssertException("Can't open file "+f.getAbsolutePath()+" for writing",ex);
-            }catch(IOException ex){
+              }catch(IOException ex){
                 throw new AssertException("Can't output object to file "+f.getAbsolutePath(),ex);
-            }finally{
+              }finally{
                 if (oo!=null) {
                     try {
                         oo.close();
@@ -345,6 +355,7 @@ public class JavaTypeModelAttributes {
                         LOG.log(Level.WARNING,"exception diring closing just-writed swp file",ex);
                     }
                 }
+              }
             }
         }
     }
