@@ -1,7 +1,7 @@
 /*
  * LoadingTest.java
  *
- * Copyright (c) 2006-2009 GradSoft  Ukraine
+ * Copyright (c) 2006-2010 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -11,17 +11,25 @@ package ua.gradsoft.javachecker;
 import java.util.List;
 import java.util.Map;
 import junit.framework.TestCase;
+import ua.gradsoft.javachecker.models.JavaExpressionKind;
+import ua.gradsoft.javachecker.models.JavaExpressionModel;
 import ua.gradsoft.javachecker.models.JavaFormalParameterModel;
 import ua.gradsoft.javachecker.models.JavaMemberVariableModel;
 import ua.gradsoft.javachecker.models.JavaMethodModel;
 import ua.gradsoft.javachecker.models.JavaPackageModel;
 import ua.gradsoft.javachecker.models.JavaResolver;
+import ua.gradsoft.javachecker.models.JavaStatementKind;
+import ua.gradsoft.javachecker.models.JavaStatementModel;
 import ua.gradsoft.javachecker.models.JavaTypeArgumentBoundTypeModel;
 import ua.gradsoft.javachecker.models.JavaTypeModel;
 import ua.gradsoft.javachecker.models.JavaTypeVariableAbstractModel;
 import ua.gradsoft.javachecker.models.JavaVariableModel;
 import ua.gradsoft.javachecker.models.TermUtils;
+import ua.gradsoft.javachecker.models.expressions.JavaTermFunctionCallExpressionModel;
+import ua.gradsoft.javachecker.models.expressions.JavaTermMethodCallExpressionModel;
 import ua.gradsoft.termware.Term;
+import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *How sources are loading.
@@ -218,6 +226,56 @@ public class LoadingTest extends TestCase
           assertTrue(yModel!=null);
         
     }
-    
+
+    public void testLoadingResolv2() throws Exception
+    {
+        JavaCheckerFacade.init();
+        JavaCheckerFacade.addInputDirectory("testpackages/resolv2",true);
+
+        JavaTypeModel xModel = JavaResolver.resolveTypeModelFromPackage("X","x");
+        Term mt = xModel.getModelTerm();
+       // List<JavaMethodModel> mainMethods = xModel.getMethodModels().get("main");
+       // assertTrue(mainMethods.size()==1);
+       // JavaMethodModel mainModel = mainMethods.get(0);
+       // List<JavaStatementModel> sts = mainModel.getTopLevelBlockModel().getStatements();
+       // for(JavaStatementModel st: sts) {
+            //if (st.getKind()==JavaStatementKind.STATEMENT_EXPRESSION_STATEMENT) {
+       //         List<JavaExpressionModel> exprs = st.getExpressions();
+       //         for(JavaExpressionModel expr: exprs) {
+       //           retrieveMethodModels(expr);
+       //         }
+            //}else{
+            //    System.err.println("kind is "+st.getKind());
+            //}
+       // }
+
+    }
+
+    private void retrieveMethodModels(JavaExpressionModel expr) throws TermWareException, EntityNotFoundException {
+        if (expr.getKind()==JavaExpressionKind.METHOD_CALL) {
+            if (expr instanceof JavaTermMethodCallExpressionModel) {
+                JavaTermMethodCallExpressionModel mc = (JavaTermMethodCallExpressionModel)expr;
+                JavaMethodModel m = mc.getMethodModel();
+                JavaTypeModel rt = m.getResultType();
+                System.err.println("m is "+m.getName()+ ", rt is "+rt.getName());
+            }else{
+                throw new AssertException("Method call is implemented by expression "+expr.getClass().getName());
+            }
+        }else if (expr.getKind()==JavaExpressionKind.FUNCTION_CALL) {
+            if (expr instanceof JavaTermFunctionCallExpressionModel) {
+                JavaTermFunctionCallExpressionModel mc = (JavaTermFunctionCallExpressionModel)expr;
+                JavaMethodModel m = mc.getMethodModel();
+                JavaTypeModel rt = m.getResultType();
+            //    System.err.println("m is "+m.getName()+ ", rt is "+rt.getName());
+            }else{
+                throw new AssertException("Function call is implemented by expression "+expr.getClass().getName());
+            }
+        }else{
+           // System.err.println("kind is "+expr.getKind());
+            for(JavaExpressionModel e: expr.getSubExpressions()) {
+                retrieveMethodModels(e);
+            }
+        }
+    }
     
 }

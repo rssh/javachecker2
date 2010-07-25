@@ -3,8 +3,6 @@
  *
  * Created on May 3, 2007, 2:56 PM
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package ua.gradsoft.javachecker.models;

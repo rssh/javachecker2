@@ -2,7 +2,7 @@
  * VarResolvingTest.java
  *
  *
- * Copyright (c) 2006 GradSoft  Ukraine
+ * Copyright (c) 2006-2010 GradSoft  Ukraine
  * All Rights Reserved
  */
 

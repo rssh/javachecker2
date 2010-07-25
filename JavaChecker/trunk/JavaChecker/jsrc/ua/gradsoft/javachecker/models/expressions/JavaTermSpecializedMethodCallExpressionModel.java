@@ -69,6 +69,14 @@ public final class JavaTermSpecializedMethodCallExpressionModel extends JavaTerm
             if (foundIndex!=-1) {
                 tm = getTypeArguments().get(i);
             }
+        }else  {
+           JavaTypeArgumentsSubstitution s = new JavaTypeArgumentsSubstitution();
+           List<JavaTypeVariableAbstractModel> typeVariables = methodModel.getTypeParameters();
+           List<JavaTypeModel> resolvedTypeParameters = getTypeArguments();
+           for(int i=0; i<resolvedTypeParameters.size(); ++i) {
+             s.put(typeVariables.get(i), resolvedTypeParameters.get(i));
+           }
+           tm = s.substitute(tm);
         }
         return tm;
     }

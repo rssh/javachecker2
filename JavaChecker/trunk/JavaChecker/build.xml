@@ -102,6 +102,7 @@
                  <!--<include name="ua/**/x1Test.java"/>-->
                  <!--<include name="ua/**/ExternalTest.java"/>-->
                  <!--<include name="ua/**/CloseableTrackingTest.java"/> -->
+                 <!--<include name="ua/**/LoadingTest.java"/> -->
              </fileset>
          </batchtest>
      </junit>
