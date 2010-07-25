@@ -248,7 +248,7 @@ public final class ValuesMethodModel extends JavaMethodModel
     public List<JavaTypeVariableAbstractModel>  getTypeParameters() 
     { return Collections.emptyList(); }
  
-    public JavaTypeModel  getResultType() 
+    public JavaTypeModel  getResultType() throws AssertException
     { return new JavaArrayTypeModel(JavaTermEnumModel.this,null); }
     
     public List<JavaTypeModel> getFormalParametersTypes() 

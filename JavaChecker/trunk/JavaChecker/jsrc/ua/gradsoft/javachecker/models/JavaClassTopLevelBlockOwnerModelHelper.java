@@ -20,6 +20,7 @@ import ua.gradsoft.javachecker.util.ImmutableMappedCollection;
 import ua.gradsoft.javachecker.util.ImmutableMappedList;
 import ua.gradsoft.javachecker.util.IntegerOrderList;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.TermWareRuntimeException;
 import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
@@ -34,7 +35,11 @@ public class JavaClassTopLevelBlockOwnerModelHelper {
            Arrays.asList(executable.getClassTypeParameters()),
            new Function<TypeVariable,JavaTypeVariableAbstractModel>(){
             public JavaTypeVariableAbstractModel function(TypeVariable x){
-                return new JavaClassTypeVariableModel(x);
+                try {
+                  return new JavaClassTypeVariableModel(x);
+                }catch(AssertException ex){
+                    throw new TermWareRuntimeException(ex);
+                }
             }
         }     
                 );

@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *
@@ -24,7 +25,8 @@ public class JavaClassTypeVariableModel extends JavaTypeVariableAbstractModel
 {
     
     /** Creates a new instance of JavaClassTypeVariableModel */
-    public JavaClassTypeVariableModel(TypeVariable<?> typeVariable) {
+    public JavaClassTypeVariableModel(TypeVariable<?> typeVariable) throws AssertException
+    {
         typeVariable_=typeVariable;
     }
     

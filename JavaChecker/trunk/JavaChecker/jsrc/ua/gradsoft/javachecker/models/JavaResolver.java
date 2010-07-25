@@ -1,7 +1,7 @@
 /*
  * JavaResolver.java
  *
- * Copyright (c) 2006-2009 GradSoft  Ukraine
+ * Copyright (c) 2006-2010 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -580,13 +580,15 @@ public class JavaResolver {
         }
         
         // if not found in class imports, than in current package
-        try {
+        if (pm!=null) {
+          try {
             JavaTypeModel retval=pm.findTypeModel(name);
             if (retval!=null) {
                 return retval;
             }
-        }catch(EntityNotFoundException ex){
+          }catch(EntityNotFoundException ex){
             ; /* do nothing */
+          }
         }
                        
         
@@ -1135,14 +1137,14 @@ public class JavaResolver {
     public static JavaMethodModel resolveMethod(String methodName,List<JavaTypeModel> argumentTypes, JavaTypeArgumentsSubstitution substitution,JavaTypeModel where) throws EntityNotFoundException, TermWareException {
         boolean printDetails=false;
         
-        //if (methodName.equals("getDeclaredMethod")) {
+        //if (methodName.equals("putSerializable")) {
         //    printDetails=true;
         //}
         
         if (printDetails) {
             StringBuilder sb=new StringBuilder();
             boolean frs=true;
-            sb.append("resolveMethod "+methodName+"(");
+            sb.append("~#1145 resolveMethod "+methodName+"(");
             for(JavaTypeModel at: argumentTypes) {
                 if (frs) frs=false; else sb.append(",");
                 sb.append(at.getName());
@@ -1179,6 +1181,7 @@ public class JavaResolver {
                 // candidates are still null
                 if (printDetails) {
                     LOG.log(Level.INFO,"not found in "+currWhere.getFullName());
+                    //LOG.log(Level.INFO,"trace is ",ex);
                 }
             }
             if (candidates!=null) {
@@ -1362,10 +1365,16 @@ public class JavaResolver {
             }
             
         }
-        
-        Pair<JavaMethodModel,MethodMatchingConversions> retval = MethodMatchingConversions.best(goodCandidates);
+
+        if (printDetails) {
+            LOG.info("now search best conversion, goodCandidates.size()="+goodCandidates.size());
+        }
+        Pair<JavaMethodModel,MethodMatchingConversions> retval = MethodMatchingConversions.best(goodCandidates, printDetails);
         if (retval!=null) {
             substitution.putAll(retval.getSecond().getSubstitution());
+            if (printDetails) {
+                LOG.info("found best conversion, return one");
+            }
             return retval.getFirst();
         }
         

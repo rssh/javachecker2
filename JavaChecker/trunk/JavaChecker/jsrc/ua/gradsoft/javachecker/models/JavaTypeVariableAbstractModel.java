@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.Main;
-import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *Abstract model for Java Type Variable
@@ -26,7 +26,7 @@ import ua.gradsoft.termware.TermWareException;
  */
 public abstract class JavaTypeVariableAbstractModel extends JavaTypeModel {
     
-    public JavaTypeVariableAbstractModel() {
+    public JavaTypeVariableAbstractModel()  {
         super(Main.getFacts().getPackagesStore().findOrAddPackage("java.lang"));
     }
     

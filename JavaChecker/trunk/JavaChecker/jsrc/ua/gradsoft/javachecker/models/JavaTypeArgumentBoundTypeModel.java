@@ -1,7 +1,7 @@
 /*
  * JavaTypeArgumentBoundTypeModel.java
  *
- * Copyright (c) 2004-2005 GradSoft  Ukraine
+ * Copyright (c) 2004-2010 GradSoft  Ukraine
  * All Rights Reserved
  */
 

@@ -244,7 +244,7 @@ public abstract class JavaTermTypeAbstractModel extends JavaTypeModel
                       }
                       resolvedSuperClass_=JavaResolver.resolveTypeToModel(superClassTerm_,getEnclosedType(),tvs);
                   }else{  
-                         resolvedSuperClass_=JavaResolver.resolveTypeToModel(superClassTerm_,getUnitModel(),getPackageModel(),null,getTypeParameters(),null);
+                      resolvedSuperClass_=JavaResolver.resolveTypeToModel(superClassTerm_,getUnitModel(),getPackageModel(),null,getTypeParameters(),null);
                   }
               }
           }else if(isEnum()) {              

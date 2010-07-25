@@ -10,6 +10,7 @@ package ua.gradsoft.javachecker.models;
 
 import java.util.LinkedList;
 import java.util.List;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  * Formal 'CompilationUnitModel' which represent one class,
@@ -19,7 +20,8 @@ public class JavaClassUnitModel extends JavaUnitModel
 {
     
     /** Creates a new instance of JavaClassUnitModel */
-    public JavaClassUnitModel(Class theClass) {
+    public JavaClassUnitModel(Class theClass) throws AssertException
+    {
         typeModels_=new LinkedList<JavaTypeModel>();
         JavaClassTypeModel tm=new JavaClassTypeModel(theClass);
         typeModels_.add(tm);

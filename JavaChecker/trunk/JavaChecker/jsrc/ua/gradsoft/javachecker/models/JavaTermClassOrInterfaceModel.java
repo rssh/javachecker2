@@ -194,7 +194,11 @@ public  class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
        }
        Term implementsListModel = TermUtils.createNil();
        List<JavaTypeModel> superInterfaces = getSuperInterfaces();
-       Term oimplementsList = t_.getSubtermAt(IMPLEMENTS_TERM_INDEX);
+       Term oimplementsList = isClass_ ? 
+                                t_.getSubtermAt(IMPLEMENTS_TERM_INDEX)
+                               :
+                                t_.getSubtermAt(EXTENDS_TERM_INDEX)
+                              ;
        if (!oimplementsList.isNil()) {
            oimplementsList=oimplementsList.getSubtermAt(0);
            Iterator<JavaTypeModel> siit = superInterfaces.iterator();
@@ -206,11 +210,16 @@ public  class JavaTermClassOrInterfaceModel extends JavaTermTypeAbstractModel {
               implementsListModel=TermUtils.createTerm("cons",tr,implementsListModel);
            }
        }
+       if (isInterface_) {
+           extendsListModel=implementsListModel;
+           implementsListModel = TermUtils.createNil();
+       }
        Term membersList=getMemberModelsList();
        Term classOrInterfaceBody=TermUtils.createTerm("ClassOrInterfaceBody",membersList);
        JavaPlaceContext ctx = JavaPlaceContextFactory.createNewTypeContext(this);
        Term tctx = TermUtils.createJTerm(ctx);
-       return TermUtils.createTerm("ClassOrInterfaceModel",modifiers,classOrInterface,nameTerm,typeParametersTerm,extendsListModel,implementsListModel,classOrInterfaceBody,tctx);
+       Term retval = TermUtils.createTerm("ClassOrInterfaceModel",modifiers,classOrInterface,nameTerm,typeParametersTerm,extendsListModel,implementsListModel,classOrInterfaceBody,tctx);
+       return retval;
     }
     
     public JavaTermExpressionModel getDefaultInitializerExpression() throws TermWareException

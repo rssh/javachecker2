@@ -11,11 +11,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.Main;
-import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWare;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *Null type model.  (represents superclasses of primitive and object)
@@ -24,7 +24,8 @@ import ua.gradsoft.termware.TermWareException;
 public final class JavaNullTypeModel extends JavaTypeModel {
     
     /** Creates a new instance of JavaUnknownTypeModel */
-    private JavaNullTypeModel() {
+    private JavaNullTypeModel() 
+    {
         super(Main.getFacts().getPackagesStore().findOrAddPackage("java.lang"));
     }
     

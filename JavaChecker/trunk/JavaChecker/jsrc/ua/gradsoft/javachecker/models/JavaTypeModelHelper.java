@@ -48,7 +48,6 @@ public class JavaTypeModelHelper {
     public static boolean subtypeOrSame(JavaTypeModel t, JavaTypeModel s, MethodMatchingConversions conversions, boolean freeTypeArguments,boolean debug) throws TermWareException {
         boolean subtypeOrSameDebugEnabled=true;
         
-        //debug=true;
         if (debug)  {
             LOG.info("subtimeOrSame("+t.getFullName()+","+s.getFullName()+")");
         }
@@ -232,21 +231,39 @@ public class JavaTypeModelHelper {
                 retval=false;
             }
         }else if (t.isInterface()){
+            if (debug) {
+                LOG.log(Level.INFO,"#235: t is interface");
+            }
             if (s.isClass()) {
                 retval=same(s,JavaResolver.resolveJavaLangObject());
             }else if (s.isInterface()) {
                 if (samePrimaryName(t,s)) {
+                    if (debug) {
+                        LOG.log(Level.INFO,"#242 same primary name");
+                    }
                     retval=subtypeOrSameWithSameName(t,s,cn,freeTypeArguments,debug);
                 }else{
-                        for(JavaTypeModel td : t.getSuperInterfaces()) {
-                            if (subtypeOrSame(td,s,cn,freeTypeArguments,debug)) {
+                    List<JavaTypeModel> si = t.getSuperInterfaces();
+                    if (debug) {
+                       LOG.log(Level.INFO,"superInterfaces.length="+si.size());
+                       LOG.log(Level.INFO,"t.getName()="+t.getName());
+                       LOG.log(Level.INFO,"t.getClass()="+t.getClass().getName());
+                    }
+                        for(JavaTypeModel td : si) {
+                            if (debug) {
+                               LOG.log(Level.INFO, "check td superinterface: "+td.getName());
+                            }
+                            if (retval=subtypeOrSame(td,s,cn,freeTypeArguments,debug)) {
                                 if (debug) {
-                                    LOG.log(Level.INFO,"subtypeOrSame("+t.getName()+","+s.getName()+") result "+retval);
+                                    LOG.log(Level.INFO," ~#256 subtypeOrSame("+t.getName()+","+s.getName()+") result "+retval+" try return");
                                 }
                                 cn.incrementNNarrows();
                                 conversions.assign(cn);
                                 return true;
                             }
+                        }
+                        if (debug) {
+                            LOG.log(Level.INFO, "#253 - checked all suoper-interfaces, retval=false" );
                         }
                         retval=false;
                 }

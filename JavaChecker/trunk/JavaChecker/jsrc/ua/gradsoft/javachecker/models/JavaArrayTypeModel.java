@@ -12,10 +12,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
-import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.javachecker.models.expressions.JavaTermNullLiteralExpressionModel;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *Type model for Java array
@@ -24,7 +24,8 @@ import ua.gradsoft.termware.TermWareException;
 public class JavaArrayTypeModel extends JavaTypeModel {
     
     /** Creates a new instance of JavaArrayTypeModel */
-    public JavaArrayTypeModel(JavaTypeModel referencedType, JavaExpressionModel lengthInitializer) {
+    public JavaArrayTypeModel(JavaTypeModel referencedType, JavaExpressionModel lengthInitializer) throws AssertException
+    {
         super(referencedType.getPackageModel());
         referencedType_=referencedType;
         lengthModel_=new LengthMemberVariableModel();

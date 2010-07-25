@@ -7,7 +7,10 @@
 package ua.gradsoft.javachecker.models;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ua.gradsoft.javachecker.util.Pair;
+import ua.gradsoft.termware.exceptions.AssertException;
 
 /**
  *Set of conversions.
@@ -86,17 +89,40 @@ public class MethodMatchingConversions implements Cloneable
     { ++nSupers_; }
 
     
-    public static Pair<JavaMethodModel,MethodMatchingConversions>  best(List<Pair<JavaMethodModel, MethodMatchingConversions>> candidates)
+    public static Pair<JavaMethodModel,MethodMatchingConversions>  best(List<Pair<JavaMethodModel, MethodMatchingConversions>> candidates, boolean debug) throws AssertException
     {
-        Pair<JavaMethodModel,MethodMatchingConversions> retval = bestPhase1(candidates);
-        if (retval!=null) {
+        if (debug) {
+            LOG.log(Level.INFO,"before best1");
+        }
+        Pair<JavaMethodModel,MethodMatchingConversions> retval = null;
+        try {
+          retval = bestPhase1(candidates, debug);
+          if (retval!=null) {
+            if (debug) {
+                LOG.log(Level.INFO,"return best for method "+retval.getFirst().getName());
+            }
             return retval;
+          }
+        }catch(Exception ex){
+            // impossible
+            //ex.printStackTrace();
+            LOG.log(Level.WARNING,"error durind findign of conversion", ex);
+            throw new AssertException("error during finding bestMatch",ex);
+        }
+        if (debug) {
+            LOG.log(Level.INFO,"before best2");
         }
         retval = bestPhase2(candidates);
         if (retval!=null) {
             return retval;
         }
+        if (debug) {
+            LOG.log(Level.INFO,"before best3");
+        }
         retval = bestPhase3(candidates);
+        if (debug) {
+            LOG.log(Level.INFO,"after best3");
+        }
         return retval;
     }
     
@@ -105,7 +131,7 @@ public class MethodMatchingConversions implements Cloneable
         return (!varArg_) && nBoxing_==0 && nUnboxing_==0 && nNarrows_==0;
     }
     
-    private static Pair<JavaMethodModel,MethodMatchingConversions> bestPhase1(List<Pair<JavaMethodModel, MethodMatchingConversions>> candidates)
+    private static Pair<JavaMethodModel,MethodMatchingConversions> bestPhase1(List<Pair<JavaMethodModel, MethodMatchingConversions>> candidates, boolean debug)
     {
        Pair<JavaMethodModel,MethodMatchingConversions> minSpecific=null; 
        for(Pair<JavaMethodModel, MethodMatchingConversions> candidate: candidates) {
@@ -181,4 +207,7 @@ public class MethodMatchingConversions implements Cloneable
     private int     nSupers_=0;
     
     private JavaTypeArgumentsSubstitution substitution_=new JavaTypeArgumentsSubstitution();
+    
+    private static final Logger LOG = Logger.getLogger(MethodMatchingConversions.class.getName());
+
 }

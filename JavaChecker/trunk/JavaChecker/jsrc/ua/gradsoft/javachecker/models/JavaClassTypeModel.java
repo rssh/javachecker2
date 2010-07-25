@@ -50,7 +50,8 @@ public class JavaClassTypeModel extends JavaTypeModel
 {
     
     /** Creates a new instance of JavaClassTypeModel */
-    public JavaClassTypeModel(Class theClass) {
+    public JavaClassTypeModel(Class theClass) throws AssertException
+    {
         super(Main.getFacts().getPackagesStore().findOrAddPackage(theClass.getPackage().getName()));
         theClass_=theClass;       
     }
@@ -377,7 +378,7 @@ public class JavaClassTypeModel extends JavaTypeModel
   /**
    * return type parameters. (i. e.  for class<U,B> { ... }  definitions are <U,B> )
    */
-  public List<JavaTypeVariableAbstractModel>  getTypeParameters()
+  public List<JavaTypeVariableAbstractModel>  getTypeParameters() throws AssertException
   {
       TypeVariable<?> tv[]=theClass_.getTypeParameters();
       List<JavaTypeVariableAbstractModel> retval= new LinkedList<JavaTypeVariableAbstractModel>();

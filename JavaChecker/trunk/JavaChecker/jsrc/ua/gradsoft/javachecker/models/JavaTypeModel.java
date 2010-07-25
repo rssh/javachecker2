@@ -1,7 +1,7 @@
 /*
  * JavaTypeModel.java
  *
- * Copyright (c) 2004-2007 GradSoft  Ukraine
+ * Copyright (c) 2004-2010 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 import ua.gradsoft.javachecker.EntityNotFoundException;
 import ua.gradsoft.javachecker.JavaFacts;
-import ua.gradsoft.javachecker.NotSupportedException;
 import ua.gradsoft.javachecker.attributes.AttributedEntity;
 import ua.gradsoft.javachecker.attributes.AttributesData;
 import ua.gradsoft.javachecker.attributes.JavaTypeModelAttributes;
 import ua.gradsoft.termware.Term;
 import ua.gradsoft.termware.TermWareException;
+import ua.gradsoft.termware.exceptions.RuntimeAssertException;
 
 /**
  *Abstract class for type model of Java Language term
@@ -26,8 +26,11 @@ import ua.gradsoft.termware.TermWareException;
 public abstract class JavaTypeModel implements AttributedEntity
 {
     
-  JavaTypeModel(JavaPackageModel packageModel)
+  JavaTypeModel(JavaPackageModel packageModel) 
   {
+    //if (packageModel==null) {
+    //    throw new RuntimeAssertException("null package model is not allowed");
+    //}
     packageModel_=packageModel;
   }
     
@@ -52,7 +55,14 @@ public abstract class JavaTypeModel implements AttributedEntity
              return packageModel_.getName()+".<error>."+getName();
          }
       }else{
-          return getPackageModel().getName()+"."+getName(); 
+          JavaPackageModel pm = getPackageModel();
+          if (pm==null) {
+              // strange: packageModel is null
+              //
+              return getName();
+          }else{
+              return pm.getName()+"."+getName();
+          }
       }
   }  
 
