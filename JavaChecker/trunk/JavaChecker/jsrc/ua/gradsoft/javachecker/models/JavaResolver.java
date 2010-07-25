@@ -858,6 +858,9 @@ public class JavaResolver {
      */
     public static JavaMemberVariableModel resolveMemberVariableByName(String name,JavaTypeModel where) throws TermWareException, EntityNotFoundException {
         boolean printDetails=false;
+        if (name.equals("ReturnToStatistics")) {
+            printDetails=true;
+        }
         if(printDetails) {
             LOG.log(Level.INFO,"resolveMemberVariableByName("+name+","+where.getFullName()+")");
         }
