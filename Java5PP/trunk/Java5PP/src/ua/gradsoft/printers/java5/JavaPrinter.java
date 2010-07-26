@@ -1,7 +1,7 @@
 /*
  * JavaPrinter.java
  *
- * Copyright (c) 2004-2008 GradSoft  Ukraine
+ * Copyright (c) 2004-2010 GradSoft  Ukraine
  * All Rights Reserved
  */
 
@@ -653,6 +653,7 @@ public class JavaPrinter extends AbstractPrinter {
         Term extendsList=t.getSubtermAt(3);
         Term implementsList=t.getSubtermAt(4);
         Term classOrInterfaceBody=t.getSubtermAt(5);
+        //if (name.getSubtermAt(0).getString().equals("CalculatedStatistics"))
         if (kind.getName().equals("interface")){
             out_.print("interface ");
         }else{
@@ -1412,7 +1413,7 @@ public class JavaPrinter extends AbstractPrinter {
     }
     
     public void writeAdditiveExpression(Term t, int level, int topPriority) throws TermWareException {
-        boolean quoted=(topPriority > ExpressionPriorities.ADDITIVE_EXPRESSION_PRIORITY);
+        boolean quoted=(topPriority >= ExpressionPriorities.ADDITIVE_EXPRESSION_PRIORITY);
         if (quoted) {
             out_.print("(");
         }
@@ -1428,7 +1429,7 @@ public class JavaPrinter extends AbstractPrinter {
     
     
     public void writeMultiplicativeExpression(Term t, int level, int topPriority) throws TermWareException {
-        boolean quoted=(topPriority > ExpressionPriorities.MULTIPLICATIVE_EXPRESSION_PRIORITY);
+        boolean quoted=(topPriority >= ExpressionPriorities.MULTIPLICATIVE_EXPRESSION_PRIORITY);
         if (quoted) {
             out_.print("(");
         }
