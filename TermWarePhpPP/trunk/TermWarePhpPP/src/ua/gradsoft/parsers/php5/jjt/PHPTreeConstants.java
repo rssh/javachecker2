@@ -99,12 +99,13 @@ public interface PHPTreeConstants
   public int JJTCLASSINSTANTIATION = 92;
   public int JJTALLOCATIONEXPRESSION = 93;
   public int JJTCLONEEXPRESSION = 94;
-  public int JJTVARIABLE = 95;
-  public int JJTARGUMENTEXPRESSIONLIST = 96;
-  public int JJTCONSTANT = 97;
-  public int JJTSTRING = 98;
-  public int JJTDOUBLESTRINGLITERAL = 99;
-  public int JJTVISIBILITY = 100;
+  public int JJTCLOSUREEXPRESSION = 95;
+  public int JJTVARIABLE = 96;
+  public int JJTARGUMENTEXPRESSIONLIST = 97;
+  public int JJTCONSTANT = 98;
+  public int JJTSTRING = 99;
+  public int JJTDOUBLESTRINGLITERAL = 100;
+  public int JJTVISIBILITY = 101;
 
 
   public String[] jjtNodeName = {
@@ -203,6 +204,7 @@ public interface PHPTreeConstants
     "ClassInstantiation",
     "AllocationExpression",
     "CloneExpression",
+    "ClosureExpression",
     "Variable",
     "ArgumentExpressionList",
     "Constant",

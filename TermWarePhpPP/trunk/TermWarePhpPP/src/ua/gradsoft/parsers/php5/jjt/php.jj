@@ -2035,9 +2035,9 @@ void MemberFunctionDeclaration() throws TermWareException :
 /*@egen*/ 
       {
         if (tkRef!=null) {
-          jjtn000.addTerm(createAtom("ref"),1);
+          jjtn000.addTerm(createBoolean(true),1);
         }else{
-          jjtn000.addTerm(createNil(),1);
+          jjtn000.addTerm(createBoolean(false),1);
         }
         jjtn000.addTerm(createIdentifier(tkName.image),2);
         if (withPL==false) {
@@ -2210,7 +2210,7 @@ void VariableDecl() throws TermWareException :
 /*@egen*/ 
     { jjtn000.addTerm(createIdentifier(tk.image),0); 
       if (!withExpr) {
-        jjtn000.addTerm(createNil(),0); 
+        jjtn000.addTerm(createNil(),1); 
       }
     }/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
@@ -2579,15 +2579,19 @@ void InterfaceMethodDeclaration() throws TermWareException :
  boolean jjtc000 = true;
  jjtree.openNodeScope(jjtn000);
 /*@egen*/
+ Token tkAbstract=null;
+ Token tkPublic=null;
  Token tkRef=null;
  Token tkId=null;
  boolean  withPL=false;
  boolean  withBody=false;
+ Term  attrs=createNil();
 }
 {/*@bgen(jjtree) InterfaceMethodDeclaration */
  try {
 /*@egen*/
- (<ABSTRACT> | <PUBLIC>)* <FUNCTION> [tkRef="&"]  tkId=<IDENTIFIER> 
+ (tkAbstract=<ABSTRACT> | tkPublic=<PUBLIC>)* <FUNCTION> [tkRef="&"]  
+    tkId=<IDENTIFIER> 
           "(" [ParameterList()  { withPL=true; }] ")" 
                                             ["{" "}" { withBody=true; }]
            EndOfStatement()/*@bgen(jjtree)*/
@@ -2597,12 +2601,19 @@ void InterfaceMethodDeclaration() throws TermWareException :
  }
 /*@egen*/
  {
-  jjtn000.addTerm(createBoolean(tkRef!=null),0); 
-  jjtn000.addTerm(createIdentifier(tkId.image),1); 
-  if (!withPL) {
-    jjtn000.addTerm(createNil(),2); 
+  if (tkAbstract!=null) {
+    attrs=createTerm("cons",createAtom("abstract"),attrs);
+  } 
+  if (tkPublic!=null) {
+    attrs=createTerm("cons",createAtom("public"),attrs);
   }
-  jjtn000.addTerm(createBoolean(withBody),3); 
+  jjtn000.addTerm(attrs,0); 
+  jjtn000.addTerm(createBoolean(tkRef!=null),1); 
+  jjtn000.addTerm(createIdentifier(tkId.image),2); 
+  if (!withPL) {
+    jjtn000.addTerm(createNil(),3); 
+  }
+  jjtn000.addTerm(createBoolean(withBody),4); 
  }/*@bgen(jjtree)*/
  } catch (Throwable jjte000) {
    if (jjtc000) {
@@ -3227,173 +3238,238 @@ void ConditionalExpression() throws TermWareException : {/*@bgen(jjtree) Conditi
 }
 
 
-void Logical_Or_Expression() throws TermWareException : {/*@bgen(jjtree) Logical_Or_Expression */
-  SimpleNode jjtn000 = new SimpleNode(JJTLOGICAL_OR_EXPRESSION);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/}
+void Logical_Or_Expression() throws TermWareException : 
 {/*@bgen(jjtree) Logical_Or_Expression */
-        try {
+ SimpleNode jjtn000 = new SimpleNode(JJTLOGICAL_OR_EXPRESSION);
+ boolean jjtc000 = true;
+ jjtree.openNodeScope(jjtn000);
 /*@egen*/
-	Logical_And_Expression() [LOOKAHEAD(2) "||" Logical_Or_Expression() ]/*@bgen(jjtree)*/
-        } catch (Throwable jjte000) {
-          if (jjtc000) {
-            jjtree.clearNodeScope(jjtn000);
-            jjtc000 = false;
-          } else {
-            jjtree.popNode();
-          }
-          if (jjte000 instanceof TermWareException) {
-            throw (TermWareException)jjte000;
-          }
-          if (jjte000 instanceof RuntimeException) {
-            throw (RuntimeException)jjte000;
-          }
-          if (jjte000 instanceof ParseException) {
-            throw (ParseException)jjte000;
-          }
-          throw (Error)jjte000;
-        } finally {
-          if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, true);
-          }
-        }
+ Token tk=null;
+}
+{/*@bgen(jjtree) Logical_Or_Expression */
+  try {
+/*@egen*/
+  Logical_And_Expression() [LOOKAHEAD(2) tk="||" Logical_Or_Expression() ]/*@bgen(jjtree)*/
+  {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtc000 = false;
+  }
+/*@egen*/
+  {
+   if (tk!=null) {
+     jjtn000.addTerm(createString(tk.image),1); 
+   }
+  }/*@bgen(jjtree)*/
+  } catch (Throwable jjte000) {
+    if (jjtc000) {
+      jjtree.clearNodeScope(jjtn000);
+      jjtc000 = false;
+    } else {
+      jjtree.popNode();
+    }
+    if (jjte000 instanceof TermWareException) {
+      throw (TermWareException)jjte000;
+    }
+    if (jjte000 instanceof RuntimeException) {
+      throw (RuntimeException)jjte000;
+    }
+    if (jjte000 instanceof ParseException) {
+      throw (ParseException)jjte000;
+    }
+    throw (Error)jjte000;
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+  }
 /*@egen*/
 }
 
-void Logical_And_Expression() throws TermWareException : {/*@bgen(jjtree) Logical_And_Expression */
-  SimpleNode jjtn000 = new SimpleNode(JJTLOGICAL_AND_EXPRESSION);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/}
+void Logical_And_Expression() throws TermWareException : 
 {/*@bgen(jjtree) Logical_And_Expression */
-        try {
+ SimpleNode jjtn000 = new SimpleNode(JJTLOGICAL_AND_EXPRESSION);
+ boolean jjtc000 = true;
+ jjtree.openNodeScope(jjtn000);
 /*@egen*/
-	BitwiseOrExpression() [LOOKAHEAD(2) "&&" Logical_And_Expression() ]/*@bgen(jjtree)*/
-        } catch (Throwable jjte000) {
-          if (jjtc000) {
-            jjtree.clearNodeScope(jjtn000);
-            jjtc000 = false;
-          } else {
-            jjtree.popNode();
-          }
-          if (jjte000 instanceof TermWareException) {
-            throw (TermWareException)jjte000;
-          }
-          if (jjte000 instanceof RuntimeException) {
-            throw (RuntimeException)jjte000;
-          }
-          if (jjte000 instanceof ParseException) {
-            throw (ParseException)jjte000;
-          }
-          throw (Error)jjte000;
-        } finally {
-          if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, true);
-          }
-        }
+ Token tk=null;
+}
+{/*@bgen(jjtree) Logical_And_Expression */
+  try {
+/*@egen*/
+  BitwiseOrExpression() [LOOKAHEAD(2) tk="&&" Logical_And_Expression() ]/*@bgen(jjtree)*/
+  {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtc000 = false;
+  }
+/*@egen*/
+  {
+   if (tk!=null) {
+     jjtn000.addTerm(createString(tk.image),1); 
+   }
+  }/*@bgen(jjtree)*/
+  } catch (Throwable jjte000) {
+    if (jjtc000) {
+      jjtree.clearNodeScope(jjtn000);
+      jjtc000 = false;
+    } else {
+      jjtree.popNode();
+    }
+    if (jjte000 instanceof TermWareException) {
+      throw (TermWareException)jjte000;
+    }
+    if (jjte000 instanceof RuntimeException) {
+      throw (RuntimeException)jjte000;
+    }
+    if (jjte000 instanceof ParseException) {
+      throw (ParseException)jjte000;
+    }
+    throw (Error)jjte000;
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+  }
 /*@egen*/
 }
 
-void BitwiseOrExpression() throws TermWareException : {/*@bgen(jjtree) BitwiseOrExpression */
-  SimpleNode jjtn000 = new SimpleNode(JJTBITWISEOREXPRESSION);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/}
+void BitwiseOrExpression() throws TermWareException : 
 {/*@bgen(jjtree) BitwiseOrExpression */
-        try {
+ SimpleNode jjtn000 = new SimpleNode(JJTBITWISEOREXPRESSION);
+ boolean jjtc000 = true;
+ jjtree.openNodeScope(jjtn000);
 /*@egen*/
-	BitwiseXorExpression() [LOOKAHEAD(2) "|" BitwiseOrExpression() ]/*@bgen(jjtree)*/
-        } catch (Throwable jjte000) {
-          if (jjtc000) {
-            jjtree.clearNodeScope(jjtn000);
-            jjtc000 = false;
-          } else {
-            jjtree.popNode();
-          }
-          if (jjte000 instanceof TermWareException) {
-            throw (TermWareException)jjte000;
-          }
-          if (jjte000 instanceof RuntimeException) {
-            throw (RuntimeException)jjte000;
-          }
-          if (jjte000 instanceof ParseException) {
-            throw (ParseException)jjte000;
-          }
-          throw (Error)jjte000;
-        } finally {
-          if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, true);
-          }
-        }
+ Token tk=null;
+}
+{/*@bgen(jjtree) BitwiseOrExpression */
+  try {
+/*@egen*/
+  BitwiseXorExpression() [LOOKAHEAD(2) tk="|" BitwiseOrExpression() ]/*@bgen(jjtree)*/
+  {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtc000 = false;
+  }
+/*@egen*/
+  {
+   if (tk!=null) {
+     jjtn000.addTerm(createString(tk.image),1); 
+   }
+  }/*@bgen(jjtree)*/
+  } catch (Throwable jjte000) {
+    if (jjtc000) {
+      jjtree.clearNodeScope(jjtn000);
+      jjtc000 = false;
+    } else {
+      jjtree.popNode();
+    }
+    if (jjte000 instanceof TermWareException) {
+      throw (TermWareException)jjte000;
+    }
+    if (jjte000 instanceof RuntimeException) {
+      throw (RuntimeException)jjte000;
+    }
+    if (jjte000 instanceof ParseException) {
+      throw (ParseException)jjte000;
+    }
+    throw (Error)jjte000;
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+  }
 /*@egen*/
 }
 
-void BitwiseXorExpression() throws TermWareException : {/*@bgen(jjtree) BitwiseXorExpression */
-  SimpleNode jjtn000 = new SimpleNode(JJTBITWISEXOREXPRESSION);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/}
+void BitwiseXorExpression() throws TermWareException : 
 {/*@bgen(jjtree) BitwiseXorExpression */
-        try {
+ SimpleNode jjtn000 = new SimpleNode(JJTBITWISEXOREXPRESSION);
+ boolean jjtc000 = true;
+ jjtree.openNodeScope(jjtn000);
 /*@egen*/
-	BitwiseAndExpression() [LOOKAHEAD(2) "^" BitwiseXorExpression() ]/*@bgen(jjtree)*/
-        } catch (Throwable jjte000) {
-          if (jjtc000) {
-            jjtree.clearNodeScope(jjtn000);
-            jjtc000 = false;
-          } else {
-            jjtree.popNode();
-          }
-          if (jjte000 instanceof TermWareException) {
-            throw (TermWareException)jjte000;
-          }
-          if (jjte000 instanceof RuntimeException) {
-            throw (RuntimeException)jjte000;
-          }
-          if (jjte000 instanceof ParseException) {
-            throw (ParseException)jjte000;
-          }
-          throw (Error)jjte000;
-        } finally {
-          if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, true);
-          }
-        }
+ Token tk=null;
+}
+{/*@bgen(jjtree) BitwiseXorExpression */
+  try {
+/*@egen*/
+  BitwiseAndExpression() [LOOKAHEAD(2) tk="^" BitwiseXorExpression() ]/*@bgen(jjtree)*/
+  {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtc000 = false;
+  }
+/*@egen*/
+  {
+   if (tk!=null) {
+     jjtn000.addTerm(createString(tk.image),1); 
+   }
+  }/*@bgen(jjtree)*/
+  } catch (Throwable jjte000) {
+    if (jjtc000) {
+      jjtree.clearNodeScope(jjtn000);
+      jjtc000 = false;
+    } else {
+      jjtree.popNode();
+    }
+    if (jjte000 instanceof TermWareException) {
+      throw (TermWareException)jjte000;
+    }
+    if (jjte000 instanceof RuntimeException) {
+      throw (RuntimeException)jjte000;
+    }
+    if (jjte000 instanceof ParseException) {
+      throw (ParseException)jjte000;
+    }
+    throw (Error)jjte000;
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+  }
 /*@egen*/
 }
 
-void BitwiseAndExpression() throws TermWareException : {/*@bgen(jjtree) BitwiseAndExpression */
-  SimpleNode jjtn000 = new SimpleNode(JJTBITWISEANDEXPRESSION);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/}
+void BitwiseAndExpression() throws TermWareException : 
 {/*@bgen(jjtree) BitwiseAndExpression */
-        try {
+ SimpleNode jjtn000 = new SimpleNode(JJTBITWISEANDEXPRESSION);
+ boolean jjtc000 = true;
+ jjtree.openNodeScope(jjtn000);
 /*@egen*/
-	EqualityExpression() [LOOKAHEAD(2) "&" BitwiseAndExpression() ]/*@bgen(jjtree)*/
-        } catch (Throwable jjte000) {
-          if (jjtc000) {
-            jjtree.clearNodeScope(jjtn000);
-            jjtc000 = false;
-          } else {
-            jjtree.popNode();
-          }
-          if (jjte000 instanceof TermWareException) {
-            throw (TermWareException)jjte000;
-          }
-          if (jjte000 instanceof RuntimeException) {
-            throw (RuntimeException)jjte000;
-          }
-          if (jjte000 instanceof ParseException) {
-            throw (ParseException)jjte000;
-          }
-          throw (Error)jjte000;
-        } finally {
-          if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, true);
-          }
-        }
+ Token tk=null;
+}
+{/*@bgen(jjtree) BitwiseAndExpression */
+  try {
+/*@egen*/
+  EqualityExpression() [LOOKAHEAD(2) tk="&" BitwiseAndExpression() ]/*@bgen(jjtree)*/
+  {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtc000 = false;
+  }
+/*@egen*/
+  {
+   if (tk!=null) {
+     jjtn000.addTerm(createString(tk.image),1); 
+   }
+  }/*@bgen(jjtree)*/
+  } catch (Throwable jjte000) {
+    if (jjtc000) {
+      jjtree.clearNodeScope(jjtn000);
+      jjtc000 = false;
+    } else {
+      jjtree.popNode();
+    }
+    if (jjte000 instanceof TermWareException) {
+      throw (TermWareException)jjte000;
+    }
+    if (jjte000 instanceof RuntimeException) {
+      throw (RuntimeException)jjte000;
+    }
+    if (jjte000 instanceof ParseException) {
+      throw (ParseException)jjte000;
+    }
+    throw (Error)jjte000;
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+  }
 /*@egen*/
 }
 
@@ -3648,7 +3724,7 @@ void CastExpression() throws TermWareException :
  }
 /*@egen*/
  {
-   if (tk!=null) jjtn000.addTerm(createAtom(tk.image),1);
+   if (tk!=null) jjtn000.addTerm(createAtom(tk.image),0);
  }/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
@@ -3813,7 +3889,7 @@ void IncDecSuffix() throws TermWareException :
 {/*@bgen(jjtree) IncDecSuffix */
   try {
 /*@egen*/
-  ( ( tk="++" | tk="--" )
+  (LOOKAHEAD(2) ( tk="++" | tk="--" )
    { jjtn000.addTerm(createString(tk.image),jjtn000.getArity()); }
   )+/*@bgen(jjtree)*/
   } finally {
@@ -3868,9 +3944,9 @@ void PostfixExpression() throws TermWareException :
 /*@egen*/
 }
 {/*@bgen(jjtree) PostfixExpression */
-  try {
+     try {
 /*@egen*/
-  PrimaryExpression()
+     PrimaryExpression()
                        ( 
                                PostfixExpressionMethodCallSuffix() 
                         |
@@ -3895,28 +3971,28 @@ void PostfixExpression() throws TermWareException :
                           LOOKAHEAD("{")
                           PostfixExpressionCurlyBracketsSuffix() 
 		 )*/*@bgen(jjtree)*/
-  } catch (Throwable jjte000) {
-    if (jjtc000) {
-      jjtree.clearNodeScope(jjtn000);
-      jjtc000 = false;
-    } else {
-      jjtree.popNode();
-    }
-    if (jjte000 instanceof TermWareException) {
-      throw (TermWareException)jjte000;
-    }
-    if (jjte000 instanceof RuntimeException) {
-      throw (RuntimeException)jjte000;
-    }
-    if (jjte000 instanceof ParseException) {
-      throw (ParseException)jjte000;
-    }
-    throw (Error)jjte000;
-  } finally {
-    if (jjtc000) {
-      jjtree.closeNodeScope(jjtn000, true);
-    }
-  }
+     } catch (Throwable jjte000) {
+       if (jjtc000) {
+         jjtree.clearNodeScope(jjtn000);
+         jjtc000 = false;
+       } else {
+         jjtree.popNode();
+       }
+       if (jjte000 instanceof TermWareException) {
+         throw (TermWareException)jjte000;
+       }
+       if (jjte000 instanceof RuntimeException) {
+         throw (RuntimeException)jjte000;
+       }
+       if (jjte000 instanceof ParseException) {
+         throw (ParseException)jjte000;
+       }
+       throw (Error)jjte000;
+     } finally {
+       if (jjtc000) {
+         jjtree.closeNodeScope(jjtn000, true);
+       }
+     }
 /*@egen*/
 }
 
@@ -4127,6 +4203,8 @@ void PrimaryExpression() throws TermWareException :
 	ClassInstantiation() 
        |
 	Array()
+       |
+        ClosureExpression()
   )/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
@@ -4380,6 +4458,53 @@ void CloneExpression() throws TermWareException : {/*@bgen(jjtree) CloneExpressi
 /*@egen*/
 }
 
+void ClosureExpression() throws TermWareException:
+{/*@bgen(jjtree) ClosureExpression */
+  SimpleNode jjtn000 = new SimpleNode(JJTCLOSUREEXPRESSION);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/
+  boolean withPL=false;
+}
+{/*@bgen(jjtree) ClosureExpression */
+  try {
+/*@egen*/
+  <FUNCTION> "(" [ParameterList() { withPL=true; }] ")" CompoundStatement()/*@bgen(jjtree)*/
+  {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtc000 = false;
+  }
+/*@egen*/
+  {
+   if (!withPL) {
+     jjtn000.addTerm(createNil(),0);
+   }
+  }/*@bgen(jjtree)*/
+  } catch (Throwable jjte000) {
+    if (jjtc000) {
+      jjtree.clearNodeScope(jjtn000);
+      jjtc000 = false;
+    } else {
+      jjtree.popNode();
+    }
+    if (jjte000 instanceof TermWareException) {
+      throw (TermWareException)jjte000;
+    }
+    if (jjte000 instanceof RuntimeException) {
+      throw (RuntimeException)jjte000;
+    }
+    if (jjte000 instanceof ParseException) {
+      throw (ParseException)jjte000;
+    }
+    throw (Error)jjte000;
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+  }
+/*@egen*/
+}
+
 void Variable() throws TermWareException: 
 {/*@bgen(jjtree) Variable */
  SimpleNode jjtn000 = new SimpleNode(JJTVARIABLE);
@@ -4409,6 +4534,7 @@ void Variable() throws TermWareException:
         }
 /*@egen*/
 }
+
 
 
 void ArgumentExpressionList() throws TermWareException : {/*@bgen(jjtree) ArgumentExpressionList */
@@ -4533,11 +4659,19 @@ void String() throws TermWareException :
 /*@egen*/
            {
              s=getSpecialToken(tk2);
-             jjtn000.addTerm(createTerm("SingleStringLiteral",
-                             tk2.image.substring(0,tk2.image.length()-1)),0);
+             jjtn000.addTerm(createTerm("SingleStringLiteral",s),0);
            }
       |
-	<HEREDOC_START>/*@bgen(jjtree)*/
+	tk1=<HEREDOC_START>/*@bgen(jjtree)*/
+          {
+            jjtree.closeNodeScope(jjtn000, true);
+            jjtc000 = false;
+          }
+/*@egen*/
+          {
+             s=getSpecialToken(tk1);
+             jjtn000.addTerm(createTerm("HereDoc",s),0);
+          }/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);

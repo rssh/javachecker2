@@ -866,9 +866,9 @@ void MemberFunctionDeclaration() throws TermWareException :
           "(" [ParameterList() { withPL=true; } ] ")" CompoundStatement() 
       {
         if (tkRef!=null) {
-          jjtThis.addTerm(createAtom("ref"),1);
+          jjtThis.addTerm(createBoolean(true),1);
         }else{
-          jjtThis.addTerm(createNil(),1);
+          jjtThis.addTerm(createBoolean(false),1);
         }
         jjtThis.addTerm(createIdentifier(tkName.image),2);
         if (withPL==false) {
@@ -915,7 +915,7 @@ void VariableDecl() throws TermWareException :
   <DOLLAR> tk=<VAR_NAME> [ "=" Expression() { withExpr=true; } ] 
     { jjtThis.addTerm(createIdentifier(tk.image),0); 
       if (!withExpr) {
-        jjtThis.addTerm(createNil(),0); 
+        jjtThis.addTerm(createNil(),1); 
       }
     }
 }
@@ -1021,23 +1021,34 @@ void InterfaceMember() throws TermWareException : {}
 
 void InterfaceMethodDeclaration() throws TermWareException : 
 {
+ Token tkAbstract=null;
+ Token tkPublic=null;
  Token tkRef=null;
  Token tkId=null;
  boolean  withPL=false;
  boolean  withBody=false;
+ Term  attrs=createNil();
 }
 {
- (<ABSTRACT> | <PUBLIC>)* <FUNCTION> [tkRef="&"]  tkId=<IDENTIFIER> 
+ (tkAbstract=<ABSTRACT> | tkPublic=<PUBLIC>)* <FUNCTION> [tkRef="&"]  
+    tkId=<IDENTIFIER> 
           "(" [ParameterList()  { withPL=true; }] ")" 
                                             ["{" "}" { withBody=true; }]
            EndOfStatement()
  {
-  jjtThis.addTerm(createBoolean(tkRef!=null),0); 
-  jjtThis.addTerm(createIdentifier(tkId.image),1); 
-  if (!withPL) {
-    jjtThis.addTerm(createNil(),2); 
+  if (tkAbstract!=null) {
+    attrs=createTerm("cons",createAtom("abstract"),attrs);
+  } 
+  if (tkPublic!=null) {
+    attrs=createTerm("cons",createAtom("public"),attrs);
   }
-  jjtThis.addTerm(createBoolean(withBody),3); 
+  jjtThis.addTerm(attrs,0); 
+  jjtThis.addTerm(createBoolean(tkRef!=null),1); 
+  jjtThis.addTerm(createIdentifier(tkId.image),2); 
+  if (!withPL) {
+    jjtThis.addTerm(createNil(),3); 
+  }
+  jjtThis.addTerm(createBoolean(withBody),4); 
  }
 }
 
@@ -1203,29 +1214,69 @@ void ConditionalExpression() throws TermWareException : {}
 }
 
 
-void Logical_Or_Expression() throws TermWareException : {}
+void Logical_Or_Expression() throws TermWareException : 
 {
-	Logical_And_Expression() [LOOKAHEAD(2) "||" Logical_Or_Expression() ]
+ Token tk=null;
+}
+{
+  Logical_And_Expression() [LOOKAHEAD(2) tk="||" Logical_Or_Expression() ]
+  {
+   if (tk!=null) {
+     jjtThis.addTerm(createString(tk.image),1); 
+   }
+  }
 }
 
-void Logical_And_Expression() throws TermWareException : {}
+void Logical_And_Expression() throws TermWareException : 
 {
-	BitwiseOrExpression() [LOOKAHEAD(2) "&&" Logical_And_Expression() ]
+ Token tk=null;
+}
+{
+  BitwiseOrExpression() [LOOKAHEAD(2) tk="&&" Logical_And_Expression() ]
+  {
+   if (tk!=null) {
+     jjtThis.addTerm(createString(tk.image),1); 
+   }
+  }
 }
 
-void BitwiseOrExpression() throws TermWareException : {}
+void BitwiseOrExpression() throws TermWareException : 
 {
-	BitwiseXorExpression() [LOOKAHEAD(2) "|" BitwiseOrExpression() ]
+ Token tk=null;
+}
+{
+  BitwiseXorExpression() [LOOKAHEAD(2) tk="|" BitwiseOrExpression() ]
+  {
+   if (tk!=null) {
+     jjtThis.addTerm(createString(tk.image),1); 
+   }
+  }
 }
 
-void BitwiseXorExpression() throws TermWareException : {}
+void BitwiseXorExpression() throws TermWareException : 
 {
-	BitwiseAndExpression() [LOOKAHEAD(2) "^" BitwiseXorExpression() ]
+ Token tk=null;
+}
+{
+  BitwiseAndExpression() [LOOKAHEAD(2) tk="^" BitwiseXorExpression() ]
+  {
+   if (tk!=null) {
+     jjtThis.addTerm(createString(tk.image),1); 
+   }
+  }
 }
 
-void BitwiseAndExpression() throws TermWareException : {}
+void BitwiseAndExpression() throws TermWareException : 
 {
-	EqualityExpression() [LOOKAHEAD(2) "&" BitwiseAndExpression() ]
+ Token tk=null;
+}
+{
+  EqualityExpression() [LOOKAHEAD(2) tk="&" BitwiseAndExpression() ]
+  {
+   if (tk!=null) {
+     jjtThis.addTerm(createString(tk.image),1); 
+   }
+  }
 }
 
 void EqualityExpression() throws TermWareException : 
@@ -1298,7 +1349,7 @@ void CastExpression() throws TermWareException :
 {
   [ LOOKAHEAD("(" <VARTYPE> ")") "(" tk=<VARTYPE> ")" ] UnaryExpression()
  {
-   if (tk!=null) jjtThis.addTerm(createAtom(tk.image),1);
+   if (tk!=null) jjtThis.addTerm(createAtom(tk.image),0);
  }
 }
 
@@ -1337,7 +1388,7 @@ void IncDecSuffix() throws TermWareException :
  Token tk=null;
 }
 {
-  ( ( tk="++" | tk="--" )
+  (LOOKAHEAD(2) ( tk="++" | tk="--" )
    { jjtThis.addTerm(createString(tk.image),jjtThis.getArity()); }
   )+
 }
@@ -1353,7 +1404,7 @@ void PostfixExpression() throws TermWareException :
 {
 }
 {
-  PrimaryExpression()
+     PrimaryExpression()
                        ( 
                                PostfixExpressionMethodCallSuffix() 
                         |
@@ -1426,6 +1477,8 @@ void PrimaryExpression() throws TermWareException :
 	ClassInstantiation() 
        |
 	Array()
+       |
+        ClosureExpression()
   )
 }
 
@@ -1477,6 +1530,19 @@ void CloneExpression() throws TermWareException : {}
   <CLONE> Variable()
 }
 
+void ClosureExpression() throws TermWareException:
+{
+  boolean withPL=false;
+}
+{
+  <FUNCTION> "(" [ParameterList() { withPL=true; }] ")" CompoundStatement()
+  {
+   if (!withPL) {
+     jjtThis.addTerm(createNil(),0);
+   }
+  }
+}
+
 void Variable() throws TermWareException: 
 {
  int nDollars=1;
@@ -1489,6 +1555,7 @@ void Variable() throws TermWareException:
            jjtThis.addTerm(createString(tk.image),1);
          }
 }
+
 
 
 void ArgumentExpressionList() throws TermWareException : {}
@@ -1524,11 +1591,14 @@ void String() throws TermWareException :
 	tk1=<SINGLE_STRING_LITERAL_START> tk2=<SINGLE_STRING_LITERAL_END>
            {
              s=getSpecialToken(tk2);
-             jjtThis.addTerm(createTerm("SingleStringLiteral",
-                             tk2.image.substring(0,tk2.image.length()-1)),0);
+             jjtThis.addTerm(createTerm("SingleStringLiteral",s),0);
            }
       |
-	<HEREDOC_START>
+	tk1=<HEREDOC_START>
+          {
+             s=getSpecialToken(tk1);
+             jjtThis.addTerm(createTerm("HereDoc",s),0);
+          }
 }
 
 void DoubleStringLiteral()  throws TermWareException : 

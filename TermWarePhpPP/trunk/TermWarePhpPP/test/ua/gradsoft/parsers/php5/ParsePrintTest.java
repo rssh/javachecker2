@@ -191,6 +191,12 @@ public class ParsePrintTest
     }
 
     @Test
+    public void testClosure1() throws Exception
+    {
+        doParsePrintParse("testdata/ta/function.anonymous.1.php",true);
+    }
+
+    @Test
     public void testSnPHOJAOClassDescription() throws Exception
     {
         String fname="testdata/sn/phpjaoClassDescription.php";
@@ -203,6 +209,8 @@ public class ParsePrintTest
         String fname="testdata/sn/phpjaoInhAdd.php";
         doParsePrintParse(fname,false);
     }
+
+
 
 
     @Test

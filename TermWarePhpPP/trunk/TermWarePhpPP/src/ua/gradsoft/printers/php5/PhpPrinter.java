@@ -166,6 +166,8 @@ public class PhpPrinter extends AbstractPrinter
             printMemberAbstractFunctionDeclaration(t,level);
         }else if (t.getName().equals("InterfaceMethodDeclaration")){
             printInterfaceMethodDeclaration(t,level);
+        }else if (t.getName().equals("ClosureExpression")) {
+            printClosureExpression(t,level);
         }else if (t.getName().equals("HtmlBlocks")) {
             printHtmlBlocks(t,level);
         }else if (t.getName().equals("HtmlBlock")) {
@@ -267,8 +269,12 @@ public class PhpPrinter extends AbstractPrinter
       writeTerm(t.getSubtermAt(0),level+1);
       out_.print(", ");
       writeTerm(t.getSubtermAt(1),level+1);
+      if (!t.getSubtermAt(2).isNil()) {
+        out_.print(", ");
+        writeTerm(t.getSubtermAt(2),level+1);
+      }
       out_.print(")");
-      writeTerm(t.getSubtermAt(2),level+1);
+      writeTerm(t.getSubtermAt(3),level+1);
     }
 
     public void printExpressionStatement(Term t, int level)
@@ -454,14 +460,15 @@ public class PhpPrinter extends AbstractPrinter
 
     public void printInterfaceMethodDeclaration(Term t, int level)
     {
-      out_.print("function ");  
-      boolean isRef = t.getSubtermAt(0).getBoolean();
+      printAttributesList(t.getSubtermAt(0),level);
+      out_.print(" function ");
+      boolean isRef = t.getSubtermAt(1).getBoolean();
       if (isRef) {
           out_.print("&");
       }
-      printIdentifier(t.getSubtermAt(1),level+1);
+      printIdentifier(t.getSubtermAt(2),level+1);
       out_.print("(");
-      Term params=t.getSubtermAt(2);
+      Term params=t.getSubtermAt(3);
       if (!params.isNil()) {
           if (params.getName().equals("SParameterList")) {
               params=params.getSubtermAt(0);
@@ -475,11 +482,11 @@ public class PhpPrinter extends AbstractPrinter
           }
       }
       out_.print(") ");
-      boolean emptyBody = t.getSubtermAt(3).getBoolean();
+      boolean emptyBody = t.getSubtermAt(4).getBoolean();
       if (emptyBody) {
           out_.print("{ }");
       }
-      writeTerm(t.getSubtermAt(4),level);
+      writeTerm(t.getSubtermAt(5),level);
     }
 
 
@@ -604,19 +611,27 @@ public class PhpPrinter extends AbstractPrinter
     {
         if (t.getArity()==1) {
           Term list = t.getSubtermAt(0);
-          while(!list.isNil()) {
-            writeTerm(list.getSubtermAt(0),level);
-            list=list.getSubtermAt(1);
-            if (!list.isNil()) {
-                out_.print(", ");
-            }
-          }
+          printAttributesList(list,level);
         }else{
           out_.print("ATTRIBUTES(");  
           t.print(out_);
           out_.print(")");  
         }
     }
+
+    private void printAttributesList(Term list, int level)
+    {
+          while(!list.isNil()) {
+            writeTerm(list.getSubtermAt(0),level);
+            list=list.getSubtermAt(1);
+            if (!list.isNil()) {
+                out_.print(", ");
+            } else {
+                out_.print(" ");
+            }
+          }
+    }
+
 
     public void printMethodCall(Term t, int level)
     {
@@ -1170,6 +1185,23 @@ public class PhpPrinter extends AbstractPrinter
      }
     }
 
+    public void printClosureExpression(Term t, int level)
+    {
+      Term sParameterList = t.getSubtermAt(0);
+      Term statement = t.getSubtermAt(1);
+      out_.print(" function (");
+      Term curr = sParameterList.getSubtermAt(0);
+      while(!curr.isNil()) {
+          Term ct = curr.getSubtermAt(0);
+          curr=curr.getSubtermAt(1);
+          writeTerm(ct, level+1);
+          if (!curr.isNil()) {
+              out_.print(", ");
+          }
+      }
+      out_.print(")");
+      writeTerm(statement, level+1);
+    }
 
     public void printInvisible(Term t, int level)
     {
