@@ -1,9 +1,0 @@
-Checkers(
-[
- #define(UnusedLocally,resources,"unused private methods or fields",
- #       JAVA_CLASS, 
- #       "ua.gradsoft.javachecker.checkers.UnusedMethodsAndFieldsChecker",
- #       true)
- #
-]
-);
