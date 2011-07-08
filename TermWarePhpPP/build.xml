@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<!-- build file for TermWare/PHP driver  -->
+<project name="TermWarePhpPP" default="build" basedir="."
+   xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
+>
+
+
+ <property file="build.properties" />
+
+ <import file="build-ivy.xml" />
+
+ <!-- set here location of JavaCC [version 4.2] -->
+ <condition property="javacc.int.home" value="${javacchome}"
+     else="lib" >
+   <isset property="javacchome" />
+ </condition>
+
+
+  
+ <!-- task definitions -->
+ 
+ <!-- targets -->
+
+ <target name="clean">
+  <delete>
+   <fileset dir="src"   includes="**/*.class" />
+   <fileset dir="test"   includes="**/*.class" />
+   <fileset dir="output"   includes="**/*.jar" />
+  </delete>
+ </target>
+
+
+ <target name="build-php5-jj" depends="retrieve-for-build" >
+   <!--
+     <ivy:artifactproperty name="[module].version" value="[revision]"
+                           override="true" />     
+   -->
+     <echo message="javacc.int.home=${javacc.int.home}" />
+     <echo message="javacc.version=${javacc.version}" />
+     <echo message="javacc.v1=${javacc.v1}" />
+     <echo message="ivy.version=${ivy.version}" />
+     <java classpath="${javacc.int.home}/javacc-${javacc.version}.jar"
+           classname="org.javacc.jjtree.Main"
+           fork="true"
+           dir="src/ua/gradsoft/parsers/php5/jjt"
+           >
+           <arg file="src/ua/gradsoft/parsers/php5/jjt/php.jt"/>
+     </java>
+ </target>
+
+ <target name="build-php5-jv" depends="build-php5-jj">
+     <java classpath="${javacc.int.home}/javacc-${javacc.version}.jar"
+           classname="org.javacc.parser.Main"
+           fork="true"
+           dir="src/ua/gradsoft/parsers/php5/jjt"
+           >
+           <arg file="src/ua/gradsoft/parsers/php5/jjt/php.jj"/>
+     </java>
+ </target>
+ 
+
+ <target name="build-php5-classes" depends="build-php5-jv,retrieve-for-default">
+  <javac srcdir="src" includes="**/*.java" debug="${debug}" >
+    <classpath>
+      <pathelement location="src"/>
+      <pathelement location="lib/TermWare-${termware.version}.jar"/>
+      <pathelement location="${java.class.path}/"/>      
+    </classpath>
+  </javac>
+ </target>
+ 
+ <target name="build-lib"  depends="build-php5-classes">
+   <jar basedir="src" includes="**/*.class,**/*.dtd" 
+       destfile="output/TermWarePhp-${version}.jar" 
+       index="true">
+  <include name="build"/>
+  <manifest>
+   <attribute name="Build-By" value="${user-name}"/>
+   <attribute name="Extension-Name" value="TermWarePhp" />
+   <attribute name="Specification-Vendor" value="GradSoft Ltd" />
+   <attribute name="Specification-Version" value="1.0" />
+   <attribute name="Implementation-Vendor-Id" value="ua.gradsoft" />
+   <attribute name="Implementation-Vendor" value="GradSoft Ltd" />
+   <attribute name="Implementation-Version" value="${version}" />
+  </manifest>
+  </jar>
+ </target>
+
+  <target name="build-test" depends="build-lib,retrieve-for-test">
+  <javac srcdir="test" includes="**/*.java" debug="${debug}" >
+    <classpath>
+      <pathelement location="test"/>
+      <pathelement location="lib/TermWare-${termware.version}.jar"/>
+      <pathelement location="lib/junit-${junit.version}.jar"/>
+      <pathelement location="output/TermWarePhp-${version}.jar"/>
+      <pathelement location="${java.class.path}/"/>      
+    </classpath>
+  </javac>     
+  <jar basedir="test" includes="**/*.class,**/*.dtd" 
+       destfile="output/TermWarePhpTests-${version}.jar" 
+       index="true"/>
+ </target>
+
+ <target name="build" depends="build-lib,build-test">     
+ </target>
+ 
+  <target name="test" depends="build-test" >
+    <junit >
+     <formatter type="plain" />
+     <batchtest>
+      <fileset dir="test" >
+        <include name="**/*Test.java" />
+        <exclude name="**/AllTests.class" />
+      </fileset>
+     </batchtest>
+     <classpath>
+      <pathelement location="lib/TermWare-${termware.version}.jar"/>
+      <pathelement location="output/TermWarePhp-${version}.jar"/>
+      <pathelement location="output/TermWarePhpTests-${version}.jar" />
+      <pathelement location="lib/junit-${junit.version}.jar"/>
+     </classpath>
+    </junit>
+ </target>
+
+ 
+ <target name="api-docs">
+  <javadoc sourcepath="src" destdir="doc/api"
+           packagenames="ua.gradsoft.parsers.php5,ua.gradsoft.printers.php5"
+  >
+   <classpath>
+      <pathelement location="lib/TermWare-${termware.version}.jar"/>
+      <pathelement location="${java.class.path}/"/>      
+   </classpath>
+  </javadoc>
+ </target>
+
+ <target name="docs" depends="api-docs">
+ </target>
+
+ <target name="source-distributive" depends="build,docs">
+  <mkdir dir="output/TermWarePhp-src-${version}" />
+  <copy todir="output/TermWarePhp-src-${version}" >
+   <fileset dir="." >
+    <include name="**/*.xml" />
+    <include name="**/*.java" />
+    <include name="**/*.php" />
+    <include name="**/*.properties" />
+    <include name="src/*" />
+    <include name="lib/*" />
+    <include name="docs/**/*" />
+    <exclude name="output/*.jar" />
+    <exclude name="output/*.tar.gz" />
+    <exclude name="output/TermWarePhp*/*" />
+    <include name="output/README" />
+    <exclude name="nbproject/private/*" />
+    <exclude name="**/*.class" />
+   </fileset>
+  </copy>
+  <tar basedir="output"
+       destfile="output/TermWarePhp-src-${version}.tar"
+       defaultexcludes="yes"
+       includes="TermWarePhp-src-${version}/**/*" />
+  <gzip src="output/TermWarePhp-src-${version}.tar" 
+        destfile="output/TermWarePhp-src-${version}.tar.gz" 
+  />
+  <delete file="output/TermWarePhp-src-${version}.tar" />
+  <delete dir="output/TermWarePhp-src-${version}" />
+ </target>
+
+ <target name="publish" depends="source-distributive,publish.only" />
+
+</project>

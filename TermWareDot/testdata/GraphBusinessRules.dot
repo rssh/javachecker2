@@ -1,0 +1,25 @@
+
+
+digraph x {
+
+     receiveOrder -> shipOrderAndSendInvoice [ label="creditLimit() > price()" ];
+     shipOrderAndSendInvoice -> shipOrder;
+     shipOrderAndSendInvoice -> sendInvoice;
+     receiveOrder -> sendInvoice;
+     receivePayment -> receivePaymentForInvoice 
+          [label="determinate invoice from payment" ];
+     receivePayment -> "Signal about payment without invoice" 
+          [label="can't find invoice" ];
+
+     receivePaymentForInvoice -> shipOrderAndMarkPayed
+          [label="! order.isShipped()"];
+
+      shipOrderAndMarkPayed -> shipOrder;
+      shipOrderAndMarkPayed -> markPayed;
+
+     receivePaymentForInvoice -> markPayed; 
+
+    
+
+}
+

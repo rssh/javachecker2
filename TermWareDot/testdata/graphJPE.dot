@@ -1,0 +1,28 @@
+
+digraph x {
+
+  "Java source/generic";
+  JPE [shape="box"];
+
+  "Java source/generic"->JPE;
+  
+  "Java source/Device1";
+  "Java source/Device2";
+
+  JPE -> "Java source/Device1";
+  JPE -> "Java source/Device2";
+
+  "Constants/Device1";
+  "Constants/Device2";
+
+  "Constants/Device1"-> JPE;
+  "Constants/Device2"-> JPE;
+
+  "Constants/Device1"-> "Java source/Device1" [dir="none",shape="dots"];
+  "Constants/Device2"-> "Java source/Device2" [dir="none",shape="dots"];
+
+  //"Java source/generic"-> Constants [dir=none]
+  //Constants -> "Constants/Device1" [dir=none]
+  //Constants -> "Constants/Device2" [dir=none]
+
+}

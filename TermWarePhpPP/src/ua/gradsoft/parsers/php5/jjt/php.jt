@@ -1,0 +1,1700 @@
+/*
+
+  PHP grammar defintion for use with JavaCC
+  By Satyam (satyam@satyam.com.ar)
+
+  This is a partial grammar which I meant to use in a project of mine.
+  I refined it a little bit beyond my specific need, but didn't go to the 
+  very end.
+  It works for the purpose of my project, but it is not complete.
+
+  It was tested by parsing all the source files in the PHP 5.0 test suite,
+  and a couple of other applications (a CMS and an image gallery).
+  Some files in these sets were skipped because they use syntax not supported
+  in this parser, as noted in the TODO lists below.
+
+
+TODO:
+
+- Alternate notation for control flow, if: endif, etc.
+- Curly braces to disambiguate variable variable array references: ${$a[1]} against ${$a}[1]
+- Notice comment on line 555
+- There are a couple of warnings when compiling which I wasn't able to solve nor was I able
+  to figure out if they mattered at all.
+*/
+
+options {
+  DEBUG_PARSER = false;
+  DEBUG_LOOKAHEAD = false;
+  DEBUG_TOKEN_MANAGER = false;
+  NODE_EXTENDS = "PhpNode";
+  BUILD_NODE_FILES= false;
+  STATIC=false;
+}
+
+
+PARSER_BEGIN(PHP)
+package ua.gradsoft.parsers.php5.jjt;
+
+import java.util.*;
+import ua.gradsoft.termware.*;
+import ua.gradsoft.termware.exceptions.*;
+import ua.gradsoft.parsers.php5.*;
+
+
+public  class PHP {
+	private static PHP parser ;
+
+	public static void main ( String args [ ] ) {
+
+		if(args.length == 0){
+			System.out.println("PHP Parser Version 0.1Alpha:  Reading from standard input . . .");
+			parser = new PHP(System.in);
+		} else if (args.length == 1) {
+			System.out.println("PHP Parser Version 0.1Alpha:  Reading from file " + args[0] + " . . ." );
+			try {
+				parser = new PHP(new java.io.FileInputStream(args[0]));
+			}
+			catch(java.io.FileNotFoundException e){
+				System.out.println("PHP Parser Version 0.1:  File " + args[0] + " not found.");
+				return ;
+			}
+		} else {
+			System.out.println("PHP Parser Version 0.1Alpha:  Usage is one of:");
+			System.out.println("         java PHP < inputfile");
+			System.out.println("OR");
+			System.out.println("         java PHP inputfile");
+			return ;
+		}
+		parser.token_source.SwitchTo(HTML_STATE);
+		try {
+			parser.PhpPage();
+			System.out.println("PHP Parser Version 0.1Alpha:  PHP program parsed successfully.");
+		}
+		catch(TermWareException e) {
+			System.out.println("PHP Parser Version 0.1Alpha:  Encountered errors during parse.");
+			System.out.println(e.getMessage());
+                        e.printStackTrace();
+                }
+		catch(ParseException e) {
+			System.out.println("PHP Parser Version 0.1Alpha:  Encountered errors during parse.");
+			System.out.println(e.getMessage());
+		}
+	}
+
+    public SimpleNode getRootNode()
+     { return (SimpleNode)jjtree.rootNode(); }
+
+    public String getInFname()
+     { return inFname_; }
+
+    public void setInFname(String inFname)
+     { inFname_=inFname; }
+
+    public void  setTermWareInstance(TermWareInstance instance)
+     { termWareInstance_=instance; }
+
+    Term createString(String value) 
+    {
+        return termWareInstance_.getTermFactory().createString(value);
+    }
+
+    Term createAtom(String name) 
+    {
+        return termWareInstance_.getTermFactory().createAtom(name);
+    }
+
+    Term createNil() 
+    {
+        return termWareInstance_.getTermFactory().createNil();
+    }
+
+    Term createInt(int n) throws TermWareException
+    {
+      return termWareInstance_.getTermFactory().createInt(n);
+    }
+
+    Term createInt(String s) throws TermWareException
+    {
+      try {
+       int i = Integer.parseInt(s);
+       return termWareInstance_.getTermFactory().createInt(i);
+      }catch(NumberFormatException ex){
+        throw new TermParseException("Can't parse interger:"+s,ex); 
+      }
+    }
+
+    Term createFloat(String s) throws TermWareException
+    {
+      try {
+       double d = Double.parseDouble(s);
+       return termWareInstance_.getTermFactory().createDouble(d);
+      }catch(NumberFormatException ex){
+        throw new TermParseException("Can't parse interger:"+s,ex); 
+      }
+    }
+
+    Term createBoolean(boolean b) throws TermWareException
+    {
+      return termWareInstance_.getTermFactory().createBoolean(b);
+    }
+
+    Term createIdentifier(String name) throws TermWareException
+    {
+        return createTerm("Identifier",name);
+    }
+
+    Term createTerm(String name, Object ... subterms) throws TermWareException
+    {
+       Term[] terms = new Term[subterms.length];
+       for(int i=0; i<subterms.length; ++i) {
+         terms[i]=termWareInstance_.getTypeConversion().adopt(subterms[i]);
+       }
+       return termWareInstance_.getTermFactory().createTerm(name, terms);
+    }
+
+    Term createTerm(String name, Term ... subterms) throws TermWareException
+    {
+       return termWareInstance_.getTermFactory().createTerm(name, subterms);
+    }
+
+    Term adoptList(List<Term> l) throws TermWareException
+    {
+      return termWareInstance_.getTypeConversion().adopt(l);
+    }
+
+    private String getSpecialToken(Token tk)
+    {
+      String s="";
+      while(tk.specialToken != null) {
+         s=tk.specialToken.image+s;
+         tk=tk.specialToken;
+      }
+      return s;
+    }
+
+
+    private String inFname_;
+    private TermWareInstance termWareInstance_;
+
+
+}
+
+PARSER_END(PHP)
+
+TOKEN_MGR_DECLS : {
+	String HereDocEnd;
+}
+
+<HTML_STATE> TOKEN [IGNORE_CASE]: {
+	<PHP_BEGIN: "<?" ("php")?> : DEFAULT  |
+	<PHP_EXPR: "<?=" > : DEFAULT |
+	<HTML_OTHER: "<" ~[] >
+}
+
+<HTML_STATE> TOKEN : {
+	<HTML: (~["<"] | "<" ~["?"])+ >
+}
+
+<DEFAULT> SKIP :
+{	" "
+|	"\t"
+|	"\n"
+|	"\r"
+|	<SLASH_SLASH_COMMENT: "//" (~["\n","\r"])* ("\n" | "\r" | "\r\n")>
+|	<NUMERAL_COMMENT: "#" (~["\n","\r"])* ("\n" | "\r" | "\r\n")>
+|	<SLASH_STAR_COMMENT: "/*" (~["*"])* "*" ("*" | ~["*","/"] (~["*"])* "*")* "/">
+}
+
+<DEFAULT> TOKEN :
+{	<INTEGER_LITERAL: <DECIMAL_LITERAL> (["l","L"])? | <HEX_LITERAL> (["l","L"])? | <OCTAL_LITERAL> (["l","L"])?>
+|  		<#DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])*>
+|  		<#HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+>
+|  		<#OCTAL_LITERAL: "0" (["0"-"7"])*>
+|  	<FLOATING_POINT_LITERAL: (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])? | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])? | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])? | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]>
+|  		<#EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+>
+|  	<DOUBLE_STRING_LITERAL_START: "\""> : DOUBLE_STRING_LITERAL
+|  	<SINGLE_STRING_LITERAL_START: "'">  : SINGLE_STRING_LITERAL
+| 	<HEREDOC_START: "<<<"> : HEREDOC1
+}
+
+<SINGLE_STRING_LITERAL> MORE: {
+	<"\\">: SSL_SPECIAL
+}
+
+<SINGLE_STRING_LITERAL> TOKEN: {
+	<SINGLE_STRING_LITERAL_END: "'">: DEFAULT
+}
+
+<SINGLE_STRING_LITERAL> MORE:
+{	<(~[])>
+}
+
+<SSL_SPECIAL> MORE:
+{	<["'" , "\\"] > : SINGLE_STRING_LITERAL
+|	< ~[]> : SINGLE_STRING_LITERAL
+}
+
+<DOUBLE_STRING_LITERAL> TOKEN: {
+	<DOUBLE_STRING_LITERAL_END: "\""> : DEFAULT
+}
+
+<DOUBLE_STRING_LITERAL> TOKEN:
+{	<DSL_SIMPLE_VAR_START: "$"> :DSL_SIMPLE_VAR
+|	<DSL_COMPLEX_VAR_START: ("{$" | "${") > :DSL_COMPLEX_VAR
+}
+
+<DOUBLE_STRING_LITERAL> MORE: {
+	<"\\"> : DSL_SPECIAL
+}
+
+<DOUBLE_STRING_LITERAL> MORE: {
+	<TEXT: (~[])>
+}
+
+<DSL_COMPLEX_VAR> TOKEN: {
+	<DSL_COMPLEX_VAR_END: "}"> :DOUBLE_STRING_LITERAL
+}
+
+<DSL_COMPLEX_VAR> MORE: {
+	<DSL_CV_TEXT: (~[])>
+}
+
+<DSL_SIMPLE_VAR> TOKEN:
+{	<DSL_SIMPLE_VAR_END: <IDENTIFIER> ("[" <IDENTIFIER> "]") ? > :DOUBLE_STRING_LITERAL
+}
+
+<DSL_SIMPLE_VAR> TOKEN:
+{	<DSL_SIMPLE_STRING_VAR_END: "\""> :DEFAULT
+}
+
+<DSL_SIMPLE_VAR> TOKEN:
+{ 	<DSL_SIMPLE_VAR_WASNT: ~[]> :DOUBLE_STRING_LITERAL
+}
+
+<DSL_SPECIAL> MORE: {
+	<["n","t","b","r","f","\\","\"","$","{"]> :DOUBLE_STRING_LITERAL  |
+	<(["0"-"7"] (["0"-"7"])? | ["0"-"3"] ["0"-"7"] ["0"-"7"])> :DOUBLE_STRING_LITERAL |
+	<("x" | "X") ["0"-"9","A"-"F","a"-"f"](["0"-"9","A"-"F","a"-"f"])?> :DOUBLE_STRING_LITERAL |
+	< ~[]>:DOUBLE_STRING_LITERAL
+}
+
+
+<HEREDOC1> SKIP: {
+	<HD1: <IDENTIFIER>> {
+		HereDocEnd = image.toString();
+	} :HEREDOC
+}
+<HEREDOC> SKIP: {
+	<~["\n"]> |
+	<"\n"> :HEREDOC2
+}
+
+<HEREDOC, HEREDOC2> SKIP: {
+	< "\r" | " " >
+}
+
+<HEREDOC2> SKIP: {
+	<"\n"> |
+	<HD2: <IDENTIFIER>>
+	 {
+		SwitchTo( HereDocEnd.equals(image.toString()) ? DEFAULT : HEREDOC ) ;
+	} |
+	<~[] > :HEREDOC
+}
+
+
+
+<DEFAULT> TOKEN : {
+
+	<REQUIRE_ONCE: "require_once"> |
+	<REQUIRE: "require"> |
+	<INCLUDE_ONCE: "include_once"> |
+	<INCLUDE: "include"> |
+
+	<DEFINE: "define"> |
+
+	<ECHO: "echo"> |
+	<PRINT: "print"> |
+
+	<SWITCH: "switch"> |
+	<CASE: "case"> |
+	<DFLT: "default"> |
+	<BREAK: "break"> |
+
+	<RETURN: "return"> |
+
+	<DO: "do"> |
+
+	<WHILE: "while"> |
+
+	<FOREACH: "foreach"> |
+	<AS: "as"> |
+
+	<FOR: "for"> |
+	<CONTINUE: "continue"> |
+
+	<IF: "if"> |
+	<ELSE: "else"> |
+	<ELSEIF: "elseif"> |
+	<AND: "and"> |
+	<OR: "or"> |
+	<XOR: "xor"> |
+	<NOT: "not"> |
+
+	<FUNCTION: "function"> |
+
+	<CLASS: "class"> |
+	<EXTENDS: "extends" > |
+	<VAR: "var"> |
+	<PUBLIC: "public"> |
+	<PRIVATE: "private"> |
+	<PROTECTED: "protected"> |
+	<ABSTRACT: "abstract"> |
+	<FINAL: "final" > |
+	<STATIC: "static" > |
+	<INTERFACE: "interface"> |
+	<IMPLEMENTS: "implements"> |
+	<CONST: "const" > |
+	<CLONE: "clone" > |
+	<INSTANCEOF: "instanceof" > |
+
+	<GLOBAL: "global"> |
+
+	<ARRAY: "array"> |
+
+	<NEW: "new" > |
+
+	<PREDEFINED_CONSTANT: "null" | "true" | "false" > |
+
+	<PHP_END: "?>"  > : HTML_STATE |
+	<DOLLAR: "$" > :VAR_NAME_STATE |
+	<SEMICOLON: ";">
+| 	<TRY: "try">
+|	<CATCH: "catch">
+|	<THROW: "throw">
+|	<GOTO: "goto">
+
+|	<DECLARE: "declare">
+|	<NAMESPACE: "namespace">
+|	<USE: "use">
+
+}
+
+<VAR_NAME_STATE> TOKEN : 
+{	<VAR_NAME: <LETTER1> (<LETTER1> | <DIGIT1>)*> : DEFAULT
+|  		<#LETTER1: ["A"-"Z","_","a"-"z"]>
+|  		<#DIGIT1: ["0"-"9"]>
+|	<DOLLAR1: "$">
+}
+
+<DEFAULT> TOKEN: {
+	<VARTYPE: ("boolean" | "bool" | "integer" | "int" | "float" | "double" | "real" | "string" )>
+}
+
+
+<DEFAULT> TOKEN : {
+ 	<IDENTIFIER: <LETTER> (<LETTER> | <DIGIT>)*>
+|  		<#LETTER: ["A"-"Z","_","a"-"z"]>
+|  		<#DIGIT: ["0"-"9"]>
+}
+
+void PhpPage() throws TermWareException  : {}
+{
+	HtmlBlocks()
+	(
+		<PHP_BEGIN> (Statement())*
+	| 	
+                <EOF>
+                  { jjtThis.addTerm(createNil(),0); }
+	)
+}
+
+void HtmlBlocks() throws TermWareException  : {}
+{
+  (HtmlBlock())*
+}
+
+void HtmlBlock() throws TermWareException  : 
+{
+ Token htmlToken;
+}
+{	
+   htmlToken=<HTML>
+     { jjtThis.addTerm(createString(htmlToken.image),0); }
+|	
+   htmlToken=<HTML_OTHER>
+     { jjtThis.addTerm(createString(htmlToken.image),0); }
+|	
+   <PHP_EXPR> Expression() <PHP_END>
+}
+
+void Statement() throws TermWareException  : {}
+{
+	LOOKAHEAD(2) GotoLabeledStatement() |
+	LOOKAHEAD(2) ClassDeclaration() |
+	LOOKAHEAD(2) InterfaceDeclaration() |
+	LOOKAHEAD(2) ExpressionStatement() |
+	CompoundStatement() |
+	SelectionStatement() |
+	IterationStatement() |
+	JumpStatement() |
+	IncludeStatement() |
+	EchoStatement() |
+	DefineStatement() |
+	MemberDeclaration()
+|	ThrowStatement()
+| 	TryBlock()
+|       NamespaceStatement()
+|       UseStatement()
+|       DeclareStatement()
+|	EndOfStatement()
+}
+
+void  ThrowStatement() throws TermWareException  : {}
+{
+	<THROW> ClassInstantiation() EndOfStatement()
+}
+
+void TryBlock() throws TermWareException  : {}
+{
+	<TRY> CompoundStatement() CatchBlocks()
+}
+
+void CatchBlocks() throws TermWareException :
+{}
+{
+  ( CatchBlock() )+
+}
+
+void CatchBlock() throws TermWareException :
+{
+ Token tk;
+}
+{
+  <CATCH> "(" tk=<IDENTIFIER> Variable() ")" CompoundStatement()
+  { jjtThis.addTerm(createIdentifier(tk.image),0); }
+}
+
+void EndOfStatement() throws TermWareException : {}
+{
+	";" | EmbeddedHtml()
+}
+
+void EmbeddedHtml() throws TermWareException : 
+{
+  Token htmlToken;
+  List<Term> htmls = new ArrayList<Term>();
+  Term st = createNil();
+}
+{	<PHP_END>  ( htmlToken=<HTML> 
+                         { htmls.add(createString(htmlToken.image)); } 
+                     | htmlToken=<HTML_OTHER> 
+                         { htmls.add(createString(htmlToken.image)); } 
+                   )*
+	(
+		<PHP_BEGIN>
+                  { st=createAtom("PhpBegin"); }
+	|	<EOF>
+                 
+	)
+         { 
+           jjtThis.addTerm(adoptList(htmls),0);
+           jjtThis.addTerm(st,1);
+         }
+}
+
+void DefineStatement() throws TermWareException  : 
+{
+ boolean withcssn = false;
+}
+{
+	<DEFINE> "(" String() "," Expression() 
+                     [ "," Expression() { withcssn = true; } ] 
+                 ")" EndOfStatement()
+        {
+          if (!withcssn) {
+            jjtThis.addTerm(createNil(),2);
+          }
+        }
+}
+
+void LabeledStatements() throws TermWareException  : {}
+{
+	<CASE> Expression() ":" Statements() 
+       |
+	<DFLT> ":" Statements()
+        { jjtThis.addTerm(createAtom("default"),0); }
+}
+
+void Statements() throws TermWareException  : 
+{}
+{
+ (Statement())*
+}
+
+void GotoLabeledStatement() throws TermWareException : 
+{
+ Token tk;
+}
+{
+     tk=<IDENTIFIER> ":" Statement()
+      { jjtThis.addTerm(createString(tk.image),0); 
+        jjtThis.setAttribute("line",createInt(tk.beginLine));
+        jjtThis.setAttribute("file",createString(getInFname()));
+      }
+}
+
+void ExpressionStatement() throws TermWareException  : {}
+{
+	Expression() EndOfStatement()
+}
+
+void CompoundStatement() throws TermWareException  : 
+{
+ Token tk=null;
+}
+{
+	tk="{"
+	    ( Statement())*
+	"}"
+      {
+        jjtThis.setAttribute("line",createInt(tk.beginLine));
+        jjtThis.setAttribute("file",createString(getInFname()));
+      }
+}
+
+void SelectionStatement() throws TermWareException  : 
+{
+}
+{
+ SelectionIfStatement()
+ |
+ SelectionSwitchStatement()
+}
+
+void SelectionIfStatement() throws TermWareException  : 
+{
+  boolean withElseIf = false;
+  boolean withElse = false;
+}
+{
+	<IF> "(" Expression() ")" Statement() 
+             [LOOKAHEAD(2) SelectionElseIfClauses() { withElseIf = true; } ] 
+             [LOOKAHEAD(2) <ELSE> Statement() { withElse=true; } ] 
+  {
+    if (!withElseIf) {
+       jjtThis.addTerm(createNil(),2); 
+    }
+    if (!withElse) {
+       jjtThis.addTerm(createNil(),3); 
+    }
+  }
+}
+
+
+void SelectionSwitchStatement() throws TermWareException  : 
+{
+}
+{
+	<SWITCH> "(" Expression() ")" CaseStatements()
+}
+
+void CaseStatements() throws TermWareException  : 
+{
+}
+{
+  "{"
+     ( LabeledStatements() )*
+  "}"
+}
+
+void SelectionElseIfClauses() throws TermWareException :
+{
+}
+{
+   ( LOOKAHEAD(2) SelectionElseIfClause() )+
+}
+
+void SelectionElseIfClause() throws TermWareException :
+{
+}
+{
+   ( <ELSEIF> "(" Expression() ")" Statement() )
+}
+
+void IterationStatement() throws TermWareException  : {}
+{
+	WhileStatement() 
+       |
+        DoStatement()
+       |
+        ForStatement()
+       |
+        ForEachStatement()
+}
+
+void WhileStatement() throws TermWareException  : 
+{
+ Token tk=null;
+}
+{
+  tk=<WHILE> "(" Expression() ")" Statement() 
+  { 
+    jjtThis.setAttribute("line",createInt(tk.beginLine));
+    jjtThis.setAttribute("file",createString(getInFname()));
+  }
+}
+
+void DoStatement() throws TermWareException  : 
+{
+ Token tk=null;
+}
+{
+ <DO> Statement() <WHILE> "(" Expression() ")" EndOfStatement() 
+  { 
+    jjtThis.setAttribute("line",createInt(tk.beginLine));
+    jjtThis.setAttribute("file",createString(getInFname()));
+  }
+}
+
+void ForStatement() throws TermWareException  : 
+{
+  boolean withE1=false;
+  boolean withE2=false;
+  boolean withE3=false;
+}
+{
+  <FOR> "(" [ Expression() {withE1=true;}] ";" 
+            [ Expression() {withE2=true;}] ";" 
+            [ Expression() {withE3=true;}] ")" Statement() 
+  {
+   if (!withE1) {
+     jjtThis.addTerm(createNil(),0);
+   }
+   if (!withE2) {
+     jjtThis.addTerm(createNil(),1);
+   }
+   if (!withE3) {
+     jjtThis.addTerm(createNil(),2);
+   }
+  }
+}
+
+void ForEachStatement() throws TermWareException  : 
+{
+ boolean withKey = false;
+ boolean withExpr = false;
+ boolean withRef = false;
+}
+{
+  <FOREACH> "(" 
+               [Expression() { withExpr=true; } ] 
+               <AS> [ "&" {withRef=true;} ]  Variable() 
+                  [ "=>" ["&" { withRef=true;} ] Variable() 
+                        { withKey=true; }
+                  ]
+               ")" Statement()
+  {
+    if (!withExpr) {
+       jjtThis.addTerm(createNil(),0);
+    }
+    if (!withKey) {
+       jjtThis.addTerm(createNil(),1);
+    }
+    jjtThis.addTerm(createBoolean(withRef),3);
+  }
+}
+
+
+void JumpStatement() throws TermWareException  : {}
+{
+        ContinueStatement()
+       |
+        BreakStatement()
+       |
+        ReturnStatement()
+       |
+        GotoStatement()
+}
+
+
+void ContinueStatement() throws TermWareException  : 
+{
+ Token tk=null;
+}
+{
+  <CONTINUE> [tk=<INTEGER_LITERAL>] EndOfStatement() 
+  { if (tk!=null) {
+      jjtThis.addTerm(createInt(tk.image),0);
+    }else{
+      jjtThis.addTerm(createNil(),0);
+    }
+  }
+}
+
+void BreakStatement() throws TermWareException  : 
+{
+ Token tk=null;
+}
+{
+  <BREAK> [tk=<INTEGER_LITERAL>] EndOfStatement() 
+  { if (tk!=null) {
+      jjtThis.addTerm(createInt(tk.image),0);
+    }else{
+      jjtThis.addTerm(createNil(),0);
+    }
+  }
+}
+
+void ReturnStatement() throws TermWareException  : 
+{
+ boolean withexpr=false;
+}
+{
+  <RETURN> [ Expression() {withexpr=true;}] EndOfStatement() 
+  { if (!withexpr) {
+      jjtThis.addTerm(createNil(),0);
+    }
+  }
+}
+
+void GotoStatement() throws TermWareException  : 
+{
+ Token tk=null;
+}
+{
+  <GOTO> tk=<IDENTIFIER> EndOfStatement() 
+  { jjtThis.addTerm(createString(tk.image),0); }
+}
+
+void ParameterList() throws TermWareException  : {}
+{
+	Parameter() (LOOKAHEAD(2) "," Parameter())*
+}
+
+void Parameter() throws TermWareException  : 
+{
+ Token tkId=null;
+ Token tkRef=null;
+ boolean withInit=false;
+}
+{
+	[tkId=<IDENTIFIER> ] [tkRef="&"] Variable() 
+                                  ["=" Expression() {withInit=true;}]
+  {
+   if (tkId==null) {
+     jjtThis.addTerm(createNil(),0);
+   }else{
+     jjtThis.addTerm(createIdentifier(tkId.image),0);
+   }
+   jjtThis.addTerm(createBoolean(tkRef!=null),1);
+   if (!withInit) {
+     jjtThis.addTerm(createNil(),3);
+   }
+  }
+}
+
+
+void ClassDeclaration() throws TermWareException : 
+{
+ Token tkAbstract=null;
+ Token tkFinal=null;
+ Token tkName=null;
+ Token tkSuper=null;
+ Token tkI=null;
+ List<Term> implementsList = new ArrayList<Term>();
+}
+{
+	[tkAbstract=<ABSTRACT> | tkFinal=<FINAL> ] 
+          <CLASS> tkName=<IDENTIFIER> 
+         [<EXTENDS> tkSuper=<IDENTIFIER>] 
+         [<IMPLEMENTS> tkI=<IDENTIFIER> { implementsList.add(
+                                             createIdentifier(tkI.image)); }
+                      ( "," tkI=<IDENTIFIER>
+                         { implementsList.add(createIdentifier(tkI.image)); }
+                      ) * ] 
+         ClassMembers()
+  {
+    if (tkAbstract!=null) {
+     jjtThis.addTerm(createAtom("abstract"),0);
+    }else if(tkFinal!=null){
+     jjtThis.addTerm(createAtom("final"),0);
+    }else{
+     jjtThis.addTerm(createNil(),0);
+    }
+    jjtThis.addTerm(createIdentifier(tkName.image),1);
+    if (tkSuper!=null) {
+      jjtThis.addTerm(createIdentifier(tkSuper.image),2);
+    }else{
+      jjtThis.addTerm(createNil(),2);
+    }
+    jjtThis.addTerm(adoptList(implementsList),3);
+  }
+}
+
+void ClassMembers() throws TermWareException : {}
+{
+	"{" (MemberDeclaration() )* "}"
+}
+
+void MemberDeclaration() throws TermWareException : 
+{
+}
+{
+	LOOKAHEAD( (<FINAL> | Visibility() | <STATIC> )* <FUNCTION>) 
+        MemberFunctionDeclaration()
+      |
+	LOOKAHEAD([Visibility()] <CONST>) 
+        MemberConstantDeclaration()
+       |
+        MemberVariablesDeclaration()
+       |
+        MemberGlobalsDeclaration()
+       |
+        MemberAbstractFunctionDeclaration()
+}
+
+void MemberFunctionDeclaration() throws TermWareException : 
+{
+ Token tkRef=null;
+ Token tkName=null; 
+ boolean withPL=false;
+}
+{
+      MemberFunctionAttributes() <FUNCTION> [tkRef="&"]  tkName=<IDENTIFIER> 
+          "(" [ParameterList() { withPL=true; } ] ")" CompoundStatement() 
+      {
+        if (tkRef!=null) {
+          jjtThis.addTerm(createBoolean(true),1);
+        }else{
+          jjtThis.addTerm(createBoolean(false),1);
+        }
+        jjtThis.addTerm(createIdentifier(tkName.image),2);
+        if (withPL==false) {
+          jjtThis.addTerm(createNil(),3);
+        }
+      }
+}
+
+void MemberConstantDeclaration() throws TermWareException :
+{
+ boolean withV=false;
+ Token tk=null;
+}
+{
+  [Visibility() {withV=true;}] <CONST> 
+          tk=<IDENTIFIER> "=" Expression()  EndOfStatement() 
+  {
+    if (!withV) {
+      jjtThis.addTerm(createNil(),0);
+    }
+    jjtThis.addTerm(createIdentifier(tk.image),1);
+  }
+}
+
+
+void MemberVariablesDeclaration() throws TermWareException :
+{}
+{
+  MemberVariableAttributes() VariableDeclSeq() EndOfStatement() 
+}
+
+void VariableDeclSeq() throws TermWareException :
+{}
+{
+  VariableDecl() ("," VariableDecl() )* 
+}
+
+void VariableDecl() throws TermWareException :
+{
+ Token tk;
+ boolean withExpr=false;
+}
+{
+  <DOLLAR> tk=<VAR_NAME> [ "=" Expression() { withExpr=true; } ] 
+    { jjtThis.addTerm(createIdentifier(tk.image),0); 
+      if (!withExpr) {
+        jjtThis.addTerm(createNil(),1); 
+      }
+    }
+}
+
+
+void MemberVariableAttributes() throws TermWareException :
+{
+}
+{
+  (    <VAR> { jjtThis.addTerm( createAtom("var"), jjtThis.getArity()); }
+     | Visibility() 
+     | <STATIC>  { jjtThis.addTerm( createAtom("static"), jjtThis.getArity()); }
+  )* 
+}
+
+void MemberGlobalsDeclaration() throws TermWareException :
+{}
+{
+ <GLOBAL> VarList() EndOfStatement() 
+}
+
+void VarList() throws TermWareException :
+{}
+{
+  Variable() ("," Variable())*  
+}
+
+void MemberAbstractFunctionDeclaration() throws TermWareException : 
+{
+ Token tkRef = null;
+ Token tkId = null;
+ boolean withPL = false;
+}
+{
+	<ABSTRACT> MemberFunctionAttributes() 
+          <FUNCTION> [tkRef="&"] tkId=<IDENTIFIER> 
+            "(" [ParameterList() {withPL=true;}] ")" EndOfStatement()
+  {
+    jjtThis.addTerm(createBoolean(tkRef!=null),1);
+    jjtThis.addTerm(createIdentifier(tkId.image),2);
+    if (!withPL) {
+      jjtThis.addTerm(createNil(),3);
+    }
+  }
+}
+
+void MemberFunctionAttributes() throws TermWareException : 
+{
+}
+{
+  ( <FINAL>  { jjtThis.addTerm(createAtom("final"),jjtThis.getArity()); }
+    | Visibility() 
+    | <STATIC> { jjtThis.addTerm(createAtom("static"),jjtThis.getArity()); }
+  )* 
+}
+
+
+void InterfaceDeclaration() throws TermWareException : 
+{
+ Token tkId=null;
+ List<Term> extendsList = new ArrayList<Term>();
+ Token tkn1=null; 
+ Token tkn2=null; 
+}
+{
+	<INTERFACE> tkId=<IDENTIFIER> 
+          [<EXTENDS> tkn1=<IDENTIFIER> 
+                   { extendsList.add(createIdentifier(tkn1.image)); }
+                   ("," tkn2=<IDENTIFIER> 
+                      { extendsList.add(createIdentifier(tkn2.image)); }
+                   )* ] 
+         InterfaceMembers()
+  {
+    jjtThis.addTerm(createIdentifier(tkId.image),0);
+    if (extendsList.size()==0) {
+      jjtThis.addTerm(createNil(),1);
+    } else {
+      jjtThis.addTerm(adoptList(extendsList),1);
+    }
+  }
+}
+
+void InterfaceMembers() throws TermWareException : {}
+{
+	"{" ( InterfaceMember() )* "}"
+}
+
+void InterfaceMember() throws TermWareException : {}
+{
+      LOOKAHEAD((<ABSTRACT>|<PUBLIC>)* <FUNCTION>)
+      InterfaceMethodDeclaration()
+/*
+  // I know nothing about this future in PHP
+  //  Official documentation also know nothing, so,
+  //  we will think that this is bug.
+      |
+	<DOLLAR> <VAR_NAME> ("," <DOLLAR> <VAR_NAME>)* 
+*/
+      |
+	LOOKAHEAD([Visibility()] <CONST>) 
+        MemberConstantDeclaration()
+}
+
+void InterfaceMethodDeclaration() throws TermWareException : 
+{
+ Token tkAbstract=null;
+ Token tkPublic=null;
+ Token tkRef=null;
+ Token tkId=null;
+ boolean  withPL=false;
+ boolean  withBody=false;
+ Term  attrs=createNil();
+}
+{
+ (tkAbstract=<ABSTRACT> | tkPublic=<PUBLIC>)* <FUNCTION> [tkRef="&"]  
+    tkId=<IDENTIFIER> 
+          "(" [ParameterList()  { withPL=true; }] ")" 
+                                            ["{" "}" { withBody=true; }]
+           EndOfStatement()
+ {
+  if (tkAbstract!=null) {
+    attrs=createTerm("cons",createAtom("abstract"),attrs);
+  } 
+  if (tkPublic!=null) {
+    attrs=createTerm("cons",createAtom("public"),attrs);
+  }
+  jjtThis.addTerm(attrs,0); 
+  jjtThis.addTerm(createBoolean(tkRef!=null),1); 
+  jjtThis.addTerm(createIdentifier(tkId.image),2); 
+  if (!withPL) {
+    jjtThis.addTerm(createNil(),3); 
+  }
+  jjtThis.addTerm(createBoolean(withBody),4); 
+ }
+}
+
+void IncludeStatement() throws TermWareException : 
+{
+ Token refTk=null;
+ Token wordTk=null;
+}
+{
+	[refTk="@"] ( 
+           wordTk=<INCLUDE> 
+          | 
+           wordTk=<INCLUDE_ONCE> 
+          | 
+           wordTk=<REQUIRE> 
+          | 
+           wordTk=<REQUIRE_ONCE>
+         ) (LOOKAHEAD(2) "(" Expression() ")" | Expression() ) EndOfStatement()
+   {
+     if (refTk==null) {
+       jjtThis.addTerm(createBoolean(false),0);
+     } else {
+       jjtThis.addTerm(createBoolean(true),0);
+     }
+     jjtThis.addTerm(createAtom(wordTk.image),1);
+   }
+}
+
+void EchoStatement() throws TermWareException : 
+{
+ Token tkEcho=null;
+ Token tkPrint=null;
+}
+{
+  (tkEcho=<ECHO> | tkPrint=<PRINT> ) ArgumentExpressionList() EndOfStatement()
+  {
+   Term at = createAtom(tkEcho!=null ? "echo" : "print");
+   jjtThis.addTerm(at,0);
+  }
+}
+
+void NamespaceStatement() throws TermWareException : 
+{
+}
+{
+  <NAMESPACE> QualifiedName() EndOfStatement()
+}
+
+void QualifiedName() throws TermWareException:
+{
+ Token tk=null;
+ Token tk1 = null;
+ int n=0;
+}
+{
+  tk=<IDENTIFIER> ("\\" tk1=<IDENTIFIER> 
+                    { jjtThis.addTerm(createIdentifier(tk1.image),n); 
+                      ++n;
+                    }
+                  ) *
+  { jjtThis.addTerm(createIdentifier(tk.image),0); 
+    jjtThis.setAttribute("file",createString(getInFname()));
+    jjtThis.setAttribute("line",createInt(tk.beginLine));
+  }
+}
+
+void UseStatement() throws TermWareException : 
+{
+ Token tk;
+}
+{
+ tk=<USE> UsePairs() EndOfStatement()
+ {
+   jjtThis.setAttribute("file",createString(getInFname()));
+   jjtThis.setAttribute("line",createInt(tk.beginLine));
+ }
+}
+
+void UsePairs() throws TermWareException : 
+{
+}
+{
+  UsePair() ( "," UsePair() )*
+}
+
+void UsePair() throws TermWareException : 
+{
+ Token tk=null;
+}
+{
+  QualifiedName() [<AS> tk=<IDENTIFIER> ]
+  {
+    if (tk!=null) {
+      jjtThis.addTerm(createIdentifier(tk.image),1);
+    }else{
+      jjtThis.addTerm(createNil(),1);
+    }
+  }
+}
+
+void DeclareStatement() throws TermWareException : 
+{
+ Token tk=null;
+}
+{
+  tk=<DECLARE> "(" AssignmentExpression()  ")" Statement()
+  {
+   jjtThis.setAttribute("file",createString(getInFname()));
+   jjtThis.setAttribute("line",createInt(tk.beginLine));
+  }
+}
+
+
+void Expression() throws TermWareException : {}
+{
+	 LogicalTextOrExpression()
+}
+
+
+void LogicalTextOrExpression() throws TermWareException :{}
+{
+	LogicalTextXorExpression() [LOOKAHEAD(2) <OR> LogicalTextOrExpression() ]
+}
+
+void LogicalTextXorExpression() throws TermWareException : {}
+{
+	LogicalTextAndExpression() [LOOKAHEAD(2) <XOR> LogicalTextXorExpression() ]
+}
+
+void LogicalTextAndExpression() throws TermWareException : {}
+{
+	AssignmentExpression() [LOOKAHEAD(2) <AND> LogicalTextAndExpression() ]
+}
+
+void AssignmentExpression() throws TermWareException : {}
+{
+	ConditionalExpression() [LOOKAHEAD(2) AssignmentOperator() Expression()]
+}
+
+void AssignmentOperator() throws TermWareException : 
+{
+ Token tk;
+}
+{
+	( tk="=" 
+         | tk="+=" 
+         | tk="-=" 
+         | tk="*=" 
+         | tk="/=" 
+         | tk=".=" 
+         | tk="%=" 
+         | tk="&=" 
+         | tk="|=" 
+         | tk="^=" 
+         | tk="<<=" 
+         | tk=">>=" )
+   { jjtThis.addTerm(createString(tk.image),0); }
+}
+
+void ConditionalExpression() throws TermWareException : {}
+{
+	Logical_Or_Expression() [LOOKAHEAD(2) "?" Expression() ":" Expression() ]
+}
+
+
+void Logical_Or_Expression() throws TermWareException : 
+{
+ Token tk=null;
+}
+{
+  Logical_And_Expression() [LOOKAHEAD(2) tk="||" Logical_Or_Expression() ]
+  {
+   if (tk!=null) {
+     jjtThis.addTerm(createString(tk.image),1); 
+   }
+  }
+}
+
+void Logical_And_Expression() throws TermWareException : 
+{
+ Token tk=null;
+}
+{
+  BitwiseOrExpression() [LOOKAHEAD(2) tk="&&" Logical_And_Expression() ]
+  {
+   if (tk!=null) {
+     jjtThis.addTerm(createString(tk.image),1); 
+   }
+  }
+}
+
+void BitwiseOrExpression() throws TermWareException : 
+{
+ Token tk=null;
+}
+{
+  BitwiseXorExpression() [LOOKAHEAD(2) tk="|" BitwiseOrExpression() ]
+  {
+   if (tk!=null) {
+     jjtThis.addTerm(createString(tk.image),1); 
+   }
+  }
+}
+
+void BitwiseXorExpression() throws TermWareException : 
+{
+ Token tk=null;
+}
+{
+  BitwiseAndExpression() [LOOKAHEAD(2) tk="^" BitwiseXorExpression() ]
+  {
+   if (tk!=null) {
+     jjtThis.addTerm(createString(tk.image),1); 
+   }
+  }
+}
+
+void BitwiseAndExpression() throws TermWareException : 
+{
+ Token tk=null;
+}
+{
+  EqualityExpression() [LOOKAHEAD(2) tk="&" BitwiseAndExpression() ]
+  {
+   if (tk!=null) {
+     jjtThis.addTerm(createString(tk.image),1); 
+   }
+  }
+}
+
+void EqualityExpression() throws TermWareException : 
+{
+ Token tk=null;
+}
+{
+  RelationalExpression() 
+    [LOOKAHEAD(2) ( tk="==" | tk="!=" | tk="===" | tk="!==" ) 
+        EqualityExpression() ]
+  {
+    if (tk!=null) jjtThis.addTerm(createString(tk.image),1);
+  }
+}
+
+void RelationalExpression() throws TermWareException : 
+{
+ Token tk=null;
+}
+{
+  ShiftExpression() 
+    [LOOKAHEAD(2) ( tk="<" | tk=">" | tk="<=" | tk=">=" ) 
+           RelationalExpression() ]
+  {
+    if (tk!=null) jjtThis.addTerm(createString(tk.image),1);
+  }
+}
+
+void ShiftExpression() throws TermWareException : 
+{
+ Token tk=null;
+}
+{
+	AdditiveExpression() [LOOKAHEAD(2) ( tk="<<" | tk=">>" ) ShiftExpression() ]
+  {
+    if (tk!=null) jjtThis.addTerm(createString(tk.image),1);
+  }
+}
+
+void AdditiveExpression() throws TermWareException : 
+{
+ Token tk=null;
+}
+{
+	MultiplicativeExpression() 
+           [LOOKAHEAD(2) ( tk="+" | tk="-" | tk="." ) AdditiveExpression() ]
+    { if (tk!=null) {
+        jjtThis.addTerm(createString(tk.image),1);
+      }
+    }
+}
+
+void MultiplicativeExpression() throws TermWareException : 
+{
+ Token tk=null;
+}
+{
+  CastExpression() 
+     [LOOKAHEAD(2) ( tk="*" | tk="/" | tk="%" ) 
+              MultiplicativeExpression() ]
+  {
+    if (tk!=null) jjtThis.addTerm(createString(tk.image),1);
+  }
+}
+
+void CastExpression() throws TermWareException : 
+{
+  Token tk=null;
+}
+{
+  [ LOOKAHEAD("(" <VARTYPE> ")") "(" tk=<VARTYPE> ")" ] UnaryExpression()
+ {
+   if (tk!=null) jjtThis.addTerm(createAtom(tk.image),0);
+ }
+}
+
+void UnaryExpression() throws TermWareException : 
+{
+  Token tk=null;
+}
+{
+    (tk="&" | tk="-" | tk="~" | tk="!") UnaryExpression()
+       { jjtThis.addTerm(createString(tk.image),0); }
+    |
+     PrefixIncDecExpression()
+}
+
+void PrefixIncDecExpression() throws TermWareException : 
+{
+  Token tk=null;
+}
+{
+	( tk="++" | tk="--" )  PrefixIncDecExpression() 
+          { jjtThis.addTerm(createString(tk.image),0); }
+	|
+          LOOKAHEAD(2)
+          PostfixIncDecExpression0() 
+}
+
+void PostfixIncDecExpression0() throws TermWareException : 
+{
+}
+{
+    InstanceOfExpression() [LOOKAHEAD(2) IncDecSuffix() ]
+}
+
+void IncDecSuffix() throws TermWareException : 
+{
+ Token tk=null;
+}
+{
+  (LOOKAHEAD(2) ( tk="++" | tk="--" )
+   { jjtThis.addTerm(createString(tk.image),jjtThis.getArity()); }
+  )+
+}
+
+
+void InstanceOfExpression() throws TermWareException  : {}
+{
+	PostfixExpression() [LOOKAHEAD(2) <INSTANCEOF>  Expression() ]
+}
+
+
+void PostfixExpression() throws TermWareException : 
+{
+}
+{
+     PrimaryExpression()
+                       ( 
+                               PostfixExpressionMethodCallSuffix() 
+                        |
+                          LOOKAHEAD("->")
+                               PostfixExpressionMemberSelectorSuffix() 
+            /* TODO: There is a problem here.  Variable members
+	           can have reserved names since they are preceded
+		by a $, but the $ is ommitted here and this
+                parser will complain.  If you have declared:
+			private $array
+		you can have:
+   			$this->array
+		which is fine with PHP,
+		but will generate an error in this parser */
+                        |
+                          LOOKAHEAD("::")
+                          PostfixExpressionScopeResolutionSuffix() 
+                        |
+                          LOOKAHEAD("[")
+                          PostfixExpressionArrayIndexSuffix()
+                        |
+                          LOOKAHEAD("{")
+                          PostfixExpressionCurlyBracketsSuffix() 
+		 )*
+}
+
+void PostfixExpressionMethodCallSuffix() throws TermWareException : {}
+{
+ "("  ArgumentExpressionList() ")" 
+}
+
+void PostfixExpressionMemberSelectorSuffix() throws TermWareException : {}
+{
+ "->"  PostfixExpression() 
+}
+
+void PostfixExpressionScopeResolutionSuffix() throws TermWareException : 
+{}
+{
+  "::" PostfixExpression() 
+}
+
+void PostfixExpressionArrayIndexSuffix() throws TermWareException : 
+{}
+{
+  "[" [ Expression()] "]" 
+}
+
+void PostfixExpressionCurlyBracketsSuffix() throws TermWareException : 
+{}
+{
+  "{" Expression() "}"
+}
+
+void PrimaryExpression() throws TermWareException : 
+{
+ boolean withRef=false;
+}
+{
+  (
+	LOOKAHEAD(2) ["@" {withRef=true;}]  Variable() 
+          { if (withRef) { jjtThis.addTerm(createAtom("IgnoreErrors"),0); } }
+       |
+	["@" { withRef=true;} ] Constant() 
+          { if (withRef) { jjtThis.addTerm(createAtom("IgnoreErrors"),0); } }
+       |
+        LOOKAHEAD(3)
+	InBracesExpression()
+       |
+	ClassInstantiation() 
+       |
+	Array()
+       |
+        ClosureExpression()
+  )
+}
+
+void InBracesExpression() throws TermWareException :
+{}
+{
+	"(" Expression() ")" 
+}
+
+
+void Array() throws TermWareException : {}
+{
+  <ARRAY> "(" [ArrayKeyOrValue()] ( "," ArrayKeyOrValue() )* ")"
+}
+
+void ArrayKeyOrValue() throws TermWareException : 
+{}
+{
+  Expression() ["=>" Expression() ]
+}
+
+
+void ClassInstantiation() throws TermWareException : {}
+{
+  AllocationExpression()
+ |
+  CloneExpression()
+}
+
+void AllocationExpression() throws TermWareException : 
+{
+  Token tk;
+  boolean withArguments=false;
+}
+{
+ <NEW>  tk=<IDENTIFIER> 
+       [LOOKAHEAD(3) "(" ArgumentExpressionList() ")" { withArguments=true; }] 
+ {
+  jjtThis.addTerm(createIdentifier(tk.image),0);
+  if (!withArguments) {
+    jjtThis.addTerm(createNil(),1);
+  }
+ }
+}
+
+
+void CloneExpression() throws TermWareException : {}
+{
+  <CLONE> Variable()
+}
+
+void ClosureExpression() throws TermWareException:
+{
+  boolean withPL=false;
+}
+{
+  <FUNCTION> "(" [ParameterList() { withPL=true; }] ")" CompoundStatement()
+  {
+   if (!withPL) {
+     jjtThis.addTerm(createNil(),0);
+   }
+  }
+}
+
+void Variable() throws TermWareException: 
+{
+ int nDollars=1;
+ Token tk;
+}
+{
+	<DOLLAR> (<DOLLAR1> { ++nDollars; })* tk=<VAR_NAME>
+         { 
+           jjtThis.addTerm(createInt(nDollars),0);
+           jjtThis.addTerm(createString(tk.image),1);
+         }
+}
+
+
+
+void ArgumentExpressionList() throws TermWareException : {}
+{
+	[Expression()] ( "," Expression() )*
+}
+
+void Constant() throws TermWareException: 
+{
+ Token tk; 
+}
+{
+   tk=<INTEGER_LITERAL>  
+                    { jjtThis.addTerm(createInt(tk.image),0); }
+  | tk=<FLOATING_POINT_LITERAL> 
+                    { jjtThis.addTerm(createFloat(tk.image),0); }
+  | String() 
+  | tk=<PREDEFINED_CONSTANT> 
+                    { jjtThis.addTerm(createIdentifier(tk.image),0); }
+  | tk=<IDENTIFIER>
+                    { jjtThis.addTerm(createIdentifier(tk.image),0); }
+}
+
+void String() throws TermWareException : 
+{
+ Token tk1;
+ Token tk2;
+ String s;
+}
+{
+	DoubleStringLiteral() 
+      |
+	tk1=<SINGLE_STRING_LITERAL_START> tk2=<SINGLE_STRING_LITERAL_END>
+           {
+             s=getSpecialToken(tk2);
+             jjtThis.addTerm(createTerm("SingleStringLiteral",s),0);
+           }
+      |
+	tk1=<HEREDOC_START>
+          {
+             s=getSpecialToken(tk1);
+             jjtThis.addTerm(createTerm("HereDoc",s),0);
+          }
+}
+
+void DoubleStringLiteral()  throws TermWareException : 
+{
+ Token tkBegin=null;
+ Token tkEnd=null;
+ Token tkVBegin=null;
+ Token tkVEnd=null;
+ Token tkVNo=null;
+ int nVars=0;
+ List<Term> sterms=new ArrayList<Term>();
+}
+{
+   tkBegin=<DOUBLE_STRING_LITERAL_START>
+     (
+	LOOKAHEAD(2) 
+           tkVBegin=<DSL_SIMPLE_VAR_START> tkVEnd=<DSL_SIMPLE_STRING_VAR_END>
+           {
+            if (tkVBegin.specialToken!=null) {
+              String s= getSpecialToken(tkVBegin);
+              sterms.add(createTerm("string",s));
+            }
+           }
+        |	
+           (
+              (
+	       	tkVBegin=<DSL_SIMPLE_VAR_START>
+	 	(
+                  tkVEnd=<DSL_SIMPLE_VAR_END>
+	         |			
+                  tkVNo=<DSL_SIMPLE_VAR_WASNT>
+		)
+	       |		
+                tkVBegin=<DSL_COMPLEX_VAR_START> 
+                            tkVEnd=<DSL_COMPLEX_VAR_END>
+              )
+              {
+                ++nVars;
+                if (tkVBegin.specialToken!=null) {
+                  String s= getSpecialToken(tkVBegin);
+                  sterms.add(createTerm("string",s));
+                }
+                if (tkVNo==null) {
+                 if (tkVBegin.image.endsWith("${")) {
+                   if (tkVBegin.image.length() > 2) {
+                    String s = tkVBegin.image.substring(0,tkVBegin.image.length()-2);
+                    sterms.add(createTerm("string",s));
+                   }
+                   String varName = tkVEnd.image.substring(0,
+                                                 tkVEnd.image.length()-1);
+                   Term t = createTerm("var",varName);
+                   sterms.add(t);
+                 }else{
+                  if (tkVBegin.image.length() > 1) {
+                    String s = tkVBegin.image.substring(0,tkVBegin.image.length()-1);
+                    sterms.add(createTerm("string",s));
+                  }
+                  Term t = createTerm("var",tkVEnd.image);
+                  sterms.add(t);  
+                 }
+                }else{
+                 if (tkVBegin.image.length() > 1) {
+                    String s = tkVBegin.image.substring(0,tkVBegin.image.length()-1);
+                    sterms.add(createTerm("string",s));
+                 }
+                 Term t = createTerm("string",tkVNo.image);
+                 sterms.add(t);  
+                }
+               }
+	  )* 
+          tkEnd=<DOUBLE_STRING_LITERAL_END>
+          {
+            if (!tkBegin.image.equals("\"")) {
+             Term t = createTerm("string",tkBegin.image.substring(1));
+             sterms.add(0,t);
+            }
+            if (!tkEnd.image.equals("\"")) {
+             Term t = createTerm("string",
+                             tkEnd.image.substring(0,tkEnd.image.length()-1));
+             sterms.add(t);
+            }
+           }
+      )
+    { 
+      //System.err.println("addTerm must be called");
+      jjtThis.addTerm(adoptList(sterms),0); 
+    }
+}
+
+void Visibility()  : 
+{
+ Token tk;
+}
+{
+	(tk=<PUBLIC> | tk=<PRIVATE> | tk=<PROTECTED>)
+         { jjtThis.addTerm(createAtom(tk.image),0); }
+}
+
+

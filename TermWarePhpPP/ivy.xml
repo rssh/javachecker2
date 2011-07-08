@@ -1,0 +1,30 @@
+<ivy-module version="1.0">
+ <info organisation="ua.gradsoft" module="termwarephp" />
+ <configurations>
+  <conf name="default" description="provide termwarephp jar" />
+  <conf name="build" description="provide termwarephp with build tools" />
+  <conf name="test" extends="default" description=" with tests" />
+  <conf name="src" extends="test,build" 
+                         description="source distribution" />
+  <conf name="src.only" 
+                         description="special configuration for src publish" />
+ </configurations>
+ <publications>
+    <artifact name="TermWarePhp" type="jar" conf="default" />
+    <artifact name="TermWarePhp-src" type="source-archive" ext="tar.gz" 
+              conf="src,src.only" />
+ </publications>
+ <dependencies>
+   <dependency org="net.java.dev.javacc" name="javacc" rev="4.0" 
+               conf="build->default" transitive="false" >
+   </dependency>
+   <dependency org="org.junit" name="junit" rev="4.5" 
+               conf="test->default" >
+     <artifact name="junit" type="jar" />
+   </dependency>
+   <dependency org="ua.gradsoft" name="termware" rev="[2.3.1,)"
+               conf="default->jar" >
+    <artifact name="TermWare" type="jar" />
+   </dependency>
+ </dependencies>
+</ivy-module>
