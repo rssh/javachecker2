@@ -38,7 +38,7 @@ public class X1test extends TestCase
     public void testX1() throws Exception
     {
         Term t = JPPMain.parseString(xClass);
-        t.println(System.out);
+        //t.println(System.out);
         assert(t.getName().equals("CompilationUnit"));
         Term dcl=t.getSubtermAt(0).getSubtermAt(1);
         assert(dcl.getName().equals("ClassOrInterfaceDeclaration"));

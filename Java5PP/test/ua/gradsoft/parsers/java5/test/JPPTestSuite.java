@@ -27,6 +27,7 @@ public class JPPTestSuite extends TestSuite
         this.addTestSuite(ParseHelperTest.class);
         this.addTestSuite(JettyServerTest.class);
         //this.addTestSuite(JavaSrcTest.class);
+        this.addTestSuite(Java7Test.class);
     }
     
     
